@@ -6,7 +6,7 @@
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <QTime>
-#include <armadillo>
+//#include <armadillo>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 

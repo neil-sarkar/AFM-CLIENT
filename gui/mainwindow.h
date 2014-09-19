@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include "plot.h"
 #include <qtimer.h>
-#include <XYGenerator.h>
+//#include <XYGenerator.h>
 #include <QtConcurrentRun>
 #include <QFuture>
 #include <QFutureWatcher>
