@@ -6,6 +6,9 @@
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <QTime>
+#include "serialworker.h"
+#include <QThread>
+#include <QObject>
 //#include <armadillo>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
@@ -20,6 +23,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
+
+    // Serial Thread
+    serialThread = new QThread();
+    serialWorker = new serialworker();
+
+    serialWorker->moveToThread(serialThread);
+    connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
+    connect(serialWorker, SIGNAL(finished()), serialThread, SLOT(quit()), Qt::DirectConnection);
+    serialThread->start();
 
     // Serial port
     detectedSerialPorts= QSerialPortInfo::availablePorts();
@@ -219,6 +231,8 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     afm.setPort(detectedSerialPorts.at(index));
     afm.open(QIODevice::ReadWrite);
     //displayComPortInfo(detectedSerialPorts.at(index));
+
+    serialWorker->requestMethod(serialworker::writeByte);
 }
 
 void MainWindow::displayComPortInfo(const QSerialPortInfo& info)

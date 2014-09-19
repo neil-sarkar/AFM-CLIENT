@@ -15,6 +15,7 @@
 #include <QtConcurrentRun>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <serialworker.h>
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +35,10 @@ public:
 
 protected:
     void timerEvent( QTimerEvent * );
+
+private:
+    QThread *serialThread;
+    serialworker *serialWorker;
 
 private slots:
     void updateGraph();

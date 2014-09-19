@@ -12,6 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT  += concurrent
 QT  += serialport
+
 TARGET = nano-i
 TEMPLATE = app
 
@@ -20,10 +21,12 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     afm.cpp \
     plot.cpp \
+    serialworker.cpp
 
 HEADERS  += mainwindow.h \
     afm.h \
     plot.h \
+    serialworker.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
