@@ -45,21 +45,25 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
 }
 
 float nanoiAFM::readDAC(qint8 dacID){
+    quint16 val;
     writeByte(AFM_DAC_READ_SELECT);
     writeByte(dacID);
     QByteArray res=waitForData();
 #if AFM_DEBUG
     qDebug() << "Bytes Read from DAC: " << res.size();
 #endif
-    quint16 val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+    if(!res.isEmpty() || !res.isNull())
+        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
     return ((float)val)/AFM_DAC_SCALING;
 }
 
 float nanoiAFM::readADC(qint8 adcID){
+    quint16 val;
     writeByte(AFM_ADC_READ_SELECT);
     writeByte(adcID);
     QByteArray res=waitForData();
-    quint16 val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+    if(!res.isEmpty() || !res.isNull())
+        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 #if AFM_DEBUG
     qDebug() << "ADC Digital Value read" << val;
 #endif

@@ -125,6 +125,12 @@ void MainWindow::finishedThread() {
 
 MainWindow::~MainWindow()
 {
+    //MAKE SURE TO TERMINATE THE THREAD ON CLOSE
+    serialWorker->abort();
+    serialThread->wait();
+    delete serialThread;
+    delete serialWorker;
+
     afm.close();
     delete ui;
 }
@@ -232,7 +238,7 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     afm.open(QIODevice::ReadWrite);
     //displayComPortInfo(detectedSerialPorts.at(index));
 
-    serialWorker->requestMethod(serialworker::writeByte);
+
 }
 
 void MainWindow::displayComPortInfo(const QSerialPortInfo& info)
@@ -418,9 +424,13 @@ void MainWindow::on_pushButton_6_clicked()
 
 void MainWindow::on_buttonWriteToDAC_clicked()
 {
+
     double valueToWrite = ui->valToWrite->value();
     if (valueToWrite <= AFM_ADC_MAX_VOLTAGE && valueToWrite >= 0) {
         afm.writeDAC(ui->dacNumber->value(), ui->valToWrite->value());
+
+        //THREAD TESTING WILL REMOVE
+        serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
     }
     ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
     ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
@@ -428,7 +438,9 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 
 void MainWindow::on_buttonReadIO_clicked()
 {
-    ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
+    //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
+    qDebug() << "Value read from DAC: " << serialWorker->doreadDAC() << endl;
+    ui->dacValue->setValue(serialWorker->doreadDAC());
     ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
 
