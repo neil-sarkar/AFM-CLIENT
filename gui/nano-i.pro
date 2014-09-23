@@ -21,12 +21,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     afm.cpp \
     plot.cpp \
-    serialworker.cpp
+    serialworker.cpp \
+    commandqueue.cpp
 
 HEADERS  += mainwindow.h \
     afm.h \
     plot.h \
-    serialworker.h
+    serialworker.h \
+    commandqueue.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

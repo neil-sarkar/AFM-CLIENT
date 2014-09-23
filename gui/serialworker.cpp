@@ -3,15 +3,18 @@
 #include <QThread>
 #include <QEventLoop>
 #include <iostream>
+#include <commandqueue.h>
+#include <stdlib.h>
 
 /*SERIAL WORKER
     -Objective: Separate serial Read/Write from the GUI thread
     -Methods: requestMethod(Method)
     -Info: mainLoop will wait for methods to be requested. */
-serialworker::serialworker(QObject *parent) :
+serialworker::serialworker(QObject *parent, commandqueue *queue) :
 QObject(parent)
 {
     _abort = false;
+    _queue = queue;
 }
 
 /*This main loop will constantly check for methods to call
@@ -33,16 +36,19 @@ void serialworker::mainLoop()
             return;
         }
 
-        Method method = _method;
-        mutex.unlock();
+        if(!_queue->isEmpty()){
+            commandNode _node = _queue->pop();
+            Method method = _method;
+            mutex.unlock();
 
-        switch(method) {
-        case writeDAC:
-            dowriteDAC(_dacID,_val);
-            break;
-//        case readDAC:
-//            doreadDAC();
-//            break;
+            switch(method) {
+            case writeDAC:
+                dowriteDAC(_dacID,_val);
+                break;
+    //        case readDAC:
+    //            doreadDAC();
+    //            break;
+            }
         }
     }
 }

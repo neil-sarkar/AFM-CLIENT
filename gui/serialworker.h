@@ -5,13 +5,13 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <afm.h>
-
+#include "commandqueue.h"
 class serialworker : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit serialworker(QObject *parent = 0);
+    explicit serialworker(QObject *parent = 0, commandqueue *queue = nullptr);
     enum Method{
         writeDAC,
         writeByte
@@ -26,6 +26,7 @@ private:
     double _val;
     qint8 _dacID;
     bool _abort;
+    commandqueue *_queue;
     QMutex mutex;
     QWaitCondition condition;
     void dowriteByte(char byte);

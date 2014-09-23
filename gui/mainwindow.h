@@ -16,6 +16,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <serialworker.h>
+#include <commandqueue.h>
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,7 @@ protected:
 private:
     QThread *serialThread;
     serialworker *serialWorker;
+    commandqueue *commandQueue;
 
 private slots:
     void updateGraph();

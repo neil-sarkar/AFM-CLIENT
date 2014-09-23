@@ -9,6 +9,7 @@
 #include "serialworker.h"
 #include <QThread>
 #include <QObject>
+#include "commandqueue.h"
 //#include <armadillo>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
@@ -25,8 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->setCurrentIndex(0);
 
     // Serial Thread
+    commandQueue = new commandqueue();
     serialThread = new QThread();
-    serialWorker = new serialworker();
+    serialWorker = new serialworker(0, commandQueue);
 
     serialWorker->moveToThread(serialThread);
     connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
@@ -430,7 +432,8 @@ void MainWindow::on_buttonWriteToDAC_clicked()
         afm.writeDAC(ui->dacNumber->value(), ui->valToWrite->value());
 
         //THREAD TESTING WILL REMOVE
-        serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
+        //serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
+        commandQueue->push('test','2','2');
     }
     ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
     ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
