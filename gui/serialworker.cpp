@@ -3,19 +3,14 @@
 #include <QThread>
 #include <QEventLoop>
 #include <iostream>
-#include <commandqueue.h>
-#include <stdlib.h>
+#include <queue>
+using std::queue;
 
 /*SERIAL WORKER
     -Objective: Separate serial Read/Write from the GUI thread
     -Methods: requestMethod(Method)
     -Info: mainLoop will wait for methods to be requested. */
-serialworker::serialworker(QObject *parent, commandqueue *queue) :
-QObject(parent)
-{
-    _abort = false;
-    _queue = queue;
-}
+//serialworker::serialworker(QObject *parent, queue<commandNode*>& _queue) : QObject(parent){_abort = false;}
 
 /*This main loop will constantly check for methods to call
 if _method matches a case in the switch statement the
@@ -23,11 +18,12 @@ corresponding method will be called. if _abort is ever set to
 true the thread will exit.*/
 void serialworker::mainLoop()
 {
+    _abort = false;
     forever {
-
+        QThread::msleep(1000);
         mutex.lock();
         if (!_abort) {
-            condition.wait(&mutex);
+            //condition.wait(&mutex);
         }
 
         if (_abort) {
@@ -36,10 +32,13 @@ void serialworker::mainLoop()
             return;
         }
 
-        if(!_queue->isEmpty()){
-            commandNode _node = _queue->pop();
-            Method method = _method;
+        if(!m_queue.empty()){
+            commandNode* _node = m_queue.front();
+            _method = _node->getcommandName();
+            char method = _method;
             mutex.unlock();
+
+            qDebug() << "Received method : " << _method << endl;
 
             switch(method) {
             case writeDAC:
@@ -49,7 +48,8 @@ void serialworker::mainLoop()
     //            doreadDAC();
     //            break;
             }
-        }
+            m_queue.pop();
+        }else{mutex.unlock();}
     }
 }
 
@@ -63,7 +63,7 @@ void serialworker::mainLoop()
 void serialworker::requestMethod(serialworker::Method method)
 {
     QMutexLocker locker(&mutex);
-    _method = method;
+    //_method = method;
     condition.wakeOne();
 }
 

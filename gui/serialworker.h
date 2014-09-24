@@ -5,13 +5,18 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <afm.h>
-#include "commandqueue.h"
+#include <queue>
+#include <commandNode.h>
+using std::queue;
+
+
+
 class serialworker : public QObject
 {
     Q_OBJECT
-
+    queue<commandNode*>& m_queue;
 public:
-    explicit serialworker(QObject *parent = 0, commandqueue *queue = nullptr);
+    serialworker(QObject *parent, queue<commandNode*>& _queue) : m_queue(_queue),QObject(parent){}
     enum Method{
         writeDAC,
         writeByte
@@ -20,13 +25,13 @@ public:
     void requestMethod(Method method,qint8 dacID, double val);
     void abort();
 
+
 private:
     nanoiAFM afm;
-    Method _method;
+    char _method;
     double _val;
     qint8 _dacID;
     bool _abort;
-    commandqueue *_queue;
     QMutex mutex;
     QWaitCondition condition;
     void dowriteByte(char byte);
