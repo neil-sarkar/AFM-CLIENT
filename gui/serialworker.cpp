@@ -6,21 +6,37 @@
 #include <queue>
 using std::queue;
 
-/*SERIAL WORKER
+/***********************************************************************
+ * SERIAL WORKER
     -Objective: Separate serial Read/Write from the GUI thread
     -Methods: requestMethod(Method)
-    -Info: mainLoop will wait for methods to be requested. */
-//serialworker::serialworker(QObject *parent, queue<commandNode*>& _queue) : QObject(parent){_abort = false;}
+    -Info: mainLoop will wait for methods to be requested.
 
-/*This main loop will constantly check for methods to call
+This main loop will constantly check for methods to call
 if _method matches a case in the switch statement the
 corresponding method will be called. if _abort is ever set to
-true the thread will exit.*/
+true the thread will exit.
+***********************************************************************/
 void serialworker::mainLoop()
 {
     _abort = false;
+
+//    QList<QSerialPortInfo> detectedSerialPorts = QSerialPortInfo::availablePorts();
+//    if(detectedSerialPorts.size()==0)
+//    {
+//        //QMessageBox msgBox;
+//        //msgBox.setText("Unable to find any serial ports.");
+//        //msgBox.exec();
+//        qDebug() << "Unable to find any serial ports." << endl;
+//    }
+//    else
+//    {
+//        afm->setPort(detectedSerialPorts.at(0));
+//        afm->open(QIODevice::ReadWrite);
+//    }
+
     forever {
-        QThread::msleep(1000);
+        //QThread::msleep(1000);
         mutex.lock();
         if (!_abort) {
             //condition.wait(&mutex);
@@ -34,22 +50,47 @@ void serialworker::mainLoop()
 
         if(!m_queue.empty()){
             commandNode* _node = m_queue.front();
-            _method = _node->getcommandName();
-            char method = _method;
+            _command = _node->getcommandName();
             mutex.unlock();
 
-            qDebug() << "Received method : " << _method << endl;
+            qDebug() << "Received method : " << _command << endl;
 
-            switch(method) {
+            switch(_command) {
             case writeDAC:
-                dowriteDAC(_dacID,_val);
+                _dacID = _node->getval1();
+                _val = _node->getval2();
+                //dowriteDAC(_dacID,_val);
+                m_afm.writeDAC((char)_node->getdacID(),(double)_node->getdval());
                 break;
-    //        case readDAC:
-    //            doreadDAC();
-    //            break;
+            case readDAC:
+                _dacID = _node->getdacID();
+                _returnBytes = _node->getreturnBytes();
+                //_returnBytes = afm.readDAC(_dacID);
+                _returnBytes = 4;
+                break;
+            case setRasterStep:
+                m_afm.setRasterStep();
+                break;
+            case memsSetOffset:
+                _val = _node->getval1();
+                m_afm.memsSetOffset(_val);
+                break;
+            case memsSetFrequency:
+                _val = _node->getval1();
+                m_afm.memsSetFrequency(_val);
+                break;
+            case memsSetAmplitude:
+                _val = _node->getval1();
+                m_afm.memsSetAmplitude(_val);
+                break;
+            case memsSetBridgeVoltage:
+                _val = _node->getval1();
+                m_afm.memsSetBridgeVoltage(_val);
+                break;
             }
             m_queue.pop();
-        }else{mutex.unlock();}
+        }
+        else{mutex.unlock();}
     }
 }
 
@@ -60,7 +101,7 @@ void serialworker::mainLoop()
    This function sets placeholders for the method and all arguments required
 */
 
-void serialworker::requestMethod(serialworker::Method method)
+void serialworker::requestCommand(Command command)
 {
     QMutexLocker locker(&mutex);
     //_method = method;
@@ -73,10 +114,10 @@ void serialworker::requestMethod(serialworker::Method method)
           a dacID
           a value to set the DAC
 */
-void serialworker::requestMethod(serialworker::Method method, qint8 dacID, double val)
+void serialworker::requestCommand(Command command, qint8 dacID, double val)
 {
     QMutexLocker locker(&mutex);
-    _method = method;
+    _command = command;
     _dacID = dacID;
     _val = val;
     condition.wakeOne();
@@ -90,10 +131,6 @@ void serialworker::dowriteByte(char byte)
 void serialworker::dowriteDAC(qint8 dacID, double val)
 {
     /*CALL AFM CODE*/
-    mutex.lock();
-    bool abort = _abort;
-    mutex.unlock();
-
 //    if (abort) {
 //        break;
 //    }

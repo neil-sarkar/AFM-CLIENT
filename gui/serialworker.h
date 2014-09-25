@@ -7,6 +7,8 @@
 #include <afm.h>
 #include <queue>
 #include <commandNode.h>
+#include <command.h>
+
 using std::queue;
 
 
@@ -15,25 +17,23 @@ class serialworker : public QObject
 {
     Q_OBJECT
     queue<commandNode*>& m_queue;
+    nanoiAFM m_afm;
 public:
-    serialworker(QObject *parent, queue<commandNode*>& _queue) : m_queue(_queue),QObject(parent){}
-    enum Method{
-        writeDAC,
-        writeByte
-    };
-    void requestMethod(Method method);
-    void requestMethod(Method method,qint8 dacID, double val);
+    serialworker(QObject *parent, queue<commandNode*>& _queue, nanoiAFM& _afm) : m_queue(_queue),QObject(parent), m_afm(_afm){}
+    void requestCommand(Command command);
+    void requestCommand(Command command,qint8 dacID, double val);
     void abort();
 
 
 private:
-    nanoiAFM afm;
-    char _method;
+    //nanoiAFM* afm;
+    Command _command;
     double _val;
     qint8 _dacID;
     bool _abort;
     QMutex mutex;
     QWaitCondition condition;
+    float _returnBytes;
     void dowriteByte(char byte);
     void dowriteDAC(qint8 dacID, double val);
     int dosetRasterStep();

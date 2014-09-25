@@ -27,7 +27,8 @@ HEADERS  += mainwindow.h \
     afm.h \
     plot.h \
     serialworker.h \
-    commandNode.h
+    commandNode.h \
+    command.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

@@ -9,6 +9,7 @@
 #include "serialworker.h"
 #include <QThread>
 #include <QObject>
+#include <command.h>
 //#include <armadillo>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
@@ -28,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Serial Thread
 
     serialThread = new QThread();
-    serialWorker = new serialworker(0, commandQueue);
+    serialWorker = new serialworker(0, commandQueue, afm);
 
     serialWorker->moveToThread(serialThread);
     connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
@@ -429,22 +430,25 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 
     double valueToWrite = ui->valToWrite->value();
     if (valueToWrite <= AFM_ADC_MAX_VOLTAGE && valueToWrite >= 0) {
-        afm.writeDAC(ui->dacNumber->value(), ui->valToWrite->value());
+       // afm.writeDAC(ui->dacNumber->value(), ui->valToWrite->value());
 
         //THREAD TESTING WILL REMOVE
         //serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
-        commandNode* _node = new commandNode('t','2','2');
+        commandNode* _node = new commandNode(writeDAC,2,2,(qint8)ui->dacNumber->value(),ui->valToWrite->value());
         commandQueue.push(_node);
         //serialWorker->requestMethod(serialworker::writeDAC);
     }
-    ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
-    ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
+    //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
+    //ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
 
 void MainWindow::on_buttonReadIO_clicked()
 {
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
-    qDebug() << "Value read from DAC: " << serialWorker->doreadDAC() << endl;
+    float returnBytes;
+    commandNode* _node = new commandNode(readDAC,2,2,(qint8)0,(float)returnBytes);
+    commandQueue.push(_node);
+    qDebug() << "Value read from DAC: " << returnBytes << endl;
     ui->dacValue->setValue(serialWorker->doreadDAC());
     ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
