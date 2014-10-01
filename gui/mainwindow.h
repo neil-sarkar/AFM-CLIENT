@@ -17,6 +17,8 @@
 #include <QFutureWatcher>
 #include <serialworker.h>
 #include <queue>
+#include <returnBuffer.h>
+
 using std::queue;
 
 namespace Ui {
@@ -28,9 +30,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    nanoiAFM afm;
+    //nanoiAFM afm;
     QList<QSerialPortInfo> detectedSerialPorts;
     queue<commandNode*> commandQueue;
+    queue<returnBuffer<int>*> returnQueue;
     explicit MainWindow(QWidget *parent = 0);
     void autoApproach(nanoiAFM* afm);
     ~MainWindow();
@@ -41,6 +44,7 @@ protected:
 private:
     QThread* serialThread;
     serialworker *serialWorker;
+    QMutex mutex;
 
 private slots:
     void updateGraph();

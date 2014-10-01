@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 //            }
 //        }
 
-    //calculateLineScan(3000,2000,1000);
+//    calculateLineScan(3000,2000,1000);
 
     return a.exec();
 }

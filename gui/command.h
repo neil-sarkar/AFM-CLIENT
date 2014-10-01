@@ -1,9 +1,14 @@
 #ifndef METHOD_H
 #define METHOD_H
 
+#include <QEventLoop>
+#include <iostream>
+#include <QThread>
+
 enum Command{
     writeDAC,
     readDAC,
+    readADC,
     writeByte,
     setRasterStep,
     memsSetOffset,
@@ -28,7 +33,11 @@ enum Command{
     stageMoveBackward,
     setDDSSettings,
     frequencySweep,
-    autoApproach
+    afmAutoApproach,
+    setPorts,
+    mainWindowTimerEvent
 };
+
+
 
 #endif // METHOD_H

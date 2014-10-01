@@ -25,9 +25,22 @@ class commandNode
     QVector<double> m_amplitude;
     QVector<double> m_frequency;
     int m_bytesRead;
-    float m_returnBytes;
 
   public:
+
+    /* Template constructors are hard.
+     *
+     *
+     * Working on turning these constructors into templates*/
+
+//    template<class a_Type> commandNode(Command commandName, int sendByteSize, int recByteSize, a_Type val1)
+//        : m_commandName(commandName), m_sendByteSize(sendByteSize) , m_recByteSize(recByteSize), m_val1(val1) { }
+
+//    template<class a_Type,class b_Type> commandNode(Command commandName, int sendByteSize, int recByteSize, a_Type val1, b_Type val2)
+//        : m_commandName(commandName), m_sendByteSize(sendByteSize) , m_recByteSize(recByteSize), m_val1(val1), m_val2(val2) { }
+
+
+
     /*int dosetRasterStep()
     int dopidEnable()
     int dopidDisable()
@@ -40,11 +53,16 @@ class commandNode
     void dostageMoveForward()
     void dostageMoveBackward()
     void doautoApproach()*/
+    commandNode(Command commandName)
+          : m_commandName(commandName) {}
+
     commandNode(Command commandName, int sendByteSize, int recByteSize)
           : m_commandName(commandName), m_sendByteSize(sendByteSize), m_recByteSize(recByteSize) {}
 
-    commandNode(Command commandName, int sendByteSize, int recByteSize,qint8 dacID, float& returnBytes)
-          : m_commandName(commandName), m_sendByteSize(sendByteSize), m_recByteSize(recByteSize),m_dacID(dacID), m_returnBytes(returnBytes) {}
+    /* readADC
+     * readDAC*/
+//    commandNode(Command commandName, int sendByteSize, int recByteSize,qint8 dacID)
+//          : m_commandName(commandName), m_sendByteSize(sendByteSize), m_recByteSize(recByteSize),m_dacID(dacID) {}
 
     /*void dowriteByte(char byte)*/
     commandNode(Command commandName, int sendByteSize, int recByteSize, char val1)
@@ -110,7 +128,6 @@ class commandNode
     QVector<double>& getamplitude() {return m_amplitude; }
     QVector<double>& getfrequency() { return m_frequency; }
     int& getbytesRead() { return m_bytesRead;}
-    float getreturnBytes() { return m_returnBytes; }
 };
 
 #endif // COMMANDNODE_H

@@ -51,7 +51,7 @@
 #define AFM_ADC_Y1_ID                         1
 #define AFM_ADC_Y2_ID                         0
 #define AFM_ADC_OFFSET_ID                     5
-#define AFM_ADC_AMPLTIDE_ID                   3
+#define AFM_ADC_AMPLITUDE_ID                   3
 #define AFM_ADC_PHASE_ID                      6
 #endif
 

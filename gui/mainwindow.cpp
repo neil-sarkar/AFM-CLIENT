@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Serial Thread
 
     serialThread = new QThread();
-    serialWorker = new serialworker(0, commandQueue, afm);
+    serialWorker = new serialworker(0, commandQueue, returnQueue);
 
     serialWorker->moveToThread(serialThread);
     connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
@@ -37,29 +37,36 @@ MainWindow::MainWindow(QWidget *parent) :
     serialThread->start();
 
     // Serial port
-    detectedSerialPorts= QSerialPortInfo::availablePorts();
-    if(detectedSerialPorts.size()==0)
-    {
-        QMessageBox msgBox;
-        msgBox.setText("Unable to find any serial ports.");
-        msgBox.exec();
-    }
-    else
-    {
-        afm.setPort(detectedSerialPorts.at(0));
-        afm.open(QIODevice::ReadWrite);
-    }
+//    detectedSerialPorts= QSerialPortInfo::availablePorts();
+//    if(detectedSerialPorts.size()==0)
+//    {
+//        QMessageBox msgBox;
+//        msgBox.setText("Unable to find any serial ports.");
+//        msgBox.exec();
+//    }
+//    else
+//    {
 
-    foreach (const QSerialPortInfo &info, detectedSerialPorts) {
-        ui->cboComPortSelection->addItem(info.portName());
-    }
+//        afm.setPort(detectedSerialPorts.at(0));
+//        afm.open(QIODevice::ReadWrite);
+//    }
+
+    commandQueue.push(new commandNode(setPorts));
+
+
+//    if(!QSerialPortInfo::availablePorts().at(0).isNull()){
+//        foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+//            ui->cboComPortSelection->addItem(info.portName());
+//        }
+//    }
 
     // temporary random number generator for plots
     qsrand(QTime::currentTime().msec());
     time = 0;
 
     // for reading DAC/updating plots
-    ioTimer = startTimer(200); // for reading DAC/ADC
+    //ioTimer = startTimer(200); // for reading DAC/ADC
+
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
     generalTimer->start(20); // every 20 ms, we update UI elements/other tasks, like continuous coarse step
@@ -134,7 +141,7 @@ MainWindow::~MainWindow()
     delete serialThread;
     delete serialWorker;
 
-    afm.close();
+    //afm.close();
     delete ui;
 }
 
@@ -161,20 +168,29 @@ void MainWindow::timerEvent(QTimerEvent *e) {
     int currTab = ui->tabWidget->currentIndex();
     int id = e->timerId();
 
+
     if( id == ioTimer ) {
 #if AFM_MICRO_CONNECTED
         if( continuousStep )
-            afm.stageSetStep();
+            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
 
-        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
+//        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
+//        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
+//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLTIDE_ID));
+//        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
+//        adc5 = returnQueue.front();
+//        returnQueue.pop();
+//        dac8 = returnQueue.front();
+//        returnQueue.pop();
+        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
+        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
 
         if( isAutoApproach ) {
             approachPlot->update(time, adc5, currTab == Approach ? true: false);
             ui->currOffsetValue->setValue(adc5);
             time++;
 
-            afm.stageSetStep();
+            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
 
             if ( adc5 <= 0.95*autoApproachComparison ) {
                 on_buttonAutoApproachClient_clicked(false);
@@ -190,56 +206,56 @@ void MainWindow::timerEvent(QTimerEvent *e) {
 
 void MainWindow::on_spnOffsetVoltage_valueChanged(double arg1)
 {
-    afm.memsSetOffset(arg1);
+    commandQueue.push(new commandNode(memsSetOffset,0,0,(double)arg1));//afm.memsSetOffset(arg1);
 }
 
 void MainWindow::on_spnBridgeVoltage_valueChanged(double arg1)
 {
-    afm.memsSetBridgeVoltage(arg1);
+    commandQueue.push(new commandNode(memsSetBridgeVoltage,0,0,(double)arg1));//afm.memsSetBridgeVoltage(arg1);
 }
 
 void MainWindow::on_spnFrequencyVoltage_valueChanged(double arg1)
 {
-    afm.memsSetFrequency(arg1);
+    commandQueue.push(new commandNode(memsSetFrequency,0,0,(double)arg1));//afm.memsSetFrequency(arg1);
 }
 
 void MainWindow::on_btnPidToggle_toggled(bool checked)
 {
     if(checked){
-        afm.pidEnable();
+         commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
     }
     else{
-        afm.pidDisable();
+         commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
     }
 }
 
 void MainWindow::on_spnPidValueP_valueChanged(double arg1)
 {
-    afm.pidSetP(arg1);
+    commandQueue.push(new commandNode(pidSetP,0,0,(double)arg1));//afm.pidSetP(arg1);
 }
 
 void MainWindow::on_spnPidValueI_valueChanged(double arg1)
 {
-    afm.pidSetI(arg1);
+    commandQueue.push(new commandNode(pidSetI,0,0,(double)arg1));//afm.pidSetI(arg1);
 }
 
 void MainWindow::on_spnPidValueD_valueChanged(double arg1)
 {
-    afm.pidSetD(arg1);
+    commandQueue.push(new commandNode(pidSetD,0,0,(double)arg1));//afm.pidSetD(arg1);
 }
 
 void MainWindow::on_spnPidSetpoint_valueChanged(double arg1)
 {
-    afm.pidSetPoint(arg1);
+    commandQueue.push(new commandNode(pidSetPoint,0,0,(double)arg1));//afm.pidSetPoint(arg1);
 }
 
 void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
 {
 
-    afm.close(); //Close any existing ports
-    afm.setPort(detectedSerialPorts.at(index));
-    afm.open(QIODevice::ReadWrite);
-    //displayComPortInfo(detectedSerialPorts.at(index));
+    //afm.close(); //Close any existing ports
+    //afm.setPort(detectedSerialPorts.at(index));
+    //afm.open(QIODevice::ReadWrite);
+    displayComPortInfo(detectedSerialPorts.at(index));
 
 
 }
@@ -282,12 +298,12 @@ void MainWindow::on_checkBox_clicked(bool checked)
 // TODO: verify retr is backwards aka 'l'
 void MainWindow::on_retreatButton_clicked()
 {
-    afm.stageSetDirBackward();
+    commandQueue.push(new commandNode(stageSetDirBackward));//afm.stageSetDirBackward();
 }
 
 void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
-    afm.stageSetPulseWidth(value);
+    commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)value));//afm.stageSetPulseWidth(value);
 }
 
 void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
@@ -297,17 +313,24 @@ void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
 
 void MainWindow::autoApproach(nanoiAFM* afm) {
     qDebug() << "In the threaded coarse approach";
-    float initVal = afm->readADC(AFM_ADC_AMPLTIDE_ID);
+    float initVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
     afm->stageSetPulseWidth(3);
     afm->stageSetDirBackward();
 
     float bridgeVal;
     for( ;; ) {
+//        commandQueue.push(new commandNode(stageSetStep));
         afm->stageSetStep(); // take a step
-        bridgeVal = afm->readADC(AFM_ADC_AMPLTIDE_ID);
-
+        bridgeVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
+//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
+//        QThread::msleep(100);
+//        mutex.lock();
+//        bridgeVal = return_queue.front();
+//        returnQueue.pop();
+//        mutex.unlock();
         // if we're less than 95% of init, then slow down
         if (bridgeVal < 0.95*initVal) {
+            //commandQueue.push(new commandNode(stageSetPulseWidth,0,0,0));
             afm->stageSetPulseWidth(0);
         }
         // if we're within 90% of init, then autoapproach complete
@@ -321,28 +344,28 @@ void MainWindow::autoApproach(nanoiAFM* afm) {
 // TODO: verify autoapproach
 void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
 {
-    if(checked) {
-        autoApproachComparison = adc5; // comparison value before starting motor
-        ui->comparisonValue->setValue(adc5);
-        afm.stageSetPulseWidth(19);
-        afm.stageSetDirBackward();
-        isAutoApproach = true;
-        //*future = QtConcurrent::run(this, &MainWindow::autoApproach, &afm);
-        //watcher->setFuture(*future);
-    }
-    // TODO: does unchecking autoapproach do anything in original software?
-    // Set the values of motor back to what they were before
-    else {
-        isAutoApproach = false;
-        afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
-        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
-                                                 afm.stageSetDirForward();
-    }
+//    if(checked) {
+//        autoApproachComparison = adc5; // comparison value before starting motor
+//        ui->comparisonValue->setValue(adc5);
+//        afm.stageSetPulseWidth(19);
+//        afm.stageSetDirBackward();
+//        isAutoApproach = true;
+//        //*future = QtConcurrent::run(this, &MainWindow::autoApproach, &afm);
+//        //watcher->setFuture(*future);
+//    }
+//    // TODO: does unchecking autoapproach do anything in original software?
+//    // Set the values of motor back to what they were before
+//    else {
+//        isAutoApproach = false;
+//        afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
+//        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
+//                                                 afm.stageSetDirForward();
+//    }
 }
 
 void MainWindow::on_stepButton_clicked()
 {
-    afm.stageSetStep();
+    commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
 }
 
 void MainWindow::on_continuousButton_clicked(bool checked)
@@ -365,23 +388,30 @@ void MainWindow::on_sweepButton_clicked()
 
     freqPlot->clearData();
     ui->freqProgressLabel->setText("TRUE");
-    int retVal = afm.frequencySweep(ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                    amplitudeData, frequencyData, bytesRead);
-    if ( retVal != AFM_SUCCESS) {
-        QMessageBox msg;
-        msg.setText(QString("Size of Freq Data: %1. Expected Size: %2").arg(\
-                                QString::number(bytesRead), QString::number(ui->numFreqPoints->value()*2) ));
-        msg.exec();
-    }
-    else {
-        qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
-        for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
-            qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqPlot->update(frequencyData[i], amplitudeData[i], true); // add points to graph but don't replot
-        }
-        freqPlot->replot(); // show the frequency sweep
-    }
-    ui->freqProgressLabel->setText("FALSE");
+
+    //commandQueue.push(new commandNode(frequencySweep,0,0,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
+    //                                  amplitudeData, frequencyData, bytesRead));
+
+    //int retVal = afm.frequencySweep(ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
+    //                                amplitudeData, frequencyData, bytesRead);
+
+    //int retVal = returnQueue.front();
+
+//    if ( retVal != AFM_SUCCESS) {
+//        QMessageBox msg;
+//        msg.setText(QString("Size of Freq Data: %1. Expected Size: %2").arg(\
+//                                QString::number(bytesRead), QString::number(ui->numFreqPoints->value()*2) ));
+//        msg.exec();
+//    }
+//    else {
+//        qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
+//        for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
+//            qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
+//            freqPlot->update(frequencyData[i], amplitudeData[i], true); // add points to graph but don't replot
+//        }
+//        freqPlot->replot(); // show the frequency sweep
+//    }
+//    ui->freqProgressLabel->setText("FALSE");
 }
 
 void MainWindow::on_useCurrFreqVal_clicked()
@@ -445,17 +475,35 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 void MainWindow::on_buttonReadIO_clicked()
 {
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
-    float returnBytes;
-    commandNode* _node = new commandNode(readDAC,2,2,(qint8)0,(float)returnBytes);
+    commandNode* _node = new commandNode(readDAC,2,2,(qint8)0);
     commandQueue.push(_node);
-    qDebug() << "Value read from DAC: " << returnBytes << endl;
-    ui->dacValue->setValue(serialWorker->doreadDAC());
-    ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
+    QThread::msleep(1000);
+    mutex.lock();
+    returnBuffer<int>* _buffer;
+    if(!returnQueue.empty()){
+         _buffer = returnQueue.front();
+         returnQueue.pop();
+    }
+    qDebug() << "Value read from DAC: " << _buffer->getData() << endl;
+    mutex.unlock();
+    //returnQueue.pop();
+    //ui->dacValue->setValue(serialWorker->doreadDAC(ui->dacNumber->value()));
+    //ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
 
 void MainWindow::on_btnPidToggle_clicked(bool checked)
 {
-    checked == true ? afm.pidEnable() : afm.pidDisable();
+    commandQueue.push(new commandNode(pidEnable));
+    QThread::msleep(100);
+    bool _pidEnable = returnQueue.front();
+    returnQueue.pop();
+
+    commandQueue.push(new commandNode(pidDisable));
+    QThread::msleep(100);
+    bool _pidDisable = returnQueue.front();
+    returnQueue.pop();
+
+    checked == true ? _pidEnable : _pidDisable;
 }
 
 void MainWindow::on_freqAutoScale_clicked(bool checked)
@@ -465,23 +513,23 @@ void MainWindow::on_freqAutoScale_clicked(bool checked)
 
 void MainWindow::on_spnFrequencyVoltage_2_valueChanged(double arg1)
 {
-    afm.memsSetAmplitude(arg1);
+    commandQueue.push(new commandNode(memsSetAmplitude,0,0,arg1));//afm.memsSetAmplitude(arg1);
 }
 
 void MainWindow::on_buttonSendSweep_clicked()
 {
-    afm.setDDSSettings(ui->numFreqPoints->value(), ui->currFreqVal->value(), ui->stepSize->value());
+    commandQueue.push(new commandNode(setDDSSettings,0,0,(qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(),(qint16) ui->stepSize->value()));//afm.setDDSSettings(ui->numFreqPoints->value(), ui->currFreqVal->value(), ui->stepSize->value());
 }
 
 void MainWindow::on_buttonAutoApproachMCU_clicked()
 {
-    afm.autoApproach();
-    //isAutoApproach = true;
+    commandQueue.push(new commandNode(afmAutoApproach));//afm.autoApproach();
+    isAutoApproach = true;
 }
 
 void MainWindow::on_writeCharacter_clicked()
 {
-    afm.writeByte('z');
+    //afm.writeByte('z');
 //    char data[2];
 //    qDebug() << "Num bytes from click read: " << afm.readData(data, 2);
 //    adc5 = (float)((data[1] << 8) | data[0]);
