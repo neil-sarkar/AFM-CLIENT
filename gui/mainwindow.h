@@ -18,6 +18,7 @@
 #include <serialworker.h>
 #include <queue>
 #include <returnBuffer.h>
+#include <globals.h>
 
 using std::queue;
 
@@ -44,8 +45,7 @@ protected:
 private:
     QThread* serialThread;
     serialworker *serialWorker;
-    QMutex mutex;
-
+    //QMutex mutex;
 private slots:
     void updateGraph();
     void generalTimerUpdate();

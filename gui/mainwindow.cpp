@@ -11,6 +11,7 @@
 #include <QObject>
 #include <command.h>
 //#include <armadillo>
+#include <globals.h>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 
@@ -52,14 +53,19 @@ MainWindow::MainWindow(QWidget *parent) :
 //    }
 
     commandQueue.push(new commandNode(setPorts));
+    QThread::msleep(100);
+    mutex.lock();
+    if(!returnQueue.empty()){
+        returnBuffer<int>* _node = returnQueue.front();
+        if (ui->cboComPortSelection){
+            foreach (const QSerialPortInfo info, _node->getList()) {
+                ui->cboComPortSelection->addItem(info.portName());
+            }
+        }
 
-
-//    if(!QSerialPortInfo::availablePorts().at(0).isNull()){
-//        foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-//            ui->cboComPortSelection->addItem(info.portName());
-//        }
-//    }
-
+        returnQueue.pop();
+    }
+    mutex.unlock();
     // temporary random number generator for plots
     qsrand(QTime::currentTime().msec());
     time = 0;
@@ -176,14 +182,21 @@ void MainWindow::timerEvent(QTimerEvent *e) {
 
 //        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
 //        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
-//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLTIDE_ID));
-//        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
-//        adc5 = returnQueue.front();
-//        returnQueue.pop();
-//        dac8 = returnQueue.front();
-//        returnQueue.pop();
-        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
-        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
+        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
+        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
+        mutex.lock();
+        returnBuffer<int>* _buffer;
+        if(!returnQueue.empty()){
+            _buffer = returnQueue.front();
+            adc5 = _buffer->getData();
+            returnQueue.pop();
+            _buffer = returnQueue.front();
+            dac8 = _buffer->getData();
+            returnQueue.pop();
+            mutex.unlock();
+        }
+//        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
+//        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
 
         if( isAutoApproach ) {
             approachPlot->update(time, adc5, currTab == Approach ? true: false);
@@ -255,7 +268,7 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     //afm.close(); //Close any existing ports
     //afm.setPort(detectedSerialPorts.at(index));
     //afm.open(QIODevice::ReadWrite);
-    displayComPortInfo(detectedSerialPorts.at(index));
+    //displayComPortInfo(detectedSerialPorts.at(index));
 
 
 }
@@ -303,6 +316,7 @@ void MainWindow::on_retreatButton_clicked()
 
 void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
+    ui->lblAmplitude->setText(QString::number(value));
     commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)value));//afm.stageSetPulseWidth(value);
 }
 
@@ -344,23 +358,29 @@ void MainWindow::autoApproach(nanoiAFM* afm) {
 // TODO: verify autoapproach
 void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
 {
-//    if(checked) {
-//        autoApproachComparison = adc5; // comparison value before starting motor
-//        ui->comparisonValue->setValue(adc5);
+    if(checked) {
+        autoApproachComparison = adc5; // comparison value before starting motor
+        ui->comparisonValue->setValue(adc5);
+
+        commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)19));
+        commandQueue.push(new commandNode(stageSetDirBackward));
 //        afm.stageSetPulseWidth(19);
 //        afm.stageSetDirBackward();
-//        isAutoApproach = true;
-//        //*future = QtConcurrent::run(this, &MainWindow::autoApproach, &afm);
-//        //watcher->setFuture(*future);
-//    }
-//    // TODO: does unchecking autoapproach do anything in original software?
-//    // Set the values of motor back to what they were before
-//    else {
-//        isAutoApproach = false;
-//        afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
+        isAutoApproach = true;
+        //*future = QtConcurrent::run(this, &MainWindow::autoApproach, &afm);
+        //watcher->setFuture(*future);
+    }
+    // TODO: does unchecking autoapproach do anything in original software?
+    // Set the values of motor back to what they were before
+    else {
+        isAutoApproach = false;
+        commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)ui->sldAmplitudeVoltage_3->value()));
+        //afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
 //        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
 //                                                 afm.stageSetDirForward();
-//    }
+        ui->retreatButton->isChecked() == true ? commandQueue.push(new commandNode(stageSetDirBackward)) : \
+                                                 commandQueue.push(new commandNode(stageSetDirForward));
+    }
 }
 
 void MainWindow::on_stepButton_clicked()
@@ -388,7 +408,7 @@ void MainWindow::on_sweepButton_clicked()
 
     freqPlot->clearData();
     ui->freqProgressLabel->setText("TRUE");
-
+    ui->freqProgressLabel->setStyleSheet("QLabel { color : Green; }");
     //commandQueue.push(new commandNode(frequencySweep,0,0,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
     //                                  amplitudeData, frequencyData, bytesRead));
 
@@ -411,7 +431,8 @@ void MainWindow::on_sweepButton_clicked()
 //        }
 //        freqPlot->replot(); // show the frequency sweep
 //    }
-//    ui->freqProgressLabel->setText("FALSE");
+    ui->freqProgressLabel->setText("FALSE");
+    ui->freqProgressLabel->setStyleSheet("QLabel { color : red; }");
 }
 
 void MainWindow::on_useCurrFreqVal_clicked()
@@ -464,7 +485,7 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 
         //THREAD TESTING WILL REMOVE
         //serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
-        commandNode* _node = new commandNode(writeDAC,2,2,(qint8)ui->dacNumber->value(),ui->valToWrite->value());
+        commandNode* _node = new commandNode(writeDAC,2,2,(qint8)ui->dacNumber->value(),valueToWrite);
         commandQueue.push(_node);
         //serialWorker->requestMethod(serialworker::writeDAC);
     }
@@ -475,7 +496,9 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 void MainWindow::on_buttonReadIO_clicked()
 {
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
-    commandNode* _node = new commandNode(readDAC,2,2,(qint8)0);
+    commandNode* _node = new commandNode(readDAC,2,2,(qint8)ui->dacNumber->value());
+    commandQueue.push(_node);
+    _node = new commandNode(readADC,2,2,(qint8)ui->adcNumber->value());
     commandQueue.push(_node);
     QThread::msleep(1000);
     mutex.lock();
@@ -483,11 +506,17 @@ void MainWindow::on_buttonReadIO_clicked()
     if(!returnQueue.empty()){
          _buffer = returnQueue.front();
          returnQueue.pop();
+         ui->dacValue->setValue(_buffer->getData());
+         if(!returnQueue.empty()){
+             _buffer = returnQueue.front();
+             returnQueue.pop();
+             ui->adcValue->setValue(_buffer->getData());
+         }
     }
-    qDebug() << "Value read from DAC: " << _buffer->getData() << endl;
+    //qDebug() << "Value read from DAC: " << _buffer->getData() << endl;
     mutex.unlock();
     //returnQueue.pop();
-    //ui->dacValue->setValue(serialWorker->doreadDAC(ui->dacNumber->value()));
+
     //ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
 

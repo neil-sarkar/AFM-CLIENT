@@ -10,6 +10,7 @@
 #include <commandNode.h>
 #include <command.h>
 #include <returnBuffer.h>
+#include <globals.h>
 
 using std::queue;
 
@@ -34,7 +35,7 @@ private:
     double _val;
     qint8 _dacID;
     bool _abort;
-    QMutex mutex;
+    //QMutex mutex;
     QWaitCondition condition;
 
 signals:

@@ -3,6 +3,8 @@
 //gotta follow this to add QtSerial Port
 //http://qt-project.org/wiki/QtSerialPort#fn1921400492531950a902bc4
 
+    QMutex mutex;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
