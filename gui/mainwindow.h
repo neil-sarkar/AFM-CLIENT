@@ -19,6 +19,7 @@
 #include <queue>
 #include <returnBuffer.h>
 #include <globals.h>
+#include <eventworker.h>
 
 using std::queue;
 
@@ -29,14 +30,15 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    queue<commandNode*>& commandQueue;
+    queue<returnBuffer<int>*>& returnQueue;
 
 public:
     //nanoiAFM afm;
     QList<QSerialPortInfo> detectedSerialPorts;
-    queue<commandNode*> commandQueue;
-    queue<returnBuffer<int>*> returnQueue;
-    explicit MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : commandQueue(_queue),returnQueue(_returnqueue),QMainWindow(parent){}
     void autoApproach(nanoiAFM* afm);
+    void abort();
     ~MainWindow();
 
 protected:
@@ -44,9 +46,16 @@ protected:
 
 private:
     QThread* serialThread;
+    QThread* eventThread;
     serialworker *serialWorker;
+    eventworker *eventWorker;
     //QMutex mutex;
+
+signals:
+    void finished();
+
 private slots:
+    void MainWindowLoop();
     void updateGraph();
     void generalTimerUpdate();
     void finishedThread();

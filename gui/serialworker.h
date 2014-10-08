@@ -26,6 +26,7 @@ public:
     serialworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
     void requestCommand(Command command);
     void requestCommand(Command command,qint8 dacID, double val);
+    ~serialworker();
     void abort();
 
 

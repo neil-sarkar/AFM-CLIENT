@@ -40,10 +40,11 @@ void serialworker::mainLoop()
         }
 
         if(!m_queue.empty()){
+            mutex.lock();
             commandNode* _node = m_queue.front();
             _command = _node->getcommandName();
             //mutex.unlock();
-            mutex.lock();
+
 
             qDebug() << "Received method : " << _command << endl;
             switch(_command) {
@@ -115,9 +116,6 @@ void serialworker::mainLoop()
                 detectedSerialPorts = QSerialPortInfo::availablePorts();
                 if(detectedSerialPorts.size()==0)
                 {
-                    //QMessageBox msgBox;
-                    //msgBox.setText("Unable to find any serial ports.");
-                   // msgBox.exec();
                     qDebug() << "Unable to find any serial ports." << endl;
                 }
                 else
@@ -191,5 +189,9 @@ void serialworker::abort()
     //QMutexLocker locker(&mutex);
     //mutex.unlock();
     _abort = true;
-    condition.wakeOne();
+    //condition.wakeOne();
+}
+serialworker::~serialworker()
+{
+    //emit finished();
 }

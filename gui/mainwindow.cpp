@@ -17,25 +17,15 @@
 
 
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    useBridgeSignalAsSetpoint(false),
-    isAutoApproach(false),
-    continuousStep(false)
+void MainWindow::MainWindowLoop()
 {
+    ui = new Ui::MainWindow;
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
 
     // Serial Thread
 
-    serialThread = new QThread();
-    serialWorker = new serialworker(0, commandQueue, returnQueue);
 
-    serialWorker->moveToThread(serialThread);
-    connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
-    connect(serialWorker, SIGNAL(finished()), serialThread, SLOT(quit()), Qt::DirectConnection);
-    serialThread->start();
 
     // Serial port
 //    detectedSerialPorts= QSerialPortInfo::availablePorts();
@@ -71,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     time = 0;
 
     // for reading DAC/updating plots
-    //ioTimer = startTimer(200); // for reading DAC/ADC
+    ioTimer = startTimer(200); // for reading DAC/ADC
 
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
@@ -142,15 +132,24 @@ void MainWindow::finishedThread() {
 MainWindow::~MainWindow()
 {
     //MAKE SURE TO TERMINATE THE THREAD ON CLOSE
-    serialWorker->abort();
-    serialThread->wait();
-    delete serialThread;
-    delete serialWorker;
+//    serialWorker->abort();
+//    serialThread->wait();
+//    eventWorker->abort();
+//    eventThread->wait();
 
-    //afm.close();
-    delete ui;
+//    delete eventThread;
+//    delete eventWorker;
+//    delete serialThread;
+//    delete serialWorker;
+
+//    //afm.close();
+//    delete ui;
+//    emit finished();
 }
-
+void MainWindow::abort()
+{
+    emit finished();
+}
 void MainWindow::updateGraph() {
     int currTab = ui->tabWidget->currentIndex();
     if ( !isAutoApproach ) {
@@ -175,46 +174,46 @@ void MainWindow::timerEvent(QTimerEvent *e) {
     int id = e->timerId();
 
 
-    if( id == ioTimer ) {
-#if AFM_MICRO_CONNECTED
-        if( continuousStep )
-            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+//    if( id == ioTimer ) {
+//#if AFM_MICRO_CONNECTED
+//        if( continuousStep )
+//            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
 
-//        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-//        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
-        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
-        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
-        mutex.lock();
-        returnBuffer<int>* _buffer;
-        if(!returnQueue.empty()){
-            _buffer = returnQueue.front();
-            adc5 = _buffer->getData();
-            returnQueue.pop();
-            _buffer = returnQueue.front();
-            dac8 = _buffer->getData();
-            returnQueue.pop();
-            mutex.unlock();
-        }
-//        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
-//        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
+////        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
+////        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
+//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
+//        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
+//        mutex.lock();
+//        returnBuffer<int>* _buffer;
+//        if(!returnQueue.empty()){
+//            _buffer = returnQueue.front();
+//            adc5 = _buffer->getData();
+//            returnQueue.pop();
+//            _buffer = returnQueue.front();
+//            dac8 = _buffer->getData();
+//            returnQueue.pop();
+//            mutex.unlock();
+//        }
+////        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
+////        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
 
-        if( isAutoApproach ) {
-            approachPlot->update(time, adc5, currTab == Approach ? true: false);
-            ui->currOffsetValue->setValue(adc5);
-            time++;
+//        if( isAutoApproach ) {
+//            approachPlot->update(time, adc5, currTab == Approach ? true: false);
+//            ui->currOffsetValue->setValue(adc5);
+//            time++;
 
-            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+//            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
 
-            if ( adc5 <= 0.95*autoApproachComparison ) {
-                on_buttonAutoApproachClient_clicked(false);
-            }
-        }
+//            if ( adc5 <= 0.95*autoApproachComparison ) {
+//                on_buttonAutoApproachClient_clicked(false);
+//            }
+//        }
 
-#else
-        adc5 = float(qrand())/RAND_MAX;
-        dac8 = float(qrand())/RAND_MAX;
-#endif
-    }
+//#else
+//        adc5 = float(qrand())/RAND_MAX;
+//        dac8 = float(qrand())/RAND_MAX;
+//#endif
+//    }
 }
 
 void MainWindow::on_spnOffsetVoltage_valueChanged(double arg1)
@@ -566,3 +565,4 @@ void MainWindow::on_writeCharacter_clicked()
 //    quint16 val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 //    adc5 = ((float)val)/AFM_ADC_SCALING;
 }
+
