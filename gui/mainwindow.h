@@ -27,6 +27,7 @@ namespace Ui {
 class MainWindow;
 }
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +40,14 @@ public:
     MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : commandQueue(_queue),returnQueue(_returnqueue),QMainWindow(parent){}
     void autoApproach(nanoiAFM* afm);
     void abort();
+    void SetPorts();
+    void setADC5(float val){adc5 = val;}
+    void setDAC8(float val){dac8 = val;}
+    bool getContinuousStep(){return continuousStep;}
+    bool getAutoApproach(){return isAutoApproach;}
+    float getAutoApproachComparison(){return autoApproachComparison;}
+    float getADC5(){return adc5;}
+
     ~MainWindow();
 
 protected:
@@ -48,7 +57,7 @@ private:
     QThread* serialThread;
     QThread* eventThread;
     serialworker *serialWorker;
-    eventworker *eventWorker;
+    //eventworker *eventWorker;
     //QMutex mutex;
 
 signals:
@@ -146,13 +155,13 @@ private:
     int ioTimer;            // timer id for ADC/DAC read
     QTimer *graphTimer;     // graph timer which can change intervals
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
-    float dac8;
-    float adc5;
     Plot *freqPlot;
     Plot *approachPlot;
     Plot *signalPlot1;
     Plot *signalPlot2;
     int time;
+    float dac8;
+    float adc5;
     bool useBridgeSignalAsSetpoint;
     bool continuousStep;
     bool isAutoApproach;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <queue>
 #include <returnBuffer.h>
+#include <string>
 
 using std::queue;
 
@@ -24,11 +25,11 @@ void serialworker::mainLoop()
     _abort = false;
     QList<QSerialPortInfo>& detectedSerialPorts = QList<QSerialPortInfo>();
     int _success;
-    float _returnBytes;
+
 
     forever {
         //QThread::msleep(1000);
-        //mutex.lock();
+        mutex.lock();
         if (!_abort) {
             //condition.wait(&mutex);
         }
@@ -40,7 +41,7 @@ void serialworker::mainLoop()
         }
 
         if(!m_queue.empty()){
-            mutex.lock();
+
             commandNode* _node = m_queue.front();
             _command = _node->getcommandName();
             //mutex.unlock();
@@ -49,20 +50,30 @@ void serialworker::mainLoop()
             qDebug() << "Received method : " << _command << endl;
             switch(_command) {
             case writeDAC:
-                _dacID = _node->getdacID();
+                _ID = _node->getdacID();
                 _val = _node->getdval();
                 //dowriteDAC(_dacID,_val);
-                m_afm.writeDAC((qint8)_dacID,(double)_val);
+                m_afm.writeDAC((qint8)_node->getdacID(),(double)_node->getdval());
                 break;
             case readDAC:
-                _dacID = _node->getqval();
-                _returnBytes = m_afm.readDAC(_dacID);
-                return_queue.push(new returnBuffer<int>('i', _returnBytes));
+                _ID = _node->getqval();
+                _returnBytes = m_afm.readDAC((qint8)_node->getqval());
+                if(_ID == 6)
+                    return_queue.push(new returnBuffer<int>("DAC8"));
+                else
+                    return_queue.push(new returnBuffer<int>("DAC"));
+
+                return_queue.push(new returnBuffer<int>((float)_returnBytes));
                 break;
             case readADC:
-                _dacID = _node->getqval();
-                _returnBytes = m_afm.readADC(_dacID);
-                return_queue.push(new returnBuffer<int>('i', _returnBytes));
+                _ID = _node->getqval();
+                _returnBytes = m_afm.readADC((qint8)_node->getqval());
+                if(_ID == 3)
+                    return_queue.push(new returnBuffer<int>("ADC5"));
+                else
+                    return_queue.push(new returnBuffer<int>("ADC"));
+
+                return_queue.push(new returnBuffer<int>((float)_returnBytes));
                 break;
             case setRasterStep:
                 m_afm.setRasterStep();
@@ -88,11 +99,11 @@ void serialworker::mainLoop()
                 break;
             case pidEnable:
                 _success = m_afm.pidEnable();
-                return_queue.push(new returnBuffer<int>('i',_success));
+                return_queue.push(new returnBuffer<int>(_success));
                 break;
             case pidDisable:
                 _success = m_afm.pidDisable();
-                return_queue.push(new returnBuffer<int>('i',_success));
+                return_queue.push(new returnBuffer<int>(_success));
                 break;
             case pidSetP:
                 m_afm.pidSetP(_node->getP());
@@ -123,30 +134,33 @@ void serialworker::mainLoop()
                     //qDebug() << detectedSerialPorts.at(0).portName() << endl;
                     m_afm.setPort(detectedSerialPorts.at(0));
                     m_afm.open(QIODevice::ReadWrite);
-                    m_afm.setBaudRate(78600);
+                    m_afm.setBaudRate(76800);
                 }
                // QSerialPortInfo _test = detectedSerialPorts.at(0);
-                returnBuffer<int>* _buffer = new returnBuffer<int>('Q',1,detectedSerialPorts);
+                returnBuffer<int>* _buffer = new returnBuffer<int>("SetPorts");
+                return_queue.push(_buffer);
+                _buffer = new returnBuffer<int>(1,detectedSerialPorts);
                 return_queue.push(_buffer);
                 break;
             }
 
             m_queue.pop();
-            mutex.unlock();
+
         }
         else
         {
-            //mutex.unlock();
+
         }
+        mutex.unlock();
     }
 }
 
 /* The requestMethod initializes a method to be called from mainLoop
  *
  * Params: a method to be called
-
-   This function sets placeholders for the method and all arguments required
-*/
+ *
+ * This function sets placeholders for the method and all arguments required
+ */
 
 void serialworker::requestCommand(Command command)
 {
@@ -158,14 +172,14 @@ void serialworker::requestCommand(Command command)
 /* The requestMethod overloaded to support writing to DAC
  *
  * Params: a method to be called
-          a dacID
-          a value to set the DAC
-*/
+ *        a dacID
+ *        a value to set the DAC
+ */
 void serialworker::requestCommand(Command command, qint8 dacID, double val)
 {
     //QMutexLocker locker(&mutex);
     _command = command;
-    _dacID = dacID;
+    _ID = dacID;
     _val = val;
     condition.wakeOne();
 }

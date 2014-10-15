@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>894</width>
+    <width>910</width>
     <height>569</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -17,40 +23,102 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_21">
-    <item row="0" column="0">
-     <widget class="QWidget" name="widget_3" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_37">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="sidebarFrame">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>528</height>
+       </size>
       </property>
-      <layout class="QGridLayout" name="gridLayout_19">
-       <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLabel" name="lblComPortSelection">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>COM:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="cboComPortSelection">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">    QComboBox  {
+      <property name="styleSheet">
+       <string notr="true">#sidebarFrame {
+background: #9E9E9E;
+border: none;
+border-right: 1px solid black;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_30">
+       <item>
+        <widget class="QWidget" name="widget_3" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QGridLayout" name="_2">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="4" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Plot Refresh (ms):</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="refreshSpinBox">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="lblComPortSelection">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>COM:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cboComPortSelection">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">    QComboBox  {
         border: 1px solid gray;
         border-radius: 3px;
         padding: 1px 18px 1px 3px;
@@ -100,51 +168,23 @@
         left: 1px;
     }
 </string>
-             </property>
-             <property name="editable">
-              <bool>false</bool>
-             </property>
-             <property name="currentText">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="4" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <property name="sizeConstraint">
-            <enum>QLayout::SetFixedSize</enum>
-           </property>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_23">
-           <item>
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Plot Refresh (ms):</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="refreshSpinBox">
-             <property name="maximum">
-              <number>10000</number>
-             </property>
-             <property name="value">
-              <number>100</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="pushButton_6">
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
+                </property>
+                <property name="editable">
+                 <bool>false</bool>
+                </property>
+                <property name="currentText">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButton_6">
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
     /* Let's make the size of the button 1,5 times of font size. */
     min-height: 1.5em;
     /* Font size just 1.*/
@@ -173,16 +213,19 @@ QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #0d5ca6, stop: 1 #2198c0);
 }</string>
-         </property>
-         <property name="text">
-          <string>SCAN</string>
-         </property>
+            </property>
+            <property name="text">
+             <string>SCAN</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -211,7 +254,9 @@ QPushButton:pressed {
      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                  stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
                                  stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-     border: 2px solid gray;
+     border-left: 2px solid gray;
+ border-right: 2px solid gray;
+ border-top: 2px solid gray;
      border-bottom-color: gray; /* same as the pane color */
      border-top-left-radius: 4px;
      border-top-right-radius: 4px;
@@ -795,36 +840,72 @@ QPushButton:pressed {
                  </property>
                  <layout class="QGridLayout" name="gridLayout_16">
                   <item row="0" column="0">
-                   <layout class="QGridLayout" name="gridLayout_15">
-                    <item row="0" column="0">
-                     <layout class="QGridLayout" name="gridLayout_14">
-                      <item row="1" column="0" colspan="2">
-                       <layout class="QHBoxLayout" name="horizontalLayout_18">
-                        <item>
-                         <widget class="QLabel" name="label_20">
-                          <property name="text">
-                           <string>Number of Points:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="numFreqPoints">
-                          <property name="maximum">
-                           <number>1000</number>
-                          </property>
-                          <property name="value">
-                           <number>200</number>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item row="0" column="0">
-                       <layout class="QVBoxLayout" name="verticalLayout_9">
-                        <item>
-                         <widget class="QPushButton" name="sweepButton">
-                          <property name="styleSheet">
-                           <string notr="true">QPushButton {
+                   <widget class="QGroupBox" name="groupBox_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">    QGroupBox  {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                          stop: 0 #E0E0E0, stop: 1 #FFFFFF);
+        border: 2px solid gray;
+        border-radius: 5px;
+        margin-top: 1ex; /* leave space at the top for the title */
+    }
+     
+    QGroupBox::title  {
+        subcontrol-origin: margin;
+        subcontrol-position: top center; /* position at the top center */
+        padding: 0 3px;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                          stop: 0 #FFOECE, stop: 1 #FFFFFF);
+    }
+</string>
+                    </property>
+                    <property name="title">
+                     <string>Settings</string>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_38">
+                     <item>
+                      <layout class="QGridLayout" name="gridLayout_15">
+                       <item row="0" column="0">
+                        <layout class="QGridLayout" name="gridLayout_14">
+                         <item row="1" column="0" colspan="2">
+                          <layout class="QHBoxLayout" name="horizontalLayout_18">
+                           <item>
+                            <widget class="QLabel" name="label_20">
+                             <property name="text">
+                              <string>Number of Points:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QSpinBox" name="numFreqPoints">
+                             <property name="maximum">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>200</number>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item row="0" column="0">
+                          <layout class="QVBoxLayout" name="verticalLayout_9">
+                           <item>
+                            <widget class="QPushButton" name="sweepButton">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
     /* Let's make the size of the button 1,5 times of font size. */
     min-height: 1.5em;
     /* Font size just 1.*/
@@ -853,16 +934,16 @@ QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #0d5ca6, stop: 1 #2198c0);
 }</string>
-                          </property>
-                          <property name="text">
-                           <string>Sweep</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="freqAutoScale">
-                          <property name="styleSheet">
-                           <string notr="true">QPushButton {
+                             </property>
+                             <property name="text">
+                              <string>Sweep</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="freqAutoScale">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
     /* Let's make the size of the button 1,5 times of font size. */
     min-height: 1.5em;
     /* Font size just 1.*/
@@ -891,16 +972,16 @@ QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #0d5ca6, stop: 1 #2198c0);
 }</string>
-                          </property>
-                          <property name="text">
-                           <string>Auto Scale</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="buttonSendSweep">
-                          <property name="styleSheet">
-                           <string notr="true">QPushButton {
+                             </property>
+                             <property name="text">
+                              <string>Auto Scale</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="buttonSendSweep">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
     /* Let's make the size of the button 1,5 times of font size. */
     min-height: 1.5em;
     /* Font size just 1.*/
@@ -929,22 +1010,22 @@ QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #0d5ca6, stop: 1 #2198c0);
 }</string>
-                          </property>
-                          <property name="text">
-                           <string>Send Sweep Data</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="useCurrFreqVal">
-                          <property name="styleSheet">
-                           <string notr="true">QPushButton {
+                             </property>
+                             <property name="text">
+                              <string>Send Sweep Data</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="useCurrFreqVal">
+                             <property name="styleSheet">
+                              <string notr="true">QPushButton {
     /* Let's make the size of the button 1,5 times of font size. */
     min-height: 1.5em;
     /* Font size just 1.*/
     font: 1em;
     /* Margins so that we get a little space on the left and right. */
-    margin: 0 1px 0 1px;
+    margin: 0 2px 0 2px;
     /* The font color */ 
     color: white;
     /* Here's the background gradient with start point, end point, 
@@ -967,153 +1048,155 @@ QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                       stop: 0 #0d5ca6, stop: 1 #2198c0);
 }</string>
-                          </property>
-                          <property name="text">
-                           <string>Use Current Freq Value</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                      <item row="2" column="0">
-                       <widget class="QCheckBox" name="checkBox">
-                        <property name="text">
-                         <string>Show Marker</string>
-                        </property>
-                        <property name="checked">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="1">
-                       <layout class="QVBoxLayout" name="verticalLayout_8">
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_17">
-                          <item>
-                           <widget class="QLabel" name="label_19">
-                            <property name="text">
-                             <string>In Progress:</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="freqProgressLabel">
-                            <property name="styleSheet">
-                             <string notr="true">
+                             </property>
+                             <property name="text">
+                              <string>Use Current Freq Value</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item row="2" column="0">
+                          <widget class="QCheckBox" name="checkBox">
+                           <property name="text">
+                            <string>Show Marker</string>
+                           </property>
+                           <property name="checked">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <layout class="QVBoxLayout" name="verticalLayout_8">
+                           <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_17">
+                             <item>
+                              <widget class="QLabel" name="label_19">
+                               <property name="text">
+                                <string>In Progress:</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="freqProgressLabel">
+                               <property name="styleSheet">
+                                <string notr="true">
 QLabel {  color : red; };</string>
-                            </property>
-                            <property name="text">
-                             <string>FALSE</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <spacer name="verticalSpacer">
-                          <property name="orientation">
-                           <enum>Qt::Vertical</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>20</width>
-                            <height>40</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_28">
-                          <item>
-                           <widget class="QLabel" name="label_23">
-                            <property name="text">
-                             <string>Start Frequency (Hz):</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QSpinBox" name="startFrequency">
-                            <property name="readOnly">
-                             <bool>false</bool>
-                            </property>
-                            <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::UpDownArrows</enum>
-                            </property>
-                            <property name="maximum">
-                             <number>10000</number>
-                            </property>
-                            <property name="singleStep">
-                             <number>100</number>
-                            </property>
-                            <property name="value">
-                             <number>3800</number>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_27">
-                          <item>
-                           <widget class="QLabel" name="label_22">
-                            <property name="text">
-                             <string>Step Size (Hz):</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QSpinBox" name="stepSize">
-                            <property name="readOnly">
-                             <bool>false</bool>
-                            </property>
-                            <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::UpDownArrows</enum>
-                            </property>
-                            <property name="maximum">
-                             <number>1000</number>
-                            </property>
-                            <property name="singleStep">
-                             <number>5</number>
-                            </property>
-                            <property name="value">
-                             <number>5</number>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_8">
-                          <item>
-                           <widget class="QLabel" name="label_18">
-                            <property name="text">
-                             <string>Current Freq Value:</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QDoubleSpinBox" name="currFreqVal">
-                            <property name="readOnly">
-                             <bool>false</bool>
-                            </property>
-                            <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::NoButtons</enum>
-                            </property>
-                            <property name="maximum">
-                             <double>10000.000000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
+                               </property>
+                               <property name="text">
+                                <string>FALSE</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                           <item>
+                            <spacer name="verticalSpacer">
+                             <property name="orientation">
+                              <enum>Qt::Vertical</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>20</width>
+                               <height>40</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_28">
+                             <item>
+                              <widget class="QLabel" name="label_23">
+                               <property name="text">
+                                <string>Start Frequency (Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="startFrequency">
+                               <property name="readOnly">
+                                <bool>false</bool>
+                               </property>
+                               <property name="buttonSymbols">
+                                <enum>QAbstractSpinBox::UpDownArrows</enum>
+                               </property>
+                               <property name="maximum">
+                                <number>10000</number>
+                               </property>
+                               <property name="singleStep">
+                                <number>100</number>
+                               </property>
+                               <property name="value">
+                                <number>3800</number>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                           <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_27">
+                             <item>
+                              <widget class="QLabel" name="label_22">
+                               <property name="text">
+                                <string>Step Size (Hz):</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QSpinBox" name="stepSize">
+                               <property name="readOnly">
+                                <bool>false</bool>
+                               </property>
+                               <property name="buttonSymbols">
+                                <enum>QAbstractSpinBox::UpDownArrows</enum>
+                               </property>
+                               <property name="maximum">
+                                <number>1000</number>
+                               </property>
+                               <property name="singleStep">
+                                <number>5</number>
+                               </property>
+                               <property name="value">
+                                <number>5</number>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                           <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_8">
+                             <item>
+                              <widget class="QLabel" name="label_18">
+                               <property name="text">
+                                <string>Current Freq Value:</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QDoubleSpinBox" name="currFreqVal">
+                               <property name="readOnly">
+                                <bool>false</bool>
+                               </property>
+                               <property name="buttonSymbols">
+                                <enum>QAbstractSpinBox::NoButtons</enum>
+                               </property>
+                               <property name="maximum">
+                                <double>10000.000000000000000</double>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
                   </item>
                  </layout>
-                 <zorder></zorder>
                 </widget>
                </item>
                <item>
@@ -2079,15 +2162,13 @@ QPushButton:pressed {
      </widget>
     </item>
    </layout>
-   <zorder>tabWidget</zorder>
-   <zorder>widget_3</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>894</width>
+     <width>910</width>
      <height>21</height>
     </rect>
    </property>

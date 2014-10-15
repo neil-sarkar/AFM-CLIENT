@@ -9,6 +9,7 @@
 #include <commandNode.h>
 #include <QTimer>
 #include <returnBuffer.h>
+#include <mainwindow.h>
 
 using std::queue;
 
@@ -20,10 +21,12 @@ class eventworker : public QObject
 
 public:
     eventworker();
-    eventworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
+    eventworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue)
+        : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
     void abort();
     ~eventworker();
 private:
+
     nanoiAFM m_afm;
     QTimer *graphTimer;     // graph timer which can change intervals
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc

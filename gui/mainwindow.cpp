@@ -22,46 +22,20 @@ void MainWindow::MainWindowLoop()
     ui = new Ui::MainWindow;
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
+    //this->resize(1000,600);
+    this->showMaximized();
+    //qDebug() << this->size() << endl;
+    //this->setWindowState(Qt::WindowState windowState);
+    continuousStep = false;
+    isAutoApproach = false;
+    SetPorts();
 
-    // Serial Thread
-
-
-
-    // Serial port
-//    detectedSerialPorts= QSerialPortInfo::availablePorts();
-//    if(detectedSerialPorts.size()==0)
-//    {
-//        QMessageBox msgBox;
-//        msgBox.setText("Unable to find any serial ports.");
-//        msgBox.exec();
-//    }
-//    else
-//    {
-
-//        afm.setPort(detectedSerialPorts.at(0));
-//        afm.open(QIODevice::ReadWrite);
-//    }
-
-    commandQueue.push(new commandNode(setPorts));
-    QThread::msleep(100);
-    mutex.lock();
-    if(!returnQueue.empty()){
-        returnBuffer<int>* _node = returnQueue.front();
-        if (ui->cboComPortSelection){
-            foreach (const QSerialPortInfo info, _node->getList()) {
-                ui->cboComPortSelection->addItem(info.portName());
-            }
-        }
-
-        returnQueue.pop();
-    }
-    mutex.unlock();
     // temporary random number generator for plots
     qsrand(QTime::currentTime().msec());
     time = 0;
 
     // for reading DAC/updating plots
-    ioTimer = startTimer(200); // for reading DAC/ADC
+    //ioTimer = startTimer(200); // for reading DAC/ADC
 
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
@@ -69,7 +43,7 @@ void MainWindow::MainWindowLoop()
 
     graphTimer = new QTimer(this);
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(updateGraph()));
-    graphTimer->start(ui->refreshSpinBox->value());
+    graphTimer->start(10);
 
     // add frequency sweep plot
     PlotFields fields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
@@ -144,19 +118,85 @@ MainWindow::~MainWindow()
 
 //    //afm.close();
 //    delete ui;
-//    emit finished();
+    emit finished();
 }
 void MainWindow::abort()
 {
     emit finished();
 }
+
+void MainWindow::SetPorts(){
+
+    /*Push a setPort event to the serial thread*/
+    mutex.lock();
+    commandQueue.push(new commandNode(setPorts));
+    mutex.unlock();
+    QThread::msleep(100);
+    mutex.lock();
+    if(!returnQueue.empty()){
+        returnBuffer<int>* _node = returnQueue.front();
+        if(_node->getFunction() == "SetPorts"){
+            returnQueue.pop();
+            _node = returnQueue.front();
+            if (ui->cboComPortSelection){
+                foreach (const QSerialPortInfo info, _node->getList()) {
+                    ui->cboComPortSelection->addItem(info.portName());
+                }
+            }
+            returnQueue.pop();
+        }
+    }
+    mutex.unlock();
+}
 void MainWindow::updateGraph() {
     int currTab = ui->tabWidget->currentIndex();
     if ( !isAutoApproach ) {
+
+
+        QThread::msleep(100);
+        returnBuffer<int>* _buffer;
+        while(!returnQueue.empty()){
+            mutex.lock();
+        //adc
+
+
+        //dac
+
+            if(!returnQueue.empty()){
+                _buffer = returnQueue.front();
+                if(_buffer->getFunction() == "ADC5"){
+                    returnQueue.pop();
+                    _buffer = returnQueue.front();
+                    adc5 = _buffer->getFData();
+                    returnQueue.pop();
+                }
+                else if(_buffer->getFunction() == "DAC8"){
+                     returnQueue.pop();
+                     _buffer = returnQueue.front();
+                     dac8 = _buffer->getFData();
+                     returnQueue.pop();
+                 }
+                 else if(_buffer->getFunction() == "DAC"){
+                     returnQueue.pop();
+                     _buffer = returnQueue.front();
+                     ui->dacValue->setValue(_buffer->getFData());
+                     returnQueue.pop();
+                 }
+                 else if(_buffer->getFunction() == "ADC"){
+                     returnQueue.pop();
+                     _buffer = returnQueue.front();
+                     ui->adcValue->setValue(_buffer->getFData());
+                     returnQueue.pop();
+                 }
+
+        }
+        //qDebug() << "Value read from DAC: " << _buffer->getData() << endl;
+        mutex.unlock();
         approachPlot->update(time, adc5, currTab == Approach ? true: false);
         signalPlot1->update(time, dac8, currTab == Signal ? true: false);
         signalPlot2->update(time, adc5 - ui->spnPidSetpoint->value(), currTab == Signal ? true: false);
         time++;
+        }
      }
 }
 
@@ -183,6 +223,7 @@ void MainWindow::timerEvent(QTimerEvent *e) {
 ////        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
 //        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
 //        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
+//        QThread::msleep(100);
 //        mutex.lock();
 //        returnBuffer<int>* _buffer;
 //        if(!returnQueue.empty()){
@@ -218,47 +259,65 @@ void MainWindow::timerEvent(QTimerEvent *e) {
 
 void MainWindow::on_spnOffsetVoltage_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(memsSetOffset,0,0,(double)arg1));//afm.memsSetOffset(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(memsSetOffset,(double)arg1));//afm.memsSetOffset(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_spnBridgeVoltage_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(memsSetBridgeVoltage,0,0,(double)arg1));//afm.memsSetBridgeVoltage(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(memsSetBridgeVoltage,(double)arg1));//afm.memsSetBridgeVoltage(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_spnFrequencyVoltage_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(memsSetFrequency,0,0,(double)arg1));//afm.memsSetFrequency(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(memsSetFrequency,(double)arg1));//afm.memsSetFrequency(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_btnPidToggle_toggled(bool checked)
 {
     if(checked){
-         commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
+        mutex.lock();
+        commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
+        mutex.unlock();
     }
     else{
-         commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
+        mutex.lock();
+        commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
+        mutex.unlock();
     }
 }
 
 void MainWindow::on_spnPidValueP_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(pidSetP,0,0,(double)arg1));//afm.pidSetP(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(pidSetP,(double)arg1));//afm.pidSetP(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_spnPidValueI_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(pidSetI,0,0,(double)arg1));//afm.pidSetI(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(pidSetI,(double)arg1));//afm.pidSetI(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_spnPidValueD_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(pidSetD,0,0,(double)arg1));//afm.pidSetD(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(pidSetD,(double)arg1));//afm.pidSetD(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_spnPidSetpoint_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(pidSetPoint,0,0,(double)arg1));//afm.pidSetPoint(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(pidSetPoint,(double)arg1));//afm.pidSetPoint(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
@@ -310,13 +369,17 @@ void MainWindow::on_checkBox_clicked(bool checked)
 // TODO: verify retr is backwards aka 'l'
 void MainWindow::on_retreatButton_clicked()
 {
+    mutex.lock();
     commandQueue.push(new commandNode(stageSetDirBackward));//afm.stageSetDirBackward();
+    mutex.unlock();
 }
 
 void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
     ui->lblAmplitude->setText(QString::number(value));
+    mutex.lock();
     commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)value));//afm.stageSetPulseWidth(value);
+    mutex.unlock();
 }
 
 void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
@@ -326,14 +389,20 @@ void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
 
 void MainWindow::autoApproach(nanoiAFM* afm) {
     qDebug() << "In the threaded coarse approach";
+    mutex.lock();
     float initVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
-    afm->stageSetPulseWidth(3);
-    afm->stageSetDirBackward();
+    commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)3));    //afm->stageSetPulseWidth(3);
+    commandQueue.push(new commandNode(stageSetDirBackward));    //afm->stageSetDirBackward();
+    mutex.unlock();
 
+
+
+    mutex.lock();
     float bridgeVal;
     for( ;; ) {
 //        commandQueue.push(new commandNode(stageSetStep));
-        afm->stageSetStep(); // take a step
+
+        commandQueue.push(new commandNode(stageSetStep)); //afm->stageSetStep(); // take a step
         bridgeVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
 //        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
 //        QThread::msleep(100);
@@ -344,13 +413,14 @@ void MainWindow::autoApproach(nanoiAFM* afm) {
         // if we're less than 95% of init, then slow down
         if (bridgeVal < 0.95*initVal) {
             //commandQueue.push(new commandNode(stageSetPulseWidth,0,0,0));
-            afm->stageSetPulseWidth(0);
+            commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)0)); //afm->stageSetPulseWidth(0);
         }
         // if we're within 90% of init, then autoapproach complete
         else if (bridgeVal < 0.9*initVal) {
             break;
         }
     }
+    mutex.unlock();
 }
 
 // Button for autoapproach
@@ -361,8 +431,11 @@ void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
         autoApproachComparison = adc5; // comparison value before starting motor
         ui->comparisonValue->setValue(adc5);
 
+        mutex.lock();
         commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)19));
         commandQueue.push(new commandNode(stageSetDirBackward));
+        mutex.unlock();
+
 //        afm.stageSetPulseWidth(19);
 //        afm.stageSetDirBackward();
         isAutoApproach = true;
@@ -373,18 +446,24 @@ void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
     // Set the values of motor back to what they were before
     else {
         isAutoApproach = false;
+        mutex.lock();
         commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)ui->sldAmplitudeVoltage_3->value()));
+
         //afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
 //        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
 //                                                 afm.stageSetDirForward();
         ui->retreatButton->isChecked() == true ? commandQueue.push(new commandNode(stageSetDirBackward)) : \
                                                  commandQueue.push(new commandNode(stageSetDirForward));
+
+        mutex.unlock();
     }
 }
 
 void MainWindow::on_stepButton_clicked()
 {
+    mutex.lock();
     commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+    mutex.unlock();
 }
 
 void MainWindow::on_continuousButton_clicked(bool checked)
@@ -484,8 +563,10 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 
         //THREAD TESTING WILL REMOVE
         //serialWorker->requestMethod(serialworker::writeDAC,ui->dacNumber->value(),ui->valToWrite->value());
-        commandNode* _node = new commandNode(writeDAC,2,2,(qint8)ui->dacNumber->value(),valueToWrite);
+        mutex.lock();
+        commandNode* _node = new commandNode(writeDAC,ui->dacNumber->value(),valueToWrite);
         commandQueue.push(_node);
+        mutex.unlock();
         //serialWorker->requestMethod(serialworker::writeDAC);
     }
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
@@ -495,43 +576,27 @@ void MainWindow::on_buttonWriteToDAC_clicked()
 void MainWindow::on_buttonReadIO_clicked()
 {
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
-    commandNode* _node = new commandNode(readDAC,2,2,(qint8)ui->dacNumber->value());
-    commandQueue.push(_node);
-    _node = new commandNode(readADC,2,2,(qint8)ui->adcNumber->value());
-    commandQueue.push(_node);
-    QThread::msleep(1000);
     mutex.lock();
-    returnBuffer<int>* _buffer;
-    if(!returnQueue.empty()){
-         _buffer = returnQueue.front();
-         returnQueue.pop();
-         ui->dacValue->setValue(_buffer->getData());
-         if(!returnQueue.empty()){
-             _buffer = returnQueue.front();
-             returnQueue.pop();
-             ui->adcValue->setValue(_buffer->getData());
-         }
-    }
-    //qDebug() << "Value read from DAC: " << _buffer->getData() << endl;
+    commandNode* _node = new commandNode(readDAC,(qint8)ui->dacNumber->value());
+    commandQueue.push(_node);
+    _node = new commandNode(readADC,(qint8)ui->adcNumber->value());
+    commandQueue.push(_node);
     mutex.unlock();
-    //returnQueue.pop();
-
-    //ui->adcValue->setValue(afm.readADC(ui->adcNumber->value()));
 }
 
 void MainWindow::on_btnPidToggle_clicked(bool checked)
 {
-    commandQueue.push(new commandNode(pidEnable));
-    QThread::msleep(100);
-    bool _pidEnable = returnQueue.front();
-    returnQueue.pop();
+//    commandQueue.push(new commandNode(pidEnable));
+//    QThread::msleep(100);
+//    bool _pidEnable = returnQueue.front();
+//    returnQueue.pop();
 
-    commandQueue.push(new commandNode(pidDisable));
-    QThread::msleep(100);
-    bool _pidDisable = returnQueue.front();
-    returnQueue.pop();
+//    commandQueue.push(new commandNode(pidDisable));
+//    QThread::msleep(100);
+//    bool _pidDisable = returnQueue.front();
+//    returnQueue.pop();
 
-    checked == true ? _pidEnable : _pidDisable;
+//    checked == true ? _pidEnable : _pidDisable;
 }
 
 void MainWindow::on_freqAutoScale_clicked(bool checked)
@@ -541,18 +606,24 @@ void MainWindow::on_freqAutoScale_clicked(bool checked)
 
 void MainWindow::on_spnFrequencyVoltage_2_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(memsSetAmplitude,0,0,arg1));//afm.memsSetAmplitude(arg1);
+    mutex.lock();
+    commandQueue.push(new commandNode(memsSetAmplitude,arg1));//afm.memsSetAmplitude(arg1);
+    mutex.unlock();
 }
 
 void MainWindow::on_buttonSendSweep_clicked()
 {
-    commandQueue.push(new commandNode(setDDSSettings,0,0,(qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(),(qint16) ui->stepSize->value()));//afm.setDDSSettings(ui->numFreqPoints->value(), ui->currFreqVal->value(), ui->stepSize->value());
+    mutex.lock();
+    commandQueue.push(new commandNode(setDDSSettings,(qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(),(qint16) ui->stepSize->value()));//afm.setDDSSettings(ui->numFreqPoints->value(), ui->currFreqVal->value(), ui->stepSize->value());
+    mutex.unlock();
 }
 
 void MainWindow::on_buttonAutoApproachMCU_clicked()
 {
+    mutex.lock();
     commandQueue.push(new commandNode(afmAutoApproach));//afm.autoApproach();
     isAutoApproach = true;
+    mutex.unlock();
 }
 
 void MainWindow::on_writeCharacter_clicked()
@@ -565,4 +636,5 @@ void MainWindow::on_writeCharacter_clicked()
 //    quint16 val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 //    adc5 = ((float)val)/AFM_ADC_SCALING;
 }
+
 

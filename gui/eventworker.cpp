@@ -3,6 +3,10 @@
 #include <afm.h>
 #include <Qtimer>
 #include <commandNode.h>
+#include <mainwindow.h>
+#include <globals.h>
+
+
 
 /* Moving all the timers into one thread.
  *
@@ -11,21 +15,24 @@
  */
 void eventworker::mainLoop()
 {
-    forever {
 
+
+    //forever {
+
+    _abort = false;
         if (_abort) {
             emit finished();
             //mutex.unlock();
             return;
         }
-        ioTimer = startTimer(200); // for reading DAC/ADC
+        //ioTimer = startTimer(200); // for reading DAC/ADC
 
         generalTimer = new QTimer(this);
         connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
-        generalTimer->start(20); // every 20 ms, we update UI elements/other tasks, like continuous coarse step
+        generalTimer->start(100); // need to get refresh rate from mainwindow
 
 
-    }
+    //}
 }
 
 void eventworker::updateGraph()
@@ -38,50 +45,80 @@ void eventworker::generalTimerUpdate()
     //general timer update
     //what does this do?
 
-//    int currTab = ui->tabWidget->currentIndex();
-//        int id = e->timerId();
+    //int currTab = MainWindow::ui->tabWidget->currentIndex();
+    //int id = e->timerId();
+    if (_abort) {
+        emit finished();
+        //mutex.unlock();
+        return;
+    }
+    MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
+    int id = 1;
 
-
-//        if( id == ioTimer ) {
-//    #if AFM_MICRO_CONNECTED
-//            if( continuousStep )
-//                commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-
-//    //        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-//    //        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
-//            commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
-//            commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
-//            mutex.lock();
-//            returnBuffer<int>* _buffer;
-//            if(!returnQueue.empty()){
-//                _buffer = returnQueue.front();
-//                adc5 = _buffer->getData();
-//                returnQueue.pop();
-//                _buffer = returnQueue.front();
-//                dac8 = _buffer->getData();
-//                returnQueue.pop();
-//                mutex.unlock();
+    if(_mainwindow != nullptr){
+    //if( id == ioTimer ) {
+#if AFM_MICRO_CONNECTED
+        mutex.lock();
+        if( _mainwindow->getContinuousStep() )
+            m_queue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+        mutex.unlock();
+//        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
+//        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
+        mutex.lock();
+        m_queue.push(new commandNode(readADC,(qint8)AFM_ADC_AMPLITUDE_ID));
+        mutex.unlock();
+//        returnBuffer<int>* _buffer;
+//        mutex.lock();
+//        if(!return_queue.empty()){
+//            _buffer = return_queue.front();
+//            if(_buffer->getFunction() == "ADC"){
+//                return_queue.pop();
+//                _buffer = return_queue.front();
+//                _mainwindow->setADC5(_buffer->getData());
+//                return_queue.pop();
 //            }
-//            //adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
-//            //dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
-
-//            if( isAutoApproach ) {
-//                approachPlot->update(time, adc5, currTab == Approach ? true: false);
-//                ui->currOffsetValue->setValue(adc5);
-//                time++;
-
-//                commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-
-//                if ( adc5 <= 0.95*autoApproachComparison ) {
-//                    on_buttonAutoApproachClient_clicked(false);
-//                }
-//            }
-
-//    #else
-//            adc5 = float(qrand())/RAND_MAX;
-//            dac8 = float(qrand())/RAND_MAX;
-//    #endif
 //        }
+//        mutex.unlock();
+        mutex.lock();
+        m_queue.push(new commandNode(readDAC,(qint8)AFM_DAC_OFFSET_ID));
+        mutex.unlock();
+//        mutex.lock();
+//        if(!return_queue.empty()){
+//            _buffer = return_queue.front();
+//            if(_buffer->getFunction() == "DAC"){
+//                return_queue.pop();
+//                _buffer = return_queue.front();
+//                _mainwindow->setDAC8(_buffer->getData());
+//                return_queue.pop();
+//            }
+
+//        }
+//        mutex.unlock();
+        //adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
+        //dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
+
+        mutex.lock();
+        if( _mainwindow->getAutoApproach() ) {
+            //approachPlot->update(time, adc5, currTab == Approach ? true: false);
+            //MainWindow::ui->currOffsetValue->setValue(adc5);
+            //time++;
+
+            m_queue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+
+            if ( _mainwindow->getADC5() <= 0.95*_mainwindow->getAutoApproachComparison() ) {
+                //on_buttonAutoApproachClient_clicked(false);
+            }
+        }
+        mutex.unlock();
+
+#else
+        mutex.lock();
+        _mainwindow->setADC5(float(qrand())/RAND_MAX);
+        _mainwindow->setDAC8(float(qrand())/RAND_MAX);
+        mutex.lock();
+#endif
+    }
+    //}
 
 }
 
@@ -97,5 +134,5 @@ void eventworker::abort()
 }
 eventworker::~eventworker()
 {
-    //emit finished();
+    emit finished();
 }

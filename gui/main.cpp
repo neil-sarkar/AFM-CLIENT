@@ -23,12 +23,14 @@ int main(int argc, char *argv[])
      *                      for plots
      *
      *******************************************************************/
+
     QThread* serialThread = new QThread();
     QThread* eventThread = new QThread();
     QThread* mainThread = new QThread();
+
+    MainWindow* mainWorker = new MainWindow(0,commandQueue,returnQueue);
     serialworker* serialWorker = new serialworker(0, commandQueue, returnQueue);
     eventworker* eventWorker = new eventworker(0,commandQueue,returnQueue);
-    MainWindow* mainWorker = new MainWindow(0,commandQueue,returnQueue);
 
     mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
@@ -45,13 +47,14 @@ int main(int argc, char *argv[])
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
     eventThread->start();
 
-    mainWorker->resize(1000,600);
-    mainWorker->show();
+    //mainWorker->resize(1000,600);
+    //mainWorker->showMaximized();
 
 
 
     int rt = a.exec();
 
+    /*Terminate threads on close*/
     serialWorker->abort();
     serialThread->wait();
     eventWorker->abort();

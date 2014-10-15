@@ -13,7 +13,11 @@ int nanoiAFM::writeByte(char byte)
     //Change it to write sequentially.
     writeData(&byte, AFM_MAX_DATA_SIZE);
     waitForBytesWritten(1);
-    return AFM_SUCCESS;
+
+//    if(waitForData().at(0) == byte)
+        return AFM_SUCCESS;
+//    else
+//        return AFM_FAIL;
 }
 
 QByteArray nanoiAFM::waitForData()
@@ -41,7 +45,13 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
     writeByte((digitalValue & 0xFF));
     writeByte((digitalValue >> 8));
 
-    return AFM_SUCCESS;
+    QByteArray res=waitForData();
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_DAC_WRITE_SELECT)
+            return AFM_SUCCESS;
+        else
+            return AFM_FAIL;
+    }
 }
 
 float nanoiAFM::readDAC(qint8 dacID){
@@ -52,40 +62,63 @@ float nanoiAFM::readDAC(qint8 dacID){
 #if AFM_DEBUG
     qDebug() << "Bytes Read from DAC: " << res.size();
 #endif
-    if(!res.isEmpty() || !res.isNull())
+    if(!res.isEmpty() || !res.isNull()){
         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-    return ((float)val)/AFM_DAC_SCALING;
+
+        if(res.at(2) == AFM_DAC_READ_SELECT)
+            return ((float)val)/AFM_DAC_SCALING;
+    }
+    else
+        return AFM_FAIL;
 }
 
 float nanoiAFM::readADC(qint8 adcID){
     quint16 val;
+//    QByteArray responseData;
     writeByte(AFM_ADC_READ_SELECT);
     writeByte(adcID);
     QByteArray res=waitForData();
-    if(!res.isEmpty() || !res.isNull())
+    if(!res.isEmpty() || !res.isNull()){
         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 #if AFM_DEBUG
     qDebug() << "ADC Digital Value read" << val;
 #endif
-    return ((float)val)/AFM_ADC_SCALING;
+        if(res.at(2) == AFM_ADC_READ_SELECT)
+            return ((float)val)/AFM_ADC_SCALING;
+
+    }
+    else
+        return AFM_FAIL;
+
 }
 
 int nanoiAFM::setRasterStep(){
+//    QByteArray responseData;
+//    while(waitForReadyRead(AFM_POLL_TIMOUT)){
+//        responseData+= readAll();
+//    }
+
+//    if(responseData.at(0) == 'f')
+//        return AFM_SUCCESS;
+//    else
+//        return AFM_FAIL;
     return AFM_SUCCESS;
 }
 
 int nanoiAFM::memsSetOffset(double val){
+
     writeDAC(AFM_DAC_OFFSET_ID, val);
+
     return AFM_SUCCESS; //There should be a comparison against a maximum value for offset voltage
 }
 
 int nanoiAFM::memsSetFrequency(double val){
-     writeDAC(AFM_DAC_VCO_ID, val);
+    writeDAC(AFM_DAC_VCO_ID, val);
     return AFM_SUCCESS;
 }
 
 int nanoiAFM::memsSetAmplitude(double val){
-     writeDAC(AFM_DAC_AMPLITUDE_ID, val);
+    writeDAC(AFM_DAC_AMPLITUDE_ID, val);
     return AFM_SUCCESS;
 }
 
@@ -96,7 +129,10 @@ int nanoiAFM::memsSetBridgeVoltage(double val){
 
 int nanoiAFM::pidEnable(){
     writeByte(AFM_PID_ENABLE_SELECT);
-    return AFM_SUCCESS;
+    if(waitForData().at(0) == AFM_PID_ENABLE_SELECT)
+        return AFM_SUCCESS;
+    else
+        return AFM_FAIL;
 }
 int nanoiAFM::pidDisable(){
     writeByte(AFM_PID_DISABLE_SELECT);

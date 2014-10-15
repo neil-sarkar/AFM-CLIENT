@@ -34,8 +34,9 @@ private:
     nanoiAFM m_afm;
     Command _command;
     double _val;
-    qint8 _dacID;
+    qint8 _ID;
     bool _abort;
+    float _returnBytes;
     //QMutex mutex;
     QWaitCondition condition;
 
