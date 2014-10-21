@@ -47,11 +47,10 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
 
     QByteArray res=waitForData();
     if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_DAC_WRITE_SELECT)
-            return AFM_SUCCESS;
-        else
-            return AFM_FAIL;
+        if(res.at(0) == AFM_DAC_WRITE_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
     }
+    else {return AFM_FAIL;}
 }
 
 float nanoiAFM::readDAC(qint8 dacID){
@@ -65,11 +64,10 @@ float nanoiAFM::readDAC(qint8 dacID){
     if(!res.isEmpty() || !res.isNull()){
         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 
-        if(res.at(2) == AFM_DAC_READ_SELECT)
-            return ((float)val)/AFM_DAC_SCALING;
+        if(res.at(2) == AFM_DAC_READ_SELECT){ return ((float)val)/AFM_DAC_SCALING;}
+        else{ return AFM_FAIL;}
     }
-    else
-        return AFM_FAIL;
+    else{ return AFM_FAIL;}
 }
 
 float nanoiAFM::readADC(qint8 adcID){
@@ -83,12 +81,11 @@ float nanoiAFM::readADC(qint8 adcID){
 #if AFM_DEBUG
     qDebug() << "ADC Digital Value read" << val;
 #endif
-        if(res.at(2) == AFM_ADC_READ_SELECT)
-            return ((float)val)/AFM_ADC_SCALING;
+        if(res.at(2) == AFM_ADC_READ_SELECT){ return ((float)val)/AFM_ADC_SCALING;}
+        else{ return AFM_FAIL;}
 
     }
-    else
-        return AFM_FAIL;
+    else{ return AFM_FAIL;}
 
 }
 
@@ -145,7 +142,14 @@ int nanoiAFM::pidSetP(float P){
     writeByte(((char*)&P)[1]);
     writeByte(((char*)&P)[2]);
     writeByte(((char*)&P)[3]);
-    return AFM_SUCCESS; //There should be a max allowed P value. Return FAIL if P value over the range
+    QByteArray res=waitForData();
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_PID_P_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL; }
+    //return AFM_SUCCESS; //There should be a max allowed P value. Return FAIL if P value over the range
 }
 
 int nanoiAFM::pidSetI(float I){
@@ -154,7 +158,14 @@ int nanoiAFM::pidSetI(float I){
     writeByte(((char*)&I)[1]);
     writeByte(((char*)&I)[2]);
     writeByte(((char*)&I)[3]);
-    return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if I value over the range
+    QByteArray res=waitForData();
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_PID_I_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{  return AFM_FAIL;}
+    //return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if I value over the range
 }
 
 int nanoiAFM::pidSetD(float D){
@@ -163,7 +174,14 @@ int nanoiAFM::pidSetD(float D){
     writeByte(((char*)&D)[1]);
     writeByte(((char*)&D)[2]);
     writeByte(((char*)&D)[3]);
-    return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if D value over the range
+    QByteArray res=waitForData();
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_PID_D_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+    //return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if D value over the range
 }
 
 int nanoiAFM::pidSetValues(qint8 P,qint8 I,qint8 D){
@@ -202,6 +220,10 @@ void nanoiAFM::stageSetContinuous(){
     writeByte(AFM_STAGE_CONT_SELECT);
 }
 
+void nanoiAFM::stageAbortContinuous(){
+    writeByte('q');
+}
+
 void nanoiAFM::stageStepForward(){
     stageSetDirForward();
     stageSetStep();
@@ -209,7 +231,7 @@ void nanoiAFM::stageStepForward(){
 
 void nanoiAFM::stageStepBackward(){
     stageSetDirBackward();
-    stageSetContinuous();
+    stageSetStep();
 }
 
 void nanoiAFM::stageMoveForward(){
@@ -256,7 +278,8 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     QByteArray freqData = waitForData();
     bytesRead = freqData.size();
     qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
-    if (bytesRead != numPoints*2) {
+    bytesRead[freqData.cend()];
+    if (bytesRead != numPoints*4 + 2) {
         return AFM_FAIL;
     }
 
@@ -298,7 +321,23 @@ void nanoiAFM::rasterStep(float /*val1*/, float /*val2*/){
 void nanoiAFM::autoApproach(){
     writeByte(AFM_AUTOAPPROACH_SELECT);
 }
+int nanoiAFM::setDACValues(char dacID, double _val){
 
+    writeByte(AFM_SET_DAC_MAX);
+    char _max = AFM_DAC_SCALING*_val;
+
+    writeByte((char)dacID);
+    writeByte((_max & 0xFF));
+    writeByte((_max & 0x0F00) >> 8);
+
+    QByteArray res=waitForData();
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_SET_DAC_MAX){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+}
 
 
 

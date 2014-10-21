@@ -27,6 +27,7 @@ enum Command{
     stageSetDirBackward,
     stageSetStep,
     stageSetContinuous,
+    stageAbortContinuous,
     stageStepForward,
     stageStepBackward,
     stageMoveForward,
@@ -34,8 +35,10 @@ enum Command{
     setDDSSettings,
     frequencySweep,
     afmAutoApproach,
-    setPorts,
-    mainWindowTimerEvent
+    getPorts,
+    setPort,
+    mainWindowTimerEvent,
+    setDacValues
 };
 
 

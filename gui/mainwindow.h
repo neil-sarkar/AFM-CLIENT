@@ -40,18 +40,21 @@ public:
     MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : commandQueue(_queue),returnQueue(_returnqueue),QMainWindow(parent){}
     void autoApproach(nanoiAFM* afm);
     void abort();
-    void SetPorts();
+    void SetPorts(returnBuffer<int> *_node);
+    void SetMaxDACValues();
+    void Initialize();
     void setADC5(float val){adc5 = val;}
     void setDAC8(float val){dac8 = val;}
     bool getContinuousStep(){return continuousStep;}
     bool getAutoApproach(){return isAutoApproach;}
     float getAutoApproachComparison(){return autoApproachComparison;}
     float getADC5(){return adc5;}
+    int getCurrTab(){return currTab;}
 
     ~MainWindow();
 
 protected:
-    void timerEvent( QTimerEvent * );
+    //void timerEvent( QTimerEvent * );
 
 private:
     QThread* serialThread;
@@ -63,11 +66,15 @@ private:
 signals:
     void finished();
 
+public slots:
+    void on_buttonAutoApproachClient_clicked(bool checked);
+
 private slots:
     void MainWindowLoop();
-    void updateGraph();
+    void dequeueReturnBuffer();
     void generalTimerUpdate();
     void finishedThread();
+    void CreateGraphs();
 
     // GUI elements
     void on_spnOffsetVoltage_valueChanged(double arg1);
@@ -101,7 +108,7 @@ private slots:
 
     void on_sldAmplitudeVoltage_3_valueChanged(int value);
 
-    void on_buttonAutoApproachClient_clicked(bool checked);
+
 
     void on_retreatButton_clicked();
 
@@ -138,6 +145,10 @@ private slots:
 
     void on_writeCharacter_clicked();
 
+    void on_approachButton_clicked();
+
+    void on_setMaxDACValuesButton_clicked();
+
 private:
 
     enum TabType{
@@ -153,13 +164,15 @@ private:
     void displayComPortInfo(const QSerialPortInfo& info);
 
     int ioTimer;            // timer id for ADC/DAC read
-    QTimer *graphTimer;     // graph timer which can change intervals
+    QTimer *dequeueTimer;     // dequeue timer to empty the return buffer
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
     Plot *freqPlot;
     Plot *approachPlot;
     Plot *signalPlot1;
     Plot *signalPlot2;
     int time;
+    int freqRetVal;
+    int currTab;
     float dac8;
     float adc5;
     bool useBridgeSignalAsSetpoint;
@@ -168,6 +181,19 @@ private:
     float autoApproachComparison;
     QFuture<void> *future;
     QFutureWatcher<void> *watcher;
+    returnBuffer<int>* _buffer;
+    float zOffsetCoarse;
+    float zOffsetFine;
+    float bfrd1;
+    float bfrd2;
+    float bfrd3;
+    float br2;
+    float br1;
+    float zAmp;
+    float y1;
+    float y2;
+    float x1;
+    float x2;
 };
 
 #endif // MAINWINDOW_H

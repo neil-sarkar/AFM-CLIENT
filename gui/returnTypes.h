@@ -1,0 +1,27 @@
+#ifndef RETURNTYPES_H
+#define RETURNTYPES_H
+
+enum returnType{
+    DACBFRD1,
+    DACBFRD2,
+    DACBR2,
+    DACZAMP,
+    DACBR1,
+    DACBFRD3,
+    DACZOFFSETFINE,
+    DACY1,
+    DACZOFFSETCOARSE,
+    DACY2,
+    DACX1,
+    DACX2,
+    GETPORTS,
+    FREQSWEEP,
+    ADC,
+    DAC,
+    AFMADCAMPLITUDEID,
+    AFMDACOFFSETID,
+    PIDEnable,
+    PIDDisable
+};
+
+#endif // RETURNTYPES_H

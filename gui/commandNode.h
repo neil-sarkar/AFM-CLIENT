@@ -5,24 +5,7 @@
 
 class commandNode
 {
-    Command m_commandName;
-    char m_val1;
-    char m_val2;
-    char m_val3;
-    qint8 m_dacID;
-    double m_dval;
-    float m_fval;
-    float m_fval2;
-    qint8 m_P;
-    qint8 m_I;
-    qint8 m_D;
-    qint8 m_qval;
-    qint16 m_numPoints;
-    qint16 m_startFrequency;
-    qint16 m_stepSize;
-    QVector<double> m_amplitude;
-    QVector<double> m_frequency;
-    int m_bytesRead;
+
 
   public:
 
@@ -76,7 +59,7 @@ class commandNode
     commandNode(Command commandName, qint8 qval) : m_commandName(commandName), m_qval(qval) {}
 
     /*void dowriteDAC(qint8 dacID, double val)*/
-    commandNode(Command commandName, qint8 dacID, double dval) : m_commandName(commandName), m_dacID(dacID),m_dval(dval) {}
+    commandNode(Command commandName, qint8 dacID, double dval) : m_commandName(commandName), m_qval(dacID),m_dval(dval) {}
 
     /*int dopidSetValues(qint8 P,qint8 I,qint8 D)*/
     commandNode(Command commandName, qint8 P, qint8 I, qint8 D) : m_commandName(commandName), m_P(P),m_I(I), m_D(D) {}
@@ -98,7 +81,6 @@ class commandNode
     double getdval() { return m_dval;}
     float getfval() { return m_fval;}
     float getfval2() {return m_fval2;}
-    qint8 getdacID() { return m_dacID;}
     qint8 getP() { return m_P;}
     qint8 getI() { return m_I;}
     qint8 getD() { return m_D;}
@@ -106,9 +88,28 @@ class commandNode
     qint16 getnumPoints() { return m_numPoints;}
     qint16 getstartFrequency() { return m_startFrequency;}
     qint16 getstepSize() { return m_stepSize;}
-    QVector<double>& getamplitude() {return m_amplitude; }
-    QVector<double>& getfrequency() { return m_frequency; }
+    QVector<double> getamplitude() {return m_amplitude; }
+    QVector<double> getfrequency() { return m_frequency; }
     int& getbytesRead() { return m_bytesRead;}
+
+private:
+    Command m_commandName;
+    char m_val1;
+    char m_val2;
+    char m_val3;
+    double m_dval;
+    float m_fval;
+    float m_fval2;
+    qint8 m_P;
+    qint8 m_I;
+    qint8 m_D;
+    qint8 m_qval;
+    qint16 m_numPoints;
+    qint16 m_startFrequency;
+    qint16 m_stepSize;
+    QVector<double> m_amplitude;
+    QVector<double> m_frequency;
+    int m_bytesRead;
 };
 
 #endif // COMMANDNODE_H

@@ -24,8 +24,6 @@ class serialworker : public QObject
     //nanoiAFM m_afm;
 public:
     serialworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
-    void requestCommand(Command command);
-    void requestCommand(Command command,qint8 dacID, double val);
     ~serialworker();
     void abort();
 
@@ -37,8 +35,10 @@ private:
     qint8 _ID;
     bool _abort;
     float _returnBytes;
-    //QMutex mutex;
     QWaitCondition condition;
+    int _success;
+    returnBuffer<int>* _buffer;
+    int _index;
 
 signals:
     void valueChanged(const QString &value);
@@ -46,8 +46,6 @@ signals:
     void finished();
 
 public slots:
-    float doreadDAC(qint8 dacID);
-    float doreadADC(qint8 adcID);
     void mainLoop();
 };
 

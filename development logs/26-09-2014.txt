@@ -1,0 +1,3 @@
+-Swapping afm class from main thread to worker thread
+
+-Changing node constructor to take advantage of templates

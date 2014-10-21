@@ -1,0 +1,3 @@
+Need to create a global queue. 
+	new class?
+	pass the queue back and forth? this makes no sense

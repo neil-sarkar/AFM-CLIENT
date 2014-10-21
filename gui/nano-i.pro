@@ -32,7 +32,8 @@ HEADERS  += mainwindow.h \
     command.h \
     returnBuffer.h \
     eventworker.h \
-    globals.h
+    globals.h \
+    returnTypes.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
