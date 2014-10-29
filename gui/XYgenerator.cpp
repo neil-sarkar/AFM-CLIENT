@@ -118,5 +118,5 @@ int generateScanGrid(int numLines,
         }
 
     }
-
+    return 0;
 }

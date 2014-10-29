@@ -13,9 +13,17 @@
 //#include <armadillo>
 #include <globals.h>
 #include <QSignalMapper>
+#include <XYgenerator.h>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 
+/* Conrad Sanderson.
+ * Armadillo: An Open Source C++ Linear Algebra Library for
+ * Fast Prototyping and Computationally Intensive Experiments.
+ * Technical Report, NICTA, 2010.
+ *
+ *
+ */
 
 
 void MainWindow::MainWindowLoop()
@@ -54,8 +62,8 @@ void MainWindow::abort()
  *      1) Connect to ports
  *      2) Set max dac values
  *      3) Calibrate?
- *
- *
+ *              device calibration
+ *              set scan parameters
  */
 
 void MainWindow::Initialize()
@@ -93,7 +101,9 @@ void MainWindow::Initialize()
     dequeueTimer->start(10);
 
     /*Intialize Graphs*/
-    CreateGraphs();
+    //CreateGraphs();
+    QwtPlot* _plot = new QwtPlot();
+    _plot->setAutoReplot(false);
 
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
     on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value()); // set amplitude
@@ -106,25 +116,33 @@ void MainWindow::Initialize()
     connect(watcher, SIGNAL(finished()),
                this, SLOT(finishedThread()));
 
+    /*Event mapping for setting labels and statuses*/
     QSignalMapper* signalMapper = new QSignalMapper (ui->sweepButton) ;
     QSignalMapper* signalMapper2 = new QSignalMapper (ui->sweepButton) ;
     connect (ui->sweepButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
     connect (ui->sweepButton, SIGNAL(clicked()), signalMapper2, SLOT(map()));
+    connect(this, SIGNAL(SweepFinished()),signalMapper,SLOT(map()));
+    connect(this, SIGNAL(SweepFinished()),signalMapper2,SLOT(map()));
     signalMapper->setMapping(ui->sweepButton, "TRUE");
     signalMapper2->setMapping(ui->sweepButton, "QLabel { color : Green; }");
+    signalMapper->setMapping(this, "FALSE");
+    signalMapper2->setMapping(this, "QLabel { color : Red; }");
     connect (signalMapper, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setText(QString))) ;
     connect (signalMapper2, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setStyleSheet(QString))) ;
+
     //connect(ui->sweepButton, SIGNAL(clicked()),ui->freqProgressLabel, SLOT(setText()));
     //connect(ui->sweepButton, SIGNAL(clicked()),ui->freqProgressLabel, SLOT(setStyleSheet()));
 
 }
 
 void MainWindow::CreateGraphs(){
+    //freqPlot = new Plot();
     // add frequency sweep plot
-    PlotFields fields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
+    PlotFields fields = PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
                       QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
                       false, true);
-    freqPlot = new Plot( fields, ui->freqWidget );
+
+    freqPlot->SetPlot( fields, ui->freqWidget);
     ui->gridLayout_17->setSpacing(0);
     ui->gridLayout_17->addWidget(freqPlot, 1, 0);
     freqPlot->resize(500, 300);
@@ -135,7 +153,7 @@ void MainWindow::CreateGraphs(){
     fields = PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    approachPlot = new Plot( fields, ui->approachWidget );
+    approachPlot->SetPlot( fields, ui->approachWidget );
     ui->gridLayout_24->setSpacing(0);
     ui->gridLayout_24->addWidget(approachPlot, 1, 0);
     approachPlot->resize( 500, 300 );
@@ -146,7 +164,7 @@ void MainWindow::CreateGraphs(){
     fields = PlotFields("Z Offset", false, "Time", "Z Offset (V)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    signalPlot1 = new Plot( fields, ui->signalWidget );
+    signalPlot1->SetPlot( fields, ui->signalWidget );
 
     ui->gridLayout_10->addWidget(signalPlot1, 1, 0);
     signalPlot1->resize( 500, 100 );
@@ -156,13 +174,13 @@ void MainWindow::CreateGraphs(){
     fields = PlotFields("Error (V)", false, "Time", "Error)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    signalPlot2 = new Plot( fields, ui->signalWidget );
+    signalPlot2->SetPlot( fields, ui->signalWidget );
 
     ui->gridLayout_10->addWidget(signalPlot2, 2, 0);
     signalPlot2->resize( 500, 100 );
     signalPlot2->show();
 }
-void MainWindow::SetPorts(returnBuffer<int>* _node){
+void MainWindow::SetPorts(returnBuffer *_node){
 
     /*Push a setPort event to the serial thread*/
     //mutex.lock();
@@ -209,8 +227,9 @@ void MainWindow::dequeueReturnBuffer() {
      * This forces the buffer to be completely emptied
      * on each timer trigger
      */
+    mutex.lock();
     while(!returnQueue.empty()){
-        mutex.lock();
+
         _buffer = returnQueue.front();
         switch(_buffer->getReturnType()) {
          case DACBFRD1:
@@ -244,7 +263,6 @@ void MainWindow::dequeueReturnBuffer() {
             returnQueue.pop();
             break;
          case DACZOFFSETFINE:
-            //dac8=_buffer->getFData();
             zOffsetFine = _buffer->getFData();
             returnQueue.pop();
             break;
@@ -292,13 +310,33 @@ void MainWindow::dequeueReturnBuffer() {
          case FREQSWEEP:
             freqRetVal = _buffer->getData();
             returnQueue.pop();
+            emit SweepFinished();
             break;
          case GETPORTS:
             SetPorts(returnQueue.front());
             returnQueue.pop();
             break;
+         case DEVICECALIBRATION:
+            if(_buffer->getData() == AFM_SUCCESS)
+            {
+                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
+            }
+            else{
+                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858973_ballred-24.png");
+            }
+            returnQueue.pop();
+            break;
+         case SCANPARAMETERS:
+            if(_buffer->getData() == AFM_SUCCESS){
+                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
+            }
+            else{
+                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858973_ballred-24.png");
+            }
+            returnQueue.pop();
+            break;
         }
-        //approachPlot->update(time, zAmp, currTab == Approach ? true: false);
+
         if( isAutoApproach ) {
             approachPlot->update(time, zAmp, currTab == Approach ? true: false);
             ui->currOffsetValue->setValue(zAmp);
@@ -309,8 +347,9 @@ void MainWindow::dequeueReturnBuffer() {
             signalPlot2->update(time, zAmp - ui->spnPidSetpoint->value(), currTab == Signal ? true: false);
             time++;
         }
-        mutex.unlock();
+
     }
+    mutex.unlock();
 }
 
 void MainWindow::generalTimerUpdate() {
@@ -571,8 +610,8 @@ void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
         commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)ui->sldAmplitudeVoltage_3->value()));
 
         //afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
-//        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
-//                                                 afm.stageSetDirForward();
+/*        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
+                                                 afm.stageSetDirForward();*/
         ui->retreatButton->isChecked() == true ? commandQueue.push(new commandNode(stageSetDirBackward)) : \
                                                  commandQueue.push(new commandNode(stageSetDirForward));
 
@@ -605,8 +644,8 @@ void MainWindow::on_continuousButton_clicked(bool checked)
 // Frequency sweep
 void MainWindow::on_sweepButton_clicked()
 {
-    QVector<double>& frequencyData = QVector<double>();
-    QVector<double>& amplitudeData = QVector<double>();
+    QVector<double>* frequencyData = new QVector<double>();
+    QVector<double>* amplitudeData = new QVector<double>();
     int bytesRead;
 
     //connect(ui->sweepButton, SIGNAL(clicked()), ui->freqProgressLabel, SLOT(setText("Boo!")));
@@ -617,25 +656,25 @@ void MainWindow::on_sweepButton_clicked()
 
     mutex.lock();
     commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                      amplitudeData, frequencyData, bytesRead));
+                                      *amplitudeData, *frequencyData, bytesRead));
 
     mutex.unlock();
-    //commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-     //                               amplitudeData, frequencyData, bytesRead);
+    /*commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
+                                    amplitudeData, frequencyData, bytesRead);*/
 
     //QThread::msleep(100);
     //int retVal = returnQueue.front();
     mutex.lock();
-    if(freqRetVal = -1){
+    if(freqRetVal == -1){
 
-        queue<returnBuffer<int>*> temp = returnQueue;
-        returnBuffer<int>* _buffer;
+        queue<returnBuffer*> temp = returnQueue;
+        returnBuffer* _buffer;
         while(!temp.empty()){
             _buffer = temp.front();
             if(_buffer->getReturnType() == FREQSWEEP){
                 freqRetVal = _buffer->getData();
-                amplitudeData = _buffer->getAmplitude();
-                frequencyData = _buffer->getFrequency();
+                *amplitudeData = _buffer->getAmplitude();
+                *frequencyData = _buffer->getFrequency();
                 bytesRead = _buffer->getBytesRead();
                 temp.pop();
             }
@@ -650,10 +689,10 @@ void MainWindow::on_sweepButton_clicked()
         msg.exec();
     }
     else {
-        qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
+        qDebug() << "Size of X Data: " << frequencyData->size() << "Size of Y Data: " << amplitudeData->size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqPlot->update(frequencyData[i], amplitudeData[i], false); // add points to graph but don't replot
+            freqPlot->update(frequencyData->at(i), amplitudeData->at(i), false); // add points to graph but don't replot
         }
         freqPlot->replot(); // show the frequency sweep
     }
@@ -669,16 +708,16 @@ void MainWindow::on_useCurrFreqVal_clicked()
 void MainWindow::on_pushButton_6_clicked()
 {
     //XYGenerator dynamically resizes these values
-    /*arma::mat X_points;
+    arma::mat X_points;
     arma::mat Y_points;
 
     //Convert all the values to digital values based on a resolution of 4095
     int vMax=ui->spnScanVmax->value()*AFM_DAC_SCALING;
     int vMin=ui->spnScanVmax->value()*AFM_DAC_SCALING;
     int vMin2=ui->spnScanVmax->value()*AFM_DAC_SCALING;
-    int numPoints=ui->spnScanNumLines->value();
-    int numLines=ui->spnScanNumPoints->value();
-    int ret_fail=XYGENERATOR_FAIL;
+    int numPoints=ui->cmbScanNumLines->currentText().toInt();
+    int numLines=ui->cmbScanNumPoints->currentText().toInt();
+    int ret_fail=1;
 
     if((generateXYVoltages(vMax, vMin, vMin2, numLines, numPoints, X_points, Y_points) == ret_fail)){
             QMessageBox msgBox;
@@ -689,7 +728,7 @@ void MainWindow::on_pushButton_6_clicked()
 
     //Write X Y actuator voltages to AFM and read Z. A seperate matrix should be created
 
-    mat Z_values(X_points.n_rows, X_points.n_cols);
+    //mat Z_values(X_points.n_rows, X_points.n_cols);
 
     //DANGER: Verifiy these values are bein written properly
     for(int i=0; i < X_points.n_rows; i++){
@@ -698,8 +737,8 @@ void MainWindow::on_pushButton_6_clicked()
             //Write DAC for Y Voltage
             //Wait for Z values to be populated. How long should we wait?
         }
-    }*/
-    ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
+    }
+
 
 }
 
@@ -798,6 +837,7 @@ void MainWindow::on_writeCharacter_clicked()
 
 void MainWindow::on_setMaxDACValuesButton_clicked()
 {
+
    commandQueue.push(new commandNode(setDacValues,DAC_Y1,ui->latSpinBox->value()));
    commandQueue.push(new commandNode(setDacValues,DAC_Y2,ui->latSpinBox->value()));
    commandQueue.push(new commandNode(setDacValues,DAC_X1,ui->latSpinBox->value()));
@@ -812,3 +852,23 @@ void MainWindow::on_setMaxDACValuesButton_clicked()
 }
 
 
+
+void MainWindow::on_calibrateButton_clicked()
+{
+    double _maxLat;
+    double _maxZ;
+
+    _maxLat = ui->latSpinBox->value();
+    _maxZ = ui->ZcoarseSpinBox->value();
+
+    if(_maxLat != 0)
+        commandQueue.push(new commandNode(deviceCalibration,_maxLat));
+
+    /*IF SCAN PARAMETERS HAVE BEEN SET
+        how can we check this?*/
+
+    double numlines = ui->cmbScanNumLines->currentText().toDouble();
+    double numpts = ui->cmbScanNumPoints->currentText().toDouble();
+    commandQueue.push(new commandNode(scanParameters,ui->spnScanVmin->value(),ui->spnScanVmin2->value(),ui->spnScanVmax->value(),numpts,numlines));
+
+}

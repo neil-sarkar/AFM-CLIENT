@@ -20,8 +20,10 @@ enum returnType{
     DAC,
     AFMADCAMPLITUDEID,
     AFMDACOFFSETID,
-    PIDEnable,
-    PIDDisable
+    PIDENABLE,
+    PIDDISABLE,
+    DEVICECALIBRATION,
+    SCANPARAMETERS
 };
 
 #endif // RETURNTYPES_H

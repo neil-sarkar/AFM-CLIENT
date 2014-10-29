@@ -20,10 +20,13 @@ class serialworker : public QObject
 {
     Q_OBJECT
     queue<commandNode*>& m_queue;
-    queue<returnBuffer<int>*>& return_queue;
+    queue<returnBuffer*>& return_queue;
     //nanoiAFM m_afm;
 public:
-    serialworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
+    serialworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue) :
+        QObject(parent),
+        m_queue(_queue),
+        return_queue(_returnqueue)  {}
     ~serialworker();
     void abort();
 
@@ -37,7 +40,7 @@ private:
     float _returnBytes;
     QWaitCondition condition;
     int _success;
-    returnBuffer<int>* _buffer;
+    returnBuffer* _buffer;
     int _index;
 
 signals:

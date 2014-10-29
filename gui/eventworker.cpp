@@ -48,7 +48,7 @@ void eventworker::generalTimerUpdate()
     MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
     int id = 1;
 
-    if(_mainwindow != nullptr){
+    if(_mainwindow != NULL){
     if( _mainwindow->getCurrTab() == 4 ) {
 #if AFM_MICRO_CONNECTED
 //        mutex.lock();

@@ -248,6 +248,9 @@ border-right: 1px solid black;
       <property name="styleSheet">
        <string notr="true">QTabWidget::pane { /* The tab widget frame */
      border: 2px solid gray;
+background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
  }
 
  QTabWidget::tab-bar {
@@ -286,7 +289,7 @@ border-right: 1px solid black;
  }</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="controlTab">
        <attribute name="title">
@@ -475,6 +478,9 @@ border-right: 1px solid black;
                      <property name="singleStep">
                       <double>0.010000000000000</double>
                      </property>
+                     <property name="value">
+                      <double>3.000000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -492,6 +498,9 @@ border-right: 1px solid black;
                     <widget class="QDoubleSpinBox" name="spnScanVmin">
                      <property name="singleStep">
                       <double>0.010000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.500000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -511,6 +520,9 @@ border-right: 1px solid black;
                      <property name="singleStep">
                       <double>0.010000000000000</double>
                      </property>
+                     <property name="value">
+                      <double>0.200000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -525,7 +537,63 @@ border-right: 1px solid black;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="spnScanNumLines"/>
+                    <widget class="QComboBox" name="cmbScanNumLines">
+                     <item>
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>2</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>4</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>8</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>16</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>32</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>64</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>128</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>256</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>512</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>1024</string>
+                      </property>
+                     </item>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -539,7 +607,63 @@ border-right: 1px solid black;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="spnScanNumPoints"/>
+                    <widget class="QComboBox" name="cmbScanNumPoints">
+                     <item>
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>2</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>4</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>8</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>16</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>32</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>64</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>128</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>256</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>512</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>1028</string>
+                      </property>
+                     </item>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -553,7 +677,11 @@ border-right: 1px solid black;
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="spnScanDelay"/>
+                    <widget class="QSpinBox" name="spnScanDelay">
+                     <property name="value">
+                      <number>10</number>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -594,6 +722,35 @@ border-right: 1px solid black;
              <string>MEMS Control</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_20">
+             <item row="6" column="0">
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item row="1" column="0">
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
              <item row="0" column="0">
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
@@ -745,10 +902,19 @@ border-right: 1px solid black;
                      <property name="singleStep">
                       <double>0.100000000000000</double>
                      </property>
+                     <property name="value">
+                      <double>3.300000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
                     <widget class="QLabel" name="label_10">
+                     <property name="maximumSize">
+                      <size>
+                       <width>24</width>
+                       <height>20</height>
+                      </size>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -801,6 +967,9 @@ border-right: 1px solid black;
                      <property name="singleStep">
                       <double>0.100000000000000</double>
                      </property>
+                     <property name="value">
+                      <double>2.000000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -810,6 +979,12 @@ border-right: 1px solid black;
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>24</width>
+                       <height>20</height>
+                      </size>
                      </property>
                      <property name="text">
                       <string/>
@@ -863,10 +1038,19 @@ border-right: 1px solid black;
                      <property name="singleStep">
                       <double>0.100000000000000</double>
                      </property>
+                     <property name="value">
+                      <double>3.300000000000000</double>
+                     </property>
                     </widget>
                    </item>
                    <item>
                     <widget class="QLabel" name="label_11">
+                     <property name="maximumSize">
+                      <size>
+                       <width>24</width>
+                       <height>20</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -901,36 +1085,36 @@ border-right: 1px solid black;
                </item>
               </layout>
              </item>
-             <item row="6" column="0">
-              <spacer name="verticalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Expanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="1" column="0">
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
             </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="calibrateButton">
+            <property name="minimumSize">
+             <size>
+              <width>128</width>
+              <height>128</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>Calibrate</string>
+            </property>
            </widget>
           </item>
           <item>

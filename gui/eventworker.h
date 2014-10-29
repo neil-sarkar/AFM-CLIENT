@@ -17,12 +17,14 @@ class eventworker : public QObject
 {
     Q_OBJECT
     queue<commandNode*>& m_queue;
-    queue<returnBuffer<int>*>& return_queue;
+    queue<returnBuffer*>& return_queue;
 
 public:
     eventworker();
-    eventworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue)
-        : m_queue(_queue),return_queue(_returnqueue),QObject(parent){}
+    eventworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue):
+        QObject(parent),
+        m_queue(_queue),
+        return_queue(_returnqueue) {}
     void abort();
     ~eventworker();
 private:

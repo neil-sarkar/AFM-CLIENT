@@ -9,7 +9,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QMessageBox>
-#include "plot.h"
+#include <plot.h>
 #include <qtimer.h>
 //#include <XYGenerator.h>
 #include <QtConcurrentRun>
@@ -32,15 +32,19 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     queue<commandNode*>& commandQueue;
-    queue<returnBuffer<int>*>& returnQueue;
+    queue<returnBuffer*>& returnQueue;
 
 public:
     //nanoiAFM afm;
     QList<QSerialPortInfo> detectedSerialPorts;
-    MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer<int>*>& _returnqueue) : commandQueue(_queue),returnQueue(_returnqueue),QMainWindow(parent){}
+    MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue) :
+        QMainWindow(parent),
+        commandQueue(_queue),
+        returnQueue(_returnqueue) {}
+
     void autoApproach(nanoiAFM* afm);
     void abort();
-    void SetPorts(returnBuffer<int> *_node);
+    void SetPorts(returnBuffer*_node);
     void SetMaxDACValues();
     void Initialize();
     void setADC5(float val){adc5 = val;}
@@ -65,6 +69,7 @@ private:
 
 signals:
     void finished();
+    void SweepFinished();
 
 public slots:
     void on_buttonAutoApproachClient_clicked(bool checked);
@@ -149,6 +154,8 @@ private slots:
 
     void on_setMaxDACValuesButton_clicked();
 
+    void on_calibrateButton_clicked();
+
 private:
 
     enum TabType{
@@ -181,7 +188,7 @@ private:
     float autoApproachComparison;
     QFuture<void> *future;
     QFutureWatcher<void> *watcher;
-    returnBuffer<int>* _buffer;
+    returnBuffer* _buffer;
     float zOffsetCoarse;
     float zOffsetFine;
     float bfrd1;

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     queue<commandNode*> commandQueue = queue<commandNode*>();
-    queue<returnBuffer<int>*> returnQueue = queue<returnBuffer<int>*>();
+    queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
 
 
 

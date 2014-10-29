@@ -43,10 +43,23 @@ class PlotFields {
   public:
     PlotFields(const QString& titleIn, bool displayTitleIn,
                const QString& xLabelIn, QString yLabelIn,
-               const QPair<double,double>& xAxisIn, const QPair<double,double>& yAxisIn,
+               const QPair<double,double>& xAxisIn,
+               const QPair<double,double>& yAxisIn,
                const QColor& colorIn, bool autoScaleIn = false, bool displayTrackerIn = false, int bufferSizeIn = BUFFER ) :
     title(titleIn), displayTitle(displayTitleIn), xLabel(xLabelIn), yLabel(yLabelIn), xAxis(xAxisIn), yAxis(yAxisIn), \
     color(colorIn), autoScale(autoScaleIn), displayTracker(displayTrackerIn), bufferSize(bufferSizeIn){}
+
+    PlotFields(const PlotFields& fields):
+        title(fields.title),
+        displayTitle(fields.displayTitle),
+        xLabel(fields.xLabel),
+        yLabel(fields.yLabel),
+        xAxis(fields.xAxis),
+        yAxis(fields.yAxis), \
+        color(fields.color),
+        autoScale(fields.autoScale),
+        displayTracker(fields.displayTracker),
+        bufferSize(fields.bufferSize){}
 
     QString title;
     bool displayTitle;
@@ -63,8 +76,10 @@ class PlotFields {
 class Plot : public QwtPlot
 {
     Q_OBJECT
+    int dataCount;
 public:
-    Plot( const PlotFields& fields, QWidget * = 0 );
+    Plot();
+    void SetPlot(PlotFields &fieldsIn, QWidget * = 0 );
     void update(double x, double y, bool replot = true);
     void setAutoScale(bool val);
     void setMarker(bool val);
@@ -80,10 +95,7 @@ private slots:
 private:
     QVector<double> xData;
     QVector<double> yData;
-    int dataCount;
     QwtPlotCurve* mCurve;
-
-    PlotFields fields;
     bool autoScale;
     int xAxisStart;
     int xAxisRange;

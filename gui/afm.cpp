@@ -4,7 +4,8 @@
 /* Serial Configuration */
 #define AFM_MANUFACTURER "FTDI" //Should change this later on to ICPI
 #define AFM_MAX_DATA_SIZE 1 //Basically write 1 character at a time
-#define AFM_POLL_TIMOUT 50 //Poll the buffer every 1ms
+#define AFM_POLL_TIMEOUT 50 //Poll the buffer every 1ms
+#define AFM_LONG_TIMEOUT 1000 //Longer timeout for large data
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
@@ -20,10 +21,10 @@ int nanoiAFM::writeByte(char byte)
 //        return AFM_FAIL;
 }
 
-QByteArray nanoiAFM::waitForData()
+QByteArray nanoiAFM::waitForData(int timeout)
 {
     QByteArray responseData;
-    while(waitForReadyRead(AFM_POLL_TIMOUT)){
+    while(waitForReadyRead(timeout)){
         responseData+= readAll();
     }
 #if AFM_DEBUG
@@ -45,7 +46,7 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
     writeByte((digitalValue & 0xFF));
     writeByte((digitalValue >> 8));
 
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == AFM_DAC_WRITE_SELECT){ return AFM_SUCCESS;}
         else{ return AFM_FAIL;}
@@ -57,7 +58,7 @@ float nanoiAFM::readDAC(qint8 dacID){
     quint16 val;
     writeByte(AFM_DAC_READ_SELECT);
     writeByte(dacID);
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
 #if AFM_DEBUG
     qDebug() << "Bytes Read from DAC: " << res.size();
 #endif
@@ -75,7 +76,7 @@ float nanoiAFM::readADC(qint8 adcID){
 //    QByteArray responseData;
     writeByte(AFM_ADC_READ_SELECT);
     writeByte(adcID);
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 #if AFM_DEBUG
@@ -126,7 +127,7 @@ int nanoiAFM::memsSetBridgeVoltage(double val){
 
 int nanoiAFM::pidEnable(){
     writeByte(AFM_PID_ENABLE_SELECT);
-    if(waitForData().at(0) == AFM_PID_ENABLE_SELECT)
+    if(waitForData(AFM_POLL_TIMEOUT).at(0) == AFM_PID_ENABLE_SELECT)
         return AFM_SUCCESS;
     else
         return AFM_FAIL;
@@ -142,7 +143,7 @@ int nanoiAFM::pidSetP(float P){
     writeByte(((char*)&P)[1]);
     writeByte(((char*)&P)[2]);
     writeByte(((char*)&P)[3]);
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == AFM_PID_P_SELECT){ return AFM_SUCCESS;}
         else{ return AFM_FAIL;}
@@ -158,7 +159,7 @@ int nanoiAFM::pidSetI(float I){
     writeByte(((char*)&I)[1]);
     writeByte(((char*)&I)[2]);
     writeByte(((char*)&I)[3]);
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == AFM_PID_I_SELECT){ return AFM_SUCCESS;}
         else{ return AFM_FAIL;}
@@ -174,7 +175,7 @@ int nanoiAFM::pidSetD(float D){
     writeByte(((char*)&D)[1]);
     writeByte(((char*)&D)[2]);
     writeByte(((char*)&D)[3]);
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == AFM_PID_D_SELECT){ return AFM_SUCCESS;}
         else{ return AFM_FAIL;}
@@ -275,7 +276,7 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     writeByte(AFM_SWEEP_START);
 
     // read numPoints*2 bytes of data back
-    QByteArray freqData = waitForData();
+    QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
     bytesRead = freqData.size();
     qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
     bytesRead[freqData.cend()];
@@ -300,8 +301,8 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     // y data
     amplitudeData.clear();
     for(int i = 0; i < freqData.size(); i+=2) {
-        qDebug() << "Int Val: " << intVal;
         intVal = BYTES_TO_WORD((quint8)freqData[i], (quint8)freqData[i+1]);
+        qDebug() << "Int Val: " << intVal;        
         amplitudeData.append( double(intVal)/AFM_ADC_SCALING );
     }
 
@@ -324,15 +325,141 @@ void nanoiAFM::autoApproach(){
 int nanoiAFM::setDACValues(char dacID, double _val){
 
     writeByte(AFM_SET_DAC_MAX);
-    char _max = AFM_DAC_SCALING*_val;
+    qint16 _max = AFM_DAC_SCALING*_val;
 
     writeByte((char)dacID);
     writeByte((_max & 0xFF));
     writeByte((_max & 0x0F00) >> 8);
 
-    QByteArray res=waitForData();
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == AFM_SET_DAC_MAX){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+}
+int nanoiAFM::deviceCalibration(double val, char side){
+
+
+    qint16 _max = AFM_DAC_SCALING*val;
+    float a = 0.0000000003438;
+    float b = 0.0000001379;
+    float c = -0.0000545;
+    float d = 0;
+    float e = 0;
+    float f = 0;
+
+    char _a[sizeof(float)];
+    memcpy(_a, &a, sizeof(float));
+
+    char _b[sizeof(float)];
+    memcpy(_b, &b, sizeof(float));
+
+    char _c[sizeof(float)];
+    memcpy(_c, &c, sizeof(float));
+
+    char _d[sizeof(float)];
+    memcpy(_d, &d, sizeof(float));
+
+    char _e[sizeof(float)];
+    memcpy(_e, &e, sizeof(float));
+
+    char _f[sizeof(float)];
+    memcpy(_f, &f, sizeof(float));
+
+
+    //4 bytes (o, ‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)
+    writeByte(AFM_DEVICE_CALIBRATE);
+    writeByte(side);
+    writeByte((_max & 0xFF));
+    writeByte((_max & 0x0F00) >> 8);
+
+    //16, 384 bytes
+    QByteArray res=waitForData(AFM_LONG_TIMEOUT);
+    int bytes = res.size();
+//    while(bytes < 16300){
+//        res+=waitForData();
+//        bytes = res.size();
+//    }
+
+    //12 bytes (a, b, c) – fitted quadratic polynomial coefficients for direct p-v relation (single precision floating point)
+    writeByte(_a[0]);
+    writeByte(_a[1]);
+    writeByte(_a[2]);
+    writeByte(_a[3]);
+    writeByte(_b[0]);
+    writeByte(_b[1]);
+    writeByte(_b[2]);
+    writeByte(_b[3]);
+    writeByte(_c[0]);
+    writeByte(_c[1]);
+    writeByte(_c[2]);
+    writeByte(_c[3]);
+    //12 bytes (d, e, f) – fitted quadratic polynomial coefficients for coupling r-v relation (single precision floating point)
+    writeByte(_d[0]);
+    writeByte(_d[1]);
+    writeByte(_d[2]);
+    writeByte(_d[3]);
+    writeByte(_e[0]);
+    writeByte(_e[1]);
+    writeByte(_e[2]);
+    writeByte(_e[3]);
+    writeByte(_f[0]);
+    writeByte(_f[1]);
+    writeByte(_f[2]);
+    writeByte(_f[3]);
+
+
+
+    //waitForReadyRead(100);
+
+    res = waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+}
+
+int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines){
+
+    /* We need to check that these parameters are valid
+     * How?
+     *
+     *
+     * */
+    qDebug() << AFM_DAC_SCALING << endl;
+    qint16 _vminLine = AFM_DAC_SCALING*vmin_line;
+    qint16 _vminScan = AFM_DAC_SCALING*vmin_scan;
+    qint16 _vmax = AFM_DAC_SCALING*vmax;
+    qint16 _numpts = numpts;
+    qint16 _numLines = numlines;
+
+    writeByte(AFM_SCAN_PARAMETERS);
+
+    writeByte(_vminLine & 0xFF);
+    writeByte((_vminLine & 0x0F00) >> 8);
+
+    writeByte(_vminScan & 0xFF);
+    writeByte((_vminScan & 0x0F00) >> 8);
+
+    writeByte(_vmax & 0xFF);
+    writeByte((_vmax & 0x0F00) >> 8);
+
+    writeByte(_numpts & 0xFF);
+    writeByte((_numpts & 0x0F00) >> 8);
+
+    writeByte(_numLines & 0xFF);
+    writeByte((_numLines & 0x0F00) >> 8);
+
+
+    QByteArray res = waitForData(AFM_LONG_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(1) == '@' && res.at(0) == 'o'){
+            return AFM_SUCCESS;
+        }
         else{ return AFM_FAIL;}
 
     }

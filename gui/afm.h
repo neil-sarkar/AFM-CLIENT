@@ -114,6 +114,10 @@
 
 #define AFM_SET_DAC_MAX '&'
 
+#define AFM_DEVICE_CALIBRATE 'o'
+
+#define AFM_SCAN_PARAMETERS '@'
+
 enum {
     AFM_SUCCESS = 0,
     AFM_FAIL = -1
@@ -126,7 +130,7 @@ private:
 public:
 
     int writeByte(char byte);
-    QByteArray waitForData();
+    QByteArray waitForData(int timeout);
     int writeDAC(qint8 dacID, double val);
     float readDAC(qint8 dacID);
     float readADC(qint8 adcID);
@@ -157,6 +161,8 @@ public:
     void rasterStep(float val1, float val2);
     void autoApproach();
     int setDACValues(char dacID, double _val);
+    int deviceCalibration(double val, char side);
+    int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
 };
 
 #endif // AFM_H

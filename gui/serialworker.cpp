@@ -24,24 +24,23 @@ true the thread will exit.
 void serialworker::mainLoop()
 {
     _abort = false;
-    QList<QSerialPortInfo>& detectedSerialPorts = QList<QSerialPortInfo>();
-    QVector<double>& _amplitude = QVector<double>();
-    QVector<double>& _frequency = QVector<double>();
+    QList<QSerialPortInfo>* detectedSerialPorts = new QList<QSerialPortInfo>();
+    QVector<double>* _amplitude = new QVector<double>();
+    QVector<double>* _frequency = new QVector<double>();
     int _bytesRead = 0;
 
 
     forever {
-        if (!_abort) {
-            //condition.wait(&mutex);
-        }
 
         if (_abort) {
             emit finished();
-            //mutex.unlock();
             return;
         }
+
+        /* Prevent any other threads from writing or reading from the buffers
+         * until this thread is finished the appropriate reads and writes*/
         mutex.lock();
-        if(!m_queue.empty()){
+        while(!m_queue.empty()){
 
             commandNode* _node = m_queue.front();
             _command = _node->getcommandName();
@@ -53,44 +52,56 @@ void serialworker::mainLoop()
                     m_afm.writeDAC((qint8)_ID,(double)_val);
                     break;
                 case readDAC:
-                    _node->getqval() ? _ID = -1:_ID=_node->getqval();
-                    _returnBytes = m_afm.readDAC((qint8)_node->getqval());
-                    if(_ID == DAC_ZOFFSET_FINE)
-                        return_queue.push(new returnBuffer<int>(DACZOFFSETFINE,(float)_returnBytes));
-                    else if(_ID == DAC_ZOFFSET_COARSE)
-                        return_queue.push(new returnBuffer<int>(DACZOFFSETCOARSE,(float)_returnBytes));
-                    else if(_ID == DAC_BFRD1)
-                        return_queue.push(new returnBuffer<int>(DACBFRD1,(float)_returnBytes));
-                    else if(_ID == DAC_BFRD2)
-                        return_queue.push(new returnBuffer<int>(DACBFRD2,(float)_returnBytes));
-                    else if(_ID == DAC_BFRD3)
-                        return_queue.push(new returnBuffer<int>(DACBFRD3,(float)_returnBytes));
-                    else if(_ID == DAC_ZAMP)
-                        return_queue.push(new returnBuffer<int>(DACZAMP,(float)_returnBytes));
-                    else if(_ID == DAC_BR1)
-                        return_queue.push(new returnBuffer<int>(DACBR1,(float)_returnBytes));
-                    else if(_ID == DAC_BR2)
-                        return_queue.push(new returnBuffer<int>(DACBR2,(float)_returnBytes));
-                    else if(_ID == DAC_X1)
-                        return_queue.push(new returnBuffer<int>(DACX1,(float)_returnBytes));
-                    else if(_ID == DAC_X2)
-                        return_queue.push(new returnBuffer<int>(DACX2,(float)_returnBytes));
-                    else if(_ID == DAC_Y1)
-                        return_queue.push(new returnBuffer<int>(DACY1,(float)_returnBytes));
-                    else if(_ID == DAC_Y2)
-                        return_queue.push(new returnBuffer<int>(DACY2,(float)_returnBytes));
-                    else if(_ID == -1)
-                        break;
-                    else
-                        return_queue.push(new returnBuffer<int>(DAC,(float)_returnBytes));
+                    _ID=(qint8)_node->getqval();
+                    _returnBytes = m_afm.readDAC(_ID);
+                    switch(_ID){
+                        case DAC_ZOFFSET_FINE:
+                            return_queue.push(new returnBuffer(DACZOFFSETFINE,(float)_returnBytes));
+                            break;
+                        case DAC_ZOFFSET_COARSE:
+                            return_queue.push(new returnBuffer(DACZOFFSETCOARSE,(float)_returnBytes));
+                            break;
+                        case DAC_BFRD1:
+                            return_queue.push(new returnBuffer(DACBFRD1,(float)_returnBytes));
+                            break;
+                        case DAC_BFRD2:
+                            return_queue.push(new returnBuffer(DACBFRD2,(float)_returnBytes));
+                            break;
+                        case DAC_BFRD3:
+                            return_queue.push(new returnBuffer(DACBFRD3,(float)_returnBytes));
+                            break;
+                        case DAC_ZAMP:
+                            return_queue.push(new returnBuffer(DACZAMP,(float)_returnBytes));
+                            break;
+                        case DAC_BR1:
+                            return_queue.push(new returnBuffer(DACBR1,(float)_returnBytes));
+                            break;
+                        case DAC_BR2:
+                            return_queue.push(new returnBuffer(DACBR2,(float)_returnBytes));
+                            break;
+                        case DAC_X1:
+                            return_queue.push(new returnBuffer(DACX1,(float)_returnBytes));
+                            break;
+                        case DAC_X2:
+                            return_queue.push(new returnBuffer(DACX2,(float)_returnBytes));
+                            break;
+                        case DAC_Y1:
+                            return_queue.push(new returnBuffer(DACY1,(float)_returnBytes));
+                            break;
+                        case DAC_Y2:
+                            return_queue.push(new returnBuffer(DACY2,(float)_returnBytes));
+                            break;
+                        case -1:
+                            break;
+                    }
                     break;
                 case readADC:
                     _ID = _node->getqval();
                     _returnBytes = m_afm.readADC((qint8)_node->getqval());
                     if(_ID == AFM_ADC_AMPLITUDE_ID)
-                        return_queue.push(new returnBuffer<int>(AFMADCAMPLITUDEID,(float)_returnBytes));
+                        return_queue.push(new returnBuffer(AFMADCAMPLITUDEID,(float)_returnBytes));
                     else
-                        return_queue.push(new returnBuffer<int>(ADC,(float)_returnBytes));
+                        return_queue.push(new returnBuffer(ADC,(float)_returnBytes));
                     break;
                 case setRasterStep:
                     m_afm.setRasterStep();
@@ -153,45 +164,58 @@ void serialworker::mainLoop()
                     m_afm.autoApproach();
                     break;
                 case setPort:
-                    detectedSerialPorts = QSerialPortInfo::availablePorts();
+                    *detectedSerialPorts = QSerialPortInfo::availablePorts();
                     _node->getdval() == 0 ? _index = 0 :_index = _node->getdval();
-                    if(detectedSerialPorts.size()==0)
-                    {
+
+                    if(detectedSerialPorts->size()==0)
                         qDebug() << "Unable to find any serial ports." << endl;
-                    }
-                    else
-                    {
-                        m_afm.setPort(detectedSerialPorts.at(_index));
+                    else{
+                        m_afm.setPort(detectedSerialPorts->at(_index));
                         m_afm.open(QIODevice::ReadWrite);
                         m_afm.setBaudRate(76800);
                     }
                     break;
                 case getPorts:
-                    detectedSerialPorts = QSerialPortInfo::availablePorts();
+                    *detectedSerialPorts = QSerialPortInfo::availablePorts();
                     _node->getdval() == 0 ? _index=0:_index=_node->getdval();
-                    if(detectedSerialPorts.size()==0)
-                    {
+
+                    if(detectedSerialPorts->size()==0)
                         qDebug() << "Unable to find any serial ports." << endl;
-                    }
-                    else
-                    {
-                        m_afm.setPort(detectedSerialPorts.at(_index));
+                    else{
+                        m_afm.setPort(detectedSerialPorts->at(_index));
                         m_afm.open(QIODevice::ReadWrite);
                         m_afm.setBaudRate(76800);
                     }
-                    _buffer = new returnBuffer<int>(GETPORTS,detectedSerialPorts);
+
+                    _buffer = new returnBuffer(GETPORTS,*detectedSerialPorts);
+
                     return_queue.push(_buffer);
                     break;
                  case frequencySweep:
-                    _amplitude = _node->getamplitude();
-                    _frequency = _node->getfrequency();
+                    *_amplitude = _node->getamplitude();
+                    *_frequency = _node->getfrequency();
                     _bytesRead = _node->getbytesRead();
-                    _success = m_afm.frequencySweep(_node->getnumPoints(),_node->getstartFrequency(),_node->getstepSize(),_amplitude,_frequency,_bytesRead);
-                    _buffer = new returnBuffer<int>(FREQSWEEP,_success,_amplitude,_frequency,_bytesRead);
+
+                    _success = m_afm.frequencySweep(_node->getnumPoints(),_node->getstartFrequency(),_node->getstepSize(),*_amplitude,*_frequency,_bytesRead);
+                    _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_frequency,_bytesRead);
+
                     return_queue.push(_buffer);
                     break;
                  case setDacValues:
                     m_afm.setDACValues(_node->getqval(),_node->getdval());
+                    break;
+                 case deviceCalibration:
+                    _success = m_afm.deviceCalibration(_node->getdval(),'l');
+                    //if(_success == AFM_SUCCESS)
+                        _success = m_afm.deviceCalibration(_node->getdval(),'r');
+
+                    _buffer = new returnBuffer(DEVICECALIBRATION,_success);
+                    return_queue.push(_buffer);
+                    break;
+                 case scanParameters:
+                    _success = m_afm.scanParameters(_node->getvminLine(),_node->getvminScan(),_node->getvmax(),_node->getnumpts(),_node->getnumLines());
+                    _buffer = new returnBuffer(SCANPARAMETERS,_success);
+                    return_queue.push(_buffer);
                     break;
             }
             m_queue.pop();
@@ -210,5 +234,5 @@ void serialworker::abort()
 }
 serialworker::~serialworker()
 {
-    //emit finished();
+    emit finished();
 }

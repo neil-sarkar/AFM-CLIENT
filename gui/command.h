@@ -38,7 +38,9 @@ enum Command{
     getPorts,
     setPort,
     mainWindowTimerEvent,
-    setDacValues
+    setDacValues,
+    deviceCalibration,
+    scanParameters
 };
 
 

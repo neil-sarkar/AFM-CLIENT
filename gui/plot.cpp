@@ -11,15 +11,15 @@
 #include <qobject.h>
 #include <qdebug.h>
 #include <math.h>
-#include "plot.h"
+#include <plot.h>
 
 
-Plot::Plot( const PlotFields& fieldsIn, QWidget *parent ):
-    QwtPlot( parent ),
-    dataCount( 0 ),
-    fields(fieldsIn)
+void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
+
 {
-    setAutoReplot( false );
+    PlotFields fields = fieldsIn;
+
+    this->setAutoReplot( false );
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius( 10 );
@@ -28,7 +28,7 @@ Plot::Plot( const PlotFields& fieldsIn, QWidget *parent ):
     plotLayout()->setAlignCanvasToScales( true );
 
     // sometimes, title takes up too much space
-    if (fieldsIn.displayTitle) {
+    if (fields.displayTitle) {
         QwtText title(fields.title);
         title.setFont(QFont("Times", 12, QFont::Bold));
         setTitle(title);
@@ -74,6 +74,7 @@ Plot::Plot( const PlotFields& fieldsIn, QWidget *parent ):
     xAxisStart = fields.xAxis.first;
     xAxisRange = fields.xAxis.second - fields.xAxis.first;
     autoScale = fields.autoScale;
+
 }
 
 // TODO: I cannot seem to be able to get this slot to activate upon clicking

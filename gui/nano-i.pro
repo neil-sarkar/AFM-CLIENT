@@ -8,10 +8,14 @@ QT       += core gui
 CONFIG   += serialport
 CONFIG   += qwt
 
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT  += concurrent
 QT  += serialport
+
+
+LIBS += -lqwt
 
 TARGET = nano-i
 TEMPLATE = app
@@ -22,7 +26,8 @@ SOURCES += main.cpp\
     afm.cpp \
     plot.cpp \
     serialworker.cpp \
-    eventworker.cpp
+    eventworker.cpp \
+    XYgenerator.cpp
 
 HEADERS  += mainwindow.h \
     afm.h \
@@ -33,11 +38,14 @@ HEADERS  += mainwindow.h \
     returnBuffer.h \
     eventworker.h \
     globals.h \
-    returnTypes.h
+    returnTypes.h \
+    XYgenerator.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
-include(C:\qwt-6.1.0\qwt-6.1.0\qwt.prf)
+INCLUDEPATH += C:\Users\Nick\Documents\armadillo-4.450.4\include
+#INCLUDEPATH += C:\qwt-6.1.0\qwt-6.1.0\src
+#include(C:\qwt-6.1.0\features\qwt.prf)
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/release/ -larmadillo
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/debug/ -larmadillo
 #else:unix: LIBS += -L$$PWD/../../../../../usr/lib/ -larmadillo
@@ -46,4 +54,6 @@ include(C:\qwt-6.1.0\qwt-6.1.0\qwt.prf)
 #DEPENDPATH += $$PWD/../../../../../usr/include
 
 #unix|win32: LIBS += -larmadillo
-QMAKE_LFLAGS += /INCREMENTAL:NO
+#QMAKE_LFLAGS += /INCREMENTAL:NO
+
+win32:RC_ICONS += C:\Users\Nick\Documents\code\AFM-CLIENT\icons\icspi.ico
