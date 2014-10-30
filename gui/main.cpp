@@ -1,18 +1,15 @@
 #include "mainwindow.h"
-
-
+#include <globals.h>
 //gotta follow this to add QtSerial Port
 //http://qt-project.org/wiki/QtSerialPort#fn1921400492531950a902bc4
 
-    QMutex mutex;
 
+QMutex mutex;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     queue<commandNode*> commandQueue = queue<commandNode*>();
     queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
-
-
 
     /**********************3 Threads***********************************
      *

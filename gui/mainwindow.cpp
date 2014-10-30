@@ -101,9 +101,12 @@ void MainWindow::Initialize()
     dequeueTimer->start(10);
 
     /*Intialize Graphs*/
-    //CreateGraphs();
-    QwtPlot* _plot = new QwtPlot();
-    _plot->setAutoReplot(false);
+    CreateGraphs();
+
+//    QwtPlot _plot;
+//    _plot.setAutoReplot(false);
+//    arma::mat X_points;
+//    arma::mat Y_points;
 
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
     on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value()); // set amplitude
@@ -137,48 +140,49 @@ void MainWindow::Initialize()
 
 void MainWindow::CreateGraphs(){
     //freqPlot = new Plot();
+
     // add frequency sweep plot
-    PlotFields fields = PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
+    MyPlot::PlotFields fields = MyPlot::PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
                       QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
                       false, true);
 
-    freqPlot->SetPlot( fields, ui->freqWidget);
+    freqPlot.SetPlot( fields, ui->freqWidget);
     ui->gridLayout_17->setSpacing(0);
-    ui->gridLayout_17->addWidget(freqPlot, 1, 0);
-    freqPlot->resize(500, 300);
-    freqPlot->show();
+    ui->gridLayout_17->addWidget(&freqPlot, 1, 0);
+    freqPlot.resize(500, 300);
+    freqPlot.show();
     //connect(freqPlot, SIGNAL(mousePressEvent), this, )
 
     // add approach plot
-    fields = PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)",\
+    fields = MyPlot::PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    approachPlot->SetPlot( fields, ui->approachWidget );
+    approachPlot.SetPlot( fields, ui->approachWidget );
     ui->gridLayout_24->setSpacing(0);
-    ui->gridLayout_24->addWidget(approachPlot, 1, 0);
-    approachPlot->resize( 500, 300 );
-    approachPlot->show();
+    ui->gridLayout_24->addWidget(&approachPlot, 1, 0);
+    approachPlot.resize( 500, 300 );
+    approachPlot.show();
 
     ui->gridLayout_10->setSpacing(0);
     // add signal plot 1
-    fields = PlotFields("Z Offset", false, "Time", "Z Offset (V)",\
+    fields = MyPlot::PlotFields("Z Offset", false, "Time", "Z Offset (V)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    signalPlot1->SetPlot( fields, ui->signalWidget );
+    signalPlot1.SetPlot( fields, ui->signalWidget );
 
-    ui->gridLayout_10->addWidget(signalPlot1, 1, 0);
-    signalPlot1->resize( 500, 100 );
-    signalPlot1->show();
+    ui->gridLayout_10->addWidget(&signalPlot1, 1, 0);
+    signalPlot1.resize( 500, 100 );
+    signalPlot1.show();
 
     // add signal plot 2
-    fields = PlotFields("Error (V)", false, "Time", "Error)",\
+    fields = MyPlot::PlotFields("Error (V)", false, "Time", "Error)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
-    signalPlot2->SetPlot( fields, ui->signalWidget );
+    signalPlot2.SetPlot( fields, ui->signalWidget );
 
-    ui->gridLayout_10->addWidget(signalPlot2, 2, 0);
-    signalPlot2->resize( 500, 100 );
-    signalPlot2->show();
+    ui->gridLayout_10->addWidget(&signalPlot2, 2, 0);
+    signalPlot2.resize( 500, 100 );
+    signalPlot2.show();
 }
 void MainWindow::SetPorts(returnBuffer *_node){
 
@@ -338,13 +342,13 @@ void MainWindow::dequeueReturnBuffer() {
         }
 
         if( isAutoApproach ) {
-            approachPlot->update(time, zAmp, currTab == Approach ? true: false);
+            approachPlot.update(time, zAmp, currTab == Approach ? true: false);
             ui->currOffsetValue->setValue(zAmp);
             time++;
         }
         if(currTab == 4){
-            signalPlot1->update(time, zOffsetFine, currTab == Signal ? true: false);
-            signalPlot2->update(time, zAmp - ui->spnPidSetpoint->value(), currTab == Signal ? true: false);
+            signalPlot1.update(time, zOffsetFine, currTab == Signal ? true: false);
+            signalPlot2.update(time, zAmp - ui->spnPidSetpoint->value(), currTab == Signal ? true: false);
             time++;
         }
 
@@ -497,22 +501,22 @@ void MainWindow::on_refreshSpinBox_valueChanged(int arg1)
 
 void MainWindow::on_pushButton_22_clicked(bool checked)
 {
-    approachPlot->setAutoScale(checked);
+    approachPlot.setAutoScale(checked);
 }
 
 void MainWindow::on_pushButton_4_clicked(bool checked)
 {
-    signalPlot2->setAutoScale(checked);
+    signalPlot2.setAutoScale(checked);
 }
 
 void MainWindow::on_pushButton_5_clicked(bool checked)
 {
-    signalPlot1->setAutoScale(checked);
+    signalPlot1.setAutoScale(checked);
 }
 
 void MainWindow::on_checkBox_clicked(bool checked)
 {
-    freqPlot->setMarker(checked);
+    freqPlot.setMarker(checked);
 }
 
 // retr direction for pcb motor
@@ -652,7 +656,7 @@ void MainWindow::on_sweepButton_clicked()
     ui->freqProgressLabel->setText("TRUE");
     ui->freqProgressLabel->setStyleSheet("QLabel { color : Green; }");
 
-    freqPlot->clearData();
+    freqPlot.clearData();
 
     mutex.lock();
     commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
@@ -692,9 +696,9 @@ void MainWindow::on_sweepButton_clicked()
         qDebug() << "Size of X Data: " << frequencyData->size() << "Size of Y Data: " << amplitudeData->size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqPlot->update(frequencyData->at(i), amplitudeData->at(i), false); // add points to graph but don't replot
+            freqPlot.update(frequencyData->at(i), amplitudeData->at(i), false); // add points to graph but don't replot
         }
-        freqPlot->replot(); // show the frequency sweep
+        freqPlot.replot(); // show the frequency sweep
     }
 
     ui->freqProgressLabel->setText("FALSE");
@@ -789,7 +793,7 @@ void MainWindow::on_btnPidToggle_clicked(bool checked)
 
 void MainWindow::on_freqAutoScale_clicked(bool checked)
 {
-    freqPlot->setAutoScale(checked);
+    freqPlot.setAutoScale(checked);
     ui->freqAutoScale->setChecked(checked);
 }
 

@@ -11,6 +11,8 @@
 #include <qwt_plot_panner.h>
 
 #define BUFFER 1000
+namespace MyPlot {
+
 
 class Zoomer: public QwtPlotZoomer
 {
@@ -78,7 +80,6 @@ class Plot : public QwtPlot
     Q_OBJECT
     int dataCount;
 public:
-    Plot();
     void SetPlot(PlotFields &fieldsIn, QWidget * = 0 );
     void update(double x, double y, bool replot = true);
     void setAutoScale(bool val);
@@ -101,3 +102,4 @@ private:
     int xAxisRange;
     Zoomer* zoomer;
 };
+}

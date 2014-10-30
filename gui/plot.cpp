@@ -1,3 +1,4 @@
+#include <myplot.h>
 #include <qapplication.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -11,8 +12,9 @@
 #include <qobject.h>
 #include <qdebug.h>
 #include <math.h>
-#include <plot.h>
 
+
+using namespace MyPlot;
 
 void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
 

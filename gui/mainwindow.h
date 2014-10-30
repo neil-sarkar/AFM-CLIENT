@@ -9,7 +9,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QMessageBox>
-#include <plot.h>
+#include <myplot.h>
 #include <qtimer.h>
 //#include <XYGenerator.h>
 #include <QtConcurrentRun>
@@ -173,10 +173,10 @@ private:
     int ioTimer;            // timer id for ADC/DAC read
     QTimer *dequeueTimer;     // dequeue timer to empty the return buffer
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
-    Plot *freqPlot;
-    Plot *approachPlot;
-    Plot *signalPlot1;
-    Plot *signalPlot2;
+    MyPlot::Plot freqPlot;
+    MyPlot::Plot approachPlot;
+    MyPlot::Plot signalPlot1;
+    MyPlot::Plot signalPlot2;
     int time;
     int freqRetVal;
     int currTab;
