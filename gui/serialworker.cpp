@@ -206,9 +206,8 @@ void serialworker::mainLoop()
                     break;
                  case deviceCalibration:
                     _success = m_afm.deviceCalibration(_node->getdval(),'l');
-                    //if(_success == AFM_SUCCESS)
+                    if(_success == AFM_SUCCESS)
                         _success = m_afm.deviceCalibration(_node->getdval(),'r');
-
                     _buffer = new returnBuffer(DEVICECALIBRATION,_success);
                     return_queue.push(_buffer);
                     break;
@@ -216,6 +215,10 @@ void serialworker::mainLoop()
                     _success = m_afm.scanParameters(_node->getvminLine(),_node->getvminScan(),_node->getvmax(),_node->getnumpts(),_node->getnumLines());
                     _buffer = new returnBuffer(SCANPARAMETERS,_success);
                     return_queue.push(_buffer);
+                    break;
+                 case startScan:
+                    m_afm.startScan();
+                    m_afm.scanStep();
                     break;
             }
             m_queue.pop();

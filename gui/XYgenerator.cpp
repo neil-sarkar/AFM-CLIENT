@@ -27,6 +27,7 @@ int generateXYVoltages(int vMax,
          X.col(i-1)=lineScanGridMirrored.col(((2*i)-1)-1)*3.3/4095;
          Y.col(i-1)=lineScanGridMirrored.col((2*i)-1)*3.3/4095;
     }
+    return 0;
 }
 
 int generateExtendedLineScanMatrices(int vMax,
@@ -51,6 +52,7 @@ int generateExtendedLineScanMatrices(int vMax,
 
         vec nonLinearPart(numLineScanValues);
         vec linearPart(numLineScanValues);
+        //numLineScanValues >= 0 ? vec nonLinearPart(numLineScanValues): vec nonLinearPart(0);
 
         for(int j=1; j<= numLineScanValues; j++){
             //Calculate linear and non-linear parts of the linescan
@@ -92,6 +94,7 @@ int generateThetaMatrix(int vMax,
         thetaRange(0,i-1)=theta.min();
         thetaRange(1,i-1)=theta.max();
     }
+    return 0;
 }
 
 int generateScanGrid(int numLines,

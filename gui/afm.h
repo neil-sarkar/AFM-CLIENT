@@ -118,6 +118,11 @@
 
 #define AFM_SCAN_PARAMETERS '@'
 
+#define AFM_START_SCAN '#'
+
+#define AFM_SCAN_STEP '^'
+
+
 enum {
     AFM_SUCCESS = 0,
     AFM_FAIL = -1
@@ -163,6 +168,8 @@ public:
     int setDACValues(char dacID, double _val);
     int deviceCalibration(double val, char side);
     int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
+    int startScan();
+    int scanStep();
 };
 
 #endif // AFM_H

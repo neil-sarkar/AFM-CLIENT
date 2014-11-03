@@ -5,7 +5,7 @@
 #define AFM_MANUFACTURER "FTDI" //Should change this later on to ICPI
 #define AFM_MAX_DATA_SIZE 1 //Basically write 1 character at a time
 #define AFM_POLL_TIMEOUT 50 //Poll the buffer every 1ms
-#define AFM_LONG_TIMEOUT 1000 //Longer timeout for large data
+#define AFM_LONG_TIMEOUT 5000 //Longer timeout for large data
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
@@ -430,7 +430,7 @@ int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, do
      *
      *
      * */
-    qDebug() << AFM_DAC_SCALING << endl;
+    //qDebug() << AFM_DAC_SCALING << endl;
     qint16 _vminLine = AFM_DAC_SCALING*vmin_line;
     qint16 _vminScan = AFM_DAC_SCALING*vmin_scan;
     qint16 _vmax = AFM_DAC_SCALING*vmax;
@@ -455,9 +455,41 @@ int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, do
     writeByte((_numLines & 0x0F00) >> 8);
 
 
+
     QByteArray res = waitForData(AFM_LONG_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(1) == '@' && res.at(0) == 'o'){
+            return AFM_SUCCESS;
+        }
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+}
+int nanoiAFM::startScan()
+{
+    writeByte(AFM_START_SCAN);
+
+    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == AFM_START_SCAN){
+            return AFM_SUCCESS;
+        }
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+}
+
+int nanoiAFM::scanStep(){
+
+    writeByte(AFM_SCAN_STEP);
+
+    //receives: 8 points of 6 bytes each:
+    //(z_offset_adc byte 1, z_offset_adc byte 2, z_amp_adc byte 1, z_amp_adc byte 2, z_phase_adc byte 1, z_phase_adc byte 2))
+    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(res.length() - 1) == AFM_SCAN_STEP){
             return AFM_SUCCESS;
         }
         else{ return AFM_FAIL;}

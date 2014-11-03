@@ -149,6 +149,8 @@ void MainWindow::CreateGraphs(){
     freqPlot.SetPlot( fields, ui->freqWidget);
     ui->gridLayout_17->setSpacing(0);
     ui->gridLayout_17->addWidget(&freqPlot, 1, 0);
+    freqPlot.enableAxis(QwtPlot::xBottom);
+    freqPlot.enableAxis(QwtPlot::yLeft);
     freqPlot.resize(500, 300);
     freqPlot.show();
     //connect(freqPlot, SIGNAL(mousePressEvent), this, )
@@ -175,7 +177,7 @@ void MainWindow::CreateGraphs(){
     signalPlot1.show();
 
     // add signal plot 2
-    fields = MyPlot::PlotFields("Error (V)", false, "Time", "Error)",\
+    fields = MyPlot::PlotFields("Error (V)", false, "Time", "Error",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
     signalPlot2.SetPlot( fields, ui->signalWidget );
@@ -331,6 +333,9 @@ void MainWindow::dequeueReturnBuffer() {
             returnQueue.pop();
             break;
          case SCANPARAMETERS:
+
+            QApplication::restoreOverrideCursor();
+
             if(_buffer->getData() == AFM_SUCCESS){
                 ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
             }
@@ -685,7 +690,8 @@ void MainWindow::on_sweepButton_clicked()
         }
     }
     mutex.unlock();
-
+    double freqVal;
+    double ampVal;
     if ( freqRetVal != AFM_SUCCESS) {
         QMessageBox msg;
         msg.setText(QString("Size of Freq Data: %1. Expected Size: %2").arg(\
@@ -695,8 +701,10 @@ void MainWindow::on_sweepButton_clicked()
     else {
         qDebug() << "Size of X Data: " << frequencyData->size() << "Size of Y Data: " << amplitudeData->size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
-            qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqPlot.update(frequencyData->at(i), amplitudeData->at(i), false); // add points to graph but don't replot
+            //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
+            freqVal = *frequencyData[i].data();
+            ampVal = *amplitudeData[i].data();
+            freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
         }
         freqPlot.replot(); // show the frequency sweep
     }
@@ -711,37 +719,38 @@ void MainWindow::on_useCurrFreqVal_clicked()
 }
 void MainWindow::on_pushButton_6_clicked()
 {
-    //XYGenerator dynamically resizes these values
-    arma::mat X_points;
-    arma::mat Y_points;
+//    //XYGenerator dynamically resizes these values
+//    arma::mat X_points;
+//    arma::mat Y_points;
 
-    //Convert all the values to digital values based on a resolution of 4095
-    int vMax=ui->spnScanVmax->value()*AFM_DAC_SCALING;
-    int vMin=ui->spnScanVmax->value()*AFM_DAC_SCALING;
-    int vMin2=ui->spnScanVmax->value()*AFM_DAC_SCALING;
-    int numPoints=ui->cmbScanNumLines->currentText().toInt();
-    int numLines=ui->cmbScanNumPoints->currentText().toInt();
-    int ret_fail=1;
+//    //Convert all the values to digital values based on a resolution of 4095
+//    int vMax=ui->spnScanVmax->value()*AFM_DAC_SCALING;
+//    int vMin=ui->spnScanVmin->value()*AFM_DAC_SCALING;
+//    int vMin2=ui->spnScanVmin2->value()*AFM_DAC_SCALING;
+//    int numPoints=ui->cmbScanNumLines->currentText().toInt();
+//    int numLines=ui->cmbScanNumPoints->currentText().toInt();
+//    int ret_fail=1;
 
-    if((generateXYVoltages(vMax, vMin, vMin2, numLines, numPoints, X_points, Y_points) == ret_fail)){
-            QMessageBox msgBox;
-            msgBox.setText("Unable to generate scan points");
-            msgBox.exec();
-            return;
-    }
+//    if((generateXYVoltages(vMax, vMin, vMin2, numLines, numPoints, X_points, Y_points) == ret_fail)){
+//            QMessageBox msgBox;
+//            msgBox.setText("Unable to generate scan points");
+//            msgBox.exec();
+//            return;
+//    }
 
-    //Write X Y actuator voltages to AFM and read Z. A seperate matrix should be created
+//    //Write X Y actuator voltages to AFM and read Z. A seperate matrix should be created
 
-    //mat Z_values(X_points.n_rows, X_points.n_cols);
+//    mat Z_values(X_points.n_rows, X_points.n_cols);
 
-    //DANGER: Verifiy these values are bein written properly
-    for(int i=0; i < X_points.n_rows; i++){
-        for(int j=0; j < X_points.n_rows; j++){
-            //Write DAC for X voltage
-            //Write DAC for Y Voltage
-            //Wait for Z values to be populated. How long should we wait?
-        }
-    }
+//    //DANGER: Verifiy these values are bein written properly
+//    for(int i=0; i < X_points.n_rows; i++){
+//        for(int j=0; j < X_points.n_rows; j++){
+//            //Write DAC for X voltage
+//            //Write DAC for Y Voltage
+//            //Wait for Z values to be populated. How long should we wait?
+//        }
+//    }
+    commandQueue.push(new commandNode(startScan));
 
 
 }
@@ -859,6 +868,9 @@ void MainWindow::on_setMaxDACValuesButton_clicked()
 
 void MainWindow::on_calibrateButton_clicked()
 {
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     double _maxLat;
     double _maxZ;
 

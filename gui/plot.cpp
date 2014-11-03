@@ -20,29 +20,29 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
 
 {
     PlotFields fields = fieldsIn;
-
+    this->dataCount = 0;
     this->setAutoReplot( false );
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius( 10 );
-    setCanvas( canvas );
+    this->setCanvas( canvas );
 
-    plotLayout()->setAlignCanvasToScales( true );
+    this->plotLayout()->setAlignCanvasToScales( true );
 
     // sometimes, title takes up too much space
     if (fields.displayTitle) {
         QwtText title(fields.title);
         title.setFont(QFont("Times", 12, QFont::Bold));
-        setTitle(title);
+        this->setTitle(title);
     }
 
-    setAxisTitle( QwtPlot::xBottom, fields.xLabel );
-    setAxisScale( QwtPlot::xBottom, fields.xAxis.first, fields.xAxis.second );
-    setAxisAutoScale( QwtPlot::xBottom, fields.autoScale );
+    this->setAxisTitle( QwtPlot::xBottom, fields.xLabel );
+    this->setAxisScale( QwtPlot::xBottom, fields.xAxis.first, fields.xAxis.second );
+    this->setAxisAutoScale( QwtPlot::xBottom, fields.autoScale );
 
-    setAxisTitle( QwtPlot::yLeft, fields.yLabel );
-    setAxisScale( QwtPlot::yLeft, fields.yAxis.first, fields.yAxis.second );
-    setAxisAutoScale( QwtPlot::yLeft, fields.autoScale );
+    this->setAxisTitle( QwtPlot::yLeft, fields.yLabel );
+    this->setAxisScale( QwtPlot::yLeft, fields.yAxis.first, fields.yAxis.second );
+    this->setAxisAutoScale( QwtPlot::yLeft, fields.autoScale );
 
     // LeftButton for the zooming
     // RightButton: zoom out by 1
@@ -58,7 +58,7 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     //connect(zoomer, SIGNAL(selected(const QPointF&)), this, SLOT(displayPoint(const QPointF&)));
 
     const int margin = 5;
-    setContentsMargins( margin, margin, margin, margin );
+    this->setContentsMargins( margin, margin, margin, margin );
 
     QwtPlotGrid *grid = new QwtPlotGrid;
     grid->enableX( true );
@@ -66,16 +66,16 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     grid->setMajorPen( Qt::white, 0, Qt::DotLine );
     grid->attach( this );
 
-    setCanvasBackground( QColor( "Black" ) );
+    this->setCanvasBackground( QColor( "Black" ) );
 
     QwtPlotCurve *curve = new QwtPlotCurve( fields.title );
     curve->setPen( fields.color );
     curve->attach( this );
 
-    mCurve = curve;
-    xAxisStart = fields.xAxis.first;
-    xAxisRange = fields.xAxis.second - fields.xAxis.first;
-    autoScale = fields.autoScale;
+    this->mCurve = curve;
+    this->xAxisStart = fields.xAxis.first;
+    this->xAxisRange = fields.xAxis.second - fields.xAxis.first;
+    this->autoScale = fields.autoScale;
 
 }
 
@@ -88,16 +88,16 @@ void Plot::displayPoint(const QPointF& p) {
 }
 
 void Plot::setAutoScale(bool val) {
-    autoScale = val;
-    setAxisAutoScale( QwtPlot::xBottom, val );
-    setAxisAutoScale( QwtPlot::yLeft, val );
+    this->autoScale = val;
+    this->setAxisAutoScale( QwtPlot::xBottom, val );
+    this->setAxisAutoScale( QwtPlot::yLeft, val );
 
-    if ( autoScale == false ) {
-        setAxisScale( QwtPlot::xBottom, xData[dataCount-1], xData[dataCount-1] + xAxisRange );
-        xAxisStart = xData[dataCount-1];
-        dataCount = 0;
-        xData.clear();
-        yData.clear();
+    if ( this->autoScale == false ) {
+        this->setAxisScale( QwtPlot::xBottom, xData[dataCount-1], xData[dataCount-1] + xAxisRange );
+        this->xAxisStart = xData[dataCount-1];
+        this->dataCount = 0;
+        this->xData.clear();
+        this->yData.clear();
     }
 }
 
@@ -108,25 +108,25 @@ void Plot::setMarker(bool val) {
 
 void Plot::update(double x, double y, bool toReplot ) {
     if ( dataCount == BUFFER ) {
-        xData.pop_front();
-        yData.pop_front();
+        this->xData.pop_front();
+        this->yData.pop_front();
     } else {
-        dataCount++;
+        this->dataCount++;
     }
 
-    if ( !autoScale ) {
-        if ( x >= (xAxisStart + xAxisRange) ) {
-            dataCount = 1;
-            xData.clear();
-            yData.clear();
-            setAxisScale( QwtPlot::xBottom, x, x + xAxisRange );
-            xAxisStart = x;
+    if ( !this->autoScale ) {
+        if ( x >= (this->xAxisStart + this->xAxisRange) ) {
+            this->dataCount = 1;
+            this->xData.clear();
+            this->yData.clear();
+            this->setAxisScale( QwtPlot::xBottom, x, x + xAxisRange );
+            this->xAxisStart = x;
         }
     }
-    xData.push_back( x );
-    yData.push_back( y );
-    mCurve->setRawSamples(xData.data(), yData.data(), dataCount );
+    this->xData.push_back( x );
+    this->yData.push_back( y );
+    this->mCurve->setRawSamples(xData.data(), yData.data(), dataCount );
 
     if ( toReplot )
-        replot();
+        this->replot();
 }

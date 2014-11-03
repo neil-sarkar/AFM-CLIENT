@@ -40,7 +40,8 @@ enum Command{
     mainWindowTimerEvent,
     setDacValues,
     deviceCalibration,
-    scanParameters
+    scanParameters,
+    startScan
 };
 
 
