@@ -14,6 +14,12 @@
 #include <globals.h>
 #include <QSignalMapper>
 #include <XYgenerator.h>
+#include <QStatusBar>
+
+#include <math.h>
+#include <qapplication.h>
+#include <qwt3d_surfaceplot.h>
+#include <qwt3d_function.h>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 
@@ -24,7 +30,27 @@
  *
  *
  */
+#include <math.h>
+#include <qapplication.h>
+#include <qwt3d_surfaceplot.h>
+#include <qwt3d_function.h>
 
+using namespace Qwt3D;
+
+class Rosenbrock : public Function
+{
+public:
+
+  Rosenbrock(SurfacePlot& pw)
+  :Function(pw)
+  {
+  }
+
+  double operator()(double x, double y)
+  {
+    return log((1-x)*(1-x) + 100 * (y - x*x)*(y - x*x)) / 8;
+  }
+};
 
 void MainWindow::MainWindowLoop()
 {
@@ -32,7 +58,7 @@ void MainWindow::MainWindowLoop()
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
     this->showMaximized();
-
+    updateStatusBar("Working...");
 
     Initialize();
 
@@ -40,6 +66,7 @@ void MainWindow::MainWindowLoop()
     qsrand(QTime::currentTime().msec());
     time = 0;
 
+    updateStatusBar("Ready");
     // for reading DAC/updating plots
     //ioTimer = startTimer(200); // for reading DAC/ADC
 }
@@ -141,6 +168,43 @@ void MainWindow::Initialize()
 void MainWindow::CreateGraphs(){
     //freqPlot = new Plot();
 
+
+    scanPlot.setTitle("A Simple SurfacePlot Demonstration");
+
+    Rosenbrock rosenbrock(scanPlot);
+
+    rosenbrock.setMesh(41,31);
+    rosenbrock.setDomain(-1.73,1.5,-1.5,1.5);
+    rosenbrock.setMinZ(-20);
+
+    rosenbrock.create();
+
+    scanPlot.setRotation(30,0,15);
+    scanPlot.setScale(1,1,1);
+    scanPlot.setShift(0.15,0,0);
+    scanPlot.setZoom(0.9);
+
+    for (unsigned i=0; i!=scanPlot.coordinates()->axes.size(); ++i)
+    {
+      scanPlot.coordinates()->axes[i].setMajors(7);
+      scanPlot.coordinates()->axes[i].setMinors(4);
+    }
+
+
+    scanPlot.coordinates()->axes[X1].setLabelString("x-axis");
+    scanPlot.coordinates()->axes[Y1].setLabelString("y-axis");
+    //coordinates()->axes[Z1].setLabelString(QChar(0x38f)); // Omega - see http://www.unicode.org/charts/
+
+
+    scanPlot.setCoordinateStyle(BOX);
+
+    scanPlot.updateData();
+    scanPlot.updateGL();
+    scanPlot.resize(800,600);
+    scanPlot.show();
+
+    ui->gridLayout_11->setSpacing(0);
+    ui->gridLayout_11->addWidget(&scanPlot, 1, 0);
     // add frequency sweep plot
     MyPlot::PlotFields fields = MyPlot::PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
                       QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
@@ -233,9 +297,10 @@ void MainWindow::dequeueReturnBuffer() {
      * This forces the buffer to be completely emptied
      * on each timer trigger
      */
+    //QCoreApplication::processEvents();
     mutex.lock();
     while(!returnQueue.empty()){
-
+        //updateStatusBar("Working...");
         _buffer = returnQueue.front();
         switch(_buffer->getReturnType()) {
          case DACBFRD1:
@@ -325,10 +390,10 @@ void MainWindow::dequeueReturnBuffer() {
          case DEVICECALIBRATION:
             if(_buffer->getData() == AFM_SUCCESS)
             {
-                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
+                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
             }
             else{
-                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858973_ballred-24.png");
+                ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
             returnQueue.pop();
             break;
@@ -337,10 +402,10 @@ void MainWindow::dequeueReturnBuffer() {
             QApplication::restoreOverrideCursor();
 
             if(_buffer->getData() == AFM_SUCCESS){
-                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858979_ballgreen-24.png");
+                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
             }
             else{
-                ui->label_13->setPixmap((QString)"C:\\Users\\Nick\\Documents\\code\\AFM-CLIENT\\icons\\1413858973_ballred-24.png");
+                ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
             returnQueue.pop();
             break;
@@ -357,7 +422,8 @@ void MainWindow::dequeueReturnBuffer() {
             time++;
         }
 
-    }
+    }        
+
     mutex.unlock();
 }
 
@@ -851,24 +917,24 @@ void MainWindow::on_writeCharacter_clicked()
 void MainWindow::on_setMaxDACValuesButton_clicked()
 {
 
-   commandQueue.push(new commandNode(setDacValues,DAC_Y1,ui->latSpinBox->value()));
-   commandQueue.push(new commandNode(setDacValues,DAC_Y2,ui->latSpinBox->value()));
-   commandQueue.push(new commandNode(setDacValues,DAC_X1,ui->latSpinBox->value()));
-   commandQueue.push(new commandNode(setDacValues,DAC_X2,ui->latSpinBox->value()));
-   commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_COARSE,ui->ZfineSpinBox->value()));
-   commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_FINE,ui->ZcoarseSpinBox->value()));
-   mutex.lock();
-   ui->label_10->setVisible(true);
-   ui->label_11->setVisible(true);
-   ui->label_12->setVisible(true);
-   mutex.unlock();
+    updateStatusBar("Setting DAC Values...");
+    commandQueue.push(new commandNode(setDacValues,DAC_Y1,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,DAC_Y2,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,DAC_X1,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,DAC_X2,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_COARSE,ui->ZfineSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_FINE,ui->ZcoarseSpinBox->value()));
+    mutex.lock();
+    ui->label_10->setVisible(true);
+    ui->label_11->setVisible(true);
+    ui->label_12->setVisible(true);
+    mutex.unlock();
 }
 
 
 
 void MainWindow::on_calibrateButton_clicked()
 {
-
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     double _maxLat;
@@ -887,4 +953,9 @@ void MainWindow::on_calibrateButton_clicked()
     double numpts = ui->cmbScanNumPoints->currentText().toDouble();
     commandQueue.push(new commandNode(scanParameters,ui->spnScanVmin->value(),ui->spnScanVmin2->value(),ui->spnScanVmax->value(),numpts,numlines));
 
+}
+
+void MainWindow::updateStatusBar(QString _string)
+{
+    this->statusBar()->showMessage(_string);
 }

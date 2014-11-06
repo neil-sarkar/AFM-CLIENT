@@ -192,6 +192,7 @@ void serialworker::mainLoop()
                     return_queue.push(_buffer);
                     break;
                  case frequencySweep:
+                    emit updateStatusBar("Starting Frequency Sweep...");
                     *_amplitude = _node->getamplitude();
                     *_frequency = _node->getfrequency();
                     _bytesRead = _node->getbytesRead();
@@ -200,30 +201,38 @@ void serialworker::mainLoop()
                     _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_frequency,_bytesRead);
 
                     return_queue.push(_buffer);
+                    emit updateStatusBar("Done");
                     break;
                  case setDacValues:
                     m_afm.setDACValues(_node->getqval(),_node->getdval());
                     break;
                  case deviceCalibration:
+                    emit updateStatusBar("Calibrating...");
                     _success = m_afm.deviceCalibration(_node->getdval(),'l');
                     if(_success == AFM_SUCCESS)
                         _success = m_afm.deviceCalibration(_node->getdval(),'r');
                     _buffer = new returnBuffer(DEVICECALIBRATION,_success);
                     return_queue.push(_buffer);
+                    emit updateStatusBar("Finished calibrating");
                     break;
                  case scanParameters:
+                    emit updateStatusBar("Setting scan parameters");
                     _success = m_afm.scanParameters(_node->getvminLine(),_node->getvminScan(),_node->getvmax(),_node->getnumpts(),_node->getnumLines());
                     _buffer = new returnBuffer(SCANPARAMETERS,_success);
                     return_queue.push(_buffer);
+                    emit updateStatusBar("Scan parameters set");
                     break;
                  case startScan:
+                    emit updateStatusBar("Scan started");
                     m_afm.startScan();
                     m_afm.scanStep();
+                    emit updateStatusBar("Done");
                     break;
             }
             m_queue.pop();
 
         }
+        //emit updateStatusBar("Done");
         mutex.unlock();
     }
 }

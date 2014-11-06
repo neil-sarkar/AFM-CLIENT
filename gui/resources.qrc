@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/icspi.bmp</file>
+        <file>icons/icspi.ico</file>
+        <file>icons/1413837188_checkmark-24.png</file>
+        <file>icons/1413858973_ballred-24.png</file>
+        <file>icons/1413858979_ballgreen-24.png</file>
+        <file>icons/icspi.PNG</file>
+    </qresource>
+</RCC>

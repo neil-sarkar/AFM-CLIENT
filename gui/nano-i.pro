@@ -42,7 +42,9 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
 INCLUDEPATH += C:/Users/Nick/Documents/armadillo-4.450.4/include
+INCLUDEPATH += C:/qwtplot3d-0.2.7/qwtplot3d/include
 
+LIBS += C:/qwtplot3d-0.2.7/qwtplot3d/lib/libqwtplot3d.a
 #CONFIG( debug, debug|release ) {
 #        LIBS += -LC:/qwt-6.1.1/lib -lqwtd
 #} else {
@@ -62,7 +64,7 @@ INCLUDEPATH += C:/Users/Nick/Documents/armadillo-4.450.4/include
 #unix|win32: LIBS += -larmadillo
 #QMAKE_LFLAGS += /INCREMENTAL:NO
 
-win32:RC_ICONS += C:\Users\Nick\Documents\code\AFM-CLIENT\icons\icspi.ico
+#win32:RC_ICONS += C:\Users\Nick\Documents\code\AFM-CLIENT\icons\icspi.ico
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../qwt-6.1.1/lib/ -lqwt
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../qwt-6.1.1/lib/ -lqwtd
@@ -70,3 +72,6 @@ win32:RC_ICONS += C:\Users\Nick\Documents\code\AFM-CLIENT\icons\icspi.ico
 
 #INCLUDEPATH += $$PWD/../../../../../../qwt-6.1.1/include
 #DEPENDPATH += $$PWD/../../../../../../qwt-6.1.1/include
+
+RESOURCES += \
+    resources.qrc

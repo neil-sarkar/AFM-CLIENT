@@ -1,7 +1,10 @@
 #include "mainwindow.h"
 #include <globals.h>
+#include <QSignalMapper>
+
 //gotta follow this to add QtSerial Port
 //http://qt-project.org/wiki/QtSerialPort#fn1921400492531950a902bc4
+
 
 
 QMutex mutex;
@@ -10,6 +13,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     queue<commandNode*> commandQueue = queue<commandNode*>();
     queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
+
 
     /**********************3 Threads***********************************
      *
@@ -44,6 +48,15 @@ int main(int argc, char *argv[])
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
     eventThread->start();
 
+//    QSignalMapper* signalMapper = new QSignalMapper (ui->sweepButton) ;
+//    connect (serialWorker, SIGNAL(updateStatusBar(QString)), signalMapper, SLOT(map()));
+//    signalMapper->setMapping(ui->sweepButton, "TRUE");
+//    signalMapper2->setMapping(ui->sweepButton, "QLabel { color : Green; }");
+//    signalMapper->setMapping(this, "FALSE");
+//    signalMapper2->setMapping(this, "QLabel { color : Red; }");
+//    connect (signalMapper, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setText(QString))) ;
+//    connect (signalMapper2, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setStyleSheet(QString))) ;
+    QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     //mainWorker->resize(1000,600);
     //mainWorker->showMaximized();
 

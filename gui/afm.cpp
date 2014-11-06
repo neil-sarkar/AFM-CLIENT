@@ -279,7 +279,7 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
     bytesRead = freqData.size();
     qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
-    bytesRead[freqData.cend()];
+    //bytesRead[freqData.cend()];
     if (bytesRead != numPoints*4 + 2) {
         return AFM_FAIL;
     }
@@ -377,7 +377,7 @@ int nanoiAFM::deviceCalibration(double val, char side){
 
     //16, 384 bytes
     QByteArray res=waitForData(AFM_LONG_TIMEOUT);
-    int bytes = res.size();
+    //int bytes = res.size();
 //    while(bytes < 16300){
 //        res+=waitForData();
 //        bytes = res.size();
@@ -488,6 +488,18 @@ int nanoiAFM::scanStep(){
     //receives: 8 points of 6 bytes each:
     //(z_offset_adc byte 1, z_offset_adc byte 2, z_amp_adc byte 1, z_amp_adc byte 2, z_phase_adc byte 1, z_phase_adc byte 2))
     QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+
+    QVector<char> z_offset_adc;
+    QVector<char> z_amp_adc;
+    QVector<char> z_phase_adc;
+
+    for(int i = 0; i < res.length() - 1; i++){
+        z_offset_adc.append(res.at(i)&res.at(++i));
+        z_amp_adc.append(res.at(++i)&res.at(++i));
+        z_phase_adc.append(res.at(++i)&res.at(++i));
+    }
+
+
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(res.length() - 1) == AFM_SCAN_STEP){
             return AFM_SUCCESS;

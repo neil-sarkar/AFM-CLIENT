@@ -20,6 +20,7 @@
 #include <returnBuffer.h>
 #include <globals.h>
 #include <eventworker.h>
+#include <qwt3d_surfaceplot.h>
 
 using std::queue;
 
@@ -73,6 +74,7 @@ signals:
 
 public slots:
     void on_buttonAutoApproachClient_clicked(bool checked);
+    void updateStatusBar(QString _string);
 
 private slots:
     void MainWindowLoop();
@@ -80,6 +82,7 @@ private slots:
     void generalTimerUpdate();
     void finishedThread();
     void CreateGraphs();
+
 
     // GUI elements
     void on_spnOffsetVoltage_valueChanged(double arg1);
@@ -177,6 +180,7 @@ private:
     MyPlot::Plot approachPlot;
     MyPlot::Plot signalPlot1;
     MyPlot::Plot signalPlot2;
+    Qwt3D::SurfacePlot scanPlot;
     int time;
     int freqRetVal;
     int currTab;

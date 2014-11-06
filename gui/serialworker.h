@@ -47,6 +47,7 @@ signals:
     void valueChanged(const QString &value);
     void valueChanged(double value);
     void finished();
+    void updateStatusBar(QString _string);
 
 public slots:
     void mainLoop();
