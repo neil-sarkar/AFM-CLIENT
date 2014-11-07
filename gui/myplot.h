@@ -10,6 +10,8 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_panner.h>
 
+#include <qwt3d_surfaceplot.h>
+
 #define BUFFER 1000
 namespace MyPlot {
 
@@ -73,6 +75,11 @@ class PlotFields {
     bool autoScale;
     bool displayTracker;
     int bufferSize;
+};
+
+class DPlot : public Qwt3D::SurfacePlot
+{
+    void SetDataPoints();
 };
 
 class Plot : public QwtPlot

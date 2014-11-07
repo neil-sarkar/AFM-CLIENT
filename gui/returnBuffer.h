@@ -3,7 +3,32 @@
 
 #include <QEventLoop>
 #include <QSerialPortInfo>
-#include "returnTypes.h"
+
+enum returnType{
+    DACBFRD1,
+    DACBFRD2,
+    DACBR2,
+    DACZAMP,
+    DACBR1,
+    DACBFRD3,
+    DACZOFFSETFINE,
+    DACY1,
+    DACZOFFSETCOARSE,
+    DACY2,
+    DACX1,
+    DACX2,
+    GETPORTS,
+    FREQSWEEP,
+    ADC,
+    DAC,
+    AFMADCAMPLITUDEID,
+    AFMDACOFFSETID,
+    PIDENABLE,
+    PIDDISABLE,
+    DEVICECALIBRATION,
+    SCANPARAMETERS,
+    SCANDATA
+};
 
 class returnBuffer
 {
@@ -16,6 +41,9 @@ class returnBuffer
     int m_bytesRead;
     float f_data;
     QList<QSerialPortInfo> m_list;
+    QVector<char> m_zoffset;
+    QVector<char> m_zamp;
+    QVector<char> m_zphase;
 
 public:
      returnBuffer(returnType _returnType) :
@@ -31,6 +59,13 @@ public:
          m_amplitude(_amplitude),
          m_frequency(_frequency),
          m_bytesRead(_bytesRead) { }
+
+     returnBuffer(returnType _returnType,int _success,QVector<char>& z_offset_adc, QVector<char> z_amp_adc,QVector<char> z_phase_adc):
+         m_returnType(_returnType),
+         i_data(_success),
+         m_zoffset(z_offset_adc),
+         m_zamp(z_amp_adc),
+         m_zphase(z_phase_adc){}
 
      returnBuffer(returnType _returnType,float data) :
          m_returnType(_returnType),
@@ -49,6 +84,9 @@ public:
      QVector<double> getAmplitude() { return m_amplitude; }
      QVector<double> getFrequency() { return m_frequency; }
      int getBytesRead() { return m_bytesRead; }
+     QVector<char> getzoffset() {return m_zoffset;}
+     QVector<char> getzamp() {return m_zamp;}
+     QVector<char> getzphase() {return m_zphase;}
 };
 
 #endif // RETURNBUFFER_H

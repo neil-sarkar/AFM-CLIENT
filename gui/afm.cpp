@@ -416,11 +416,10 @@ int nanoiAFM::deviceCalibration(double val, char side){
 
     res = waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
-
+        if(res.at(0) == 'o'){ return AFM_SUCCESS; }
+        else{ return AFM_FAIL; }
     }
-    else{ return AFM_FAIL;}
+    else{ return AFM_FAIL; }
 }
 
 int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines){
@@ -461,10 +460,10 @@ int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, do
         if(res.at(1) == '@' && res.at(0) == 'o'){
             return AFM_SUCCESS;
         }
-        else{ return AFM_FAIL;}
+        else{ return AFM_FAIL; }
 
     }
-    else{ return AFM_FAIL;}
+    else{ return AFM_FAIL; }
 }
 int nanoiAFM::startScan()
 {
@@ -481,7 +480,9 @@ int nanoiAFM::startScan()
     else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::scanStep(){
+int nanoiAFM::scanStep(QVector<char> &z_offset_adc,
+                        QVector<char> &z_amp_adc,
+                        QVector<char> &z_phase_adc){
 
     writeByte(AFM_SCAN_STEP);
 
@@ -489,9 +490,7 @@ int nanoiAFM::scanStep(){
     //(z_offset_adc byte 1, z_offset_adc byte 2, z_amp_adc byte 1, z_amp_adc byte 2, z_phase_adc byte 1, z_phase_adc byte 2))
     QByteArray res = waitForData(AFM_POLL_TIMEOUT);
 
-    QVector<char> z_offset_adc;
-    QVector<char> z_amp_adc;
-    QVector<char> z_phase_adc;
+
 
     for(int i = 0; i < res.length() - 1; i++){
         z_offset_adc.append(res.at(i)&res.at(++i));

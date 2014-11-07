@@ -103,8 +103,9 @@
 #define AFM_STAGE_PW_SELECT 'j'
 #define AFM_STAGE_STEP_SELECT 'm'
 #define AFM_STAGE_CONT_SELECT 'n'
-#define AFM_STAGE_DIR_FORW_SELECT 'k'
-#define AFM_STAGE_DIR_REVERSE_SELECT 'l'
+#define AFM_ABORT_AUTO_APPROACH 'q'
+#define AFM_STAGE_DIR_FORW_SELECT 'l'
+#define AFM_STAGE_DIR_REVERSE_SELECT 'k'
 
 #define AFM_SWEEP_START 'r'
 
@@ -169,7 +170,7 @@ public:
     int deviceCalibration(double val, char side);
     int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
     int startScan();
-    int scanStep();
+    int scanStep(QVector<char>& z_offset_adc, QVector<char>& z_amp_adc, QVector<char>& z_phase_adc);
 };
 
 #endif // AFM_H

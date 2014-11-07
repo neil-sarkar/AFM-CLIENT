@@ -81,7 +81,6 @@ private slots:
     void dequeueReturnBuffer();
     void generalTimerUpdate();
     void finishedThread();
-    void CreateGraphs();
 
 
     // GUI elements
@@ -171,6 +170,7 @@ private:
     };
     Ui::MainWindow *ui;
 
+    void CreateGraphs();
     void displayComPortInfo(const QSerialPortInfo& info);
 
     int ioTimer;            // timer id for ADC/DAC read

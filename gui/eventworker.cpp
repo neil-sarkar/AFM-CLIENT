@@ -1,4 +1,4 @@
-#include "eventworker.h"
+#include <eventworker.h>
 #include <QThread>
 #include <afm.h>
 #include <Qtimer>
@@ -25,7 +25,7 @@ void eventworker::mainLoop()
 
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
-    generalTimer->start(100); // need to get refresh rate from mainwindow
+    generalTimer->start(500); // need to get refresh rate from mainwindow
 }
 
 void eventworker::updateGraph()
@@ -46,29 +46,33 @@ void eventworker::generalTimerUpdate()
         return;
     }
     MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
-    int id = 1;
 
     if(_mainwindow != NULL){
-    if( _mainwindow->getCurrTab() == 4 ) {
-#if AFM_MICRO_CONNECTED
-//        mutex.lock();
-//        if( _mainwindow->getContinuousStep() )
-//            m_queue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-//        mutex.unlock();
-//        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-//        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
-        mutex.lock();
-        m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
-        m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
-        mutex.unlock();
+        if(_mainwindow->getCurrTab() == 3){
+            mutex.lock();
+            m_queue.push(new commandNode(readDAC,(qint8)DAC_BR1));
+            mutex.unlock();
+        }
+        else if( _mainwindow->getCurrTab() == 4 ) {
+        #if AFM_MICRO_CONNECTED
+        //        mutex.lock();
+        //        if( _mainwindow->getContinuousStep() )
+        //            m_queue.push(new commandNode(stageSetStep));//afm.stageSetStep();
+        //        mutex.unlock();
+        //        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
+        //        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
+            mutex.lock();
+            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
+            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
+            mutex.unlock();
 
-#else
-        mutex.lock();
-        _mainwindow->setADC5(float(qrand())/RAND_MAX);
-        _mainwindow->setDAC8(float(qrand())/RAND_MAX);
-        mutex.lock();
-#endif
-    }
+        #else
+            mutex.lock();
+            _mainwindow->setADC5(float(qrand())/RAND_MAX);
+            _mainwindow->setDAC8(float(qrand())/RAND_MAX);
+            mutex.lock();
+        #endif
+        }
     }
 
 }

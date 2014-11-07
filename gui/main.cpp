@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include <mainwindow.h>
 #include <globals.h>
 #include <QSignalMapper>
 
@@ -48,17 +48,7 @@ int main(int argc, char *argv[])
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
     eventThread->start();
 
-//    QSignalMapper* signalMapper = new QSignalMapper (ui->sweepButton) ;
-//    connect (serialWorker, SIGNAL(updateStatusBar(QString)), signalMapper, SLOT(map()));
-//    signalMapper->setMapping(ui->sweepButton, "TRUE");
-//    signalMapper2->setMapping(ui->sweepButton, "QLabel { color : Green; }");
-//    signalMapper->setMapping(this, "FALSE");
-//    signalMapper2->setMapping(this, "QLabel { color : Red; }");
-//    connect (signalMapper, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setText(QString))) ;
-//    connect (signalMapper2, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setStyleSheet(QString))) ;
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
-    //mainWorker->resize(1000,600);
-    //mainWorker->showMaximized();
 
 
 

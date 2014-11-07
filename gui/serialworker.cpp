@@ -1,12 +1,11 @@
-#include "serialworker.h"
-#include "afm.h"
+#include <serialworker.h>
+#include <afm.h>
 #include <QThread>
 #include <QEventLoop>
 #include <iostream>
 #include <queue>
 #include <returnBuffer.h>
 #include <string>
-#include <returnTypes.h>
 
 using std::queue;
 
@@ -27,6 +26,9 @@ void serialworker::mainLoop()
     QList<QSerialPortInfo>* detectedSerialPorts = new QList<QSerialPortInfo>();
     QVector<double>* _amplitude = new QVector<double>();
     QVector<double>* _frequency = new QVector<double>();
+    QVector<char>* z_offset_adc = new QVector<char>();
+    QVector<char>* z_amp_adc = new QVector<char>();
+    QVector<char>* z_phase_adc = new QVector<char>();
     int _bytesRead = 0;
 
 
@@ -201,6 +203,8 @@ void serialworker::mainLoop()
                     _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_frequency,_bytesRead);
 
                     return_queue.push(_buffer);
+                    delete _amplitude;
+                    delete _frequency;
                     emit updateStatusBar("Done");
                     break;
                  case setDacValues:
@@ -224,8 +228,14 @@ void serialworker::mainLoop()
                     break;
                  case startScan:
                     emit updateStatusBar("Scan started");
-                    m_afm.startScan();
-                    m_afm.scanStep();
+                    _success = m_afm.startScan();
+                    if(_success == AFM_SUCCESS)
+                        _success = m_afm.scanStep(*z_offset_adc, *z_amp_adc, *z_phase_adc);
+                    _buffer = new returnBuffer(SCANDATA,_success,*z_offset_adc,*z_amp_adc,*z_phase_adc);
+                    return_queue.push(_buffer);
+                    delete z_offset_adc;
+                    delete z_amp_adc;
+                    delete z_phase_adc;
                     emit updateStatusBar("Done");
                     break;
             }

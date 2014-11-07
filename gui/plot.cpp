@@ -12,6 +12,7 @@
 #include <qobject.h>
 #include <qdebug.h>
 #include <math.h>
+#include <qwt3d_surfaceplot.h>
 
 
 using namespace MyPlot;

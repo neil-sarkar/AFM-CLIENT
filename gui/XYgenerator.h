@@ -25,6 +25,7 @@ int generateThetaMatrix(int vMax,
                         const mat& lineScan_act2,
                         mat& thetaRange,
                         mat& thetaMat1);
+
 int generateScanGrid(int numLines,
                      int numPoints,
                      const mat& lineScan_act1,

@@ -8,7 +8,6 @@
 #include <afm.h>
 #include <queue>
 #include <commandNode.h>
-#include <command.h>
 #include <returnBuffer.h>
 #include <globals.h>
 

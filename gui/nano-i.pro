@@ -31,11 +31,9 @@ HEADERS  += mainwindow.h \
     afm.h \
     serialworker.h \
     commandNode.h \
-    command.h \
     returnBuffer.h \
     eventworker.h \
     globals.h \
-    returnTypes.h \
     XYgenerator.h \
     myplot.h
 

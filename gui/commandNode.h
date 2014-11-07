@@ -1,7 +1,46 @@
 #ifndef COMMANDNODE_H
 #define COMMANDNODE_H
-#include <command.h>
+
 #include <QtGlobal>
+
+enum Command{
+    writeDAC,
+    readDAC,
+    readADC,
+    writeByte,
+    setRasterStep,
+    memsSetOffset,
+    memsSetFrequency,
+    memsSetAmplitude,
+    memsSetBridgeVoltage,
+    pidEnable,
+    pidDisable,
+    pidSetP,
+    pidSetI,
+    pidSetD,
+    pidSetValues,
+    pidSetPoint,
+    stageSetPulseWidth,
+    stageSetDirForward,
+    stageSetDirBackward,
+    stageSetStep,
+    stageSetContinuous,
+    stageAbortContinuous,
+    stageStepForward,
+    stageStepBackward,
+    stageMoveForward,
+    stageMoveBackward,
+    setDDSSettings,
+    frequencySweep,
+    afmAutoApproach,
+    getPorts,
+    setPort,
+    mainWindowTimerEvent,
+    setDacValues,
+    deviceCalibration,
+    scanParameters,
+    startScan
+};
 
 class commandNode
 {
@@ -105,6 +144,7 @@ class commandNode
             m_vmax(vmax),
             m_numpts(numpts),
             m_numLines(numlines){}
+
     ~commandNode() {}
 
 

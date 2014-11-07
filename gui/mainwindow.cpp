@@ -58,6 +58,7 @@ void MainWindow::MainWindowLoop()
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
     this->showMaximized();
+
     updateStatusBar("Working...");
 
     Initialize();
@@ -67,6 +68,7 @@ void MainWindow::MainWindowLoop()
     time = 0;
 
     updateStatusBar("Ready");
+
     // for reading DAC/updating plots
     //ioTimer = startTimer(200); // for reading DAC/ADC
 }
@@ -88,7 +90,9 @@ void MainWindow::abort()
 /* Initialization:
  *      1) Connect to ports
  *      2) Set max dac values
- *      3) Calibrate?
+ *      3) Create graphs
+ *      4) set variables
+ *      5) Calibrate?
  *              device calibration
  *              set scan parameters
  */
@@ -130,11 +134,6 @@ void MainWindow::Initialize()
     /*Intialize Graphs*/
     CreateGraphs();
 
-//    QwtPlot _plot;
-//    _plot.setAutoReplot(false);
-//    arma::mat X_points;
-//    arma::mat Y_points;
-
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
     on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value()); // set amplitude
     on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value()); // set bridge voltage
@@ -146,7 +145,7 @@ void MainWindow::Initialize()
     connect(watcher, SIGNAL(finished()),
                this, SLOT(finishedThread()));
 
-    /*Event mapping for setting labels and statuses*/
+    /*Event mapping for setting labels and statuses - I DONT THINK THIS IS NEEDED*/
     QSignalMapper* signalMapper = new QSignalMapper (ui->sweepButton) ;
     QSignalMapper* signalMapper2 = new QSignalMapper (ui->sweepButton) ;
     connect (ui->sweepButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
@@ -190,10 +189,9 @@ void MainWindow::CreateGraphs(){
       scanPlot.coordinates()->axes[i].setMinors(4);
     }
 
-
     scanPlot.coordinates()->axes[X1].setLabelString("x-axis");
     scanPlot.coordinates()->axes[Y1].setLabelString("y-axis");
-    //coordinates()->axes[Z1].setLabelString(QChar(0x38f)); // Omega - see http://www.unicode.org/charts/
+    //scanPlot.coordinates()->axes[Z1].setLabelString(QChar(0x38f)); // Omega - see http://www.unicode.org/charts/
 
 
     scanPlot.setCoordinateStyle(BOX);
@@ -409,11 +407,18 @@ void MainWindow::dequeueReturnBuffer() {
             }
             returnQueue.pop();
             break;
+          case SCANDATA:
+            //update GRAPH
+            _buffer->getzamp();
+            _buffer->getzoffset();
+            _buffer->getzphase();
+            returnQueue.pop();
+            break;
         }
 
-        if( isAutoApproach ) {
-            approachPlot.update(time, zAmp, currTab == Approach ? true: false);
-            ui->currOffsetValue->setValue(zAmp);
+        if( isAutoApproach || currTab == 3 ) {
+            approachPlot.update(time, br1, currTab == Approach ? true: false);
+            ui->currOffsetValue->setValue(br1);
             time++;
         }
         if(currTab == 4){
@@ -768,8 +773,8 @@ void MainWindow::on_sweepButton_clicked()
         qDebug() << "Size of X Data: " << frequencyData->size() << "Size of Y Data: " << amplitudeData->size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqVal = *frequencyData[i].data();
-            ampVal = *amplitudeData[i].data();
+            freqVal = frequencyData->at(i);
+            ampVal = amplitudeData->at(i);
             freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
         }
         freqPlot.replot(); // show the frequency sweep
