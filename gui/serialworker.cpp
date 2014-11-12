@@ -26,9 +26,9 @@ void serialworker::mainLoop()
     QList<QSerialPortInfo>* detectedSerialPorts = new QList<QSerialPortInfo>();
     QVector<double>* _amplitude = new QVector<double>();
     QVector<double>* _frequency = new QVector<double>();
-    QVector<char>* z_offset_adc = new QVector<char>();
-    QVector<char>* z_amp_adc = new QVector<char>();
-    QVector<char>* z_phase_adc = new QVector<char>();
+    QVector<double>* z_offset_adc = new QVector<double>();
+    QVector<double>* z_amp_adc = new QVector<double>();
+    QVector<double>* z_phase_adc = new QVector<double>();
     int _bytesRead = 0;
 
 
@@ -133,6 +133,9 @@ void serialworker::mainLoop()
                 case stageAbortContinuous:
                     m_afm.stageAbortContinuous();
                     break;
+                case autoApproach:
+                    m_afm.autoApproach();
+                    break;
                 case pidEnable:
                     _success = m_afm.pidEnable();
                     //return_queue.push(new returnBuffer<int>(PIDEnable,_success));
@@ -203,8 +206,8 @@ void serialworker::mainLoop()
                     _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_frequency,_bytesRead);
 
                     return_queue.push(_buffer);
-                    delete _amplitude;
-                    delete _frequency;
+                    //delete *_amplitude;
+                    //delete *_frequency;
                     emit updateStatusBar("Done");
                     break;
                  case setDacValues:
@@ -229,13 +232,15 @@ void serialworker::mainLoop()
                  case startScan:
                     emit updateStatusBar("Scan started");
                     _success = m_afm.startScan();
-                    if(_success == AFM_SUCCESS)
+                    if(_success == AFM_SUCCESS){
                         _success = m_afm.scanStep(*z_offset_adc, *z_amp_adc, *z_phase_adc);
+                        _success = m_afm.scanStep(*z_offset_adc, *z_amp_adc, *z_phase_adc);
+                    }
                     _buffer = new returnBuffer(SCANDATA,_success,*z_offset_adc,*z_amp_adc,*z_phase_adc);
                     return_queue.push(_buffer);
-                    delete z_offset_adc;
-                    delete z_amp_adc;
-                    delete z_phase_adc;
+//                    delete z_offset_adc;
+//                    delete z_amp_adc;
+//                    delete z_phase_adc;
                     emit updateStatusBar("Done");
                     break;
             }

@@ -7,13 +7,13 @@
 QT       += core gui
 CONFIG   += serialport
 CONFIG   += qwt
-
+#MOC_DIR  += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/src/tmp
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT  += concurrent
 QT  += serialport
-
+QT  += opengl
 
 TARGET = nano-i
 TEMPLATE = app
@@ -40,9 +40,10 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
 INCLUDEPATH += C:/Users/Nick/Documents/armadillo-4.450.4/include
-INCLUDEPATH += C:/qwtplot3d-0.2.7/qwtplot3d/include
+INCLUDEPATH += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/include
 
-LIBS += C:/qwtplot3d-0.2.7/qwtplot3d/lib/libqwtplot3d.a
+LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
+
 #CONFIG( debug, debug|release ) {
 #        LIBS += -LC:/qwt-6.1.1/lib -lqwtd
 #} else {

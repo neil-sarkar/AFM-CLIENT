@@ -39,7 +39,8 @@ enum Command{
     setDacValues,
     deviceCalibration,
     scanParameters,
-    startScan
+    startScan,
+    autoApproach
 };
 
 class commandNode

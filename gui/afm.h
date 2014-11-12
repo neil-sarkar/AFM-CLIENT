@@ -165,12 +165,12 @@ public:
     void setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize);
     int frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& frequency, int& bytesRead);
     void rasterStep(float val1, float val2);
-    void autoApproach();
+    int autoApproach();
     int setDACValues(char dacID, double _val);
     int deviceCalibration(double val, char side);
     int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
     int startScan();
-    int scanStep(QVector<char>& z_offset_adc, QVector<char>& z_amp_adc, QVector<char>& z_phase_adc);
+    int scanStep(QVector<double> &z_offset_adc, QVector<double> &z_amp_adc, QVector<double> &z_phase_adc);
 };
 
 #endif // AFM_H

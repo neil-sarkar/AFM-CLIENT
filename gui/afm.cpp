@@ -319,8 +319,16 @@ void nanoiAFM::rasterStep(float /*val1*/, float /*val2*/){
  //Not too sure about this function
 }
 
-void nanoiAFM::autoApproach(){
+int nanoiAFM::autoApproach(){
     writeByte(AFM_AUTOAPPROACH_SELECT);
+
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
 }
 int nanoiAFM::setDACValues(char dacID, double _val){
 
@@ -480,16 +488,15 @@ int nanoiAFM::startScan()
     else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::scanStep(QVector<char> &z_offset_adc,
-                        QVector<char> &z_amp_adc,
-                        QVector<char> &z_phase_adc){
+int nanoiAFM::scanStep(QVector<double> &z_offset_adc,
+                        QVector<double> &z_amp_adc,
+                        QVector<double> &z_phase_adc){
 
     writeByte(AFM_SCAN_STEP);
 
     //receives: 8 points of 6 bytes each:
     //(z_offset_adc byte 1, z_offset_adc byte 2, z_amp_adc byte 1, z_amp_adc byte 2, z_phase_adc byte 1, z_phase_adc byte 2))
     QByteArray res = waitForData(AFM_POLL_TIMEOUT);
-
 
 
     for(int i = 0; i < res.length() - 1; i++){

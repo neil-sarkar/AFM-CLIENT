@@ -20,9 +20,13 @@
 #include <returnBuffer.h>
 #include <globals.h>
 #include <eventworker.h>
-#include <qwt3d_surfaceplot.h>
+#include <math.h>
+#include <qapplication.h>
+#include <qwt3d_gridplot.h>
+#include <qwt3d_function.h>
 
 using std::queue;
+using namespace Qwt3D;
 
 namespace Ui {
 class MainWindow;
@@ -43,7 +47,7 @@ public:
         commandQueue(_queue),
         returnQueue(_returnqueue) {}
 
-    void autoApproach(nanoiAFM* afm);
+    //void autoApproach(nanoiAFM* afm);
     void abort();
     void SetPorts(returnBuffer*_node);
     void SetMaxDACValues();
@@ -75,6 +79,17 @@ signals:
 public slots:
     void on_buttonAutoApproachClient_clicked(bool checked);
     void updateStatusBar(QString _string);
+    void pickPlotStyle( QAction* );
+    void setLeftGrid( bool b );
+    void setRightGrid( bool b );
+    void setCeilGrid( bool b );
+    void setFloorGrid( bool b );
+    void setFrontGrid( bool b );
+    void setBackGrid( bool b );
+    void setGrid( Qwt3D::SIDE, bool );
+    void pickCoordSystem( QAction* );
+    void pickFloorStyle( QAction* );
+    void showNormals(bool val);
 
 private slots:
     void MainWindowLoop();
@@ -158,6 +173,8 @@ private slots:
 
     void on_calibrateButton_clicked();
 
+    void on_tabWidget_currentChanged(int index);
+
 private:
 
     enum TabType{
@@ -180,7 +197,7 @@ private:
     MyPlot::Plot approachPlot;
     MyPlot::Plot signalPlot1;
     MyPlot::Plot signalPlot2;
-    Qwt3D::SurfacePlot scanPlot;
+    GridPlot scanPlot;
     int time;
     int freqRetVal;
     int currTab;
@@ -205,6 +222,7 @@ private:
     float y2;
     float x1;
     float x2;
+    double *scandata[16];
 };
 
 #endif // MAINWINDOW_H

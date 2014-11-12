@@ -7,4 +7,33 @@
         <file>icons/1413858979_ballgreen-24.png</file>
         <file>icons/icspi.PNG</file>
     </qresource>
+    <qresource prefix="/toolbar">
+        <file>icons/box.png</file>
+        <file>icons/filecell.png</file>
+        <file>icons/fileopen.png</file>
+        <file>icons/filledmesh.png</file>
+        <file>icons/floordata.png</file>
+        <file>icons/floorempty.png</file>
+        <file>icons/flooriso.png</file>
+        <file>icons/floormesh.png</file>
+        <file>icons/frame.png</file>
+        <file>icons/grid.png</file>
+        <file>icons/gridb.png</file>
+        <file>icons/gridc.png</file>
+        <file>icons/gridf.png</file>
+        <file>icons/gridfr.png</file>
+        <file>icons/gridl.png</file>
+        <file>icons/gridr.png</file>
+        <file>icons/hiddenline.png</file>
+        <file>icons/icon.png</file>
+        <file>icons/movie.png</file>
+        <file>icons/nodata.png</file>
+        <file>icons/none.png</file>
+        <file>icons/normals.png</file>
+        <file>icons/polygon.png</file>
+        <file>icons/qwtplot.png</file>
+        <file>icons/savecontent.png</file>
+        <file>icons/scattered.png</file>
+        <file>icons/wireframe.png</file>
+    </qresource>
 </RCC>

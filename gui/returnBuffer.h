@@ -41,9 +41,9 @@ class returnBuffer
     int m_bytesRead;
     float f_data;
     QList<QSerialPortInfo> m_list;
-    QVector<char> m_zoffset;
-    QVector<char> m_zamp;
-    QVector<char> m_zphase;
+    QVector<double> m_zoffset;
+    QVector<double> m_zamp;
+    QVector<double> m_zphase;
 
 public:
      returnBuffer(returnType _returnType) :
@@ -60,7 +60,7 @@ public:
          m_frequency(_frequency),
          m_bytesRead(_bytesRead) { }
 
-     returnBuffer(returnType _returnType,int _success,QVector<char>& z_offset_adc, QVector<char> z_amp_adc,QVector<char> z_phase_adc):
+     returnBuffer(returnType _returnType,int _success,QVector<double>& z_offset_adc, QVector<double> z_amp_adc,QVector<double> z_phase_adc):
          m_returnType(_returnType),
          i_data(_success),
          m_zoffset(z_offset_adc),
@@ -84,9 +84,9 @@ public:
      QVector<double> getAmplitude() { return m_amplitude; }
      QVector<double> getFrequency() { return m_frequency; }
      int getBytesRead() { return m_bytesRead; }
-     QVector<char> getzoffset() {return m_zoffset;}
-     QVector<char> getzamp() {return m_zamp;}
-     QVector<char> getzphase() {return m_zphase;}
+     QVector<double> getzoffset() {return m_zoffset;}
+     QVector<double> getzamp() {return m_zamp;}
+     QVector<double> getzphase() {return m_zphase;}
 };
 
 #endif // RETURNBUFFER_H

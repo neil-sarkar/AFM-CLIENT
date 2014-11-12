@@ -1,12 +1,12 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include <mainwindow.h>
+#include <ui_mainwindow.h>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <QTime>
-#include "serialworker.h"
+#include <serialworker.h>
 #include <QThread>
 #include <QObject>
 #include <command.h>
@@ -18,7 +18,7 @@
 
 #include <math.h>
 #include <qapplication.h>
-#include <qwt3d_surfaceplot.h>
+#include <qwt3d_gridplot.h>
 #include <qwt3d_function.h>
 
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
@@ -30,10 +30,6 @@
  *
  *
  */
-#include <math.h>
-#include <qapplication.h>
-#include <qwt3d_surfaceplot.h>
-#include <qwt3d_function.h>
 
 using namespace Qwt3D;
 
@@ -41,7 +37,7 @@ class Rosenbrock : public Function
 {
 public:
 
-  Rosenbrock(SurfacePlot& pw)
+  Rosenbrock(GridPlot& pw)
   :Function(pw)
   {
   }
@@ -61,12 +57,14 @@ void MainWindow::MainWindowLoop()
 
     updateStatusBar("Working...");
 
+
     Initialize();
 
     // temporary random number generator for plots
     qsrand(QTime::currentTime().msec());
     time = 0;
 
+    //ui->tabScan->setLayout(grid);
     updateStatusBar("Ready");
 
     // for reading DAC/updating plots
@@ -159,6 +157,44 @@ void MainWindow::Initialize()
     connect (signalMapper, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setText(QString))) ;
     connect (signalMapper2, SIGNAL(mapped(QString)), ui->freqProgressLabel, SLOT(setStyleSheet(QString))) ;
 
+    /*The follow action groups and SIGNALS/SLOTS are for the scan toolbar*/
+    QActionGroup* coord = new QActionGroup(this);
+    coord->addAction(ui->Box);
+    coord->addAction(ui->Frame);
+    coord->addAction(ui->None);
+
+    QActionGroup* plotstyle = new QActionGroup(this);
+    plotstyle->addAction(ui->pointstyle);
+    plotstyle->addAction(ui->wireframe);
+    plotstyle->addAction(ui->hiddenline);
+    plotstyle->addAction(ui->polygon);
+    plotstyle->addAction(ui->filledmesh);
+    plotstyle->addAction(ui->nodata);
+
+    QActionGroup* grids = new QActionGroup(this);
+    grids->addAction(ui->front);
+    grids->addAction(ui->back);
+    grids->addAction(ui->right);
+    grids->addAction(ui->left);
+    grids->addAction(ui->ceil);
+    grids->addAction(ui->floor);
+    grids->setExclusive(false);
+
+    QActionGroup* floorstyle = new QActionGroup(this);
+    floorstyle->addAction(ui->floordata);
+    floorstyle->addAction(ui->flooriso);
+    floorstyle->addAction(ui->floornone);
+
+    connect( ui->left, SIGNAL( toggled( bool ) ), this, SLOT( setLeftGrid( bool ) ) );
+    connect( ui->right, SIGNAL( toggled( bool ) ), this, SLOT( setRightGrid( bool ) ) );
+    connect( ui->ceil, SIGNAL( toggled( bool ) ), this, SLOT( setCeilGrid( bool ) ) );
+    connect( ui->floor, SIGNAL( toggled( bool ) ), this, SLOT( setFloorGrid( bool ) ) );
+    connect( ui->back, SIGNAL( toggled( bool ) ), this, SLOT( setBackGrid( bool ) ) );
+    connect( ui->front, SIGNAL( toggled( bool ) ), this, SLOT( setFrontGrid( bool ) ) );
+    connect( plotstyle, SIGNAL( triggered( QAction* ) ), this, SLOT( pickPlotStyle( QAction* ) ) );
+    connect( coord, SIGNAL( triggered( QAction* ) ), this, SLOT( pickCoordSystem( QAction* ) ) );
+    connect( floorstyle, SIGNAL( triggered( QAction* ) ), this, SLOT( pickFloorStyle( QAction* ) ) );
+    connect(ui->normals, SIGNAL( toggled(bool) ), this, SLOT( showNormals(bool)));
     //connect(ui->sweepButton, SIGNAL(clicked()),ui->freqProgressLabel, SLOT(setText()));
     //connect(ui->sweepButton, SIGNAL(clicked()),ui->freqProgressLabel, SLOT(setStyleSheet()));
 
@@ -168,7 +204,8 @@ void MainWindow::CreateGraphs(){
     //freqPlot = new Plot();
 
 
-    scanPlot.setTitle("A Simple SurfacePlot Demonstration");
+    //scanPlot = GridPlot(ui->frame);
+    scanPlot.setTitle("Forward");
 
     Rosenbrock rosenbrock(scanPlot);
 
@@ -195,14 +232,13 @@ void MainWindow::CreateGraphs(){
 
 
     scanPlot.setCoordinateStyle(BOX);
-
+    scanPlot.showColorLegend(true);
     scanPlot.updateData();
     scanPlot.updateGL();
-    scanPlot.resize(800,600);
     scanPlot.show();
 
     ui->gridLayout_11->setSpacing(0);
-    ui->gridLayout_11->addWidget(&scanPlot, 1, 0);
+    ui->gridLayout_11->addWidget(&scanPlot, 0, 0);
     // add frequency sweep plot
     MyPlot::PlotFields fields = MyPlot::PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
                       QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
@@ -250,7 +286,7 @@ void MainWindow::CreateGraphs(){
 }
 void MainWindow::SetPorts(returnBuffer *_node){
 
-    /*Push a setPort event to the serial thread*/
+    /*Populate the port combobox*/
     //mutex.lock();
     if (ui->cboComPortSelection){
         foreach (const QSerialPortInfo info, _node->getList()) {
@@ -409,9 +445,22 @@ void MainWindow::dequeueReturnBuffer() {
             break;
           case SCANDATA:
             //update GRAPH
-            _buffer->getzamp();
-            _buffer->getzoffset();
-            _buffer->getzphase();
+
+            if(_buffer->getData() == AFM_SUCCESS){
+                QVector<double> zamp = _buffer->getzamp();
+                int _size = zamp.size();
+                for (int i = 0; i < 16; i++)
+                {
+                    scandata[i] = new double[16];
+
+                    for (int j = 0; j < 16; j++)
+                    {
+                        scandata[i][j] = zamp.at(i);
+                    }
+                }
+                scanPlot.createDataset(scandata, 16, 16, 0, 16, 0, 16);
+                scanPlot.updateGL();
+            }
             returnQueue.pop();
             break;
         }
@@ -624,41 +673,41 @@ void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
     useBridgeSignalAsSetpoint = checked;
 }
 
-void MainWindow::autoApproach(nanoiAFM* afm) {
-    qDebug() << "In the threaded coarse approach";
-    mutex.lock();
-    float initVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
-    commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)3));    //afm->stageSetPulseWidth(3);
-    commandQueue.push(new commandNode(stageSetDirBackward));    //afm->stageSetDirBackward();
-    mutex.unlock();
+//void MainWindow::autoApproach(nanoiAFM* afm) {
+//    qDebug() << "In the threaded coarse approach";
+//    mutex.lock();
+//    float initVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
+//    commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)3));    //afm->stageSetPulseWidth(3);
+//    commandQueue.push(new commandNode(stageSetDirBackward));    //afm->stageSetDirBackward();
+//    mutex.unlock();
 
 
 
-    mutex.lock();
-    float bridgeVal;
-    for( ;; ) {
-//        commandQueue.push(new commandNode(stageSetStep));
+//    mutex.lock();
+//    float bridgeVal;
+//    for( ;; ) {
+////        commandQueue.push(new commandNode(stageSetStep));
 
-        commandQueue.push(new commandNode(stageSetStep)); //afm->stageSetStep(); // take a step
-        bridgeVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
-//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
-//        QThread::msleep(100);
-//        mutex.lock();
-//        bridgeVal = return_queue.front();
-//        returnQueue.pop();
-//        mutex.unlock();
-        // if we're less than 95% of init, then slow down
-        if (bridgeVal < 0.95*initVal) {
-            //commandQueue.push(new commandNode(stageSetPulseWidth,0,0,0));
-            commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)0)); //afm->stageSetPulseWidth(0);
-        }
-        // if we're within 90% of init, then autoapproach complete
-        else if (bridgeVal < 0.9*initVal) {
-            break;
-        }
-    }
-    mutex.unlock();
-}
+//        commandQueue.push(new commandNode(stageSetStep)); //afm->stageSetStep(); // take a step
+//        bridgeVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
+////        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
+////        QThread::msleep(100);
+////        mutex.lock();
+////        bridgeVal = return_queue.front();
+////        returnQueue.pop();
+////        mutex.unlock();
+//        // if we're less than 95% of init, then slow down
+//        if (bridgeVal < 0.95*initVal) {
+//            //commandQueue.push(new commandNode(stageSetPulseWidth,0,0,0));
+//            commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)0)); //afm->stageSetPulseWidth(0);
+//        }
+//        // if we're within 90% of init, then autoapproach complete
+//        else if (bridgeVal < 0.9*initVal) {
+//            break;
+//        }
+//    }
+//    mutex.unlock();
+//}
 
 // Button for autoapproach
 // TODO: verify autoapproach
@@ -745,19 +794,17 @@ void MainWindow::on_sweepButton_clicked()
     //QThread::msleep(100);
     //int retVal = returnQueue.front();
     mutex.lock();
-    if(freqRetVal == -1){
 
-        queue<returnBuffer*> temp = returnQueue;
-        returnBuffer* _buffer;
-        while(!temp.empty()){
-            _buffer = temp.front();
-            if(_buffer->getReturnType() == FREQSWEEP){
-                freqRetVal = _buffer->getData();
-                *amplitudeData = _buffer->getAmplitude();
-                *frequencyData = _buffer->getFrequency();
-                bytesRead = _buffer->getBytesRead();
-                temp.pop();
-            }
+    queue<returnBuffer*> temp = returnQueue;
+    returnBuffer* _buffer;
+    while(!temp.empty()){
+        _buffer = temp.front();
+        if(_buffer->getReturnType() == FREQSWEEP){
+            freqRetVal = _buffer->getData();
+            *amplitudeData = _buffer->getAmplitude();
+            *frequencyData = _buffer->getFrequency();
+            bytesRead = _buffer->getBytesRead();
+            temp.pop();
         }
     }
     mutex.unlock();
@@ -821,8 +868,11 @@ void MainWindow::on_pushButton_6_clicked()
 //            //Wait for Z values to be populated. How long should we wait?
 //        }
 //    }
-    commandQueue.push(new commandNode(startScan));
-
+//    mutex.lock();
+//    for(int i =0; i< 100; i++){
+        commandQueue.push(new commandNode(startScan));
+//    }
+//    mutex.unlock();
 
 }
 
@@ -896,7 +946,7 @@ void MainWindow::on_buttonAutoApproachMCU_clicked()
 {
     mutex.lock();
     if(!isAutoApproach){
-        commandQueue.push(new commandNode(stageSetContinuous));
+        commandQueue.push(new commandNode(autoApproach));
         isAutoApproach = true;
     }
     else{
@@ -963,4 +1013,154 @@ void MainWindow::on_calibrateButton_clicked()
 void MainWindow::updateStatusBar(QString _string)
 {
     this->statusBar()->showMessage(_string);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if(index == 1){
+        ui->toolBar->setEnabled(true);
+    }
+    else
+    {
+        ui->toolBar->setEnabled(false);
+    }
+}
+
+void MainWindow::pickPlotStyle( QAction* action )
+{
+    if (!action)
+        return;
+
+    if (action == ui->polygon)
+    {
+        scanPlot.setPlotStyle(FILLED);
+    }
+    else if (action == ui->filledmesh)
+    {
+        scanPlot.setPlotStyle(FILLEDMESH);
+    }
+    else if (action == ui->wireframe)
+    {
+        scanPlot.setPlotStyle(WIREFRAME);
+    }
+    else if (action == ui->hiddenline)
+    {
+        scanPlot.setPlotStyle(HIDDENLINE);
+    }
+    else if (action == ui->pointstyle)
+    {
+        scanPlot.setPlotStyle(Qwt3D::POINTS);
+    }
+    else
+    {
+        scanPlot.setPlotStyle(NOPLOT);
+    }
+    scanPlot.updateData();
+    scanPlot.updateGL();
+}
+
+void MainWindow::setLeftGrid(bool b)
+{
+    setGrid(Qwt3D::LEFT,b);
+}
+void MainWindow::setRightGrid(bool b)
+{
+    setGrid(Qwt3D::RIGHT,b);
+}
+void MainWindow::setCeilGrid(bool b)
+{
+    setGrid(Qwt3D::CEIL,b);
+}
+void MainWindow::setFloorGrid(bool b)
+{
+    setGrid(Qwt3D::FLOOR,b);
+}
+void MainWindow::setFrontGrid(bool b)
+{
+    setGrid(Qwt3D::FRONT,b);
+}
+void MainWindow::setBackGrid(bool b)
+{
+    setGrid(Qwt3D::BACK,b);
+}
+
+void MainWindow::setGrid(Qwt3D::SIDE s, bool b)
+{
+//  if (!dataWidget)
+//		return;
+
+    int sum = scanPlot.coordinates()->grids();
+
+    if (b)
+        sum |= s;
+    else
+        sum &= ~s;
+
+    scanPlot.coordinates()->setGridLines(sum!=Qwt3D::NOSIDEGRID, sum!=Qwt3D::NOSIDEGRID, sum);
+    scanPlot.updateGL();
+}
+
+void MainWindow::pickCoordSystem( QAction* action)
+{
+    if (!action)
+        return;
+
+    //activeCoordSystem = action;
+
+    scanPlot.setTitle("QwtPlot3D (Use Ctrl-Alt-Shift-LeftBtn-Wheel or keyboard)");
+
+    if (!scanPlot.hasData())
+    {
+        double l = 0.6;
+        scanPlot.createCoordinateSystem(Triple(-l,-l,-l), Triple(l,l,l));
+        for (unsigned i=0; i!=scanPlot.coordinates()->axes.size(); ++i)
+        {
+            scanPlot.coordinates()->axes[i].setMajors(4);
+            scanPlot.coordinates()->axes[i].setMinors(5);
+        }
+    }
+
+    if (action == ui->Box || action == ui->Frame)
+    {
+        if (action == ui->Box)
+            scanPlot.setCoordinateStyle(BOX);
+        if (action == ui->Frame)
+            scanPlot.setCoordinateStyle(FRAME);
+        //grids->setEnabled(true);
+    }
+    else if (action == ui->None)
+    {
+        scanPlot.setTitle("QwtPlot3D (Use Ctrl-Alt-Shift-LeftBtn-Wheel or keyboard)");
+        scanPlot.setCoordinateStyle(NOCOORD);
+        //grids->setEnabled(false);
+    }
+}
+
+void MainWindow::pickFloorStyle( QAction* action )
+{
+    if (!action)
+        return;
+
+    if (action == ui->floordata)
+    {
+        scanPlot.setFloorStyle(FLOORDATA);
+    }
+    else if (action == ui->flooriso)
+    {
+        scanPlot.setFloorStyle(FLOORISO);
+    }
+    else
+    {
+        scanPlot.setFloorStyle(NOFLOOR);
+    }
+
+    scanPlot.updateData();
+    scanPlot.updateGL();
+}
+
+void MainWindow::showNormals(bool val)
+{
+    scanPlot.showNormals(val);
+    scanPlot.updateNormals();
+    scanPlot.updateGL();
 }
