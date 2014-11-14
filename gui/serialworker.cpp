@@ -26,6 +26,7 @@ void serialworker::mainLoop()
     QList<QSerialPortInfo>* detectedSerialPorts = new QList<QSerialPortInfo>();
     QVector<double>* _amplitude = new QVector<double>();
     QVector<double>* _frequency = new QVector<double>();
+    QVector<double>* _phase = new QVector<double>();
     QVector<double>* z_offset_adc = new QVector<double>();
     QVector<double>* z_amp_adc = new QVector<double>();
     QVector<double>* z_phase_adc = new QVector<double>();
@@ -100,8 +101,8 @@ void serialworker::mainLoop()
                 case readADC:
                     _ID = _node->getqval();
                     _returnBytes = m_afm.readADC((qint8)_node->getqval());
-                    if(_ID == AFM_ADC_AMPLITUDE_ID)
-                        return_queue.push(new returnBuffer(AFMADCAMPLITUDEID,(float)_returnBytes));
+                    if(_ID == ADC_Z_AMP)
+                        return_queue.push(new returnBuffer(ADCZAMP,(float)_returnBytes));
                     else
                         return_queue.push(new returnBuffer(ADC,(float)_returnBytes));
                     break;
@@ -133,9 +134,6 @@ void serialworker::mainLoop()
                 case stageAbortContinuous:
                     m_afm.stageAbortContinuous();
                     break;
-                case autoApproach:
-                    m_afm.autoApproach();
-                    break;
                 case pidEnable:
                     _success = m_afm.pidEnable();
                     //return_queue.push(new returnBuffer<int>(PIDEnable,_success));
@@ -166,7 +164,7 @@ void serialworker::mainLoop()
                     m_afm.stageSetPulseWidth(_node->getqval());
                     break;
                 case afmAutoApproach:
-                    m_afm.autoApproach();
+                    m_afm.autoApproach(_node->getdval());
                     break;
                 case setPort:
                     *detectedSerialPorts = QSerialPortInfo::availablePorts();
@@ -196,14 +194,19 @@ void serialworker::mainLoop()
 
                     return_queue.push(_buffer);
                     break;
+                 case setDDSSettings:
+                    m_afm.setDDSSettings(_node->getnumPoints(),_node->getnumLines(),_node->getstepSize());
+                    emit updateStatusBar("DDS Set");
+                    break;
                  case frequencySweep:
                     emit updateStatusBar("Starting Frequency Sweep...");
                     *_amplitude = _node->getamplitude();
                     *_frequency = _node->getfrequency();
+                    *_phase = _node->getphase();
                     _bytesRead = _node->getbytesRead();
 
-                    _success = m_afm.frequencySweep(_node->getnumPoints(),_node->getstartFrequency(),_node->getstepSize(),*_amplitude,*_frequency,_bytesRead);
-                    _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_frequency,_bytesRead);
+                    _success = m_afm.frequencySweep(_node->getnumPoints(),_node->getstartFrequency(),_node->getstepSize(),*_amplitude,*_phase,*_frequency,_bytesRead);
+                    _buffer = new returnBuffer(FREQSWEEP,_success,*_amplitude,*_phase,*_frequency,_bytesRead);
 
                     return_queue.push(_buffer);
                     //delete *_amplitude;

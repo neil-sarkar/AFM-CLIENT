@@ -24,22 +24,13 @@ void eventworker::mainLoop()
     //ioTimer = startTimer(200); // for reading DAC/ADC
 
     generalTimer = new QTimer(this);
-    connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
+    connect(generalTimer, SIGNAL(timeout()), this, SLOT(updateGraph()));
     generalTimer->start(500); // need to get refresh rate from mainwindow
 }
 
 void eventworker::updateGraph()
 {
     //this event should probably be in the mainwindow thread
-}
-
-void eventworker::generalTimerUpdate()
-{
-    //general timer update
-    //what does this do?
-
-    //int currTab = MainWindow::ui->tabWidget->currentIndex();
-    //int id = e->timerId();
     if (_abort) {
         emit finished();
         //mutex.unlock();
@@ -50,30 +41,26 @@ void eventworker::generalTimerUpdate()
     if(_mainwindow != NULL){
         if(_mainwindow->getCurrTab() == 3){
             mutex.lock();
-            m_queue.push(new commandNode(readDAC,(qint8)DAC_BR1));
+            m_queue.push(new commandNode(readADC,(qint8)ADC_Z_AMP));
             mutex.unlock();
         }
         else if( _mainwindow->getCurrTab() == 4 ) {
-        #if AFM_MICRO_CONNECTED
-        //        mutex.lock();
-        //        if( _mainwindow->getContinuousStep() )
-        //            m_queue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-        //        mutex.unlock();
-        //        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-        //        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
             mutex.lock();
             m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
             m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
             mutex.unlock();
-
-        #else
-            mutex.lock();
-            _mainwindow->setADC5(float(qrand())/RAND_MAX);
-            _mainwindow->setDAC8(float(qrand())/RAND_MAX);
-            mutex.lock();
-        #endif
         }
     }
+
+}
+
+void eventworker::generalTimerUpdate()
+{
+    //general timer update
+    //what does this do?
+
+    //int currTab = MainWindow::ui->tabWidget->currentIndex();
+    //int id = e->timerId();
 
 }
 

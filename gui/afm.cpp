@@ -105,24 +105,26 @@ int nanoiAFM::setRasterStep(){
 
 int nanoiAFM::memsSetOffset(double val){
 
-    writeDAC(AFM_DAC_OFFSET_ID, val);
+    writeDAC(DAC_ZOFFSET_FINE, val);
 
     return AFM_SUCCESS; //There should be a comparison against a maximum value for offset voltage
 }
 
 int nanoiAFM::memsSetFrequency(double val){
-    writeDAC(AFM_DAC_VCO_ID, val);
+    //writeDAC(AFM_DAC_VCO_ID, val);
     return AFM_SUCCESS;
 }
 
 int nanoiAFM::memsSetAmplitude(double val){
-    writeDAC(AFM_DAC_AMPLITUDE_ID, val);
+    writeDAC(DAC_ZAMP, val);
     return AFM_SUCCESS;
 }
 
 int nanoiAFM::memsSetBridgeVoltage(double val){
-    writeDAC(AFM_DAC_BRIDGE1_ID, val);
-    return AFM_SUCCESS;
+    if(writeDAC(DAC_BR1, val))
+        return AFM_SUCCESS;
+    else
+        return AFM_FAIL;
 }
 
 int nanoiAFM::pidEnable(){
@@ -202,27 +204,62 @@ int nanoiAFM::pidSetPoint(float val){
 int nanoiAFM::stageSetPulseWidth(qint8 val){
     writeByte(AFM_STAGE_PW_SELECT);
     writeByte(val);
-    return AFM_SUCCESS; //Should be checked against a value range
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
+    //return AFM_SUCCESS; //Should be checked against a value range
 }
 
-void nanoiAFM::stageSetDirForward(){
+int nanoiAFM::stageSetDirForward(){
     writeByte(AFM_STAGE_DIR_FORW_SELECT);
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_FORW_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
 }
 
-void nanoiAFM::stageSetDirBackward(){
+int nanoiAFM::stageSetDirBackward(){
     writeByte(AFM_STAGE_DIR_REVERSE_SELECT);
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_REVERSE_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
 }
 
-void nanoiAFM::stageSetStep(){
+int nanoiAFM::stageSetStep(){
     writeByte(AFM_STAGE_STEP_SELECT);
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_STEP_SELECT){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
 }
 
 void nanoiAFM::stageSetContinuous(){
     writeByte(AFM_STAGE_CONT_SELECT);
 }
 
-void nanoiAFM::stageAbortContinuous(){
+int nanoiAFM::stageAbortContinuous(){
     writeByte('q');
+    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
+        else{ return AFM_FAIL;}
+
+    }
+    else{ return AFM_FAIL;}
 }
 
 void nanoiAFM::stageStepForward(){
@@ -245,7 +282,7 @@ void nanoiAFM::stageMoveBackward(){
     stageSetContinuous();
 }
 
-void nanoiAFM::setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize) {
+int nanoiAFM::setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize) {
     qDebug() << "Writing to DDS settings";
     // Set DDS settings
     writeByte(AFM_DDS_SWEEP_SET);
@@ -264,14 +301,24 @@ void nanoiAFM::setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16
     // num points
     writeByte((qint8)numPoints); // low byte
     writeByte((qint8)(numPoints>>8)); // high bye
+
+    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+    if(!res.isEmpty() || !res.isNull()){
+        if(res.at(0) == 'u'){
+            return AFM_SUCCESS;
+        }
+        else{ return AFM_FAIL;}
+    }
+    else{ return AFM_FAIL;}
 }
 
 // If we don't read back numPoints*2, return AFM_FAIL
 // Otherwise, the data field is filled with numPoints doubles
 int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, \
-                             QVector<double>& amplitudeData, QVector<double>& frequencyData, int& bytesRead){
+                             QVector<double>& amplitudeData, QVector<double>& phaseData, QVector<double>& frequencyData, int& bytesRead){
     //writeDAC(AFM_DAC_VCO_ID, 0); // write 0V
     setDDSSettings(numPoints, startFrequency, stepSize);
+
     // start frequency sweep
     writeByte(AFM_SWEEP_START);
 
@@ -280,11 +327,12 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     bytesRead = freqData.size();
     qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
     //bytesRead[freqData.cend()];
-    if (bytesRead != numPoints*4 + 2) {
+    if (bytesRead != numPoints*4 + 1) {
         return AFM_FAIL;
     }
 
     quint16 intVal;
+    quint16 phaseVal;
     qDebug() << "Test Bytes to Word: " << BYTES_TO_WORD((quint8)startFrequency, (quint8)(startFrequency >> 8));
 
 
@@ -300,10 +348,13 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
 
     // y data
     amplitudeData.clear();
-    for(int i = 0; i < freqData.size(); i+=2) {
+    phaseData.clear();
+    for(int i = 0; i < freqData.size() - 1; i+=4) {
         intVal = BYTES_TO_WORD((quint8)freqData[i], (quint8)freqData[i+1]);
+        phaseVal = BYTES_TO_WORD((quint8)freqData[i+2],(quint8)freqData[i+3]);
         qDebug() << "Int Val: " << intVal;        
         amplitudeData.append( double(intVal)/AFM_ADC_SCALING );
+        phaseData.append(double(phaseVal)/AFM_ADC_SCALING);
     }
 
     // x-data
@@ -312,17 +363,28 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
         frequencyData.append(double(i));
     }
 
-    return AFM_SUCCESS;
+    if(freqData.at(freqData.size()-1) == 'r')
+        return AFM_SUCCESS;
+    else
+        return AFM_FAIL;
 }
 
 void nanoiAFM::rasterStep(float /*val1*/, float /*val2*/){
  //Not too sure about this function
 }
 
-int nanoiAFM::autoApproach(){
+int nanoiAFM::autoApproach(double setpoint){
     writeByte(AFM_AUTOAPPROACH_SELECT);
 
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    qint16 _setpoint = AFM_DAC_SCALING*setpoint;
+
+    writeByte((_setpoint & 0xFF));
+    writeByte((_setpoint & 0x0F00) >> 8);
+
+    writeByte((150));
+    writeByte(0);
+
+    QByteArray res=waitForData(AFM_LONG_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == 'o'){ return AFM_SUCCESS;}
         else{ return AFM_FAIL;}

@@ -27,7 +27,8 @@ enum returnType{
     PIDDISABLE,
     DEVICECALIBRATION,
     SCANPARAMETERS,
-    SCANDATA
+    SCANDATA,
+    ADCZAMP
 };
 
 class returnBuffer
@@ -37,6 +38,7 @@ class returnBuffer
     returnType m_returnType;
     int i_data;
     QVector<double> m_amplitude;
+    QVector<double> m_phase;
     QVector<double> m_frequency;
     int m_bytesRead;
     float f_data;
@@ -53,10 +55,11 @@ public:
          m_returnType(_returnType),
          i_data(idata) { }
 
-     returnBuffer(returnType _returnType,int success,QVector<double>& _amplitude,QVector<double>& _frequency,int &_bytesRead):
+     returnBuffer(returnType _returnType,int success,QVector<double>& _amplitude,QVector<double>& _phase, QVector<double>& _frequency,int &_bytesRead):
          m_returnType(_returnType),
          i_data(success),
          m_amplitude(_amplitude),
+         m_phase(_phase),
          m_frequency(_frequency),
          m_bytesRead(_bytesRead) { }
 
@@ -83,10 +86,12 @@ public:
      returnType getReturnType() {return m_returnType;}
      QVector<double> getAmplitude() { return m_amplitude; }
      QVector<double> getFrequency() { return m_frequency; }
+     QVector<double> getPhase() { return m_phase; }
      int getBytesRead() { return m_bytesRead; }
      QVector<double> getzoffset() {return m_zoffset;}
      QVector<double> getzamp() {return m_zamp;}
      QVector<double> getzphase() {return m_zphase;}
+
 };
 
 #endif // RETURNBUFFER_H

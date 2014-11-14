@@ -39,8 +39,7 @@ enum Command{
     setDacValues,
     deviceCalibration,
     scanParameters,
-    startScan,
-    autoApproach
+    startScan
 };
 
 class commandNode
@@ -129,12 +128,13 @@ class commandNode
             m_stepSize(stepSize) {}
 
     /*int dofrequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& frequency, int& bytesRead)*/
-    commandNode(Command commandName, quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double> amplitude, QVector<double> frequency, int& bytesRead)
+    commandNode(Command commandName, quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double> amplitude, QVector<double> phase, QVector<double> frequency, int& bytesRead)
           : m_commandName(commandName),
             m_numPoints(numPoints),
             m_startFrequency(startFrequency),
             m_stepSize(stepSize),
             m_amplitude(amplitude),
+            m_phase(phase),
             m_frequency(frequency),
             m_bytesRead(bytesRead) {}
 
@@ -168,6 +168,7 @@ class commandNode
     qint16 getstepSize() { return m_stepSize;}
     QVector<double> getamplitude() {return m_amplitude; }
     QVector<double> getfrequency() { return m_frequency; }
+    QVector<double> getphase() { return m_phase;}
     int& getbytesRead() { return m_bytesRead;}
     double getvminLine(){ return m_vminLine;}
     double getvminScan(){ return m_vminScan;}
@@ -194,7 +195,8 @@ private:
     qint16 m_startFrequency;
     qint16 m_stepSize;
     QVector<double> m_amplitude;
-    QVector<double> m_frequency;
+    QVector<double> m_phase;
+    QVector<double> m_frequency;    
     int m_bytesRead;
     double m_vminLine;
     double m_vminScan;

@@ -78,6 +78,8 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     this->xAxisRange = fields.xAxis.second - fields.xAxis.first;
     this->autoScale = fields.autoScale;
 
+    //connect(this, SIGNAL(clicked(QPointF)),this,SLOT(displayPoint(QPointF)));
+
 }
 
 // TODO: I cannot seem to be able to get this slot to activate upon clicking

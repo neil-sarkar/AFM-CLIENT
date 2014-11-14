@@ -95,6 +95,7 @@ private slots:
     void MainWindowLoop();
     void dequeueReturnBuffer();
     void generalTimerUpdate();
+    void approachTimerUp();
     void finishedThread();
 
 
@@ -175,6 +176,10 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
+    void on_continuousButton_pressed();
+
+    void on_continuousButton_released();
+
 private:
 
     enum TabType{
@@ -193,7 +198,9 @@ private:
     int ioTimer;            // timer id for ADC/DAC read
     QTimer *dequeueTimer;     // dequeue timer to empty the return buffer
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
+    QTimer *approachTimer;
     MyPlot::Plot freqPlot;
+    MyPlot::Plot phasePlot;
     MyPlot::Plot approachPlot;
     MyPlot::Plot signalPlot1;
     MyPlot::Plot signalPlot2;

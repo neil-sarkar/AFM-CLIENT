@@ -11,7 +11,7 @@
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            0  // 1: display debug messages
-#define AFM_USE_DUNCAN_BOARD                 0  // 1: Duncan's Board, 0: Mahdi's Board
+//#define AFM_USE_DUNCAN_BOARD                 0  // 1: Duncan's Board, 0: Mahdi's Board
 #define AFM_MICRO_CONNECTED                  1  // 1: microcontroller, 0: uC not plugged in
 
 #define DAC_BFRD1           0
@@ -27,46 +27,48 @@
 #define DAC_X1              10/**/
 #define DAC_X2              11/**/
 
-#if AFM_USE_DUNCAN_BOARD
-// DAC IDs for Duncan's Board
-#define AFM_DAC_BRIDGE1_ID                   0
-#define AFM_DAC_BRIDGE2_ID                   1
-#define AFM_DAC_X1_ID                        2
-#define AFM_DAC_X2_ID                        3
-#define AFM_DAC_Y1_ID                        4
-#define AFM_DAC_Y2_ID                        5
-#define AFM_DAC_VCO_ID                       6
-#define AFM_DAC_AMPLITUDE_ID                 7
-#define AFM_DAC_OFFSET_ID                    8
+#define ADC_Z_AMP           5
+//#if AFM_USE_DUNCAN_BOARD
+//// DAC IDs for Duncan's Board
+//#define AFM_DAC_BRIDGE1_ID                   0
+//#define AFM_DAC_BRIDGE2_ID                   1
+//#define AFM_DAC_X1_ID                        2
+//#define AFM_DAC_X2_ID                        3
+//#define AFM_DAC_Y1_ID                        4
+//#define AFM_DAC_Y2_ID                        5
+//#define AFM_DAC_VCO_ID                       6
+//#define AFM_DAC_AMPLITUDE_ID                 7
+//#define AFM_DAC_OFFSET_ID                    8
 
-// ADC IDs for Duncan's Board
-#define AFM_ADC_X1_ID                        0
-#define AFM_ADC_X2_ID                        1
-#define AFM_ADC_Y1_ID                        2
-#define AFM_ADC_Y2_ID                        3
-#define AFM_ADC_OFFSET_ID                    4
-#define AFM_ADC_AMPLTIDE_ID                  5
-#else
-// DAC IDs for Mahdi's Board
-#define AFM_DAC_BRIDGE1_ID                    3
-#define AFM_DAC_BRIDGE2_ID                    2
-#define AFM_DAC_X1_ID                         10
-#define AFM_DAC_X2_ID                         9
-#define AFM_DAC_Y1_ID                         8
-#define AFM_DAC_Y2_ID                         7
-#define AFM_DAC_VCO_ID                        4
-#define AFM_DAC_AMPLITUDE_ID                  5
-#define AFM_DAC_OFFSET_ID                     6
+//// ADC IDs for Duncan's Board
+//#define AFM_ADC_X1_ID                        0
+//#define AFM_ADC_X2_ID                        1
+//#define AFM_ADC_Y1_ID                        2
+//#define AFM_ADC_Y2_ID                        3
+//#define AFM_ADC_OFFSET_ID                    4
+//#define AFM_ADC_AMPLTIDE_ID                  5
+//#endif
+//#if AFM_USE_MAHDI_BOARD
+//// DAC IDs for Mahdi's Board
+//#define AFM_DAC_BRIDGE1_ID                    3
+//#define AFM_DAC_BRIDGE2_ID                    2
+//#define AFM_DAC_X1_ID                         10
+//#define AFM_DAC_X2_ID                         9
+//#define AFM_DAC_Y1_ID                         8
+//#define AFM_DAC_Y2_ID                         7
+//#define AFM_DAC_VCO_ID                        4
+//#define AFM_DAC_AMPLITUDE_ID                  5
+//#define AFM_DAC_OFFSET_ID                     6
 
-// ADC IDs for Mahdi's Board
-#define AFM_ADC_X1_ID                         4
-#define AFM_ADC_X2_ID                         2
-#define AFM_ADC_Y1_ID                         1
-#define AFM_ADC_Y2_ID                         0
-#define AFM_ADC_OFFSET_ID                     5
-#define AFM_ADC_AMPLITUDE_ID                  3
-#define AFM_ADC_PHASE_ID                      6
-#endif
+//// ADC IDs for Mahdi's Board
+//#define AFM_ADC_X1_ID                         4
+//#define AFM_ADC_X2_ID                         2
+//#define AFM_ADC_Y1_ID                         1
+//#define AFM_ADC_Y2_ID                         0
+//#define AFM_ADC_OFFSET_ID                     5
+//#define AFM_ADC_AMPLITUDE_ID                  3
+//#define AFM_ADC_PHASE_ID                      6
+//#endif
 
 
 //#define AFM_DAC_OFFSET_ID 8
@@ -83,7 +85,7 @@
 
 #define AFM_ADC_MAX_VOLTAGE 2.5
 #define AFM_ADC_DATA_RANGE 4095
-#define AFM_ADC_SCALING (AFM_ADC_DATA_RANGE/AFM_ADC_MAX_VOLTAGE)
+#define AFM_ADC_SCALING (double)(AFM_ADC_DATA_RANGE/AFM_ADC_MAX_VOLTAGE)
 
 /*Serial Port Commands*/
 #define AFM_DAC_WRITE_SELECT 'a'
@@ -153,19 +155,19 @@ public:
     int pidSetValues(qint8 P,qint8 I,qint8 D);
     int pidSetPoint(float val);
     int stageSetPulseWidth(qint8 val);
-    void stageSetDirForward();
-    void stageSetDirBackward();
-    void stageSetStep();
+    int stageSetDirForward();
+    int stageSetDirBackward();
+    int stageSetStep();
     void stageSetContinuous();
-    void stageAbortContinuous();
+    int stageAbortContinuous();
     void stageStepForward();
     void stageStepBackward();
     void stageMoveForward();
     void stageMoveBackward();
-    void setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize);
-    int frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& frequency, int& bytesRead);
+    int setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize);
+    int frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& phase, QVector<double>& frequency, int& bytesRead);
     void rasterStep(float val1, float val2);
-    int autoApproach();
+    int autoApproach(double setpoint);
     int setDACValues(char dacID, double _val);
     int deviceCalibration(double val, char side);
     int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);

@@ -129,6 +129,8 @@ void MainWindow::Initialize()
     connect(dequeueTimer, SIGNAL(timeout()), this, SLOT(dequeueReturnBuffer()));
     dequeueTimer->start(10);
 
+    approachTimer = new QTimer(this);
+    connect(approachTimer, SIGNAL(timeout()),this,SLOT(approachTimerUp()));
     /*Intialize Graphs*/
     CreateGraphs();
 
@@ -239,8 +241,9 @@ void MainWindow::CreateGraphs(){
 
     ui->gridLayout_11->setSpacing(0);
     ui->gridLayout_11->addWidget(&scanPlot, 0, 0);
+
     // add frequency sweep plot
-    MyPlot::PlotFields fields = MyPlot::PlotFields("Frequency Sweep", true, "Frequency (V)", "Amplitude (V)",\
+    MyPlot::PlotFields fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Amplitude (V)",\
                       QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
                       false, true);
 
@@ -249,9 +252,21 @@ void MainWindow::CreateGraphs(){
     ui->gridLayout_17->addWidget(&freqPlot, 1, 0);
     freqPlot.enableAxis(QwtPlot::xBottom);
     freqPlot.enableAxis(QwtPlot::yLeft);
-    freqPlot.resize(500, 300);
+    //freqPlot.resize(500, 300);
     freqPlot.show();
-    //connect(freqPlot, SIGNAL(mousePressEvent), this, )
+
+
+    //phase plot
+    fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Phase (Deg)",\
+                      QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
+                      false, true);
+
+    phasePlot.SetPlot( fields, ui->freqWidget);
+    ui->gridLayout_17->addWidget(&phasePlot, 2, 0);
+    phasePlot.enableAxis(QwtPlot::xBottom);
+    phasePlot.enableAxis(QwtPlot::yLeft);
+    //phasePlot.resize(500, 300);
+    phasePlot.show();
 
     // add approach plot
     fields = MyPlot::PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)",\
@@ -263,13 +278,14 @@ void MainWindow::CreateGraphs(){
     approachPlot.resize( 500, 300 );
     approachPlot.show();
 
-    ui->gridLayout_10->setSpacing(0);
+
+
     // add signal plot 1
     fields = MyPlot::PlotFields("Z Offset", false, "Time", "Z Offset (V)",\
                         QPair<double,double>(0,300), QPair<double,double>(0,1), QColor("Red"),
                         false);
     signalPlot1.SetPlot( fields, ui->signalWidget );
-
+    ui->gridLayout_10->setSpacing(0);
     ui->gridLayout_10->addWidget(&signalPlot1, 1, 0);
     signalPlot1.resize( 500, 100 );
     signalPlot1.show();
@@ -316,6 +332,11 @@ void MainWindow::SetMaxDACValues(){
     commandQueue.push(new commandNode(setDacValues,DAC_X1 ,AFM_DAC_MAX_VOLTAGE ));
     commandQueue.push(new commandNode(setDacValues,DAC_X2,AFM_DAC_MAX_VOLTAGE ));
 }
+
+void MainWindow::approachTimerUp(){
+    commandQueue.push(new commandNode(stageSetStep));
+}
+
 /*
  * This event is called on a timer, currently every 10ms
  * The main function is to dequeue the returnBuffer and
@@ -333,6 +354,9 @@ void MainWindow::dequeueReturnBuffer() {
      */
     //QCoreApplication::processEvents();
     mutex.lock();
+
+
+
     while(!returnQueue.empty()){
         //updateStatusBar("Working...");
         _buffer = returnQueue.front();
@@ -340,65 +364,73 @@ void MainWindow::dequeueReturnBuffer() {
          case DACBFRD1:
             ui->dacValue->setValue(_buffer->getFData());
             bfrd1 = _buffer->getFData();
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACBFRD2:
             bfrd2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACBR2:
             br2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACZAMP:
             zAmp = _buffer->getFData();
             //ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACBR1:
             br1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACBFRD3:
             bfrd3 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACZOFFSETFINE:
             zOffsetFine = _buffer->getFData();
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACY1:
             y1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACZOFFSETCOARSE:
             //ui->dacValue->setValue(_buffer->getFData());
             zOffsetCoarse = _buffer->getFData();
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACY2:
             y2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACX1:
             x1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DACX2:
             x2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            returnQueue.pop();
+            //returnQueue.pop();
+            break;
+         case ADCZAMP:
+            bfrd3 = _buffer->getFData();
+            if( useBridgeSignalAsSetpoint ) {
+                //ui->spnPidSetpoint->setValue(double(bfrd3));
+                //ui->currPIDSetpoint->setValue(double(bfrd3));
+            }
+            //returnQueue.pop();
             break;
          case AFMADCAMPLITUDEID:
             zAmp = _buffer->getFData();
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case AFMDACOFFSETID:
              zOffsetFine = _buffer->getFData();
@@ -406,20 +438,20 @@ void MainWindow::dequeueReturnBuffer() {
              break;
          case DAC:
              ui->dacValue->setValue(_buffer->getFData());
-             returnQueue.pop();
+             //returnQueue.pop();
              break;
          case ADC:
              ui->adcValue->setValue(_buffer->getFData());
-             returnQueue.pop();
+             //returnQueue.pop();
              break;
          case FREQSWEEP:
             freqRetVal = _buffer->getData();
-            returnQueue.pop();
+            //returnQueue.pop();
             emit SweepFinished();
             break;
          case GETPORTS:
             SetPorts(returnQueue.front());
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case DEVICECALIBRATION:
             if(_buffer->getData() == AFM_SUCCESS)
@@ -429,7 +461,7 @@ void MainWindow::dequeueReturnBuffer() {
             else{
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
          case SCANPARAMETERS:
 
@@ -441,14 +473,14 @@ void MainWindow::dequeueReturnBuffer() {
             else{
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
-            returnQueue.pop();
+            //returnQueue.pop();
             break;
           case SCANDATA:
             //update GRAPH
 
             if(_buffer->getData() == AFM_SUCCESS){
                 QVector<double> zamp = _buffer->getzamp();
-                int _size = zamp.size();
+                //int _size = zamp.size();
                 for (int i = 0; i < 16; i++)
                 {
                     scandata[i] = new double[16];
@@ -461,12 +493,12 @@ void MainWindow::dequeueReturnBuffer() {
                 scanPlot.createDataset(scandata, 16, 16, 0, 16, 0, 16);
                 scanPlot.updateGL();
             }
-            returnQueue.pop();
+
             break;
         }
 
-        if( isAutoApproach || currTab == 3 ) {
-            approachPlot.update(time, br1, currTab == Approach ? true: false);
+        if( currTab == 3 ) {
+            approachPlot.update(time, bfrd3, currTab == Approach ? true: false);
             ui->currOffsetValue->setValue(br1);
             time++;
         }
@@ -475,6 +507,7 @@ void MainWindow::dequeueReturnBuffer() {
             signalPlot2.update(time, zAmp - ui->spnPidSetpoint->value(), currTab == Signal ? true: false);
             time++;
         }
+        returnQueue.pop();
 
     }        
 
@@ -483,10 +516,7 @@ void MainWindow::dequeueReturnBuffer() {
 
 void MainWindow::generalTimerUpdate() {
 
-    if( useBridgeSignalAsSetpoint ) {
-        ui->spnPidSetpoint->setValue(zAmp);
-        ui->currPIDSetpoint->setValue(zAmp);
-    }
+
 }
 
 // 10 ms timer
@@ -664,7 +694,7 @@ void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
     ui->lblAmplitude->setText(QString::number(value));
     mutex.lock();
-    commandQueue.push(new commandNode(stageSetPulseWidth,0,0,(qint8)value));//afm.stageSetPulseWidth(value);
+    commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)value));//afm.stageSetPulseWidth(value);
     mutex.unlock();
 }
 
@@ -757,24 +787,26 @@ void MainWindow::on_stepButton_clicked()
 
 void MainWindow::on_continuousButton_clicked(bool checked)
 {
-    mutex.lock();
-    if (checked) {
-        commandQueue.push(new commandNode(stageSetContinuous));
-        continuousStep = true;
+//    mutex.lock();
+//    if (checked) {
+//        commandQueue.push(new commandNode(stageSetContinuous));
+//        continuousStep = true;
 
-    }
-    else {
-        commandQueue.push(new commandNode(stageAbortContinuous));
-        continuousStep = false;
-    }
-    mutex.unlock();
+//    }
+//    else {
+//        commandQueue.push(new commandNode(stageAbortContinuous));
+//        continuousStep = false;
+//    }
+//    mutex.unlock();
 }
 
 // Frequency sweep
 void MainWindow::on_sweepButton_clicked()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     QVector<double>* frequencyData = new QVector<double>();
     QVector<double>* amplitudeData = new QVector<double>();
+    QVector<double>* phaseData = new QVector<double>();
     int bytesRead;
 
     //connect(ui->sweepButton, SIGNAL(clicked()), ui->freqProgressLabel, SLOT(setText("Boo!")));
@@ -782,10 +814,11 @@ void MainWindow::on_sweepButton_clicked()
     ui->freqProgressLabel->setStyleSheet("QLabel { color : Green; }");
 
     freqPlot.clearData();
+    phasePlot.clearData();
 
     mutex.lock();
     commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                      *amplitudeData, *frequencyData, bytesRead));
+                                      *amplitudeData, *phaseData,*frequencyData, bytesRead));
 
     mutex.unlock();
     /*commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
@@ -803,6 +836,7 @@ void MainWindow::on_sweepButton_clicked()
             freqRetVal = _buffer->getData();
             *amplitudeData = _buffer->getAmplitude();
             *frequencyData = _buffer->getFrequency();
+            *phaseData = _buffer->getPhase();
             bytesRead = _buffer->getBytesRead();
             temp.pop();
         }
@@ -810,7 +844,9 @@ void MainWindow::on_sweepButton_clicked()
     mutex.unlock();
     double freqVal;
     double ampVal;
+    double phaseVal;
     if ( freqRetVal != AFM_SUCCESS) {
+        QApplication::restoreOverrideCursor();
         QMessageBox msg;
         msg.setText(QString("Size of Freq Data: %1. Expected Size: %2").arg(\
                                 QString::number(bytesRead), QString::number(ui->numFreqPoints->value()*4) ));
@@ -821,14 +857,22 @@ void MainWindow::on_sweepButton_clicked()
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
             freqVal = frequencyData->at(i);
+            phaseVal = phaseData->at(i);
             ampVal = amplitudeData->at(i);
             freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
+            phasePlot.update(freqVal,phaseVal,false);
         }
+        phasePlot.replot();
         freqPlot.replot(); // show the frequency sweep
     }
 
+    frequencyData->clear();
+    phaseData->clear();
+    amplitudeData->clear();
     ui->freqProgressLabel->setText("FALSE");
     ui->freqProgressLabel->setStyleSheet("QLabel { color : red; }");
+
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::on_useCurrFreqVal_clicked()
@@ -924,6 +968,7 @@ void MainWindow::on_btnPidToggle_clicked(bool checked)
 void MainWindow::on_freqAutoScale_clicked(bool checked)
 {
     freqPlot.setAutoScale(checked);
+    phasePlot.setAutoScale(checked);
     ui->freqAutoScale->setChecked(checked);
 }
 
@@ -946,7 +991,7 @@ void MainWindow::on_buttonAutoApproachMCU_clicked()
 {
     mutex.lock();
     if(!isAutoApproach){
-        commandQueue.push(new commandNode(autoApproach));
+        commandQueue.push(new commandNode(afmAutoApproach,(double)ui->spnPidSetpoint->value()));
         isAutoApproach = true;
     }
     else{
@@ -1020,8 +1065,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     if(index == 1){
         ui->toolBar->setEnabled(true);
     }
-    else
-    {
+    else{
         ui->toolBar->setEnabled(false);
     }
 }
@@ -1163,4 +1207,24 @@ void MainWindow::showNormals(bool val)
     scanPlot.showNormals(val);
     scanPlot.updateNormals();
     scanPlot.updateGL();
+}
+
+void MainWindow::on_continuousButton_pressed()
+{
+
+   commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)25));
+   if(approachTimer->isActive()){
+       approachTimer->stop();
+       approachTimer->start(100);
+   }
+   else
+   {
+       approachTimer->start(100);
+   }
+}
+
+void MainWindow::on_continuousButton_released()
+{
+    if(approachTimer)
+        approachTimer->stop();
 }
