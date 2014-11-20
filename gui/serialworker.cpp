@@ -101,8 +101,8 @@ void serialworker::mainLoop()
                 case readADC:
                     _ID = _node->getqval();
                     _returnBytes = m_afm.readADC((qint8)_node->getqval());
-                    if(_ID == ADC_Z_AMP)
-                        return_queue.push(new returnBuffer(ADCZAMP,(float)_returnBytes));
+                    if(_ID == ADC_ZOFFSET)
+                        return_queue.push(new returnBuffer(ADCZOFFSET,(float)_returnBytes));
                     else
                         return_queue.push(new returnBuffer(ADC,(float)_returnBytes));
                     break;
@@ -167,6 +167,7 @@ void serialworker::mainLoop()
                     m_afm.autoApproach(_node->getdval());
                     break;
                 case setPort:
+                    m_afm.close();
                     *detectedSerialPorts = QSerialPortInfo::availablePorts();
                     _node->getdval() == 0 ? _index = 0 :_index = _node->getdval();
 
@@ -180,16 +181,6 @@ void serialworker::mainLoop()
                     break;
                 case getPorts:
                     *detectedSerialPorts = QSerialPortInfo::availablePorts();
-                    _node->getdval() == 0 ? _index=0:_index=_node->getdval();
-
-                    if(detectedSerialPorts->size()==0)
-                        qDebug() << "Unable to find any serial ports." << endl;
-                    else{
-                        m_afm.setPort(detectedSerialPorts->at(_index));
-                        m_afm.open(QIODevice::ReadWrite);
-                        m_afm.setBaudRate(76800);
-                    }
-
                     _buffer = new returnBuffer(GETPORTS,*detectedSerialPorts);
 
                     return_queue.push(_buffer);

@@ -202,6 +202,7 @@ int nanoiAFM::pidSetPoint(float val){
 }
 
 int nanoiAFM::stageSetPulseWidth(qint8 val){
+    //Val should be checked against a value range
     writeByte(AFM_STAGE_PW_SELECT);
     writeByte(val);
     QByteArray res=waitForData(AFM_POLL_TIMEOUT);
@@ -211,7 +212,6 @@ int nanoiAFM::stageSetPulseWidth(qint8 val){
 
     }
     else{ return AFM_FAIL;}
-    //return AFM_SUCCESS; //Should be checked against a value range
 }
 
 int nanoiAFM::stageSetDirForward(){
@@ -282,7 +282,10 @@ void nanoiAFM::stageMoveBackward(){
     stageSetContinuous();
 }
 
-int nanoiAFM::setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize) {
+int nanoiAFM::setDDSSettings(quint16 numPoints,
+                             quint16 startFrequency,
+                             quint16 stepSize) {
+
     qDebug() << "Writing to DDS settings";
     // Set DDS settings
     writeByte(AFM_DDS_SWEEP_SET);
@@ -314,15 +317,21 @@ int nanoiAFM::setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 
 
 // If we don't read back numPoints*2, return AFM_FAIL
 // Otherwise, the data field is filled with numPoints doubles
-int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, \
-                             QVector<double>& amplitudeData, QVector<double>& phaseData, QVector<double>& frequencyData, int& bytesRead){
+int nanoiAFM::frequencySweep(quint16 numPoints,
+                             quint16 startFrequency,
+                             quint16 stepSize, \
+                             QVector<double>& amplitudeData,
+                             QVector<double>& phaseData,
+                             QVector<double>& frequencyData,
+                             int& bytesRead){
+
     //writeDAC(AFM_DAC_VCO_ID, 0); // write 0V
     setDDSSettings(numPoints, startFrequency, stepSize);
 
     // start frequency sweep
     writeByte(AFM_SWEEP_START);
 
-    // read numPoints*2 bytes of data back
+    // read numPoints*2 bytes + 1 byte of handshake data back
     QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
     bytesRead = freqData.size();
     qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
@@ -334,17 +343,6 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
     quint16 intVal;
     quint16 phaseVal;
     qDebug() << "Test Bytes to Word: " << BYTES_TO_WORD((quint8)startFrequency, (quint8)(startFrequency >> 8));
-
-
-    /*for(int i = 0; i < numPoints; i++) {
-        intVal = BYTES_TO_WORD((quint8)freqData[i*2], (quint8)freqData[i*2+1]);
-        qDebug() << "intVal: " << intVal;
-        amplitudeData.append( intVal/AFM_ADC_SCALING );
-    }
-
-    for(int i = 0; i < numPoints; i++) {
-        frequencyData.append(double(startFrequency + i*stepSize));
-    }*/
 
     // y data
     amplitudeData.clear();
@@ -363,7 +361,7 @@ int nanoiAFM::frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 
         frequencyData.append(double(i));
     }
 
-    if(freqData.at(freqData.size()-1) == 'r')
+    if(freqData.at(freqData.size()-1) == AFM_SWEEP_START)
         return AFM_SUCCESS;
     else
         return AFM_FAIL;
@@ -492,7 +490,11 @@ int nanoiAFM::deviceCalibration(double val, char side){
     else{ return AFM_FAIL; }
 }
 
-int nanoiAFM::scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines){
+int nanoiAFM::scanParameters(double vmin_line,
+                             double vmin_scan,
+                             double vmax,
+                             double numpts,
+                             double numlines){
 
     /* We need to check that these parameters are valid
      * How?

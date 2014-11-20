@@ -41,8 +41,10 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
 INCLUDEPATH += C:/Users/Nick/Documents/armadillo-4.450.4/include
 INCLUDEPATH += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/include
+#INCLUDEPATH += C:/Users/Nick/Documents/code/gwyddion-2.39/libgwyddion
 
 LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
+#LIBS += "-LC:/Program Files (x86)/Gwyddion/lib -ldependency"
 
 #CONFIG( debug, debug|release ) {
 #        LIBS += -LC:/qwt-6.1.1/lib -lqwtd

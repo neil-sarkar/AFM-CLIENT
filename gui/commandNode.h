@@ -75,7 +75,8 @@ class commandNode
      * readDAC*/
     /*void dowriteByte(char byte)*/
     //template <typename a_Type>
-    commandNode(Command commandName, char val1):
+    commandNode(Command commandName,
+                char val1):
         m_commandName(commandName),
         m_val1(val1) {}
 
@@ -83,7 +84,8 @@ class commandNode
     int domemsSetFrequency(double val)
     int domemsSetAmplitude(double val)
     int domemsSetBridgeVoltage(double val)*/
-    commandNode(Command commandName, double dval) :
+    commandNode(Command commandName,
+                double dval) :
         m_commandName(commandName),
         m_dval1(dval) {}
 
@@ -92,44 +94,63 @@ class commandNode
        int dopidSetI(float I)
        int dopidSetD(float D)
        int dopidSetPoint(float val)*/
-    commandNode(Command commandName, float fval) :
+    commandNode(Command commandName,
+                float fval) :
         m_commandName(commandName),
         m_fval(fval) {}
 
     /*void dorasterStep(float val1, float val2)*/
-    commandNode(Command commandName, float fval, float fval2) :
+    commandNode(Command commandName,
+                float fval,
+                float fval2) :
         m_commandName(commandName),
         m_fval(fval),
         m_fval2(fval2) {}
 
     /*int dostageSetPulseWidth(qint8 val)*/
-    commandNode(Command commandName, qint8 qval) :
+    commandNode(Command commandName,
+                qint8 qval) :
         m_commandName(commandName),
         m_qval(qval) {}
 
     /*void dowriteDAC(qint8 dacID, double val)*/
-    commandNode(Command commandName, qint8 dacID, double dval) :
+    commandNode(Command commandName,
+                qint8 dacID,
+                double dval) :
         m_commandName(commandName),
         m_qval(dacID),
         m_dval1(dval) {}
 
     /*int dopidSetValues(qint8 P,qint8 I,qint8 D)*/
-    commandNode(Command commandName, qint8 P, qint8 I, qint8 D) :
+    commandNode(Command commandName,
+                qint8 P,
+                qint8 I,
+                qint8 D) :
         m_commandName(commandName),
         m_P(P),
         m_I(I),
         m_D(D) {}
 
     /*void dosetDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize)*/
-    commandNode(Command commandName, qint16 numPoints, qint16 startFrequency, qint16 stepSize)
-          : m_commandName(commandName),
+    commandNode(Command commandName,
+                qint16 numPoints,
+                qint16 startFrequency,
+                qint16 stepSize) :
+            m_commandName(commandName),
             m_numPoints(numPoints),
             m_startFrequency(startFrequency),
             m_stepSize(stepSize) {}
 
     /*int dofrequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& frequency, int& bytesRead)*/
-    commandNode(Command commandName, quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double> amplitude, QVector<double> phase, QVector<double> frequency, int& bytesRead)
-          : m_commandName(commandName),
+    commandNode(Command commandName,
+                quint16 numPoints,
+                quint16 startFrequency,
+                quint16 stepSize,
+                QVector<double> amplitude,
+                QVector<double> phase,
+                QVector<double> frequency,
+                int& bytesRead) :
+            m_commandName(commandName),
             m_numPoints(numPoints),
             m_startFrequency(startFrequency),
             m_stepSize(stepSize),
@@ -138,7 +159,13 @@ class commandNode
             m_frequency(frequency),
             m_bytesRead(bytesRead) {}
 
-    commandNode(Command commandName ,double vmin_line, double vmin_scan, double vmax, double numpts, double numlines)
+    commandNode(Command commandName ,
+                double vmin_line,
+                double vmin_scan,
+                double vmax,
+                double numpts,
+                double numlines)
+
           : m_commandName(commandName),
             m_vminLine(vmin_line),
             m_vminScan(vmin_scan),

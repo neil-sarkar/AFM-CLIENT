@@ -27,7 +27,12 @@
 #define DAC_X1              10/**/
 #define DAC_X2              11/**/
 
-#define ADC_Z_AMP           5
+#define ADC_X1              4
+#define ADC_X2              2
+#define ADC_Y1              1
+#define ADC_Y2              0
+#define ADC_ZOFFSET         5
+#define ADC_PHASE           6
 //#if AFM_USE_DUNCAN_BOARD
 //// DAC IDs for Duncan's Board
 //#define AFM_DAC_BRIDGE1_ID                   0
@@ -138,23 +143,37 @@ private:
 public:
 
     int writeByte(char byte);
+
     QByteArray waitForData(int timeout);
-    int writeDAC(qint8 dacID, double val);
+
+    int writeDAC(qint8 dacID,
+                 double val);
+
     float readDAC(qint8 dacID);
     float readADC(qint8 adcID);
+
     int setRasterStep();
+
     int memsSetOffset(double val);
     int memsSetFrequency(double val);
     int memsSetAmplitude(double val);
     int memsSetBridgeVoltage(double val);
+
     int pidEnable();
     int pidDisable();
+
     int pidSetP(float P);
     int pidSetI(float I);
     int pidSetD(float D);
-    int pidSetValues(qint8 P,qint8 I,qint8 D);
+
+    int pidSetValues(qint8 P,
+                     qint8 I,
+                     qint8 D);
+
     int pidSetPoint(float val);
+
     int stageSetPulseWidth(qint8 val);
+
     int stageSetDirForward();
     int stageSetDirBackward();
     int stageSetStep();
@@ -164,15 +183,40 @@ public:
     void stageStepBackward();
     void stageMoveForward();
     void stageMoveBackward();
-    int setDDSSettings(quint16 numPoints, quint16 startFrequency, quint16 stepSize);
-    int frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize, QVector<double>& amplitude, QVector<double>& phase, QVector<double>& frequency, int& bytesRead);
-    void rasterStep(float val1, float val2);
+
+    int setDDSSettings(quint16 numPoints,
+                       quint16 startFrequency,
+                       quint16 stepSize);
+
+    int frequencySweep(quint16 numPoints,
+                       quint16 startFrequency,
+                       quint16 stepSize,
+                       QVector<double>& amplitude,
+                       QVector<double>& phase,
+                       QVector<double>& frequency,
+                       int& bytesRead);
+
+    void rasterStep(float val1,
+                    float val2);
+
     int autoApproach(double setpoint);
-    int setDACValues(char dacID, double _val);
-    int deviceCalibration(double val, char side);
-    int scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
+
+    int setDACValues(char dacID,
+                     double _val);
+
+    int deviceCalibration(double val,
+                          char side);
+
+    int scanParameters(double vmin_line,
+                       double vmin_scan,
+                       double vmax,
+                       double numpts,
+                       double numlines);
     int startScan();
-    int scanStep(QVector<double> &z_offset_adc, QVector<double> &z_amp_adc, QVector<double> &z_phase_adc);
+
+    int scanStep(QVector<double> &z_offset_adc,
+                 QVector<double> &z_amp_adc,
+                 QVector<double> &z_phase_adc);
 };
 
 #endif // AFM_H

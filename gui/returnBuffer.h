@@ -28,7 +28,7 @@ enum returnType{
     DEVICECALIBRATION,
     SCANPARAMETERS,
     SCANDATA,
-    ADCZAMP
+    ADCZOFFSET
 };
 
 class returnBuffer
@@ -55,7 +55,12 @@ public:
          m_returnType(_returnType),
          i_data(idata) { }
 
-     returnBuffer(returnType _returnType,int success,QVector<double>& _amplitude,QVector<double>& _phase, QVector<double>& _frequency,int &_bytesRead):
+     returnBuffer(returnType _returnType,
+                  int success,
+                  QVector<double>& _amplitude,
+                  QVector<double>& _phase,
+                  QVector<double>& _frequency,
+                  int &_bytesRead):
          m_returnType(_returnType),
          i_data(success),
          m_amplitude(_amplitude),
@@ -63,18 +68,24 @@ public:
          m_frequency(_frequency),
          m_bytesRead(_bytesRead) { }
 
-     returnBuffer(returnType _returnType,int _success,QVector<double>& z_offset_adc, QVector<double> z_amp_adc,QVector<double> z_phase_adc):
+     returnBuffer(returnType _returnType,
+                  int _success,
+                  QVector<double>& z_offset_adc,
+                  QVector<double> z_amp_adc,
+                  QVector<double> z_phase_adc):
          m_returnType(_returnType),
          i_data(_success),
          m_zoffset(z_offset_adc),
          m_zamp(z_amp_adc),
          m_zphase(z_phase_adc){}
 
-     returnBuffer(returnType _returnType,float data) :
+     returnBuffer(returnType _returnType,
+                  float data) :
          m_returnType(_returnType),
          f_data(data) { }
 
-     returnBuffer(returnType _returnType,QList<QSerialPortInfo> &list) :
+     returnBuffer(returnType _returnType,
+                  QList<QSerialPortInfo> &list) :
          m_returnType(_returnType),
          m_list(list){}
 

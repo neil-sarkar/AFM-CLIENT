@@ -21,6 +21,8 @@
 #include <qwt3d_gridplot.h>
 #include <qwt3d_function.h>
 
+//#include <gwyddion.h>
+
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 
 /* Conrad Sanderson.
@@ -57,6 +59,7 @@ void MainWindow::MainWindowLoop()
 
     updateStatusBar("Working...");
 
+    //gwy_math_lin_solve();
 
     Initialize();
 
@@ -304,10 +307,12 @@ void MainWindow::SetPorts(returnBuffer *_node){
 
     /*Populate the port combobox*/
     //mutex.lock();
+    ui->cboComPortSelection->clear();
     if (ui->cboComPortSelection){
         foreach (const QSerialPortInfo info, _node->getList()) {
             ui->cboComPortSelection->addItem(info.portName());
         }
+        ui->cboComPortSelection->addItem("Refresh");
     }
     //mutex.unlock();
 }
@@ -420,7 +425,7 @@ void MainWindow::dequeueReturnBuffer() {
             ui->dacValue->setValue(_buffer->getFData());
             //returnQueue.pop();
             break;
-         case ADCZAMP:
+         case ADCZOFFSET:
             bfrd3 = _buffer->getFData();
             if( useBridgeSignalAsSetpoint ) {
                 //ui->spnPidSetpoint->setValue(double(bfrd3));
@@ -635,9 +640,12 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     //afm.setPort(detectedSerialPorts.at(index));
     //afm.open(QIODevice::ReadWrite);
     //displayComPortInfo(detectedSerialPorts.at(index));
-    commandQueue.push(new commandNode(setPort,(double)index));
-
-
+    if(index != -1){
+        if(ui->cboComPortSelection->itemText(index) == "Refresh" && index != 0)
+            commandQueue.push(new commandNode(getPorts));
+        else
+            commandQueue.push(new commandNode(setPort,(double)index));
+    }
 }
 
 void MainWindow::displayComPortInfo(const QSerialPortInfo& info)
@@ -1212,14 +1220,14 @@ void MainWindow::showNormals(bool val)
 void MainWindow::on_continuousButton_pressed()
 {
 
-   commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)25));
+   commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)60));
    if(approachTimer->isActive()){
        approachTimer->stop();
-       approachTimer->start(100);
+       approachTimer->start(10);
    }
    else
    {
-       approachTimer->start(100);
+       approachTimer->start(10);
    }
 }
 

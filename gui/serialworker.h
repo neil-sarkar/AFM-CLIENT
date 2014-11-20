@@ -22,7 +22,9 @@ class serialworker : public QObject
     queue<returnBuffer*>& return_queue;
     //nanoiAFM m_afm;
 public:
-    serialworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue) :
+    serialworker(QObject *parent,
+                 queue<commandNode*>& _queue,
+                 queue<returnBuffer*>& _returnqueue) :
         QObject(parent),
         m_queue(_queue),
         return_queue(_returnqueue)  {}

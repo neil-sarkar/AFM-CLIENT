@@ -21,7 +21,9 @@ class eventworker : public QObject
 
 public:
     eventworker();
-    eventworker(QObject *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue):
+    eventworker(QObject *parent,
+                queue<commandNode*>& _queue,
+                queue<returnBuffer*>& _returnqueue):
         QObject(parent),
         m_queue(_queue),
         return_queue(_returnqueue) {}

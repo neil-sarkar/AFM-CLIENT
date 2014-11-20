@@ -38,13 +38,13 @@ void eventworker::updateGraph()
     }
     MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
 
-    if(_mainwindow != NULL){
-        if(_mainwindow->getCurrTab() == 3){
-            mutex.lock();
-            m_queue.push(new commandNode(readADC,(qint8)ADC_Z_AMP));
-            mutex.unlock();
-        }
-        else if( _mainwindow->getCurrTab() == 4 ) {
+    if(_mainwindow){
+//        if(_mainwindow->getCurrTab() == 3){
+//            mutex.lock();
+//            m_queue.push(new commandNode(readADC,(qint8)ADC_ZOFFSET));
+//            mutex.unlock();
+//        }
+        if( _mainwindow->getCurrTab() == 4 ) {
             mutex.lock();
             m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
             m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));

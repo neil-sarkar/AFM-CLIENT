@@ -42,7 +42,9 @@ class MainWindow : public QMainWindow
 public:
     //nanoiAFM afm;
     QList<QSerialPortInfo> detectedSerialPorts;
-    MainWindow(QWidget *parent, queue<commandNode*>& _queue,queue<returnBuffer*>& _returnqueue) :
+    MainWindow(QWidget *parent,
+               queue<commandNode*>& _queue,
+               queue<returnBuffer*>& _returnqueue) :
         QMainWindow(parent),
         commandQueue(_queue),
         returnQueue(_returnqueue) {}
