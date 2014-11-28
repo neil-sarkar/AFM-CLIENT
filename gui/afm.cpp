@@ -46,29 +46,31 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
     writeByte((digitalValue & 0xFF));
     writeByte((digitalValue >> 8));
 
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_DAC_WRITE_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
-    }
-    else {return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_DAC_WRITE_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
+//    }
+//    else {return AFM_FAIL;}
+    return AFM_SUCCESS;
 }
 
 float nanoiAFM::readDAC(qint8 dacID){
     quint16 val;
     writeByte(AFM_DAC_READ_SELECT);
     writeByte(dacID);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    //QByteArray res=waitForData(AFM_POLL_TIMEOUT);
 #if AFM_DEBUG
     qDebug() << "Bytes Read from DAC: " << res.size();
 #endif
-    if(!res.isEmpty() || !res.isNull()){
-        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+//    if(!res.isEmpty() || !res.isNull()){
+//        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 
-        if(res.at(2) == AFM_DAC_READ_SELECT){ return ((float)val)/AFM_DAC_SCALING;}
-        else{ return AFM_FAIL;}
-    }
-    else{ return AFM_FAIL;}
+//        if(res.at(2) == AFM_DAC_READ_SELECT){ return ((float)val)/AFM_DAC_SCALING;}
+//        else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
+    return AFM_SUCCESS;
 }
 
 float nanoiAFM::readADC(qint8 adcID){
@@ -76,17 +78,18 @@ float nanoiAFM::readADC(qint8 adcID){
 //    QByteArray responseData;
     writeByte(AFM_ADC_READ_SELECT);
     writeByte(adcID);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+    //QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+    //if(!res.isEmpty() || !res.isNull()){
+    //    val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
 #if AFM_DEBUG
     qDebug() << "ADC Digital Value read" << val;
 #endif
-        if(res.at(2) == AFM_ADC_READ_SELECT){ return ((float)val)/AFM_ADC_SCALING;}
-        else{ return AFM_FAIL;}
+//        if(res.at(2) == AFM_ADC_READ_SELECT){ return ((float)val)/AFM_ADC_SCALING;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
+    return AFM_SUCCESS;
 
 }
 
@@ -205,46 +208,46 @@ int nanoiAFM::stageSetPulseWidth(qint8 val){
     //Val should be checked against a value range
     writeByte(AFM_STAGE_PW_SELECT);
     writeByte(val);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::stageSetDirForward(){
+void nanoiAFM::stageSetDirForward(){
     writeByte(AFM_STAGE_DIR_FORW_SELECT);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_FORW_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_FORW_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::stageSetDirBackward(){
+void nanoiAFM::stageSetDirBackward(){
     writeByte(AFM_STAGE_DIR_REVERSE_SELECT);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_REVERSE_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_REVERSE_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::stageSetStep(){
+void nanoiAFM::stageSetStep(){
     writeByte(AFM_STAGE_STEP_SELECT);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_STEP_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_STEP_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
 void nanoiAFM::stageSetContinuous(){
@@ -252,7 +255,7 @@ void nanoiAFM::stageSetContinuous(){
 }
 
 int nanoiAFM::stageAbortContinuous(){
-    writeByte('q');
+    writeByte(AFM_ABORT_AUTO_APPROACH);
     QByteArray res=waitForData(AFM_POLL_TIMEOUT);
     if(!res.isEmpty() || !res.isNull()){
         if(res.at(0) == 'o'){ return AFM_SUCCESS;}
@@ -317,13 +320,9 @@ int nanoiAFM::setDDSSettings(quint16 numPoints,
 
 // If we don't read back numPoints*2, return AFM_FAIL
 // Otherwise, the data field is filled with numPoints doubles
-int nanoiAFM::frequencySweep(quint16 numPoints,
+void nanoiAFM::frequencySweep(quint16 numPoints,
                              quint16 startFrequency,
-                             quint16 stepSize, \
-                             QVector<double>& amplitudeData,
-                             QVector<double>& phaseData,
-                             QVector<double>& frequencyData,
-                             int& bytesRead){
+                             quint16 stepSize){
 
     //writeDAC(AFM_DAC_VCO_ID, 0); // write 0V
     setDDSSettings(numPoints, startFrequency, stepSize);
@@ -331,40 +330,40 @@ int nanoiAFM::frequencySweep(quint16 numPoints,
     // start frequency sweep
     writeByte(AFM_SWEEP_START);
 
-    // read numPoints*2 bytes + 1 byte of handshake data back
-    QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
-    bytesRead = freqData.size();
-    qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
-    //bytesRead[freqData.cend()];
-    if (bytesRead != numPoints*4 + 1) {
-        return AFM_FAIL;
-    }
+//    // read numPoints*2 bytes + 1 byte of handshake data back
+//    QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
+//    bytesRead = freqData.size();
+//    qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
+//    //bytesRead[freqData.cend()];
+//    if (bytesRead != numPoints*4 + 1) {
+//        return AFM_FAIL;
+//    }
 
-    quint16 intVal;
-    quint16 phaseVal;
-    qDebug() << "Test Bytes to Word: " << BYTES_TO_WORD((quint8)startFrequency, (quint8)(startFrequency >> 8));
+//    quint16 intVal;
+//    quint16 phaseVal;
+//    qDebug() << "Test Bytes to Word: " << BYTES_TO_WORD((quint8)startFrequency, (quint8)(startFrequency >> 8));
 
-    // y data
-    amplitudeData.clear();
-    phaseData.clear();
-    for(int i = 0; i < freqData.size() - 1; i+=4) {
-        intVal = BYTES_TO_WORD((quint8)freqData[i], (quint8)freqData[i+1]);
-        phaseVal = BYTES_TO_WORD((quint8)freqData[i+2],(quint8)freqData[i+3]);
-        qDebug() << "Int Val: " << intVal;        
-        amplitudeData.append( double(intVal)/AFM_ADC_SCALING );
-        phaseData.append(double(phaseVal)/AFM_ADC_SCALING);
-    }
+//    // y data
+//    amplitudeData.clear();
+//    phaseData.clear();
+//    for(int i = 0; i < freqData.size() - 1; i+=4) {
+//        intVal = BYTES_TO_WORD((quint8)freqData[i], (quint8)freqData[i+1]);
+//        phaseVal = BYTES_TO_WORD((quint8)freqData[i+2],(quint8)freqData[i+3]);
+//        qDebug() << "Int Val: " << intVal;
+//        amplitudeData.append( double(intVal)/AFM_ADC_SCALING );
+//        phaseData.append(double(phaseVal)/AFM_ADC_SCALING);
+//    }
 
-    // x-data
-    frequencyData.clear();
-    for(int i = startFrequency; i < (startFrequency + stepSize*numPoints); i+= stepSize) {
-        frequencyData.append(double(i));
-    }
+//    // x-data
+//    frequencyData.clear();
+//    for(int i = startFrequency; i < (startFrequency + stepSize*numPoints); i+= stepSize) {
+//        frequencyData.append(double(i));
+//    }
 
-    if(freqData.at(freqData.size()-1) == AFM_SWEEP_START)
-        return AFM_SUCCESS;
-    else
-        return AFM_FAIL;
+//    if(freqData.at(freqData.size()-1) == AFM_SWEEP_START)
+//        return AFM_SUCCESS;
+//    else
+//        return AFM_FAIL;
 }
 
 void nanoiAFM::rasterStep(float /*val1*/, float /*val2*/){
@@ -390,7 +389,7 @@ int nanoiAFM::autoApproach(double setpoint){
     }
     else{ return AFM_FAIL;}
 }
-int nanoiAFM::setDACValues(char dacID, double _val){
+void nanoiAFM::setDACValues(char dacID, double _val){
 
     writeByte(AFM_SET_DAC_MAX);
     qint16 _max = AFM_DAC_SCALING*_val;
@@ -399,13 +398,14 @@ int nanoiAFM::setDACValues(char dacID, double _val){
     writeByte((_max & 0xFF));
     writeByte((_max & 0x0F00) >> 8);
 
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_SET_DAC_MAX){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_SET_DAC_MAX){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
+    //return AFM_SUCCESS;
 }
 int nanoiAFM::deviceCalibration(double val, char side){
 
@@ -490,7 +490,7 @@ int nanoiAFM::deviceCalibration(double val, char side){
     else{ return AFM_FAIL; }
 }
 
-int nanoiAFM::scanParameters(double vmin_line,
+void nanoiAFM::scanParameters(double vmin_line,
                              double vmin_scan,
                              double vmax,
                              double numpts,
@@ -527,57 +527,55 @@ int nanoiAFM::scanParameters(double vmin_line,
 
 
 
-    QByteArray res = waitForData(AFM_LONG_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(1) == '@' && res.at(0) == 'o'){
-            return AFM_SUCCESS;
-        }
-        else{ return AFM_FAIL; }
+//    QByteArray res = waitForData(AFM_LONG_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(1) == '@' && res.at(0) == 'o'){
+//            return AFM_SUCCESS;
+//        }
+//        else{ return AFM_FAIL; }
 
-    }
-    else{ return AFM_FAIL; }
+//    }
+//    else{ return AFM_FAIL; }
 }
-int nanoiAFM::startScan()
+void nanoiAFM::startScan()
 {
     writeByte(AFM_START_SCAN);
 
-    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_START_SCAN){
-            return AFM_SUCCESS;
-        }
-        else{ return AFM_FAIL;}
+//    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_START_SCAN){
+//            return AFM_SUCCESS;
+//        }
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
-int nanoiAFM::scanStep(QVector<double> &z_offset_adc,
-                        QVector<double> &z_amp_adc,
-                        QVector<double> &z_phase_adc){
+void nanoiAFM::scanStep(){
 
     writeByte(AFM_SCAN_STEP);
 
     //receives: 8 points of 6 bytes each:
     //(z_offset_adc byte 1, z_offset_adc byte 2, z_amp_adc byte 1, z_amp_adc byte 2, z_phase_adc byte 1, z_phase_adc byte 2))
-    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+//    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
 
 
-    for(int i = 0; i < res.length() - 1; i++){
-        z_offset_adc.append(res.at(i)&res.at(++i));
-        z_amp_adc.append(res.at(++i)&res.at(++i));
-        z_phase_adc.append(res.at(++i)&res.at(++i));
-    }
+//    for(int i = 0; i < res.length() - 1; i++){
+//        z_offset_adc.append(res.at(i)&res.at(++i));
+//        z_amp_adc.append(res.at(++i)&res.at(++i));
+//        z_phase_adc.append(res.at(++i)&res.at(++i));
+//    }
 
 
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(res.length() - 1) == AFM_SCAN_STEP){
-            return AFM_SUCCESS;
-        }
-        else{ return AFM_FAIL;}
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(res.length() - 1) == AFM_SCAN_STEP){
+//            return AFM_SUCCESS;
+//        }
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
 

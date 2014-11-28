@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>910</width>
-    <height>591</height>
+    <height>618</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -117,14 +117,15 @@ border-bottom: 1px solid black;
         border: 2px solid gray;
         border-radius: 5px;
         margin-top: 1ex; /* leave space at the top for the title */
+    font-size: 10px;
+    font-weight: bold;
     }
      
     QGroupBox::title  {
         subcontrol-origin: margin;
         subcontrol-position: top center; /* position at the top center */
         padding: 0 3px;
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                          stop: 0 #FFOECE, stop: 1 #FFFFFF);
+		font-size: 17px;
     }
 </string>
             </property>
@@ -533,6 +534,8 @@ border-bottom: 1px solid black;
         border: 2px solid gray;
         border-radius: 5px;
         margin-top: 1ex; /* leave space at the top for the title */
+    font-size: 10px;
+    font-weight: bold;
     }
      
     QGroupBox::title  {
@@ -714,7 +717,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="controlTab">
        <attribute name="title">
@@ -1210,6 +1213,22 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                   </layout>
                  </item>
                 </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="gwyddionButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="layoutDirection">
+                 <enum>Qt::RightToLeft</enum>
+                </property>
+                <property name="text">
+                 <string>Open Gwyddion</string>
+                </property>
                </widget>
               </item>
              </layout>

@@ -4,12 +4,13 @@
 #include <QObject>
 #include <QMutex>
 #include <QWaitCondition>
-#include <afm.h>
 #include <queue>
 #include <commandNode.h>
 #include <QTimer>
 #include <returnBuffer.h>
-#include <mainwindow.h>
+#include <QThread>
+#include <Qtimer>
+#include <globals.h>
 
 using std::queue;
 
@@ -31,7 +32,7 @@ public:
     ~eventworker();
 private:
 
-    nanoiAFM m_afm;
+    //nanoiAFM m_afm;
     QTimer *graphTimer;     // graph timer which can change intervals
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
     int ioTimer;

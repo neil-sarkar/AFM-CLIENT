@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <afm.h>
 #include <QApplication>
 #include <QtSerialPort/qserialport.h>
 #include <QtSerialPort/qserialportinfo.h>
@@ -15,16 +14,29 @@
 #include <QtConcurrentRun>
 #include <QFuture>
 #include <QFutureWatcher>
-#include <serialworker.h>
 #include <queue>
 #include <returnBuffer.h>
-#include <globals.h>
-#include <eventworker.h>
+//#include <eventworker.h>
 #include <math.h>
-#include <qapplication.h>
 #include <qwt3d_gridplot.h>
 #include <qwt3d_function.h>
+#include <ui_mainwindow.h>
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_symbol.h>
+#include <qwt_legend.h>
+#include <QTime>
+#include <serialworker.h>
+#include <QThread>
+#include <QObject>
+//#include <armadillo>
+//#include <globals.h>
+#include <QSignalMapper>
+#include <QStatusBar>
+#include <commandNode.h>
 
+#include <QProcess>
 using std::queue;
 using namespace Qwt3D;
 
@@ -51,9 +63,13 @@ public:
 
     //void autoApproach(nanoiAFM* afm);
     void abort();
-    void SetPorts(returnBuffer*_node);
+    void SetPorts();
     void SetMaxDACValues();
     void Initialize();
+    void CreateFreqSweepGraph(QVector<double> frequencyData,
+                              QVector<double> amplitudeData,
+                              QVector<double> phaseData,
+                              int bytesRead);
     void setADC5(float val){adc5 = val;}
     void setDAC8(float val){dac8 = val;}
     bool getContinuousStep(){return continuousStep;}
@@ -181,6 +197,8 @@ private slots:
     void on_continuousButton_pressed();
 
     void on_continuousButton_released();
+
+    void on_gwyddionButton_clicked();
 
 private:
 

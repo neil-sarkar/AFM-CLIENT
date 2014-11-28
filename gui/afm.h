@@ -130,7 +130,7 @@
 
 #define AFM_SCAN_STEP '^'
 
-
+#define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 enum {
     AFM_SUCCESS = 0,
     AFM_FAIL = -1
@@ -174,9 +174,9 @@ public:
 
     int stageSetPulseWidth(qint8 val);
 
-    int stageSetDirForward();
-    int stageSetDirBackward();
-    int stageSetStep();
+    void stageSetDirForward();
+    void stageSetDirBackward();
+    void stageSetStep();
     void stageSetContinuous();
     int stageAbortContinuous();
     void stageStepForward();
@@ -188,35 +188,29 @@ public:
                        quint16 startFrequency,
                        quint16 stepSize);
 
-    int frequencySweep(quint16 numPoints,
+    void frequencySweep(quint16 numPoints,
                        quint16 startFrequency,
-                       quint16 stepSize,
-                       QVector<double>& amplitude,
-                       QVector<double>& phase,
-                       QVector<double>& frequency,
-                       int& bytesRead);
+                       quint16 stepSize);
 
     void rasterStep(float val1,
                     float val2);
 
     int autoApproach(double setpoint);
 
-    int setDACValues(char dacID,
+    void setDACValues(char dacID,
                      double _val);
 
     int deviceCalibration(double val,
                           char side);
 
-    int scanParameters(double vmin_line,
+    void scanParameters(double vmin_line,
                        double vmin_scan,
                        double vmax,
                        double numpts,
                        double numlines);
-    int startScan();
+    void startScan();
 
-    int scanStep(QVector<double> &z_offset_adc,
-                 QVector<double> &z_amp_adc,
-                 QVector<double> &z_phase_adc);
+    void scanStep();
 };
 
 #endif // AFM_H

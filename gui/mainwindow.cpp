@@ -1,25 +1,5 @@
 #include <mainwindow.h>
-#include <ui_mainwindow.h>
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_plot_grid.h>
-#include <qwt_symbol.h>
-#include <qwt_legend.h>
-#include <QTime>
-#include <serialworker.h>
-#include <QThread>
-#include <QObject>
-#include <command.h>
-//#include <armadillo>
-#include <globals.h>
-#include <QSignalMapper>
-#include <XYgenerator.h>
-#include <QStatusBar>
 
-#include <math.h>
-#include <qapplication.h>
-#include <qwt3d_gridplot.h>
-#include <qwt3d_function.h>
 
 //#include <gwyddion.h>
 
@@ -118,7 +98,9 @@ void MainWindow::Initialize()
     zAmp = 0;
 
     /*Push event to get ports from the serialworker*/
-    commandQueue.push(new commandNode(getPorts,(double)0));
+    //commandQueue.push(new commandNode(getPorts,(double)0));
+
+    SetPorts();
 
     /*Initialize DAC limits*/
     SetMaxDACValues();
@@ -303,17 +285,20 @@ void MainWindow::CreateGraphs(){
     signalPlot2.resize( 500, 100 );
     signalPlot2.show();
 }
-void MainWindow::SetPorts(returnBuffer *_node){
+void MainWindow::SetPorts(){
 
     /*Populate the port combobox*/
+    detectedSerialPorts = QSerialPortInfo::availablePorts();
     //mutex.lock();
     ui->cboComPortSelection->clear();
     if (ui->cboComPortSelection){
-        foreach (const QSerialPortInfo info, _node->getList()) {
+        foreach (const QSerialPortInfo info, detectedSerialPorts) {
             ui->cboComPortSelection->addItem(info.portName());
         }
         ui->cboComPortSelection->addItem("Refresh");
     }
+//    if(ui->cboComPortSelection->itemText(0) != "Refresh")
+//        commandQueue.push(new commandNode(setPort,(double)0));
     //mutex.unlock();
 }
 
@@ -451,11 +436,11 @@ void MainWindow::dequeueReturnBuffer() {
              break;
          case FREQSWEEP:
             freqRetVal = _buffer->getData();
-            //returnQueue.pop();
+            CreateFreqSweepGraph(_buffer->getFrequency(),_buffer->getAmplitude(),_buffer->getPhase(),_buffer->getBytesRead());
             emit SweepFinished();
             break;
          case GETPORTS:
-            SetPorts(returnQueue.front());
+            SetPorts();
             //returnQueue.pop();
             break;
          case DEVICECALIBRATION:
@@ -642,7 +627,7 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     //displayComPortInfo(detectedSerialPorts.at(index));
     if(index != -1){
         if(ui->cboComPortSelection->itemText(index) == "Refresh" && index != 0)
-            commandQueue.push(new commandNode(getPorts));
+            SetPorts();
         else
             commandQueue.push(new commandNode(setPort,(double)index));
     }
@@ -807,15 +792,11 @@ void MainWindow::on_continuousButton_clicked(bool checked)
 //    }
 //    mutex.unlock();
 }
-
-// Frequency sweep
-void MainWindow::on_sweepButton_clicked()
-{
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QVector<double>* frequencyData = new QVector<double>();
-    QVector<double>* amplitudeData = new QVector<double>();
-    QVector<double>* phaseData = new QVector<double>();
-    int bytesRead;
+void MainWindow::CreateFreqSweepGraph(QVector<double> frequencyData,
+                                      QVector<double> amplitudeData,
+                                      QVector<double> phaseData,
+                                      int bytesRead){
+    //QApplication::setOverrideCursor(Qt::WaitCursor);
 
     //connect(ui->sweepButton, SIGNAL(clicked()), ui->freqProgressLabel, SLOT(setText("Boo!")));
     ui->freqProgressLabel->setText("TRUE");
@@ -824,32 +805,22 @@ void MainWindow::on_sweepButton_clicked()
     freqPlot.clearData();
     phasePlot.clearData();
 
-    mutex.lock();
-    commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                      *amplitudeData, *phaseData,*frequencyData, bytesRead));
+//    mutex.lock();
 
-    mutex.unlock();
-    /*commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                    amplitudeData, frequencyData, bytesRead);*/
-
-    //QThread::msleep(100);
-    //int retVal = returnQueue.front();
-    mutex.lock();
-
-    queue<returnBuffer*> temp = returnQueue;
-    returnBuffer* _buffer;
-    while(!temp.empty()){
-        _buffer = temp.front();
-        if(_buffer->getReturnType() == FREQSWEEP){
-            freqRetVal = _buffer->getData();
-            *amplitudeData = _buffer->getAmplitude();
-            *frequencyData = _buffer->getFrequency();
-            *phaseData = _buffer->getPhase();
-            bytesRead = _buffer->getBytesRead();
-            temp.pop();
-        }
-    }
-    mutex.unlock();
+//    queue<returnBuffer*> temp = returnQueue;
+//    returnBuffer* _buffer;
+//    while(!temp.empty()){
+//        _buffer = temp.front();
+//        if(_buffer->getReturnType() == FREQSWEEP){
+//            freqRetVal = _buffer->getData();
+//            *amplitudeData = _buffer->getAmplitude();
+//            *frequencyData = _buffer->getFrequency();
+//            *phaseData = _buffer->getPhase();
+//            bytesRead = _buffer->getBytesRead();
+//            temp.pop();
+//        }
+//    }
+//    mutex.unlock();
     double freqVal;
     double ampVal;
     double phaseVal;
@@ -861,12 +832,12 @@ void MainWindow::on_sweepButton_clicked()
         msg.exec();
     }
     else {
-        qDebug() << "Size of X Data: " << frequencyData->size() << "Size of Y Data: " << amplitudeData->size();
+        qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqVal = frequencyData->at(i);
-            phaseVal = phaseData->at(i);
-            ampVal = amplitudeData->at(i);
+            freqVal = ui->startFrequency->value() + i;
+            phaseVal = phaseData.at(i);
+            ampVal = amplitudeData.at(i);
             freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
             phasePlot.update(freqVal,phaseVal,false);
         }
@@ -874,13 +845,30 @@ void MainWindow::on_sweepButton_clicked()
         freqPlot.replot(); // show the frequency sweep
     }
 
-    frequencyData->clear();
-    phaseData->clear();
-    amplitudeData->clear();
+    frequencyData.clear();
+    phaseData.clear();
+    amplitudeData.clear();
     ui->freqProgressLabel->setText("FALSE");
     ui->freqProgressLabel->setStyleSheet("QLabel { color : red; }");
 
     QApplication::restoreOverrideCursor();
+}
+
+// Frequency sweep
+void MainWindow::on_sweepButton_clicked()
+{
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    mutex.lock();
+    commandQueue.push(new commandNode(frequencySweep,(quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(),(quint16) ui->stepSize->value()));
+
+    mutex.unlock();
+    /*commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
+                                    amplitudeData, frequencyData, bytesRead);*/
+
+    //QThread::msleep(100);
+    //int retVal = returnQueue.front();
+
 }
 
 void MainWindow::on_useCurrFreqVal_clicked()
@@ -1220,14 +1208,14 @@ void MainWindow::showNormals(bool val)
 void MainWindow::on_continuousButton_pressed()
 {
 
-   commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)60));
+   //commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)));
    if(approachTimer->isActive()){
        approachTimer->stop();
-       approachTimer->start(10);
+       approachTimer->start(5);
    }
    else
    {
-       approachTimer->start(10);
+       approachTimer->start(5);
    }
 }
 
@@ -1235,4 +1223,12 @@ void MainWindow::on_continuousButton_released()
 {
     if(approachTimer)
         approachTimer->stop();
+}
+
+void MainWindow::on_gwyddionButton_clicked()
+{
+    QProcess* process = new QProcess();
+    QString program = "C:\\Program Files (x86)\\Gwyddion\\bin\\gwyddion.exe";
+    process->startDetached(program,QStringList());
+
 }

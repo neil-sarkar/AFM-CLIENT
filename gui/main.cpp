@@ -1,7 +1,8 @@
 #include <mainwindow.h>
 #include <globals.h>
 #include <QSignalMapper>
-
+#include <receiver.h>
+#include <eventworker.h>
 //gotta follow this to add QtSerial Port
 //http://qt-project.org/wiki/QtSerialPort#fn1921400492531950a902bc4
 
@@ -10,11 +11,13 @@
 QMutex mutex;
 int main(int argc, char *argv[])
 {
+
     QApplication a(argc, argv);
     queue<commandNode*> commandQueue = queue<commandNode*>();
+    queue<receivetype> receiveQueue = queue<receivetype>();
     queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
 
-
+    nanoiAFM afm;
     /**********************3 Threads***********************************
      *
      * mainThread:      Handles GUI, pushed events to the serialThread
@@ -28,10 +31,12 @@ int main(int argc, char *argv[])
     QThread* serialThread = new QThread();
     QThread* eventThread = new QThread();
     QThread* mainThread = new QThread();
+    QThread* receiveThread = new QThread();
 
     MainWindow* mainWorker = new MainWindow(0,commandQueue,returnQueue);
-    serialworker* serialWorker = new serialworker(0, commandQueue, returnQueue);
+    serialworker* serialWorker = new serialworker(0, commandQueue, receiveQueue, afm);
     eventworker* eventWorker = new eventworker(0,commandQueue,returnQueue);
+    receiver* receiveWorker = new receiver(0,receiveQueue,returnQueue, afm);
 
     mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
@@ -48,7 +53,13 @@ int main(int argc, char *argv[])
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
     eventThread->start();
 
+    receiveWorker->moveToThread(receiveThread);
+    QObject::connect(receiveThread, SIGNAL(started()),receiveWorker, SLOT(mainLoop()));
+    QObject::connect(receiveWorker, SIGNAL(finished()),receiveThread, SLOT(quit()), Qt::DirectConnection);
+    receiveThread->start();
+
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
+    QObject::connect(serialWorker, SIGNAL(openPort(QSerialPortInfo)), receiveWorker, SLOT(openPort(QSerialPortInfo)));
 
 
 
@@ -57,6 +68,8 @@ int main(int argc, char *argv[])
     /*Terminate threads on close*/
     serialWorker->abort();
     serialThread->wait();
+    receiveWorker->abort();
+    receiveThread->wait();
     eventWorker->abort();
     eventThread->wait();
     mainWorker->abort();
@@ -65,7 +78,9 @@ int main(int argc, char *argv[])
     delete serialThread;
     delete mainThread;
     delete eventThread;
+    delete receiveThread;
 
+    delete receiveWorker;
     delete serialWorker;
     delete eventWorker;
     delete mainWorker;

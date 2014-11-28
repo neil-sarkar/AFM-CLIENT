@@ -25,17 +25,19 @@ SOURCES += main.cpp\
     plot.cpp \
     serialworker.cpp \
     eventworker.cpp \
-    XYgenerator.cpp
+    XYgenerator.cpp \
+    receiver.cpp
 
 HEADERS  += mainwindow.h \
     afm.h \
     serialworker.h \
-    commandNode.h \
-    returnBuffer.h \
     eventworker.h \
     globals.h \
     XYgenerator.h \
-    myplot.h
+    myplot.h \
+    receiver.h \
+    commandnode.h \
+    returnbuffer.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

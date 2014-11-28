@@ -1,10 +1,5 @@
 #include <eventworker.h>
-#include <QThread>
-#include <afm.h>
-#include <Qtimer>
-#include <commandNode.h>
-#include <mainwindow.h>
-#include <globals.h>
+
 
 
 
@@ -36,21 +31,21 @@ void eventworker::updateGraph()
         //mutex.unlock();
         return;
     }
-    MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
+//    MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
 
-    if(_mainwindow){
-//        if(_mainwindow->getCurrTab() == 3){
+//    if(_mainwindow){
+////        if(_mainwindow->getCurrTab() == 3){
+////            mutex.lock();
+////            m_queue.push(new commandNode(readADC,(qint8)ADC_ZOFFSET));
+////            mutex.unlock();
+////        }
+//        if( _mainwindow->getCurrTab() == 4 ) {
 //            mutex.lock();
-//            m_queue.push(new commandNode(readADC,(qint8)ADC_ZOFFSET));
+//            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
+//            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
 //            mutex.unlock();
 //        }
-        if( _mainwindow->getCurrTab() == 4 ) {
-            mutex.lock();
-            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
-            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
-            mutex.unlock();
-        }
-    }
+//    }
 
 }
 
