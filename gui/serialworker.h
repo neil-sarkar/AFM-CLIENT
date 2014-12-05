@@ -49,8 +49,6 @@ private:
     int _index;
 
 signals:
-    void valueChanged(const QString &value);
-    void valueChanged(double value);
     void finished();
     void openPort(QSerialPortInfo _port);
     void updateStatusBar(QString _string);

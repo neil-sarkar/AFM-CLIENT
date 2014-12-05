@@ -15,45 +15,66 @@ void receiver::mainLoop()
     receivetype _node;
     QByteArray res;
     int shift = 0;
+    _abort = false;
+    quint16 val;
+
+    /********************Return Buffers********************/
     QVector<double>* amplitudeData=new QVector<double>();
     QVector<double>* phaseData=new QVector<double>();
     QVector<double>* frequencyData=new QVector<double>();
     QVector<double>* z_offset_adc = new QVector<double>();
     QVector<double>* z_amp_adc = new QVector<double>();
     QVector<double>* z_phase_adc = new QVector<double>();
-    _abort = false;
-    quint16 val;
+
+
+
     forever{
-        //check buffer
-        //if not empty poll UART
-        //read all bytes
-        //check struct type for correct return
+
+
+        /**********************************************************
+         * check to see if the buffer is not empty. If !empty read
+         * data from the serial port. Based on the node in the queue
+         * shift the serial buffer by the appropriate number of bytes.
+         * Push a node onto the return queue with the data
+         * Repeat.
+         **********************************************************/
 
         if (_abort) {
+            delete amplitudeData;
+            delete phaseData;
+            delete frequencyData;
+            delete z_offset_adc;
+            delete z_amp_adc;
+            delete z_phase_adc;
             emit finished();
             return;
         }
 
 
         if(!m_queue.empty()){
+            isError = false;
+            _node = m_queue.front();
             while(res.isEmpty()){
                 if (_abort) {
                     emit finished();
                     return;
                 }
-                res = r_afm.waitForData(AFM_SHORT_TIMEOUT);
+                if(_node.name == DEVICECALIBRATION || _node.name == AUTOAPPROACH)
+                    res = r_afm.waitForData(AFM_LONG_TIMEOUT);
+                else
+                    res = r_afm.waitForData(AFM_SHORT_TIMEOUT);
             }
-            _node = m_queue.front();
+
             if(!res.isEmpty() || !res.isNull()){
                     //push return buffer
                 switch(_node.name){
                     case WRITE:
                         if(res.at(0) == AFM_DAC_WRITE_SELECT){
                             r_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
-                            shift = 1;
+                            shift = _node.numBytes;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACZOFFSETFINE:
@@ -64,7 +85,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACZOFFSETCOARSE:
@@ -81,7 +102,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACBFRD2:
@@ -91,7 +112,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACBFRD3:
@@ -101,7 +122,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACZAMP:
@@ -111,7 +132,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACBR1:
@@ -121,7 +142,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACBR2:
@@ -131,7 +152,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACX1:
@@ -141,7 +162,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACX2:
@@ -151,7 +172,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACY1:
@@ -161,7 +182,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case DACY2:
@@ -171,19 +192,17 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
-                    break;
-                    case -1:
                     break;
                     case ADCZOFFSET:
                         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_ADC_READ_SELECT){
                             r_queue.push(new returnBuffer(ADCZOFFSET, float(((float)val)/AFM_ADC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case ADC:
@@ -193,7 +212,7 @@ void receiver::mainLoop()
                             shift = 3;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case SETDACVALUES:
@@ -202,7 +221,7 @@ void receiver::mainLoop()
                             shift = 1;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case STAGESETSTEP:
@@ -211,7 +230,7 @@ void receiver::mainLoop()
                             shift = 2;
                         }
                         else{
-                        //    return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case SETDIRFORWARD:
@@ -220,7 +239,7 @@ void receiver::mainLoop()
                             shift = 2;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case SETDIRBACKWARD:
@@ -229,17 +248,35 @@ void receiver::mainLoop()
                             shift = 2;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case SETPULSEWIDTH:
-                            if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){
-                                r_queue.push(new returnBuffer(SETPULSEWIDTH,AFM_SUCCESS));
-                                shift = 2;
-                            }
-                            else{
-                                //return AFM_FAIL;
-                            }
+                        if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){
+                            r_queue.push(new returnBuffer(SETPULSEWIDTH,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case ABORTCONTINUOUS:
+                        if(res.at(0) == 'o' && res.at(1) == AFM_ABORT_AUTO_APPROACH){
+                            r_queue.push(new returnBuffer(ABORTCONTINUOUS,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case AUTOAPPROACH:
+                        if(res.at(0) == 'o' && res.at(_node.numBytes) == AFM_AUTOAPPROACH_SELECT){
+                            r_queue.push(new returnBuffer(AUTOAPPROACH,AFM_SUCCESS));
+                            shift = _node.numBytes + 1;
+                        }
+                        else{
+                            isError = true;
+                        }
                     break;
                     case SCANPARAMETERS:
 
@@ -248,7 +285,7 @@ void receiver::mainLoop()
                             r_queue.push(new returnBuffer(SCANPARAMETERS,AFM_SUCCESS));
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case STARTSCAN:
@@ -257,38 +294,105 @@ void receiver::mainLoop()
                             shift = 1;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
                         }
                     break;
                     case SCANDATA:
-                        for(int i = 0; i < res.length() - 1; i++){
+                        for(int i = 0; i < _node.numBytes - 1; i++){
                             z_offset_adc->append(res.at(i)&res.at(++i));
                             z_amp_adc->append(res.at(++i)&res.at(++i));
                             z_phase_adc->append(res.at(++i)&res.at(++i));
                         }
 
-                        if(res.at(res.length() - 1) == AFM_SCAN_STEP){
+                        if(res.at(_node.numBytes) == AFM_SCAN_STEP){
                             r_queue.push(new returnBuffer(SCANDATA,AFM_SUCCESS,*z_offset_adc,*z_amp_adc,*z_phase_adc));
+                            shift = _node.numBytes+1;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case PIDENABLE:
+                        if(res.at(0) == AFM_PID_ENABLE_SELECT){
+                            r_queue.push(new returnBuffer(PIDENABLE,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
-                            //return AFM_FAIL;
+                            isError = true;
+                        }
+                    break;
+                    case PIDDISABLE:
+                        if(res.at(0) == AFM_PID_DISABLE_SELECT){
+                            r_queue.push(new returnBuffer(PIDDISABLE,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case SETP:
+                        if(res.at(0) == AFM_PID_P_SELECT){
+                            r_queue.push(new returnBuffer(SETP,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case SETI:
+                        if(res.at(0) == AFM_PID_I_SELECT){
+                            r_queue.push(new returnBuffer(SETI,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case SETD:
+                        if(res.at(0) == AFM_PID_D_SELECT){
+                            r_queue.push(new returnBuffer(SETD,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case SETPOINT:
+                        if(res.at(0) == AFM_PID_SETPOINT_SELECT){
+                            r_queue.push(new returnBuffer(SETPOINT,AFM_SUCCESS));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case DEVICECALIBRATION:
+                        if(res.at(_node.numBytes) == 'o')
+                        {
+                            r_queue.push(new returnBuffer(DEVICECALIBRATION,AFM_SUCCESS));
+                            shift = _node.numBytes + 1;
+                        }
+                        else{
+                            isError = true;
                         }
                     break;
                     case FREQSWEEP:
-                    // read numPoints*2 bytes + 1 byte of handshake data back
-                        //QByteArray freqData = waitForData(AFM_LONG_TIMEOUT);
-                        int bytesRead = res.size();
+
+                        int bytesRead;
                         int success;
-                        //qDebug() << "Bytes Read: " << bytesRead << " Bytes Expected: " << numPoints*2;
-                        //bytesRead[freqData.cend()];
+
+                        /* clear the ack from dds settings */
+                        if(res.at(0) == 'u'){
+                           shift = 1;
+                           res = res.remove(0,shift);
+                           bytesRead  = res.size();
+                        }
                         if (bytesRead != _node.numBytes) {
                             success = AFM_FAIL;
                         }
 
                         quint16 intVal;
                         quint16 phaseVal;
-                        //qDebug() << "Test Bytes to Word: " << BYTES_TO_WORD((quint8)startFrequency, (quint8)(startFrequency >> 8));
 
                         // y data
                         amplitudeData->clear();
@@ -301,23 +405,28 @@ void receiver::mainLoop()
                             phaseData->append(double(phaseVal)/AFM_ADC_SCALING);
                         }
 
-                        // x-data
-                        frequencyData->clear();
-//                        for(int i = startFrequency; i < (startFrequency + stepSize*numPoints); i+= stepSize) {
-//                            frequencyData->append(double(i));
-//                        }
 
                         if(res.at(bytesRead-1) == AFM_SWEEP_START){
                                 shift = _node.numBytes;
                                 success = AFM_SUCCESS;
-                                r_queue.push(new returnBuffer(FREQSWEEP,success,*amplitudeData,*phaseData,*frequencyData,bytesRead));
+                                r_queue.push(new returnBuffer(FREQSWEEP,success,*amplitudeData,*phaseData,bytesRead));
                         }
 
                         break;
 
                 }
-                m_queue.pop();
-                res = res.remove(0,shift);
+                if(isError){
+
+                    while(!m_queue.empty())
+                        m_queue.pop();
+                    res.clear();
+                    emit serialError();
+                }
+                else{
+                    m_queue.pop();
+                    res = res.remove(0,shift);
+                }
+
 
             }
         }

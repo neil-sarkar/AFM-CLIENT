@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     QObject::connect(serialWorker, SIGNAL(openPort(QSerialPortInfo)), receiveWorker, SLOT(openPort(QSerialPortInfo)));
-
+    QObject::connect(receiveWorker,SIGNAL(serialError()),mainWorker,SLOT(serialError()));
 
 
     int rt = a.exec();

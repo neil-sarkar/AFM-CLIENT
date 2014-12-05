@@ -354,61 +354,47 @@ void MainWindow::dequeueReturnBuffer() {
          case DACBFRD1:
             ui->dacValue->setValue(_buffer->getFData());
             bfrd1 = _buffer->getFData();
-            //returnQueue.pop();
             break;
          case DACBFRD2:
             bfrd2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACBR2:
             br2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACZAMP:
             zAmp = _buffer->getFData();
-            //ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACBR1:
             br1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACBFRD3:
             bfrd3 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACZOFFSETFINE:
             zOffsetFine = _buffer->getFData();
-            //returnQueue.pop();
             break;
          case DACY1:
             y1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACZOFFSETCOARSE:
-            //ui->dacValue->setValue(_buffer->getFData());
             zOffsetCoarse = _buffer->getFData();
-            //returnQueue.pop();
             break;
          case DACY2:
             y2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACX1:
             x1 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case DACX2:
             x2 = _buffer->getFData();
             ui->dacValue->setValue(_buffer->getFData());
-            //returnQueue.pop();
             break;
          case ADCZOFFSET:
             bfrd3 = _buffer->getFData();
@@ -416,32 +402,23 @@ void MainWindow::dequeueReturnBuffer() {
                 //ui->spnPidSetpoint->setValue(double(bfrd3));
                 //ui->currPIDSetpoint->setValue(double(bfrd3));
             }
-            //returnQueue.pop();
             break;
          case AFMADCAMPLITUDEID:
             zAmp = _buffer->getFData();
-            //returnQueue.pop();
             break;
          case AFMDACOFFSETID:
              zOffsetFine = _buffer->getFData();
-             returnQueue.pop();
              break;
          case DAC:
              ui->dacValue->setValue(_buffer->getFData());
-             //returnQueue.pop();
              break;
          case ADC:
              ui->adcValue->setValue(_buffer->getFData());
-             //returnQueue.pop();
              break;
          case FREQSWEEP:
             freqRetVal = _buffer->getData();
-            CreateFreqSweepGraph(_buffer->getFrequency(),_buffer->getAmplitude(),_buffer->getPhase(),_buffer->getBytesRead());
+            CreateFreqSweepGraph(_buffer->getAmplitude(),_buffer->getPhase(),_buffer->getBytesRead());
             emit SweepFinished();
-            break;
-         case GETPORTS:
-            SetPorts();
-            //returnQueue.pop();
             break;
          case DEVICECALIBRATION:
             if(_buffer->getData() == AFM_SUCCESS)
@@ -451,7 +428,6 @@ void MainWindow::dequeueReturnBuffer() {
             else{
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
-            //returnQueue.pop();
             break;
          case SCANPARAMETERS:
 
@@ -463,24 +439,23 @@ void MainWindow::dequeueReturnBuffer() {
             else{
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
-            //returnQueue.pop();
             break;
           case SCANDATA:
             //update GRAPH
 
             if(_buffer->getData() == AFM_SUCCESS){
                 QVector<double> zamp = _buffer->getzamp();
-                //int _size = zamp.size();
-                for (int i = 0; i < 16; i++)
+                int _size = zamp.size();
+                for (int i = 0; i < _size; i++)
                 {
-                    scandata[i] = new double[16];
+                    scandata[i] = new double[_size];
 
-                    for (int j = 0; j < 16; j++)
+                    for (int j = 0; j < _size; j++)
                     {
                         scandata[i][j] = zamp.at(i);
                     }
                 }
-                scanPlot.createDataset(scandata, 16, 16, 0, 16, 0, 16);
+                scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
                 scanPlot.updateGL();
             }
 
@@ -621,10 +596,6 @@ void MainWindow::on_spnPidSetpoint_valueChanged(double arg1)
 void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
 {
 
-    //afm.close(); //Close any existing ports
-    //afm.setPort(detectedSerialPorts.at(index));
-    //afm.open(QIODevice::ReadWrite);
-    //displayComPortInfo(detectedSerialPorts.at(index));
     if(index != -1){
         if(ui->cboComPortSelection->itemText(index) == "Refresh" && index != 0)
             SetPorts();
@@ -792,35 +763,16 @@ void MainWindow::on_continuousButton_clicked(bool checked)
 //    }
 //    mutex.unlock();
 }
-void MainWindow::CreateFreqSweepGraph(QVector<double> frequencyData,
-                                      QVector<double> amplitudeData,
+void MainWindow::CreateFreqSweepGraph(QVector<double> amplitudeData,
                                       QVector<double> phaseData,
                                       int bytesRead){
-    //QApplication::setOverrideCursor(Qt::WaitCursor);
 
-    //connect(ui->sweepButton, SIGNAL(clicked()), ui->freqProgressLabel, SLOT(setText("Boo!")));
     ui->freqProgressLabel->setText("TRUE");
     ui->freqProgressLabel->setStyleSheet("QLabel { color : Green; }");
 
     freqPlot.clearData();
     phasePlot.clearData();
 
-//    mutex.lock();
-
-//    queue<returnBuffer*> temp = returnQueue;
-//    returnBuffer* _buffer;
-//    while(!temp.empty()){
-//        _buffer = temp.front();
-//        if(_buffer->getReturnType() == FREQSWEEP){
-//            freqRetVal = _buffer->getData();
-//            *amplitudeData = _buffer->getAmplitude();
-//            *frequencyData = _buffer->getFrequency();
-//            *phaseData = _buffer->getPhase();
-//            bytesRead = _buffer->getBytesRead();
-//            temp.pop();
-//        }
-//    }
-//    mutex.unlock();
     double freqVal;
     double ampVal;
     double phaseVal;
@@ -832,7 +784,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double> frequencyData,
         msg.exec();
     }
     else {
-        qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
+        //qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
             freqVal = ui->startFrequency->value() + i;
@@ -845,7 +797,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double> frequencyData,
         freqPlot.replot(); // show the frequency sweep
     }
 
-    frequencyData.clear();
+    //frequencyData.clear();
     phaseData.clear();
     amplitudeData.clear();
     ui->freqProgressLabel->setText("FALSE");
@@ -861,14 +813,7 @@ void MainWindow::on_sweepButton_clicked()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     mutex.lock();
     commandQueue.push(new commandNode(frequencySweep,(quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(),(quint16) ui->stepSize->value()));
-
     mutex.unlock();
-    /*commandQueue.push(new commandNode(frequencySweep,ui->numFreqPoints->value(), ui->startFrequency->value(), ui->stepSize->value(),\
-                                    amplitudeData, frequencyData, bytesRead);*/
-
-    //QThread::msleep(100);
-    //int retVal = returnQueue.front();
-
 }
 
 void MainWindow::on_useCurrFreqVal_clicked()
@@ -877,6 +822,12 @@ void MainWindow::on_useCurrFreqVal_clicked()
 }
 void MainWindow::on_pushButton_6_clicked()
 {
+//    mutex.lock();
+//    for(int i =0; i< 100; i++){
+        commandQueue.push(new commandNode(startScan));
+//    }
+//    mutex.unlock();
+
 //    //XYGenerator dynamically resizes these values
 //    arma::mat X_points;
 //    arma::mat Y_points;
@@ -908,11 +859,6 @@ void MainWindow::on_pushButton_6_clicked()
 //            //Wait for Z values to be populated. How long should we wait?
 //        }
 //    }
-//    mutex.lock();
-//    for(int i =0; i< 100; i++){
-        commandQueue.push(new commandNode(startScan));
-//    }
-//    mutex.unlock();
 
 }
 
@@ -1231,4 +1177,12 @@ void MainWindow::on_gwyddionButton_clicked()
     QString program = "C:\\Program Files (x86)\\Gwyddion\\bin\\gwyddion.exe";
     process->startDetached(program,QStringList());
 
+}
+
+void MainWindow::serialError()
+{
+    //if(!msgBox.isEnabled()) {
+        msgBox.setText("There was an error communicating with the Serial Port.");
+        msgBox.exec();
+    //}
 }

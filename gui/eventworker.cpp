@@ -27,6 +27,7 @@ void eventworker::updateGraph()
 {
     //this event should probably be in the mainwindow thread
     if (_abort) {
+        delete generalTimer;
         emit finished();
         //mutex.unlock();
         return;

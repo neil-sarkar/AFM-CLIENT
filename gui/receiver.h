@@ -29,9 +29,11 @@ public:
 private:
     //nanoiAFM m_afm;
     bool _abort;
+    bool isError;
 
 signals:
     void finished();
+    void serialError();
 
 public slots:
     void openPort(QSerialPortInfo _port);

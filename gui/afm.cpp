@@ -33,10 +33,10 @@ QByteArray nanoiAFM::waitForData(int timeout)
     return responseData;
 }
 
-int nanoiAFM::writeDAC(qint8 dacID, double val){
-    if(val>AFM_DAC_MAX_VOLTAGE){
-        return AFM_FAIL;
-    }
+void nanoiAFM::writeDAC(qint8 dacID, double val){
+//    if(val>AFM_DAC_MAX_VOLTAGE){
+//        return AFM_FAIL;
+//    }
     qint16 digitalValue=AFM_DAC_SCALING*val;
 #if AFM_DEBUG
     qDebug() << "DAC Digital Value to be written:" << (digitalValue);
@@ -52,10 +52,10 @@ int nanoiAFM::writeDAC(qint8 dacID, double val){
 //        else{ return AFM_FAIL;}
 //    }
 //    else {return AFM_FAIL;}
-    return AFM_SUCCESS;
+    //return AFM_SUCCESS;
 }
 
-float nanoiAFM::readDAC(qint8 dacID){
+void nanoiAFM::readDAC(qint8 dacID){
     quint16 val;
     writeByte(AFM_DAC_READ_SELECT);
     writeByte(dacID);
@@ -70,10 +70,10 @@ float nanoiAFM::readDAC(qint8 dacID){
 //        else{ return AFM_FAIL;}
 //    }
 //    else{ return AFM_FAIL;}
-    return AFM_SUCCESS;
+//    return AFM_SUCCESS;
 }
 
-float nanoiAFM::readADC(qint8 adcID){
+void nanoiAFM::readADC(qint8 adcID){
     quint16 val;
 //    QByteArray responseData;
     writeByte(AFM_ADC_READ_SELECT);
@@ -89,11 +89,11 @@ float nanoiAFM::readADC(qint8 adcID){
 
 //    }
 //    else{ return AFM_FAIL;}
-    return AFM_SUCCESS;
+//    return AFM_SUCCESS;
 
 }
 
-int nanoiAFM::setRasterStep(){
+void nanoiAFM::setRasterStep(){
 //    QByteArray responseData;
 //    while(waitForReadyRead(AFM_POLL_TIMOUT)){
 //        responseData+= readAll();
@@ -103,108 +103,112 @@ int nanoiAFM::setRasterStep(){
 //        return AFM_SUCCESS;
 //    else
 //        return AFM_FAIL;
-    return AFM_SUCCESS;
+//    return AFM_SUCCESS;
 }
 
-int nanoiAFM::memsSetOffset(double val){
+void nanoiAFM::memsSetOffset(double val){
 
     writeDAC(DAC_ZOFFSET_FINE, val);
 
-    return AFM_SUCCESS; //There should be a comparison against a maximum value for offset voltage
+    //return AFM_SUCCESS; //There should be a comparison against a maximum value for offset voltage
 }
 
-int nanoiAFM::memsSetFrequency(double val){
+void nanoiAFM::memsSetFrequency(double val){
     //writeDAC(AFM_DAC_VCO_ID, val);
-    return AFM_SUCCESS;
+    //return AFM_SUCCESS;
 }
 
-int nanoiAFM::memsSetAmplitude(double val){
+void nanoiAFM::memsSetAmplitude(double val){
     writeDAC(DAC_ZAMP, val);
-    return AFM_SUCCESS;
+    //return AFM_SUCCESS;
 }
 
-int nanoiAFM::memsSetBridgeVoltage(double val){
-    if(writeDAC(DAC_BR1, val))
-        return AFM_SUCCESS;
-    else
-        return AFM_FAIL;
+void nanoiAFM::memsSetBridgeVoltage(double val){
+            writeDAC(DAC_BR1, val);
+    //    if(writeDAC(DAC_BR1, val))
+//        return AFM_SUCCESS;
+//    else
+//        return AFM_FAIL;
 }
 
-int nanoiAFM::pidEnable(){
+void nanoiAFM::pidEnable(){
     writeByte(AFM_PID_ENABLE_SELECT);
-    if(waitForData(AFM_POLL_TIMEOUT).at(0) == AFM_PID_ENABLE_SELECT)
-        return AFM_SUCCESS;
-    else
-        return AFM_FAIL;
+//    if(waitForData(AFM_POLL_TIMEOUT).at(0) == AFM_PID_ENABLE_SELECT)
+//        return AFM_SUCCESS;
+//    else
+//        return AFM_FAIL;
 }
-int nanoiAFM::pidDisable(){
+void nanoiAFM::pidDisable(){
     writeByte(AFM_PID_DISABLE_SELECT);
-    return AFM_SUCCESS;
+    //return AFM_SUCCESS;
 }
 
-int nanoiAFM::pidSetP(float P){
+void nanoiAFM::pidSetP(float P){
     writeByte(AFM_PID_P_SELECT);
     writeByte(((char*)&P)[0]);
     writeByte(((char*)&P)[1]);
     writeByte(((char*)&P)[2]);
     writeByte(((char*)&P)[3]);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_PID_P_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_PID_P_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL; }
+//    }
+//    else{ return AFM_FAIL; }
     //return AFM_SUCCESS; //There should be a max allowed P value. Return FAIL if P value over the range
 }
 
-int nanoiAFM::pidSetI(float I){
+void nanoiAFM::pidSetI(float I){
     writeByte(AFM_PID_I_SELECT);
     writeByte(((char*)&I)[0]);
     writeByte(((char*)&I)[1]);
     writeByte(((char*)&I)[2]);
     writeByte(((char*)&I)[3]);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_PID_I_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_PID_I_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{  return AFM_FAIL;}
+//    }
+//    else{  return AFM_FAIL;}
     //return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if I value over the range
 }
 
-int nanoiAFM::pidSetD(float D){
+void nanoiAFM::pidSetD(float D){
     writeByte(AFM_PID_D_SELECT);
     writeByte(((char*)&D)[0]);
     writeByte(((char*)&D)[1]);
     writeByte(((char*)&D)[2]);
     writeByte(((char*)&D)[3]);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == AFM_PID_D_SELECT){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == AFM_PID_D_SELECT){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
     //return AFM_SUCCESS; //There should be a max allowed I value. Return FAIL if D value over the range
 }
 
-int nanoiAFM::pidSetValues(qint8 P,qint8 I,qint8 D){
-    if(pidSetP(P)==AFM_FAIL || pidSetI(I)==AFM_FAIL || pidSetD(D)==AFM_FAIL){
-        return AFM_FAIL;
-    }
-    return AFM_SUCCESS;
+void nanoiAFM::pidSetValues(qint8 P,qint8 I,qint8 D){
+    pidSetP(P);
+    pidSetI(I);
+    pidSetD(D);
+//    if(pidSetP(P)==AFM_FAIL || pidSetI(I)==AFM_FAIL || pidSetD(D)==AFM_FAIL){
+//        return AFM_FAIL;
+//    }
+    //return AFM_SUCCESS;
 }
 
-int nanoiAFM::pidSetPoint(float val){
+void nanoiAFM::pidSetPoint(float val){
     writeByte(AFM_PID_SETPOINT_SELECT);
     writeByte(((char*)&val)[0]);
     writeByte(((char*)&val)[1]);
-    return AFM_SUCCESS; //Should be checked against a value range
+    //return AFM_SUCCESS; //Should be checked against a value range
 }
 
-int nanoiAFM::stageSetPulseWidth(qint8 val){
+void nanoiAFM::stageSetPulseWidth(qint8 val){
     //Val should be checked against a value range
     writeByte(AFM_STAGE_PW_SELECT);
     writeByte(val);
@@ -254,15 +258,15 @@ void nanoiAFM::stageSetContinuous(){
     writeByte(AFM_STAGE_CONT_SELECT);
 }
 
-int nanoiAFM::stageAbortContinuous(){
+void nanoiAFM::stageAbortContinuous(){
     writeByte(AFM_ABORT_AUTO_APPROACH);
-    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
 void nanoiAFM::stageStepForward(){
@@ -285,7 +289,7 @@ void nanoiAFM::stageMoveBackward(){
     stageSetContinuous();
 }
 
-int nanoiAFM::setDDSSettings(quint16 numPoints,
+void nanoiAFM::setDDSSettings(quint16 numPoints,
                              quint16 startFrequency,
                              quint16 stepSize) {
 
@@ -308,14 +312,14 @@ int nanoiAFM::setDDSSettings(quint16 numPoints,
     writeByte((qint8)numPoints); // low byte
     writeByte((qint8)(numPoints>>8)); // high bye
 
-    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'u'){
-            return AFM_SUCCESS;
-        }
-        else{ return AFM_FAIL;}
-    }
-    else{ return AFM_FAIL;}
+//    QByteArray res = waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'u'){
+//            return AFM_SUCCESS;
+//        }
+//        else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 
 // If we don't read back numPoints*2, return AFM_FAIL
@@ -381,13 +385,13 @@ int nanoiAFM::autoApproach(double setpoint){
     writeByte((150));
     writeByte(0);
 
-    QByteArray res=waitForData(AFM_LONG_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
-        else{ return AFM_FAIL;}
+//    QByteArray res=waitForData(AFM_LONG_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o'){ return AFM_SUCCESS;}
+//        else{ return AFM_FAIL;}
 
-    }
-    else{ return AFM_FAIL;}
+//    }
+//    else{ return AFM_FAIL;}
 }
 void nanoiAFM::setDACValues(char dacID, double _val){
 
@@ -444,7 +448,7 @@ int nanoiAFM::deviceCalibration(double val, char side){
     writeByte((_max & 0x0F00) >> 8);
 
     //16, 384 bytes
-    QByteArray res=waitForData(AFM_LONG_TIMEOUT);
+    //QByteArray res=waitForData(AFM_LONG_TIMEOUT);
     //int bytes = res.size();
 //    while(bytes < 16300){
 //        res+=waitForData();
@@ -482,12 +486,12 @@ int nanoiAFM::deviceCalibration(double val, char side){
 
     //waitForReadyRead(100);
 
-    res = waitForData(AFM_POLL_TIMEOUT);
-    if(!res.isEmpty() || !res.isNull()){
-        if(res.at(0) == 'o'){ return AFM_SUCCESS; }
-        else{ return AFM_FAIL; }
-    }
-    else{ return AFM_FAIL; }
+//    res = waitForData(AFM_POLL_TIMEOUT);
+//    if(!res.isEmpty() || !res.isNull()){
+//        if(res.at(0) == 'o'){ return AFM_SUCCESS; }
+//        else{ return AFM_FAIL; }
+//    }
+//    else{ return AFM_FAIL; }
 }
 
 void nanoiAFM::scanParameters(double vmin_line,

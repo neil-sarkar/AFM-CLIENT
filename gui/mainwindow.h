@@ -66,8 +66,7 @@ public:
     void SetPorts();
     void SetMaxDACValues();
     void Initialize();
-    void CreateFreqSweepGraph(QVector<double> frequencyData,
-                              QVector<double> amplitudeData,
+    void CreateFreqSweepGraph(QVector<double> amplitudeData,
                               QVector<double> phaseData,
                               int bytesRead);
     void setADC5(float val){adc5 = val;}
@@ -87,6 +86,7 @@ private:
     QThread* serialThread;
     QThread* eventThread;
     serialworker *serialWorker;
+    QMessageBox msgBox;
     //eventworker *eventWorker;
     //QMutex mutex;
 
@@ -108,6 +108,7 @@ public slots:
     void pickCoordSystem( QAction* );
     void pickFloorStyle( QAction* );
     void showNormals(bool val);
+    void serialError();
 
 private slots:
     void MainWindowLoop();
@@ -249,7 +250,7 @@ private:
     float y2;
     float x1;
     float x2;
-    double *scandata[16];
+    double *scandata[256];
 };
 
 #endif // MAINWINDOW_H

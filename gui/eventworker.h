@@ -11,6 +11,7 @@
 #include <QThread>
 #include <Qtimer>
 #include <globals.h>
+#include <mainwindow.h>
 
 using std::queue;
 

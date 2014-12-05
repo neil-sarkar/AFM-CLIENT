@@ -146,45 +146,45 @@ public:
 
     QByteArray waitForData(int timeout);
 
-    int writeDAC(qint8 dacID,
+    void writeDAC(qint8 dacID,
                  double val);
 
-    float readDAC(qint8 dacID);
-    float readADC(qint8 adcID);
+    void readDAC(qint8 dacID);
+    void readADC(qint8 adcID);
 
-    int setRasterStep();
+    void setRasterStep();
 
-    int memsSetOffset(double val);
-    int memsSetFrequency(double val);
-    int memsSetAmplitude(double val);
-    int memsSetBridgeVoltage(double val);
+    void memsSetOffset(double val);
+    void memsSetFrequency(double val);
+    void memsSetAmplitude(double val);
+    void memsSetBridgeVoltage(double val);
 
-    int pidEnable();
-    int pidDisable();
+    void pidEnable();
+    void pidDisable();
 
-    int pidSetP(float P);
-    int pidSetI(float I);
-    int pidSetD(float D);
+    void pidSetP(float P);
+    void pidSetI(float I);
+    void pidSetD(float D);
 
-    int pidSetValues(qint8 P,
+    void pidSetValues(qint8 P,
                      qint8 I,
                      qint8 D);
 
-    int pidSetPoint(float val);
+    void pidSetPoint(float val);
 
-    int stageSetPulseWidth(qint8 val);
+    void stageSetPulseWidth(qint8 val);
 
     void stageSetDirForward();
     void stageSetDirBackward();
     void stageSetStep();
     void stageSetContinuous();
-    int stageAbortContinuous();
+    void stageAbortContinuous();
     void stageStepForward();
     void stageStepBackward();
     void stageMoveForward();
     void stageMoveBackward();
 
-    int setDDSSettings(quint16 numPoints,
+    void setDDSSettings(quint16 numPoints,
                        quint16 startFrequency,
                        quint16 stepSize);
 
