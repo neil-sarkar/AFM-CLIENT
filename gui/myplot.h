@@ -98,7 +98,7 @@ public:
     }
 
 private slots:
-    void displayPoint(const QPointF&);
+    void displayPoint(const QPointF &);
 
 private:
     QVector<double> xData;

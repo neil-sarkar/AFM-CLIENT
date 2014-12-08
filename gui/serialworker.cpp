@@ -56,62 +56,62 @@ void serialworker::mainLoop()
                     switch(_ID){
                         case DAC_ZOFFSET_FINE:
                             receivenode.name = DACZOFFSETFINE;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_ZOFFSET_COARSE:
                             receivenode.name = DACZOFFSETCOARSE;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_BFRD1:
                             receivenode.name = DACBFRD1;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_BFRD2:
                             receivenode.name = DACBFRD2;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_BFRD3:
                             receivenode.name = DACBFRD3;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_ZAMP:
                             receivenode.name = DACZAMP;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_BR1:
                             receivenode.name = DACBR1;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_BR2:
                             receivenode.name = DACBR2;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_X1:
                             receivenode.name = DACX1;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_X2:
                             receivenode.name = DACX2;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_Y1:
                             receivenode.name = DACY1;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case DAC_Y2:
                             receivenode.name = DACY2;
-                            receivenode.numBytes = 8;
+                            receivenode.numBytes = 3;
                             receive_queue.push(receivenode);
                             break;
                         case -1:
@@ -169,7 +169,7 @@ void serialworker::mainLoop()
                 case stageSetStep:
                     s_afm.stageSetStep();
                     receivenode.name = STAGESETSTEP;
-                    receivenode.numBytes = 8;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case stageSetContinuous:
@@ -223,13 +223,13 @@ void serialworker::mainLoop()
                 case stageSetDirBackward:
                     s_afm.stageSetDirBackward();
                     receivenode.name = SETDIRBACKWARD;
-                    receivenode.numBytes = 16;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case stageSetDirForward:
                     s_afm.stageSetDirForward();
                     receivenode.name = SETDIRFORWARD;
-                    receivenode.numBytes = 16;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case stageSetPulseWidth:

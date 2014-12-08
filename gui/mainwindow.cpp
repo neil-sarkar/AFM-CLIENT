@@ -224,6 +224,7 @@ void MainWindow::CreateGraphs(){
     scanPlot.updateGL();
     scanPlot.show();
 
+
     ui->gridLayout_11->setSpacing(0);
     ui->gridLayout_11->addWidget(&scanPlot, 0, 0);
 
@@ -240,10 +241,12 @@ void MainWindow::CreateGraphs(){
     //freqPlot.resize(500, 300);
     freqPlot.show();
 
+    //connect(freqPlot,SIGNAL(clicked()),freqPlot,SLOT(displayPoint(const QPointF&)));
+    //freqPlot.connect(freqPlot,SIGNAL(),freqPlot,SLOT(displayPoint(const QPointF&)));
 
     //phase plot
     fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Phase (Deg)",\
-                      QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Red"),
+                      QPair<double,double>(3800,4800), QPair<double,double>(0,0.12), QColor("Blue"),
                       false, true);
 
     phasePlot.SetPlot( fields, ui->freqWidget);
@@ -1157,11 +1160,11 @@ void MainWindow::on_continuousButton_pressed()
    //commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)));
    if(approachTimer->isActive()){
        approachTimer->stop();
-       approachTimer->start(5);
+       approachTimer->start(10);
    }
    else
    {
-       approachTimer->start(5);
+       approachTimer->start(10);
    }
 }
 

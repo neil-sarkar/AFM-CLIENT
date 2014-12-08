@@ -67,24 +67,30 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     grid->setMajorPen( Qt::white, 0, Qt::DotLine );
     grid->attach( this );
 
-    this->setCanvasBackground( QColor( "Black" ) );
+    this->setCanvasBackground( QColor( "White" ) );
 
     QwtPlotCurve *curve = new QwtPlotCurve( fields.title );
     curve->setPen( fields.color );
     curve->attach( this );
+
+    QwtPlotPicker *picker = new QwtPlotPicker(this->canvas());
+    picker->setStateMachine(new QwtPickerClickPointMachine);
+    picker->setMousePattern(QwtEventPattern::MouseSelect1,Qt::LeftButton);
+    picker->setTrackerMode(QwtPlotPicker::AlwaysOff);
+    connect(picker, SIGNAL(selected(QPointF)),this,SLOT(displayPoint(QPointF)));
 
     this->mCurve = curve;
     this->xAxisStart = fields.xAxis.first;
     this->xAxisRange = fields.xAxis.second - fields.xAxis.first;
     this->autoScale = fields.autoScale;
 
-    //connect(this, SIGNAL(clicked(QPointF)),this,SLOT(displayPoint(QPointF)));
+
+
 
 }
 
-// TODO: I cannot seem to be able to get this slot to activate upon clicking
 void Plot::displayPoint(const QPointF& p) {
-    qDebug() << "I am here";
+    //qDebug() << "I am here";
     QMessageBox msgBox;
     msgBox.setText(QString("%1 %2").arg(QString::number(p.x()), QString::number(p.y())));
     msgBox.exec();
@@ -96,8 +102,15 @@ void Plot::setAutoScale(bool val) {
     this->setAxisAutoScale( QwtPlot::yLeft, val );
 
     if ( this->autoScale == false ) {
-        this->setAxisScale( QwtPlot::xBottom, xData[dataCount-1], xData[dataCount-1] + xAxisRange );
-        this->xAxisStart = xData[dataCount-1];
+        if(dataCount == 0){
+            //this->setAxisScale( QwtPlot::xBottom, xData[dataCount], xData[dataCount] + xAxisRange );
+            //this->xAxisStart = xData[dataCount];
+        }
+        else{
+            this->setAxisScale( QwtPlot::xBottom, xData[dataCount-1], xData[dataCount-1] + xAxisRange );
+            this->xAxisStart = xData[dataCount-1];
+        }
+
         this->dataCount = 0;
         this->xData.clear();
         this->yData.clear();

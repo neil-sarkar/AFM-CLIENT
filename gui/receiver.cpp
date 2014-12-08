@@ -78,36 +78,35 @@ void receiver::mainLoop()
                         }
                     break;
                     case DACZOFFSETFINE:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACZOFFSETFINE, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACZOFFSETCOARSE:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACZOFFSETCOARSE, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                     break;
-                    case DACBFRD1:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+                    case DACBFRD1:                       
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACBFRD1, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACBFRD2:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACBFRD2, float(((float)val)/AFM_DAC_SCALING)));
                             shift = 3;
                         }
@@ -119,77 +118,77 @@ void receiver::mainLoop()
                         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             r_queue.push(new returnBuffer(DACBFRD3, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACZAMP:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACZAMP, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
-                    case DACBR1:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+                    case DACBR1:                        
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACBR1, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACBR2:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACBR2, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACX1:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACX1, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACX2:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACX2, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACY1:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACY1, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
                         }
                     break;
                     case DACY2:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(DACY2, float(((float)val)/AFM_DAC_SCALING)));
-                            shift = 3;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
@@ -206,8 +205,8 @@ void receiver::mainLoop()
                         }
                     break;
                     case ADC:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_ADC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(ADC, float(((float)val)/AFM_ADC_SCALING)));
                             shift = 3;
                         }
@@ -227,7 +226,7 @@ void receiver::mainLoop()
                     case STAGESETSTEP:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_STEP_SELECT){
                             r_queue.push(new returnBuffer(STAGESETSTEP,AFM_SUCCESS));
-                            shift = 2;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
@@ -236,7 +235,7 @@ void receiver::mainLoop()
                     case SETDIRFORWARD:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_FORW_SELECT){
                             r_queue.push(new returnBuffer(SETDIRFORWARD,AFM_SUCCESS));
-                            shift = 2;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
@@ -245,7 +244,7 @@ void receiver::mainLoop()
                     case SETDIRBACKWARD:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_REVERSE_SELECT){
                             r_queue.push(new returnBuffer(SETDIRBACKWARD,AFM_SUCCESS));
-                            shift = 2;
+                            shift = _node.numBytes;
                         }
                         else{
                             isError = true;
@@ -274,13 +273,17 @@ void receiver::mainLoop()
                             r_queue.push(new returnBuffer(AUTOAPPROACH,AFM_SUCCESS));
                             shift = _node.numBytes + 1;
                         }
+                        else if(res.at(0) == 'f'){
+                            r_queue.push(new returnBuffer(AUTOAPPROACH,AFM_FAIL));
+                            shift = 2;
+                        }
                         else{
                             isError = true;
                         }
                     break;
                     case SCANPARAMETERS:
 
-                        if(res.at(1) == '@' && res.at(0) == 'o'){
+                        if(res.at(1) == AFM_SCAN_PARAMETERS && res.at(0) == 'o'){
                             shift = 2;
                             r_queue.push(new returnBuffer(SCANPARAMETERS,AFM_SUCCESS));
                         }
@@ -306,7 +309,7 @@ void receiver::mainLoop()
 
                         if(res.at(_node.numBytes) == AFM_SCAN_STEP){
                             r_queue.push(new returnBuffer(SCANDATA,AFM_SUCCESS,*z_offset_adc,*z_amp_adc,*z_phase_adc));
-                            shift = _node.numBytes+1;
+                            shift = _node.numBytes+1; //plus one for acknowledgement byte
                         }
                         else{
                             isError = true;
@@ -370,7 +373,7 @@ void receiver::mainLoop()
                         if(res.at(_node.numBytes) == 'o')
                         {
                             r_queue.push(new returnBuffer(DEVICECALIBRATION,AFM_SUCCESS));
-                            shift = _node.numBytes + 1;
+                            shift = _node.numBytes + 1; //acknowledge byte
                         }
                         else{
                             isError = true;
@@ -423,6 +426,7 @@ void receiver::mainLoop()
                     emit serialError();
                 }
                 else{
+                    //we good
                     m_queue.pop();
                     res = res.remove(0,shift);
                 }
