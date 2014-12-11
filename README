@@ -1,0 +1,59 @@
+AFM SERIAL COMMUNICATION C++ APPLICATION
+=========================================
+
+-Version 0.1
+	- Serial communication with the MCU
+	- Ability to scan
+	- Looks nice
+
+	
+	
+**************************
+1. BUILD INSTRUCTIONS
+**************************
+Before you start make sure you have the mingw-32 compiler installed
+and at least version 5.3.2 of Qt Creator
+
+1. Download and install qwt-6.1.1
+
+2. Download and install qwtplot3d-0.3.1-322
+
+3. Update the nano-i.pro project file with the required file paths
+
+4. Run qmake and build the application and you should be good to go
+
+**************************
+2. CORE COMPONENTS
+**************************
+
+The main application is divided into 4 threads
+	1.GUI thread
+	2.Sender thread
+	3.Receiver thread
+	4.Continuous event thread 
+	
+The threads communicate by way of 3 buffers
+	1.Command buffer
+		The Command buffer can only be written to by the GUI thread
+		When the user performs an action the GUI pushes to this buffer to request
+		That the Sender thread communicates with the MCU
+		
+	2.Receive buffer
+		The Receive buffer is written to by the Sender thread. When the sender receives a 
+		request for a command it pushes to the receive buffer to notify the receiver thread
+		that there will be bytes to be read.
+		
+	3.Return buffer
+		The return buffer is written to by the receiver thread. When the receiver receives a
+		notification to read the serial port it will place the data it reads into the 
+		return buffer and then the GUI reads the return buffer.
+
+	4.Event thread
+		The event thread write to the command buffer when we want to update graphs. This thread
+		should handle all graph updating so that the main thread isn't required to spend 
+		resources updating the graphs
+
+**************************
+
+**************************
+	

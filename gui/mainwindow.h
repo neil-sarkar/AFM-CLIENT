@@ -10,13 +10,11 @@
 #include <QMessageBox>
 #include <myplot.h>
 #include <qtimer.h>
-//#include <XYGenerator.h>
 #include <QtConcurrentRun>
 #include <QFuture>
 #include <QFutureWatcher>
 #include <queue>
 #include <returnBuffer.h>
-//#include <eventworker.h>
 #include <math.h>
 #include <qwt3d_gridplot.h>
 #include <qwt3d_function.h>
@@ -109,6 +107,8 @@ public slots:
     void pickFloorStyle( QAction* );
     void showNormals(bool val);
     void serialError();
+    void setDDSFrequency(const QPointF &p);
+    void updatePlot(double _signal, int _plot);
 
 private slots:
     void MainWindowLoop();
@@ -122,8 +122,6 @@ private slots:
     void on_spnOffsetVoltage_valueChanged(double arg1);
 
     void on_spnBridgeVoltage_valueChanged(double arg1);
-
-    void on_spnFrequencyVoltage_valueChanged(double arg1);
 
     void on_spnPidValueP_valueChanged(double arg1);
 
@@ -183,7 +181,7 @@ private slots:
 
     void on_buttonSendSweep_clicked();
 
-    void on_buttonAutoApproachMCU_clicked();
+    void on_buttonAutoApproachMCU_clicked(bool checked);
 
     void on_writeCharacter_clicked();
 
@@ -200,6 +198,16 @@ private slots:
     void on_continuousButton_released();
 
     void on_gwyddionButton_clicked();
+
+    void on_spnBoxFineZRange_valueChanged(int arg1);
+
+    void on_spnBoxCoarseZ_valueChanged(double arg1);
+
+    void on_spnBoxFineZ_valueChanged(double arg1);
+
+    void on_btnSetScanParameters_clicked();
+
+    void on_spnFrequencyVoltage_valueChanged(double arg1);
 
 private:
 
@@ -250,6 +258,9 @@ private:
     float y2;
     float x1;
     float x2;
+    double signal;
+    double offset;
+    double phase;
     double *scandata[256];
 };
 

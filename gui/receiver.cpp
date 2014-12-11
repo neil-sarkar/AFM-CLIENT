@@ -18,6 +18,10 @@ void receiver::mainLoop()
     _abort = false;
     quint16 val;
 
+    double signal;
+    double offset;
+    double phase;
+
     /********************Return Buffers********************/
     QVector<double>* amplitudeData=new QVector<double>();
     QVector<double>* phaseData=new QVector<double>();
@@ -66,7 +70,6 @@ void receiver::mainLoop()
             }
 
             if(!res.isEmpty() || !res.isNull()){
-                    //push return buffer
                 switch(_node.name){
                     case WRITE:
                         if(res.at(0) == AFM_DAC_WRITE_SELECT){
@@ -194,10 +197,20 @@ void receiver::mainLoop()
                             isError = true;
                         }
                     break;
-                    case ADCZOFFSET:
-                        val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+                    case ADCZOFFSET:                        
                         if(res.at(2) == AFM_ADC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(ADCZOFFSET, float(((float)val)/AFM_ADC_SCALING)));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case ADCPHASE:
+                        if(res.at(2) == AFM_ADC_READ_SELECT){
+                            val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+                            r_queue.push(new returnBuffer(ADCPHASE, float(((float)val)/AFM_ADC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -209,6 +222,18 @@ void receiver::mainLoop()
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             r_queue.push(new returnBuffer(ADC, float(((float)val)/AFM_ADC_SCALING)));
                             shift = 3;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case READSIGNALPHASEOFFSET:
+                        if(res.at(_node.numBytes) == AFM_ADC_READ_SPO){
+                            signal = (((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
+                            offset =(((unsigned char)res.at(3) << 8) | (unsigned char)res.at(2));
+                            phase =(((unsigned char)res.at(5) << 8) | (unsigned char)res.at(4));
+                            r_queue.push(new returnBuffer(READSIGNALPHASEOFFSET,AFM_SUCCESS,signal/AFM_DAC_SCALING,offset/AFM_DAC_SCALING,phase/AFM_DAC_SCALING));
+                            shift = _node.numBytes+1;
                         }
                         else{
                             isError = true;
@@ -369,6 +394,24 @@ void receiver::mainLoop()
                             isError = true;
                         }
                     break;
+                    case SETDDS:
+                        if(res.at(0) == AFM_DDS_SWEEP_SET){
+                           r_queue.push(new returnBuffer(SETDDS,AFM_SUCCESS));
+                           shift = 1;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
+                    case SETPGA:
+                        if(res.at(0) == 'o' && res.at(1) == AFM_SET_PGA){
+                           r_queue.push(new returnBuffer(SETPGA,AFM_SUCCESS));
+                           shift = 2;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
                     case DEVICECALIBRATION:
                         if(res.at(_node.numBytes) == 'o')
                         {
@@ -385,7 +428,7 @@ void receiver::mainLoop()
                         int success;
 
                         /* clear the ack from dds settings */
-                        if(res.at(0) == 'u'){
+                        if(res.at(0) == AFM_DDS_SWEEP_SET){
                            shift = 1;
                            res = res.remove(0,shift);
                            bytesRead  = res.size();
@@ -433,6 +476,13 @@ void receiver::mainLoop()
 
 
             }
+        }
+        else
+        {
+            //sometimes there are extra bytes in the buffer when we do an
+            //approach. So if there is nothing in the receive queue just
+            //empty the buffer to make sure
+            res.clear();
         }
     };
 }

@@ -3,7 +3,7 @@
 
 //#include <gwyddion.h>
 
-#define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
+//#define AFM_DAC_AMPLITUDE_MAX_VOLTAGE 1.5 // slider bar for amplitude for control
 
 /* Conrad Sanderson.
  * Armadillo: An Open Source C++ Linear Algebra Library for
@@ -122,7 +122,7 @@ void MainWindow::Initialize()
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
     on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value()); // set amplitude
     on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value()); // set bridge voltage
-    on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
+    //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
 
     /* future watcher for auto approaching*/
     future = new QFuture<void>;
@@ -241,6 +241,7 @@ void MainWindow::CreateGraphs(){
     //freqPlot.resize(500, 300);
     freqPlot.show();
 
+    connect(&freqPlot,SIGNAL(setDDSFrequency(QPointF)),this,SLOT(setDDSFrequency(QPointF)));
     //connect(freqPlot,SIGNAL(clicked()),freqPlot,SLOT(displayPoint(const QPointF&)));
     //freqPlot.connect(freqPlot,SIGNAL(),freqPlot,SLOT(displayPoint(const QPointF&)));
 
@@ -327,7 +328,8 @@ void MainWindow::SetMaxDACValues(){
 }
 
 void MainWindow::approachTimerUp(){
-    commandQueue.push(new commandNode(stageSetStep));
+    if(approachTimer->isActive())
+        commandQueue.push(new commandNode(stageSetStep));
 }
 
 /*
@@ -346,9 +348,6 @@ void MainWindow::dequeueReturnBuffer() {
      * on each timer trigger
      */
     //QCoreApplication::processEvents();
-    mutex.lock();
-
-
 
     while(!returnQueue.empty()){
         //updateStatusBar("Working...");
@@ -406,6 +405,18 @@ void MainWindow::dequeueReturnBuffer() {
                 //ui->currPIDSetpoint->setValue(double(bfrd3));
             }
             break;
+         case ADCPHASE:
+            bfrd3 = _buffer->getFData();
+            if( useBridgeSignalAsSetpoint ) {
+               //ui->spnPidSetpoint->setValue(double(bfrd3));
+               //ui->currPIDSetpoint->setValue(double(bfrd3));
+            }
+           break;
+         case READSIGNALPHASEOFFSET:
+            offset = _buffer->getdoffset();
+            phase = _buffer->getdphase();
+            signal = _buffer->getdsignal();
+         break;
          case AFMADCAMPLITUDEID:
             zAmp = _buffer->getFData();
             break;
@@ -437,7 +448,9 @@ void MainWindow::dequeueReturnBuffer() {
             QApplication::restoreOverrideCursor();
 
             if(_buffer->getData() == AFM_SUCCESS){
-                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+//                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+                msgBox.setText("Scan Parameters Set");
+                msgBox.exec();
             }
             else{
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
@@ -466,9 +479,9 @@ void MainWindow::dequeueReturnBuffer() {
         }
 
         if( currTab == 3 ) {
-            approachPlot.update(time, bfrd3, currTab == Approach ? true: false);
-            ui->currOffsetValue->setValue(br1);
-            time++;
+//            approachPlot.update(time, signal, currTab == Approach ? true: false);
+//            ui->currOffsetValue->setValue(signal);
+//            time++;
         }
         if(currTab == 4){
             signalPlot1.update(time, zOffsetFine, currTab == Signal ? true: false);
@@ -478,8 +491,6 @@ void MainWindow::dequeueReturnBuffer() {
         returnQueue.pop();
 
     }        
-
-    mutex.unlock();
 }
 
 void MainWindow::generalTimerUpdate() {
@@ -535,23 +546,14 @@ void MainWindow::generalTimerUpdate() {
 
 void MainWindow::on_spnOffsetVoltage_valueChanged(double arg1)
 {
-    mutex.lock();
-    commandQueue.push(new commandNode(memsSetOffset,(double)arg1));//afm.memsSetOffset(arg1);
-    mutex.unlock();
+//    mutex.lock();
+//    commandQueue.push(new commandNode(memsSetOffset,(double)arg1));//afm.memsSetOffset(arg1);
+//    mutex.unlock();
 }
 
 void MainWindow::on_spnBridgeVoltage_valueChanged(double arg1)
 {
-    mutex.lock();
     commandQueue.push(new commandNode(memsSetBridgeVoltage,(double)arg1));//afm.memsSetBridgeVoltage(arg1);
-    mutex.unlock();
-}
-
-void MainWindow::on_spnFrequencyVoltage_valueChanged(double arg1)
-{
-    mutex.lock();
-    commandQueue.push(new commandNode(memsSetFrequency,(double)arg1));//afm.memsSetFrequency(arg1);
-    mutex.unlock();
 }
 
 void MainWindow::on_btnPidToggle_toggled(bool checked)
@@ -559,6 +561,10 @@ void MainWindow::on_btnPidToggle_toggled(bool checked)
     if(checked){
         //mutex.lock();
         commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
+//        commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+//        commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+//        commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+//        commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
         //mutex.unlock();
     }
     else{
@@ -660,9 +666,9 @@ void MainWindow::on_approachButton_clicked()
 void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
     ui->lblAmplitude->setText(QString::number(value));
-    mutex.lock();
+    //mutex.lock();
     commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)value));//afm.stageSetPulseWidth(value);
-    mutex.unlock();
+    //mutex.unlock();
 }
 
 void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
@@ -779,6 +785,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double> amplitudeData,
     double freqVal;
     double ampVal;
     double phaseVal;
+    double scale = (25000000.0/16777216.0);
     if ( freqRetVal != AFM_SUCCESS) {
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
@@ -790,7 +797,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double> amplitudeData,
         //qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for(int i = 0; i < ui->numFreqPoints->value(); i++ ) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqVal = ui->startFrequency->value() + i;
+            freqVal = ((ui->startFrequency->value()  + i*ui->stepSize->value())* scale);
             phaseVal = phaseData.at(i);
             ampVal = amplitudeData.at(i);
             freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
@@ -828,6 +835,8 @@ void MainWindow::on_pushButton_6_clicked()
 //    mutex.lock();
 //    for(int i =0; i< 100; i++){
         commandQueue.push(new commandNode(startScan));
+
+        commandQueue.push(new commandNode(getScanData));
 //    }
 //    mutex.unlock();
 
@@ -932,10 +941,11 @@ void MainWindow::on_buttonSendSweep_clicked()
 }
 
 
-void MainWindow::on_buttonAutoApproachMCU_clicked()
+void MainWindow::on_buttonAutoApproachMCU_clicked(bool checked)
 {
     mutex.lock();
     if(!isAutoApproach){
+
         commandQueue.push(new commandNode(afmAutoApproach,(double)ui->spnPidSetpoint->value()));
         isAutoApproach = true;
     }
@@ -994,9 +1004,7 @@ void MainWindow::on_calibrateButton_clicked()
     /*IF SCAN PARAMETERS HAVE BEEN SET
         how can we check this?*/
 
-    double numlines = ui->cmbScanNumLines->currentText().toDouble();
-    double numpts = ui->cmbScanNumPoints->currentText().toDouble();
-    commandQueue.push(new commandNode(scanParameters,ui->spnScanVmin->value(),ui->spnScanVmin2->value(),ui->spnScanVmax->value(),numpts,numlines));
+
 
 }
 
@@ -1160,11 +1168,11 @@ void MainWindow::on_continuousButton_pressed()
    //commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)));
    if(approachTimer->isActive()){
        approachTimer->stop();
-       approachTimer->start(10);
+       approachTimer->start(15);
    }
    else
    {
-       approachTimer->start(10);
+       approachTimer->start(15);
    }
 }
 
@@ -1188,4 +1196,46 @@ void MainWindow::serialError()
         msgBox.setText("There was an error communicating with the Serial Port.");
         msgBox.exec();
     //}
+}
+
+void MainWindow::setDDSFrequency(const QPointF& p){
+    double frequency = p.x();
+    ui->currFreqVal->setValue(frequency);
+    double scale= (25000000.0/16777216.0);
+    commandQueue.push(new commandNode(setDDSSettings,frequency/scale));
+}
+
+void MainWindow::on_spnBoxFineZRange_valueChanged(int arg1)
+{
+    commandQueue.push(new commandNode(memsSetFrequency,(double)arg1));
+}
+
+void MainWindow::on_spnBoxCoarseZ_valueChanged(double arg1)
+{
+    commandQueue.push(new commandNode(writeDAC,DAC_ZOFFSET_COARSE,(double)arg1));
+}
+
+void MainWindow::on_spnBoxFineZ_valueChanged(double arg1)
+{
+    commandQueue.push(new commandNode(writeDAC,DAC_ZOFFSET_FINE,(double)arg1));
+}
+
+void MainWindow::on_btnSetScanParameters_clicked()
+{
+    double numlines = ui->cmbScanNumLines->currentText().toDouble();
+    double numpts = ui->cmbScanNumPoints->currentText().toDouble();
+    commandQueue.push(new commandNode(scanParameters,ui->spnScanVmin->value(),ui->spnScanVmin2->value(),ui->spnScanVmax->value(),numpts,numlines));
+}
+
+void MainWindow::on_spnFrequencyVoltage_valueChanged(double arg1)
+{
+
+}
+
+void MainWindow::updatePlot(double _signal, int _plot){
+    if(_plot == 1){
+        approachPlot.update(time, _signal, currTab == Approach ? true: false);
+        ui->currOffsetValue->setValue(_signal);
+        time++;
+    }
 }

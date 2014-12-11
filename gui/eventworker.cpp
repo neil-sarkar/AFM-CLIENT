@@ -1,13 +1,13 @@
 #include <eventworker.h>
 
+/************************************************************
+ *
+ * EventWorker: Pushes two events to the queue every 100ms
+ *                  -First event is a read to the Amplitude DAC
+ *                  -Second event is a read to the Offset ADC
+ *
+ ************************************************************/
 
-
-
-/* EventWorker:
- *          Pushes two events to the queue every 100ms
- *              -First event is a read to the Amplitude DAC
- *              -Second event is a read to the Offset ADC
- */
 void eventworker::mainLoop()
 {
     _abort = false;
@@ -20,7 +20,7 @@ void eventworker::mainLoop()
 
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(updateGraph()));
-    generalTimer->start(500); // need to get refresh rate from mainwindow
+    generalTimer->start(100); // need to get refresh rate from mainwindow
 }
 
 void eventworker::updateGraph()
@@ -32,21 +32,20 @@ void eventworker::updateGraph()
         //mutex.unlock();
         return;
     }
-//    MainWindow* _mainwindow = (MainWindow *) QApplication::activeWindow();
+    _mainwindow = (MainWindow *) QApplication::activeWindow();
 
-//    if(_mainwindow){
-////        if(_mainwindow->getCurrTab() == 3){
-////            mutex.lock();
-////            m_queue.push(new commandNode(readADC,(qint8)ADC_ZOFFSET));
-////            mutex.unlock();
-////        }
+    if(_mainwindow){
+        if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
+            //m_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
+            m_queue.push(new commandNode(readSignalPhaseOffset));
+        }
 //        if( _mainwindow->getCurrTab() == 4 ) {
 //            mutex.lock();
 //            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
 //            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
 //            mutex.unlock();
 //        }
-//    }
+    }
 
 }
 

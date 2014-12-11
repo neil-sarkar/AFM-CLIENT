@@ -8,6 +8,7 @@
 #include <QtSerialPort/qserialportinfo.h>
 #include <QString>
 #include <QVector>
+#include <math.h>
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            0  // 1: display debug messages
@@ -96,7 +97,7 @@
 #define AFM_DAC_WRITE_SELECT 'a'
 #define AFM_DAC_READ_SELECT 'b'
 #define AFM_ADC_READ_SELECT 'c'
-#define AFM_ADC5_DAC8_READ_SELECT 'e'
+#define AFM_ADC_READ_SPO 'e'
 
 #define AFM_RASTER_STEP_SELECT 'f'
 
@@ -130,6 +131,10 @@
 
 #define AFM_SCAN_STEP '^'
 
+#define AFM_SET_PGA '*'
+#define PGA_Z_OFFSET 'z'
+#define PGA_AMPLITUDE 'a'
+
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 enum {
     AFM_SUCCESS = 0,
@@ -151,7 +156,7 @@ public:
 
     void readDAC(qint8 dacID);
     void readADC(qint8 adcID);
-
+    void setPGA(char channel, double val);
     void setRasterStep();
 
     void memsSetOffset(double val);
@@ -195,12 +200,12 @@ public:
     void rasterStep(float val1,
                     float val2);
 
-    int autoApproach(double setpoint);
+    void autoApproach(double setpoint);
 
     void setDACValues(char dacID,
                      double _val);
 
-    int deviceCalibration(double val,
+    void deviceCalibration(double val,
                           char side);
 
     void scanParameters(double vmin_line,
@@ -211,6 +216,8 @@ public:
     void startScan();
 
     void scanStep();
+
+    void readSignalPhaseOffset();
 };
 
 #endif // AFM_H

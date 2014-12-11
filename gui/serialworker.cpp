@@ -120,9 +120,14 @@ void serialworker::mainLoop()
                     break;
                 case readADC:
                     _ID = _node->getqval();
-                    s_afm.readADC((qint8)_node->getqval());
+                    s_afm.readADC((qint8)_ID);
                     if(_ID == ADC_ZOFFSET){
                         receivenode.name = ADCZOFFSET;
+                        receivenode.numBytes = 3;
+                        receive_queue.push(receivenode);
+                    }
+                    else if(_ID = ADC_PHASE){
+                        receivenode.name = ADCPHASE;
                         receivenode.numBytes = 3;
                         receive_queue.push(receivenode);
                     }
@@ -132,6 +137,12 @@ void serialworker::mainLoop()
                         receive_queue.push(receivenode);
                     }
                     break;
+                case readSignalPhaseOffset:
+                    s_afm.readSignalPhaseOffset();
+                    receivenode.name = READSIGNALPHASEOFFSET;
+                    receivenode.numBytes = 6;
+                    receive_queue.push(receivenode);
+                break;
                 case setRasterStep:
                     receivenode.name = WRITE;
                     receivenode.numBytes = 1;
@@ -139,24 +150,24 @@ void serialworker::mainLoop()
                     s_afm.setRasterStep();
                     break;
                 case memsSetOffset:
-                    _val = _node->getval1();
+                    _val = _node->getdval();
                     s_afm.memsSetOffset(_val);
-                    receivenode.name = WRITE;
-                    receivenode.numBytes = 1;
+                    receivenode.name = SETPGA;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case memsSetFrequency:
-                    _val = _node->getval1();
+                    _val = _node->getdval();
                     s_afm.memsSetFrequency(_val);
-                    receivenode.name = WRITE;
-                    receivenode.numBytes = 1;
+                    receivenode.name = SETPGA;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case memsSetAmplitude:
-                    _val = _node->getdval();
+                   _val = _node->getdval();
                     s_afm.memsSetAmplitude(_val);
-                    receivenode.name = WRITE;
-                    receivenode.numBytes = 1;
+                    receivenode.name = SETPGA;
+                    receivenode.numBytes = 2;
                     receive_queue.push(receivenode);
                     break;
                 case memsSetBridgeVoltage:
@@ -187,35 +198,35 @@ void serialworker::mainLoop()
                 case pidEnable:
                     s_afm.pidEnable();
                     receivenode.name = PIDENABLE;
-                    receivenode.numBytes = 2;
+                    receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidDisable:
                     s_afm.pidDisable();
                     receivenode.name = PIDDISABLE;
-                    receivenode.numBytes = 2;
+                    receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetP:
-                    s_afm.pidSetP(_node->getP());
+                    s_afm.pidSetP(_node->getdval());
                     receivenode.name = SETP;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetI:
-                    s_afm.pidSetI(_node->getI());
+                    s_afm.pidSetI(_node->getdval());
                     receivenode.name = SETI;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetD:
-                    s_afm.pidSetD(_node->getD());
+                    s_afm.pidSetD(_node->getdval());
                     receivenode.name = SETD;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetPoint:
-                    s_afm.pidSetPoint(_node->getval1());
+                    s_afm.pidSetPoint(_node->getdval());
                     receivenode.name = SETPOINT;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
@@ -258,7 +269,10 @@ void serialworker::mainLoop()
                     }
                     break;
                  case setDDSSettings:
-                    s_afm.setDDSSettings(_node->getnumPoints(),_node->getnumLines(),_node->getstepSize());
+                    s_afm.setDDSSettings(0,_node->getdval(),0);
+                    receivenode.name = SETDDS;
+                    receivenode.numBytes = 2;
+                    receive_queue.push(receivenode);
                     emit updateStatusBar("DDS Set");
                     break;
                  case frequencySweep:
@@ -299,14 +313,12 @@ void serialworker::mainLoop()
                     receivenode.name = STARTSCAN;
                     receivenode.numBytes = 8;
                     receive_queue.push(receivenode);
-                    s_afm.scanStep();
+                    break;
+                 case getScanData:
                     s_afm.scanStep();
                     receivenode.name = SCANDATA;
                     receivenode.numBytes = 48;
                     receive_queue.push(receivenode);
-                    receive_queue.push(receivenode);
-                    emit updateStatusBar("Done");
-                    break;
             }
             m_queue.pop();
 

@@ -108,18 +108,19 @@ void nanoiAFM::setRasterStep(){
 
 void nanoiAFM::memsSetOffset(double val){
 
-    writeDAC(DAC_ZOFFSET_FINE, val);
-
+    //writeDAC(DAC_ZOFFSET_FINE, val);
+    setPGA(PGA_Z_OFFSET,val);
     //return AFM_SUCCESS; //There should be a comparison against a maximum value for offset voltage
 }
 
 void nanoiAFM::memsSetFrequency(double val){
-    //writeDAC(AFM_DAC_VCO_ID, val);
+    setPGA(PGA_Z_OFFSET, val);
     //return AFM_SUCCESS;
 }
 
 void nanoiAFM::memsSetAmplitude(double val){
-    writeDAC(DAC_ZAMP, val);
+    //writeDAC(DAC_ZAMP, val);
+    setPGA(PGA_AMPLITUDE,val);
     //return AFM_SUCCESS;
 }
 
@@ -374,7 +375,7 @@ void nanoiAFM::rasterStep(float /*val1*/, float /*val2*/){
  //Not too sure about this function
 }
 
-int nanoiAFM::autoApproach(double setpoint){
+void nanoiAFM::autoApproach(double setpoint){
     writeByte(AFM_AUTOAPPROACH_SELECT);
 
     qint16 _setpoint = AFM_DAC_SCALING*setpoint;
@@ -411,7 +412,7 @@ void nanoiAFM::setDACValues(char dacID, double _val){
 //    else{ return AFM_FAIL;}
     //return AFM_SUCCESS;
 }
-int nanoiAFM::deviceCalibration(double val, char side){
+void nanoiAFM::deviceCalibration(double val, char side){
 
 
     qint16 _max = AFM_DAC_SCALING*val;
@@ -582,7 +583,23 @@ void nanoiAFM::scanStep(){
 //    else{ return AFM_FAIL;}
 }
 
+void nanoiAFM::setPGA(char channel, double val){
+    writeByte(AFM_SET_PGA);
+    writeByte(channel);
+    //writeByte(val);
+    if(channel == PGA_AMPLITUDE || channel == PGA_Z_OFFSET){
+        qint8 newval = abs(20 * log10(val/100));
+        writeByte(newval);
+    }
+    else{
+        qint8 newval = (((20 * log10(val/100)) - 31.5)/0.5) + 255;
+        writeByte(newval);
+    }
+}
 
+void nanoiAFM::readSignalPhaseOffset(){
+    writeByte(AFM_ADC_READ_SPO);
+}
 
 
 

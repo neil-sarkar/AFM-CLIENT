@@ -22,9 +22,11 @@ int main(int argc, char *argv[])
      *
      * mainThread:      Handles GUI, pushed events to the serialThread
      * serialThread:    Handles serial communication between the Qt Application
-     *                      and the MCU, return data is pushed to a queue
+     *                      and the MCU, sends arguments to the MCU
      * eventThread:     Creates events on a timer to gather continuous data
      *                      for plots
+     * receiverThread:  Handles the receiving of data from the MCU. Sends data
+     *                      to the mainThread to display to the user
      *
      *******************************************************************/
 

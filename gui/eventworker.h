@@ -38,6 +38,7 @@ private:
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
     int ioTimer;
     bool _abort;
+    MainWindow* _mainwindow;
 signals:
     void finished();
 

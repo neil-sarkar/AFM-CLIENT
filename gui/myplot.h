@@ -96,7 +96,8 @@ public:
         xData.clear(); yData.clear(); dataCount = 0;
         mCurve->setRawSamples(xData.data(), yData.data(), 0);
     }
-
+signals:
+    void setDDSFrequency(const QPointF &);
 private slots:
     void displayPoint(const QPointF &);
 

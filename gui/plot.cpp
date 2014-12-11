@@ -84,16 +84,18 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     this->xAxisRange = fields.xAxis.second - fields.xAxis.first;
     this->autoScale = fields.autoScale;
 
-
+    //qDebug() << connect(this,SIGNAL(setDDSFrequency(QPointF)),parent,SLOT(setDDSFrequency(QPointF)));
 
 
 }
 
+
 void Plot::displayPoint(const QPointF& p) {
     //qDebug() << "I am here";
-    QMessageBox msgBox;
-    msgBox.setText(QString("%1 %2").arg(QString::number(p.x()), QString::number(p.y())));
-    msgBox.exec();
+    emit setDDSFrequency(p);
+//    QMessageBox msgBox;
+//    msgBox.setText(QString("%1 %2").arg(QString::number(p.x()), QString::number(p.y())));
+//    msgBox.exec();
 }
 
 void Plot::setAutoScale(bool val) {
