@@ -20,12 +20,13 @@ void eventworker::mainLoop()
 
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(updateGraph()));
-    generalTimer->start(100); // need to get refresh rate from mainwindow
+    generalTimer->start(500); // need to get refresh rate from mainwindow
 }
 
 void eventworker::updateGraph()
 {
-    //this event should probably be in the mainwindow thread
+    //TODO: This thread needs to update the graphs to ensure no delay
+    //when doing a continuous approach in the Main Thread
     if (_abort) {
         delete generalTimer;
         emit finished();
@@ -37,7 +38,15 @@ void eventworker::updateGraph()
     if(_mainwindow){
         if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
             //m_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
+
             m_queue.push(new commandNode(readSignalPhaseOffset));
+            if(!graph_queue.empty()){
+                _node = graph_queue.front();
+                if(_node->getReturnType() == READSIGNALPHASEOFFSET)
+                    emit updatePlot(_node->getdsignal(),1);
+                graph_queue.pop();
+            }
+
         }
 //        if( _mainwindow->getCurrTab() == 4 ) {
 //            mutex.lock();

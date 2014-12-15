@@ -85,7 +85,7 @@
 
 #define AFM_DAC_MAX_VOLTAGE 3.3
 #define AFM_DAC_DATA_RANGE 4095
-#define AFM_DAC_SCALING (AFM_DAC_DATA_RANGE/AFM_DAC_MAX_VOLTAGE)
+#define AFM_DAC_SCALING (double)(AFM_DAC_DATA_RANGE/AFM_DAC_MAX_VOLTAGE)
 
 //#define AFM_ADC_BRIDGE_SIGNAL_ID 5
 
@@ -141,12 +141,16 @@ enum {
     AFM_FAIL = -1
 };
 
-class nanoiAFM: public QSerialPort{
+class icspiAFM: public QSerialPort{
 
 private:
 
 public:
 
+    /*
+     * All the functions that will write to the MCU
+     * They are all void because the receiver thread handles the return
+     */
     int writeByte(char byte);
 
     QByteArray waitForData(int timeout);
@@ -218,6 +222,8 @@ public:
     void scanStep();
 
     void readSignalPhaseOffset();
+
+    void forceCurve();
 };
 
 #endif // AFM_H

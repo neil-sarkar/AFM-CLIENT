@@ -8,7 +8,8 @@
 #include <afm.h>
 #include <returnbuffer.h>
 
-extern QMutex mutex;
+extern QMutex mutex; //to be used when two threads are trying to access the afm at the same time
+
 
 struct receivetype{
     returnType name;

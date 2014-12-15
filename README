@@ -11,6 +11,9 @@ AFM SERIAL COMMUNICATION C++ APPLICATION
 **************************
 1. BUILD INSTRUCTIONS
 **************************
+
+Currently only tested on Windows 7 SP1
+
 Before you start make sure you have the mingw-32 compiler installed
 and at least version 5.3.2 of Qt Creator
 
@@ -54,6 +57,19 @@ The threads communicate by way of 3 buffers
 		resources updating the graphs
 
 **************************
-
+3. ADDITIONS
 **************************
+
+All gui additions can be added easily in the mainwindow.ui file
+
+In order to add new MCU functionality several things must be done.
+	1. In the mainwindow thread a new node must be pushed onto the commandQueue of type command.
 	
+	2. In the serialworker thread that node must be dequeued and based on the commandName the afm 
+		function is called. The serialworker will also push a node onto the receiveQueue for the
+		receiver thread to act on.
+		
+	3. The afm class must have a corresponding function where the bytes are written.
+	
+	4. The receiver thread must then wait for data to be emitted from the MCU. Then act on the data
+		and push the buffer back to the main thread to be displayed to the user.

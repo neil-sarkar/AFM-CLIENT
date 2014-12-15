@@ -3,13 +3,6 @@
 #define AFM_SHORT_TIMEOUT 50
 #define AFM_LONG_TIMEOUT 5000
 
-void receiver::openPort(QSerialPortInfo _port){
-    r_afm.close();
-    r_afm.setPort(_port);
-    r_afm.open(QIODevice::ReadWrite);
-    r_afm.setBaudRate(76800);
-}
-
 void receiver::mainLoop()
 {
     receivetype _node;
@@ -55,10 +48,16 @@ void receiver::mainLoop()
         }
 
 
+       // mutex.lock();
+        //TODO: Currently there is a major bug where if there are a ton of events sent to the MCU
+        //they get out of order. If i am attempting to read a signal in order to plot and do a continuous
+        //approach the events get out of order.
         if(!m_queue.empty()){
             isError = false;
             _node = m_queue.front();
+
             while(res.isEmpty()){
+                //mutex.lock();
                 if (_abort) {
                     emit finished();
                     return;
@@ -67,6 +66,7 @@ void receiver::mainLoop()
                     res = r_afm.waitForData(AFM_LONG_TIMEOUT);
                 else
                     res = r_afm.waitForData(AFM_SHORT_TIMEOUT);
+                //mutex.unlock();
             }
 
             if(!res.isEmpty() || !res.isNull()){
@@ -232,7 +232,7 @@ void receiver::mainLoop()
                             signal = (((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                             offset =(((unsigned char)res.at(3) << 8) | (unsigned char)res.at(2));
                             phase =(((unsigned char)res.at(5) << 8) | (unsigned char)res.at(4));
-                            r_queue.push(new returnBuffer(READSIGNALPHASEOFFSET,AFM_SUCCESS,signal/AFM_DAC_SCALING,offset/AFM_DAC_SCALING,phase/AFM_DAC_SCALING));
+                            graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET,AFM_SUCCESS,signal/AFM_DAC_SCALING,offset/AFM_DAC_SCALING,phase/AFM_DAC_SCALING));
                             shift = _node.numBytes+1;
                         }
                         else{
@@ -422,6 +422,26 @@ void receiver::mainLoop()
                             isError = true;
                         }
                     break;
+                    case FORCECURVE:
+
+                        if(res.at(_node.numBytes - 1) == 'N'){
+                            amplitudeData->clear();
+                            phaseData->clear();
+                            quint16 intVal;
+                            //quint16 phaseVal;
+                            for(int i = 0; i < _node.numBytes - 1; i++) {
+                                intVal = BYTES_TO_WORD((quint8)res[i], (quint8)res[i++]);
+                                //phaseVal = BYTES_TO_WORD((quint8)res[i+2],(quint8)res[i+3]);
+                                amplitudeData->append( double(intVal)/AFM_ADC_SCALING );
+                                phaseData->append(0);
+                            }
+                            r_queue.push(new returnBuffer(FORCECURVE,0,*amplitudeData,*phaseData,_node.numBytes));
+                            shift = _node.numBytes;
+                        }
+                        else{
+                            isError = true;
+                        }
+                    break;
                     case FREQSWEEP:
 
                         int bytesRead;
@@ -466,16 +486,18 @@ void receiver::mainLoop()
                     while(!m_queue.empty())
                         m_queue.pop();
                     res.clear();
-                    emit serialError();
+                    emit serialError(); // this isn't necessary for release
                 }
                 else{
                     //we good
                     m_queue.pop();
+                    //shift the buffer to the next set of data
                     res = res.remove(0,shift);
                 }
 
 
             }
+            //mutex.unlock();
         }
         else
         {

@@ -13,21 +13,24 @@ class receiver : public QObject
     Q_OBJECT
     queue<receivetype>& m_queue;
     queue<returnBuffer*>& r_queue;
-    nanoiAFM& r_afm;
+    queue<returnBuffer*>& graph_queue;
+    icspiAFM& r_afm;
 public:
     receiver(QObject *parent,
              queue<receivetype>& receivequeue,
              queue<returnBuffer*>& returnqueue,
-             nanoiAFM& afm):
+             queue<returnBuffer*>& graphqueue,
+             icspiAFM& afm):
         QObject(parent),
         m_queue(receivequeue),
         r_queue(returnqueue),
+        graph_queue(graphqueue),
         r_afm(afm){}
     void abort();
     ~receiver();
 
 private:
-    //nanoiAFM m_afm;
+    //icspiAFM m_afm;
     bool _abort;
     bool isError;
 
@@ -36,7 +39,6 @@ signals:
     void serialError();
 
 public slots:
-    void openPort(QSerialPortInfo _port);
     void mainLoop();
 };
 

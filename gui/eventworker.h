@@ -17,9 +17,10 @@ using std::queue;
 
 class eventworker : public QObject
 {
+    //objects to be set in constructor
     Q_OBJECT
     queue<commandNode*>& m_queue;
-    queue<returnBuffer*>& return_queue;
+    queue<returnBuffer*>& graph_queue;
 
 public:
     eventworker();
@@ -28,7 +29,7 @@ public:
                 queue<returnBuffer*>& _returnqueue):
         QObject(parent),
         m_queue(_queue),
-        return_queue(_returnqueue) {}
+        graph_queue(_returnqueue) {}
     void abort();
     ~eventworker();
 private:
@@ -38,9 +39,11 @@ private:
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
     int ioTimer;
     bool _abort;
-    MainWindow* _mainwindow;
+    MainWindow* _mainwindow; //used to check current tab
+    returnBuffer* _node;     //current node
 signals:
     void finished();
+    void updatePlot(double _signal, int _plot); //signal to the mainwindow to update the plot
 
 public slots:
     void updateGraph();

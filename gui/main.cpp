@@ -16,9 +16,10 @@ int main(int argc, char *argv[])
     queue<commandNode*> commandQueue = queue<commandNode*>();
     queue<receivetype> receiveQueue = queue<receivetype>();
     queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
+    queue<returnBuffer*> graphQueue = queue<returnBuffer*>();
 
-    nanoiAFM afm;
-    /**********************3 Threads***********************************
+    icspiAFM afm;
+    /**********************4 Threads***********************************
      *
      * mainThread:      Handles GUI, pushed events to the serialThread
      * serialThread:    Handles serial communication between the Qt Application
@@ -37,8 +38,8 @@ int main(int argc, char *argv[])
 
     MainWindow* mainWorker = new MainWindow(0,commandQueue,returnQueue);
     serialworker* serialWorker = new serialworker(0, commandQueue, receiveQueue, afm);
-    eventworker* eventWorker = new eventworker(0,commandQueue,returnQueue);
-    receiver* receiveWorker = new receiver(0,receiveQueue,returnQueue, afm);
+    eventworker* eventWorker = new eventworker(0,commandQueue,graphQueue);
+    receiver* receiveWorker = new receiver(0,receiveQueue,returnQueue,graphQueue, afm);
 
     mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     //QObject::connect(serialWorker, SIGNAL(openPort(QSerialPortInfo)), receiveWorker, SLOT(openPort(QSerialPortInfo)));
     QObject::connect(receiveWorker,SIGNAL(serialError()),mainWorker,SLOT(serialError()));
+    QObject::connect(eventWorker,SIGNAL(updatePlot(double,int)),mainWorker,SLOT(updatePlot(double,int)));
 
 
 

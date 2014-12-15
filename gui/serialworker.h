@@ -24,11 +24,11 @@ class serialworker : public QObject
     Q_OBJECT
     queue<commandNode*>& m_queue;
     queue<receivetype>& receive_queue;
-    nanoiAFM& s_afm;
+    icspiAFM& s_afm;
 public:
     serialworker(QObject *parent,
                  queue<commandNode*>& _queue,
-                 queue<receivetype>& _receivequeue, nanoiAFM& afm) :
+                 queue<receivetype>& _receivequeue, icspiAFM& afm) :
         QObject(parent),
         m_queue(_queue),
         receive_queue(_receivequeue), s_afm(afm)  {}
@@ -37,7 +37,7 @@ public:
 
 
 private:
-    //nanoiAFM m_afm;
+    //icspiAFM m_afm;
     Command _command;
     double _val;
     qint8 _ID;

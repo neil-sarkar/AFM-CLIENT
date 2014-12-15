@@ -154,8 +154,6 @@ private slots:
 
     void on_stepButton_clicked();
 
-    void on_continuousButton_clicked(bool checked);
-
     void on_buttonCurrValuePidSetpoint_clicked(bool checked);
 
     void on_sweepButton_clicked();
@@ -173,8 +171,6 @@ private slots:
 
     void on_buttonReadIO_clicked();
 
-    void on_btnPidToggle_clicked(bool checked);
-
     void on_freqAutoScale_clicked(bool checked);
 
     void on_spnFrequencyVoltage_2_valueChanged(double arg1);
@@ -182,8 +178,6 @@ private slots:
     void on_buttonSendSweep_clicked();
 
     void on_buttonAutoApproachMCU_clicked(bool checked);
-
-    void on_writeCharacter_clicked();
 
     void on_approachButton_clicked();
 
@@ -209,6 +203,8 @@ private slots:
 
     void on_spnFrequencyVoltage_valueChanged(double arg1);
 
+    void on_btnForceCurve_clicked();
+
 private:
 
     enum TabType{
@@ -233,6 +229,7 @@ private:
     MyPlot::Plot approachPlot;
     MyPlot::Plot signalPlot1;
     MyPlot::Plot signalPlot2;
+    MyPlot::Plot forceCurve;
     GridPlot scanPlot;
     int time;
     int freqRetVal;
@@ -262,6 +259,7 @@ private:
     double offset;
     double phase;
     double *scandata[256];
+    int row;
 };
 
 #endif // MAINWINDOW_H

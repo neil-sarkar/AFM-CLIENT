@@ -46,7 +46,7 @@ void MainWindow::MainWindowLoop()
     // temporary random number generator for plots
     qsrand(QTime::currentTime().msec());
     time = 0;
-
+    row = 0;
     //ui->tabScan->setLayout(grid);
     updateStatusBar("Ready");
 
@@ -288,6 +288,17 @@ void MainWindow::CreateGraphs(){
     ui->gridLayout_10->addWidget(&signalPlot2, 2, 0);
     signalPlot2.resize( 500, 100 );
     signalPlot2.show();
+
+    //force curve
+    fields = MyPlot::PlotFields("Force Curve", true, "Z Offset (V)", "Z Amplitude",\
+                        QPair<double,double>(0,1000), QPair<double,double>(0,10), QColor("Blue"),
+                                false, true);
+    forceCurve.SetPlot( fields, ui->forceWidget );
+    ui->forcecurve_gridlayout->setSpacing(0);
+    ui->forcecurve_gridlayout->addWidget(&forceCurve, 1, 0);
+    forceCurve.setAutoScale(true);
+    forceCurve.resize( 500, 100 );
+    forceCurve.show();
 }
 void MainWindow::SetPorts(){
 
@@ -330,6 +341,7 @@ void MainWindow::SetMaxDACValues(){
 void MainWindow::approachTimerUp(){
     if(approachTimer->isActive())
         commandQueue.push(new commandNode(stageSetStep));
+
 }
 
 /*
@@ -343,6 +355,8 @@ void MainWindow::approachTimerUp(){
 void MainWindow::dequeueReturnBuffer() {
     currTab = ui->tabWidget->currentIndex();
 
+    QVector<double> ampData;
+    double ampVal;
     /*
      * This forces the buffer to be completely emptied
      * on each timer trigger
@@ -434,6 +448,14 @@ void MainWindow::dequeueReturnBuffer() {
             CreateFreqSweepGraph(_buffer->getAmplitude(),_buffer->getPhase(),_buffer->getBytesRead());
             emit SweepFinished();
             break;
+          case FORCECURVE:
+            ampData = _buffer->getAmplitude();
+            for(int i =0; i< ampData.size() - 1;i++){
+                ampVal = ampData.at(i);
+                forceCurve.update(i,ampVal, false);
+            }
+            forceCurve.replot();
+            break;
          case DEVICECALIBRATION:
             if(_buffer->getData() == AFM_SUCCESS)
             {
@@ -462,15 +484,17 @@ void MainWindow::dequeueReturnBuffer() {
             if(_buffer->getData() == AFM_SUCCESS){
                 QVector<double> zamp = _buffer->getzamp();
                 int _size = zamp.size();
-                for (int i = 0; i < _size; i++)
-                {
-                    scandata[i] = new double[_size];
+                //for (int i = 0; i < _size; i++)
+                //{
+
+                    scandata[row] = new double[_size];
 
                     for (int j = 0; j < _size; j++)
                     {
-                        scandata[i][j] = zamp.at(i);
+                        scandata[row][j] = zamp.at(row);
                     }
-                }
+                //}
+                    row++;
                 scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
                 scanPlot.updateGL();
             }
@@ -497,52 +521,6 @@ void MainWindow::generalTimerUpdate() {
 
 
 }
-
-// 10 ms timer
-//void MainWindow::timerEvent(QTimerEvent *e) {
-    //int currTab = ui->tabWidget->currentIndex();
-    //int id = e->timerId();
-
-
-//    if( id == ioTimer ) {
-//#if AFM_MICRO_CONNECTED
-//        if( continuousStep )
-//            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-
-////        adc5 = afm.readADC(AFM_ADC_AMPLTIDE_ID);
-////        dac8 = afm.readDAC(AFM_DAC_OFFSET_ID);
-//        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
-//        commandQueue.push(new commandNode(readDAC,0,0,(qint8)AFM_DAC_OFFSET_ID));
-//        QThread::msleep(100);
-//        mutex.lock();
-//        returnBuffer<int>* _buffer;
-//        if(!returnQueue.empty()){
-//            _buffer = returnQueue.front();
-//            adc5 = _buffer->getData();
-//            returnQueue.pop();
-//            _buffer = returnQueue.front();
-//            dac8 = _buffer->getData();
-//            returnQueue.pop();
-//            mutex.unlock();
-//        }
-//        adc5 = serialWorker->doreadADC(AFM_ADC_AMPLITUDE_ID);
-//        dac8 = serialWorker->doreadDAC(AFM_DAC_OFFSET_ID);
-
-
-
-//            commandQueue.push(new commandNode(stageSetStep));//afm.stageSetStep();
-
-//            if ( adc5 <= 0.95*autoApproachComparison ) {
-//                on_buttonAutoApproachClient_clicked(false);
-//            }
-//        }
-
-//#else
-//        adc5 = float(qrand())/RAND_MAX;
-//        dac8 = float(qrand())/RAND_MAX;
-//#endif
-//    }
-//}
 
 void MainWindow::on_spnOffsetVoltage_valueChanged(double arg1)
 {
@@ -676,42 +654,6 @@ void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
     useBridgeSignalAsSetpoint = checked;
 }
 
-//void MainWindow::autoApproach(nanoiAFM* afm) {
-//    qDebug() << "In the threaded coarse approach";
-//    mutex.lock();
-//    float initVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
-//    commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)3));    //afm->stageSetPulseWidth(3);
-//    commandQueue.push(new commandNode(stageSetDirBackward));    //afm->stageSetDirBackward();
-//    mutex.unlock();
-
-
-
-//    mutex.lock();
-//    float bridgeVal;
-//    for( ;; ) {
-////        commandQueue.push(new commandNode(stageSetStep));
-
-//        commandQueue.push(new commandNode(stageSetStep)); //afm->stageSetStep(); // take a step
-//        bridgeVal = afm->readADC(AFM_ADC_AMPLITUDE_ID);
-////        commandQueue.push(new commandNode(readADC,0,0,(qint8)AFM_ADC_AMPLITUDE_ID));
-////        QThread::msleep(100);
-////        mutex.lock();
-////        bridgeVal = return_queue.front();
-////        returnQueue.pop();
-////        mutex.unlock();
-//        // if we're less than 95% of init, then slow down
-//        if (bridgeVal < 0.95*initVal) {
-//            //commandQueue.push(new commandNode(stageSetPulseWidth,0,0,0));
-//            commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)0)); //afm->stageSetPulseWidth(0);
-//        }
-//        // if we're within 90% of init, then autoapproach complete
-//        else if (bridgeVal < 0.9*initVal) {
-//            break;
-//        }
-//    }
-//    mutex.unlock();
-//}
-
 // Button for autoapproach
 // TODO: verify autoapproach
 void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
@@ -758,20 +700,6 @@ void MainWindow::on_stepButton_clicked()
     mutex.unlock();
 }
 
-void MainWindow::on_continuousButton_clicked(bool checked)
-{
-//    mutex.lock();
-//    if (checked) {
-//        commandQueue.push(new commandNode(stageSetContinuous));
-//        continuousStep = true;
-
-//    }
-//    else {
-//        commandQueue.push(new commandNode(stageAbortContinuous));
-//        continuousStep = false;
-//    }
-//    mutex.unlock();
-}
 void MainWindow::CreateFreqSweepGraph(QVector<double> amplitudeData,
                                       QVector<double> phaseData,
                                       int bytesRead){
@@ -834,43 +762,12 @@ void MainWindow::on_pushButton_6_clicked()
 {
 //    mutex.lock();
 //    for(int i =0; i< 100; i++){
-        commandQueue.push(new commandNode(startScan));
+    row = 0;
+    commandQueue.push(new commandNode(startScan));
 
-        commandQueue.push(new commandNode(getScanData));
+    commandQueue.push(new commandNode(getScanData));
 //    }
 //    mutex.unlock();
-
-//    //XYGenerator dynamically resizes these values
-//    arma::mat X_points;
-//    arma::mat Y_points;
-
-//    //Convert all the values to digital values based on a resolution of 4095
-//    int vMax=ui->spnScanVmax->value()*AFM_DAC_SCALING;
-//    int vMin=ui->spnScanVmin->value()*AFM_DAC_SCALING;
-//    int vMin2=ui->spnScanVmin2->value()*AFM_DAC_SCALING;
-//    int numPoints=ui->cmbScanNumLines->currentText().toInt();
-//    int numLines=ui->cmbScanNumPoints->currentText().toInt();
-//    int ret_fail=1;
-
-//    if((generateXYVoltages(vMax, vMin, vMin2, numLines, numPoints, X_points, Y_points) == ret_fail)){
-//            QMessageBox msgBox;
-//            msgBox.setText("Unable to generate scan points");
-//            msgBox.exec();
-//            return;
-//    }
-
-//    //Write X Y actuator voltages to AFM and read Z. A seperate matrix should be created
-
-//    mat Z_values(X_points.n_rows, X_points.n_cols);
-
-//    //DANGER: Verifiy these values are bein written properly
-//    for(int i=0; i < X_points.n_rows; i++){
-//        for(int j=0; j < X_points.n_rows; j++){
-//            //Write DAC for X voltage
-//            //Write DAC for Y Voltage
-//            //Wait for Z values to be populated. How long should we wait?
-//        }
-//    }
 
 }
 
@@ -902,21 +799,6 @@ void MainWindow::on_buttonReadIO_clicked()
     commandQueue.push(_node);
     _node = new commandNode(readADC,(qint8)ui->adcNumber->value());
     commandQueue.push(_node);
-}
-
-void MainWindow::on_btnPidToggle_clicked(bool checked)
-{
-//    commandQueue.push(new commandNode(pidEnable));
-//    QThread::msleep(100);
-//    bool _pidEnable = returnQueue.front();
-//    returnQueue.pop();
-
-//    commandQueue.push(new commandNode(pidDisable));
-//    QThread::msleep(100);
-//    bool _pidDisable = returnQueue.front();
-//    returnQueue.pop();
-
-//    checked == true ? _pidEnable : _pidDisable;
 }
 
 void MainWindow::on_freqAutoScale_clicked(bool checked)
@@ -956,16 +838,6 @@ void MainWindow::on_buttonAutoApproachMCU_clicked(bool checked)
     mutex.unlock();
 }
 
-void MainWindow::on_writeCharacter_clicked()
-{
-    //afm.writeByte('z');
-//    char data[2];
-//    qDebug() << "Num bytes from click read: " << afm.readData(data, 2);
-//    adc5 = (float)((data[1] << 8) | data[0]);
-//    QByteArray res = afm.waitForData();
-//    quint16 val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-//    adc5 = ((float)val)/AFM_ADC_SCALING;
-}
 
 
 
@@ -979,11 +851,11 @@ void MainWindow::on_setMaxDACValuesButton_clicked()
     commandQueue.push(new commandNode(setDacValues,DAC_X2,ui->latSpinBox->value()));
     commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_COARSE,ui->ZfineSpinBox->value()));
     commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_FINE,ui->ZcoarseSpinBox->value()));
-    mutex.lock();
+
     ui->label_10->setVisible(true);
     ui->label_11->setVisible(true);
     ui->label_12->setVisible(true);
-    mutex.unlock();
+
 }
 
 
@@ -993,10 +865,10 @@ void MainWindow::on_calibrateButton_clicked()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     double _maxLat;
-    double _maxZ;
+    //double _maxZ;
 
     _maxLat = ui->latSpinBox->value();
-    _maxZ = ui->ZcoarseSpinBox->value();
+    //_maxZ = ui->ZcoarseSpinBox->value();
 
     if(_maxLat != 0)
         commandQueue.push(new commandNode(deviceCalibration,_maxLat));
@@ -1168,11 +1040,11 @@ void MainWindow::on_continuousButton_pressed()
    //commandQueue.push(new commandNode(stageSetPulseWidth,(qint8)));
    if(approachTimer->isActive()){
        approachTimer->stop();
-       approachTimer->start(15);
+       approachTimer->start(5);
    }
    else
    {
-       approachTimer->start(15);
+       approachTimer->start(5);
    }
 }
 
@@ -1238,4 +1110,9 @@ void MainWindow::updatePlot(double _signal, int _plot){
         ui->currOffsetValue->setValue(_signal);
         time++;
     }
+}
+
+void MainWindow::on_btnForceCurve_clicked()
+{
+    commandQueue.push(new commandNode(ForceCurve));
 }

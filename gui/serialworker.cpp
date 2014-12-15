@@ -32,7 +32,7 @@ void serialworker::mainLoop()
 
         /**********************************************************
          * Dequeue the command buffer and based on the command call
-         * the appropriate serial call. Then push a request to read
+         * the appropriate serial function. Then push a request to read
          * the serial port to the receiver thread
          **********************************************************/
 
@@ -41,6 +41,7 @@ void serialworker::mainLoop()
             commandNode* _node = m_queue.front();
             _command = _node->getcommandName();
 
+            //mutex.lock();
             switch(_command) {
                 case writeDAC:
                     _ID = _node->getqval();
@@ -208,25 +209,25 @@ void serialworker::mainLoop()
                     receive_queue.push(receivenode);
                     break;
                 case pidSetP:
-                    s_afm.pidSetP(_node->getdval());
+                    s_afm.pidSetP((float)_node->getdval());
                     receivenode.name = SETP;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetI:
-                    s_afm.pidSetI(_node->getdval());
+                    s_afm.pidSetI((float)_node->getdval());
                     receivenode.name = SETI;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetD:
-                    s_afm.pidSetD(_node->getdval());
+                    s_afm.pidSetD((float)_node->getdval());
                     receivenode.name = SETD;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
                     break;
                 case pidSetPoint:
-                    s_afm.pidSetPoint(_node->getdval());
+                    s_afm.pidSetPoint((float)_node->getdval() * AFM_ADC_SCALING);
                     receivenode.name = SETPOINT;
                     receivenode.numBytes = 1;
                     receive_queue.push(receivenode);
@@ -319,8 +320,15 @@ void serialworker::mainLoop()
                     receivenode.name = SCANDATA;
                     receivenode.numBytes = 48;
                     receive_queue.push(receivenode);
+                    break;
+                 case ForceCurve:
+                    s_afm.forceCurve();
+                    receivenode.name = FORCECURVE;
+                    receivenode.numBytes = 2001;
+                    receive_queue.push(receivenode);
             }
             m_queue.pop();
+            //mutex.unlock();
 
         }
         //emit updateStatusBar("Done");
