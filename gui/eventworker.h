@@ -46,9 +46,8 @@ signals:
     void updatePlot(double _signal, int _plot); //signal to the mainwindow to update the plot
 
 public slots:
-    void updateGraph();
-    void generalTimerUpdate();
-    void mainLoop();
+    void updateGraph(); //timer event to send a read request to the MCU and then sends a signal to the mainwindow to update graph
+    void mainLoop(); //used to set the timer
 };
 
 #endif // EVENTWORKER_H

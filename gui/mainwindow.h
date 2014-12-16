@@ -51,7 +51,7 @@ class MainWindow : public QMainWindow
 
 public:
     //nanoiAFM afm;
-    QList<QSerialPortInfo> detectedSerialPorts;
+    QList<QSerialPortInfo> detectedSerialPorts; //buffer for serial ports
     MainWindow(QWidget *parent,
                queue<commandNode*>& _queue,
                queue<returnBuffer*>& _returnqueue) :
@@ -59,7 +59,7 @@ public:
         commandQueue(_queue),
         returnQueue(_returnqueue) {}
 
-    //void autoApproach(nanoiAFM* afm);
+    //public functions
     void abort();
     void SetPorts();
     void SetMaxDACValues();
@@ -81,9 +81,6 @@ protected:
     //void timerEvent( QTimerEvent * );
 
 private:
-    QThread* serialThread;
-    QThread* eventThread;
-    serialworker *serialWorker;
     QMessageBox msgBox;
     //eventworker *eventWorker;
     //QMutex mutex;
@@ -93,6 +90,7 @@ signals:
     void SweepFinished();
 
 public slots:
+    //used for the scan graph settings
     void on_buttonAutoApproachClient_clicked(bool checked);
     void updateStatusBar(QString _string);
     void pickPlotStyle( QAction* );
@@ -106,6 +104,7 @@ public slots:
     void pickCoordSystem( QAction* );
     void pickFloorStyle( QAction* );
     void showNormals(bool val);
+    //slots for updates from other threads
     void serialError();
     void setDDSFrequency(const QPointF &p);
     void updatePlot(double _signal, int _plot);
@@ -242,6 +241,8 @@ private:
     float autoApproachComparison;
     QFuture<void> *future;
     QFutureWatcher<void> *watcher;
+
+    //placeholders for returned data
     returnBuffer* _buffer;
     float zOffsetCoarse;
     float zOffsetFine;

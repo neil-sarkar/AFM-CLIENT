@@ -46,7 +46,7 @@ private:
     QWaitCondition condition;
     int _success;
     returnBuffer* _buffer;
-    int _index;
+    int _index; //used for serial ports
 
 signals:
     void finished();

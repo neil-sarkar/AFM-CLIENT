@@ -14,7 +14,7 @@ class receiver : public QObject
     queue<receivetype>& m_queue;
     queue<returnBuffer*>& r_queue;
     queue<returnBuffer*>& graph_queue;
-    icspiAFM& r_afm;
+    icspiAFM& r_afm; //afm object to communicate with MCU
 public:
     receiver(QObject *parent,
              queue<receivetype>& receivequeue,
@@ -36,7 +36,7 @@ private:
 
 signals:
     void finished();
-    void serialError();
+    void serialError(); //emited to the mainwindow when there is an error
 
 public slots:
     void mainLoop();

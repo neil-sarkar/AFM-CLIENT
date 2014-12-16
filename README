@@ -1,10 +1,10 @@
+=========================================
 AFM SERIAL COMMUNICATION C++ APPLICATION
 =========================================
 
 -Version 0.1
 	- Serial communication with the MCU
-	- Ability to scan
-	- Looks nice
+	- Most main functionality is complete
 
 	
 	
@@ -63,13 +63,35 @@ The threads communicate by way of 3 buffers
 All gui additions can be added easily in the mainwindow.ui file
 
 In order to add new MCU functionality several things must be done.
-	1. In the mainwindow thread a new node must be pushed onto the commandQueue of type command.
+	1. First the objects must be created in the ui menu. Qt takes care of the events.
 	
-	2. In the serialworker thread that node must be dequeued and based on the commandName the afm 
-		function is called. The serialworker will also push a node onto the receiveQueue for the
-		receiver thread to act on.
+	2. In the mainwindow thread a new node must be pushed onto the commandQueue of type command.
+	
+	2. In the serialworker thread that node must be dequeued and based on the commandName the 
+		corresponding afm function is called. The serialworker will also push a node onto the 
+		receiveQueue for the receiver thread to act on.
 		
 	3. The afm class must have a corresponding function where the bytes are written.
 	
 	4. The receiver thread must then wait for data to be emitted from the MCU. Then act on the data
-		and push the buffer back to the main thread to be displayed to the user.
+		and push the buffer back to the main thread to be displayed to the user. The receiver thread
+		must make sure the shift the response buffer from the MCU by the correct number of bytes.
+		
+**************************
+4. FUTURE IMPROVEMENTS
+**************************
+
+In order of priority:
+	- Template/Polymorphism for commandnode instead of all these constructors. This will greatly 
+		improve the readability and modularity of the application.
+	- Build up a table of errors accumulated over time. This should be in the form of a log. A brief
+		description of the error with a timestamp should be recorded.
+	- Automate setting the timeout as a field in the command itself. Add an field in the commandNode
+		that specifies the timeout.
+	- Create a config file with all the project configurations centralized: 
+		for example: baudrate, timeout, etc..
+	- Investigate options for ensuring thread safe access to the MCU
+	- Explore the functionality of the 3D plotting software. Seems pretty powerful
+	- Use private variables in places where there are currently macros
+	- Clean up the code
+	

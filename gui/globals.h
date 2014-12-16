@@ -10,7 +10,7 @@
 
 extern QMutex mutex; //to be used when two threads are trying to access the afm at the same time
 
-
+//node struct for receiveQueue
 struct receivetype{
     returnType name;
     int numBytes;

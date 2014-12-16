@@ -58,16 +58,6 @@ void eventworker::updateGraph()
 
 }
 
-void eventworker::generalTimerUpdate()
-{
-    //general timer update
-    //what does this do?
-
-    //int currTab = MainWindow::ui->tabWidget->currentIndex();
-    //int id = e->timerId();
-
-}
-
 void eventworker::abort()
 {
     //QMutexLocker locker(&mutex);

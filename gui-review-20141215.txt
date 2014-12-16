@@ -1,0 +1,41 @@
+General:
+- Can we change the name of the GUI from nano-i?
+- avoid macros, use private variables as much as possible (especially afm.cpp)
+	- general practice: use CONST instead of macro
+- How would an update to the GUI look like? Can you come up with a flow-chart for documentation?
+- Create a list of todos.
+- Update commands against latest documentation
+- How to make sure once we add a command all the case-switch statements are update as well?
+	- some sort of a global enum?
+	- Import from a .csv file?
+
+afm.c
+- Needs some cleaning up.
+- AFM_MAX_DATA_SIZE, why not write more than 1 character? this could potentially speed things up but also a bit more complicated
+
+commandnode.c
+- Template/Polymorphism for commandnode instead of all these constructors?
+- Define enum within the class. Access using namespace (also in returnbuffer.h)
+
+receiver.c
+- let's automate setting the timeout as a field in the command itself. this avoid having to specify which command requires long timeout.
+- How do we fail (i.e. when isError = true).
+- Can we build up a table of errors accumulated over time? Show it on the GUI, or in a file? This'll allow us to do some analysis.
+
+eventworker.c
+- needs some clean up, there's an empty function
+- is it retrieving just phase data? 
+- does the commandQueue need to be thread-safe as 2 threads are writing into it? How is this safety ensured?
+	- there doesn't seem to be a problem but cannot be guaranteed!
+
+receiver.c:
+	PROBLEM: serial object accessed by receiver and serialworker at the same time.
+
+returnbuffer.h
+- it's a bit confusing..
+- who deletes the buffers that are pushed to the return queue?
+	- could have buffers statically allocated in mainwindow and use pointers to populate them.
+	
+- Some things to think about:
+	- Because the nature of our commands are somewhat similar (or are they?) is there a way we can automate adding a new command? through some script?
+	- create a config file with all the project configurations centralized: for example: baudrate, timeout, etc..

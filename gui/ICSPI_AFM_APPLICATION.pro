@@ -15,7 +15,7 @@ QT  += concurrent
 QT  += serialport
 QT  += opengl
 
-TARGET = nano-i
+TARGET = icspi
 TEMPLATE = app
 
 

@@ -324,18 +324,18 @@ void MainWindow::SetPorts(){
  *
  */
 void MainWindow::SetMaxDACValues(){
-    commandQueue.push(new commandNode(setDacValues,DAC_BFRD1,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_BFRD2 ,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_BR2,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_ZAMP ,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_BR1,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_BFRD3,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_FINE,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_Y1,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_COARSE ,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_Y2,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_X1 ,AFM_DAC_MAX_VOLTAGE ));
-    commandQueue.push(new commandNode(setDacValues,DAC_X2,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_BFRD1,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_BFRD2 ,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_BR2,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_ZAMP ,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_BR1,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_BFRD3,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_ZOFFSET_FINE,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_Y1,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_ZOFFSET_COARSE ,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_Y2,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_X1 ,AFM_DAC_MAX_VOLTAGE ));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_X2,AFM_DAC_MAX_VOLTAGE ));
 }
 
 void MainWindow::approachTimerUp(){
@@ -845,12 +845,12 @@ void MainWindow::on_setMaxDACValuesButton_clicked()
 {
 
     updateStatusBar("Setting DAC Values...");
-    commandQueue.push(new commandNode(setDacValues,DAC_Y1,ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues,DAC_Y2,ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues,DAC_X1,ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues,DAC_X2,ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_COARSE,ui->ZfineSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues,DAC_ZOFFSET_FINE,ui->ZcoarseSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_Y1,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_Y2,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_X1,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_X2,ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_ZOFFSET_COARSE,ui->ZfineSpinBox->value()));
+    commandQueue.push(new commandNode(setDacValues,(double)DAC_ZOFFSET_FINE,ui->ZcoarseSpinBox->value()));
 
     ui->label_10->setVisible(true);
     ui->label_11->setVisible(true);
@@ -1084,12 +1084,12 @@ void MainWindow::on_spnBoxFineZRange_valueChanged(int arg1)
 
 void MainWindow::on_spnBoxCoarseZ_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(writeDAC,DAC_ZOFFSET_COARSE,(double)arg1));
+    commandQueue.push(new commandNode(writeDAC,(double)DAC_ZOFFSET_COARSE,(double)arg1));
 }
 
 void MainWindow::on_spnBoxFineZ_valueChanged(double arg1)
 {
-    commandQueue.push(new commandNode(writeDAC,DAC_ZOFFSET_FINE,(double)arg1));
+    commandQueue.push(new commandNode(writeDAC,(double)DAC_ZOFFSET_FINE,(double)arg1));
 }
 
 void MainWindow::on_btnSetScanParameters_clicked()
