@@ -1,5 +1,0 @@
-#ifndef RETURNTYPES_H
-#define RETURNTYPES_H
-
-
-#endif // RETURNTYPES_H
