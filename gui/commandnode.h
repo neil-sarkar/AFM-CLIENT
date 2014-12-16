@@ -2,7 +2,9 @@
 #define COMMANDNODE_H
 
 #include <QtGlobal>
+#include <QVector>
 
+//TODO: make constructor template
 enum Command{
     writeDAC,
     readDAC,
@@ -33,14 +35,18 @@ enum Command{
     setDDSSettings,
     frequencySweep,
     afmAutoApproach,
-    getPorts,
     setPort,
     mainWindowTimerEvent,
     setDacValues,
     deviceCalibration,
     scanParameters,
-    startScan
+    startScan,
+    setPGA,
+    readSignalPhaseOffset,
+    getScanData,
+    ForceCurve
 };
+
 
 class commandNode
 {
@@ -67,9 +73,15 @@ class commandNode
     void doautoApproach()*/
 
 
+    //The following constructors are all used to define a commandNode
     commandNode(Command commandName):
         m_commandName(commandName) {}
 
+
+    //need to set
+//    template<class Type> commandNode(Command commandName,
+//                                   Type val):
+//        m_commandName(commandName){}
 
     /* readADC
      * readDAC*/
@@ -145,19 +157,11 @@ class commandNode
     commandNode(Command commandName,
                 quint16 numPoints,
                 quint16 startFrequency,
-                quint16 stepSize,
-                QVector<double> amplitude,
-                QVector<double> phase,
-                QVector<double> frequency,
-                int& bytesRead) :
+                quint16 stepSize) :
             m_commandName(commandName),
             m_numPoints(numPoints),
             m_startFrequency(startFrequency),
-            m_stepSize(stepSize),
-            m_amplitude(amplitude),
-            m_phase(phase),
-            m_frequency(frequency),
-            m_bytesRead(bytesRead) {}
+            m_stepSize(stepSize) {}
 
     commandNode(Command commandName ,
                 double vmin_line,
@@ -176,6 +180,7 @@ class commandNode
     ~commandNode() {}
 
 
+    //all the get functions
     Command getcommandName() { return m_commandName; }
     char getval1() { return m_val1; }
     char getval2() { return m_val2; }
@@ -193,9 +198,6 @@ class commandNode
     qint16 getnumPoints() { return m_numPoints;}
     qint16 getstartFrequency() { return m_startFrequency;}
     qint16 getstepSize() { return m_stepSize;}
-    QVector<double> getamplitude() {return m_amplitude; }
-    QVector<double> getfrequency() { return m_frequency; }
-    QVector<double> getphase() { return m_phase;}
     int& getbytesRead() { return m_bytesRead;}
     double getvminLine(){ return m_vminLine;}
     double getvminScan(){ return m_vminScan;}
@@ -204,6 +206,7 @@ class commandNode
     double getnumLines(){return m_numLines;}
 
 private:
+    //
     Command m_commandName;
     qint8 m_qval;
     char m_val1;
@@ -220,10 +223,7 @@ private:
     qint8 m_D;
     qint16 m_numPoints;
     qint16 m_startFrequency;
-    qint16 m_stepSize;
-    QVector<double> m_amplitude;
-    QVector<double> m_phase;
-    QVector<double> m_frequency;    
+    qint16 m_stepSize;  
     int m_bytesRead;
     double m_vminLine;
     double m_vminScan;
