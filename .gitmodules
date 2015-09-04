@@ -1,3 +1,3 @@
-[submodule "AFM-CLIENT-LIB"]
-	path = lib
-	url = https://github.com/rickeywang/AFM-CLIENT-LIB
+[submodule "gui/lib"]
+	path = gui/lib
+	url = git@github.com:rickeywang/AFM-CLIENT-LIB.git

@@ -41,11 +41,19 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
-INCLUDEPATH += C:/Users/Nick/Documents/armadillo-4.450.4/include
-INCLUDEPATH += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/include
+
+INCLUDEPATH += $$PWD/lib/armadillo-5.500.2/include
+win32:LIBS += $$PWD/lib/armadillo-5.500.2/include
+
+INCLUDEPATH += C:/Qwt-6.1.2/include
+win32:LIBS += C:/Qwt-6.1.2/lib/libqwtd.a
+
+INCLUDEPATH += $$PWD/lib/qwtplot3d/include
+win32:LIBS += $$PWD/lib/qwtplot3d/lib/libqwtplot3d.a
+
 #INCLUDEPATH += C:/Users/Nick/Documents/code/gwyddion-2.39/libgwyddion
 
-LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
+#LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
 #LIBS += "-LC:/Program Files (x86)/Gwyddion/lib -ldependency"
 
 #CONFIG( debug, debug|release ) {
@@ -53,7 +61,7 @@ LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lo
 #} else {
 #        LIBS += -LC:/qwt-6.1.1/lib -lqwt
 #}
-#win32:LIBS += C:/qwt-6.1.1/lib/libqwt.a
+#win32:LIBS += C:/qwt-6.1.2/lib/libqwt.a
 #win32:LIBS += C:/Users/Nick/Documents/armadillo-4.450.4/include
 #INCLUDEPATH += C:\qwt-6.1.0\qwt-6.1.0\src
 #include(C:\qwt-6.1.0\features\qwt.prf)
