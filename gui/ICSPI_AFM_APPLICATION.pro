@@ -8,6 +8,8 @@ QT       += core gui
 CONFIG   += serialport
 CONFIG   += qwt
 #MOC_DIR  += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/src/tmp
+#DESTDIR = ../build
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,7 +27,6 @@ SOURCES += main.cpp\
     plot.cpp \
     serialworker.cpp \
     eventworker.cpp \
-    XYgenerator.cpp \
     receiver.cpp
 
 HEADERS  += mainwindow.h \
@@ -33,38 +34,47 @@ HEADERS  += mainwindow.h \
     serialworker.h \
     eventworker.h \
     globals.h \
-    XYgenerator.h \
     myplot.h \
     receiver.h \
     commandnode.h \
-    returnbuffer.h
+    returnbuffer.h \
+    XYgenerator.cpp.disabled \
+    XYgenerator.h.disabled
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
 
-INCLUDEPATH += $$PWD/lib/armadillo-5.500.2/include
-win32:LIBS += $$PWD/lib/armadillo-5.500.2/include
+QWT_ROOT = C:/Qwt-6.1.2
+INCLUDEPATH += $${QWT_ROOT}/include
+DEPENDPATH += $${QWT_ROOT}/include
+CONFIG( debug, debug|release ) {
+        LIBS += -L$${QWT_ROOT}/lib -lqwtd
+} else {
+        LIBS += -L$${QWT_ROOT}/lib -lqwt
+}
+include ( $${QWT_ROOT}/features/qwt.prf )
 
-INCLUDEPATH += C:/Qwt-6.1.2/include
-win32:LIBS += C:/Qwt-6.1.2/lib/libqwtd.a
 
-INCLUDEPATH += $$PWD/lib/qwtplot3d/include
-win32:LIBS += $$PWD/lib/qwtplot3d/lib/libqwtplot3d.a
+INCLUDEPATH += $$PWD/../lib/qwtplot3d/include
+DEPENDPATH += $$PWD/../lib/qwtplot3d/include
+win32{
+  !build_pass {
+    win32-msvc | win32-msvc2002 {
+      error(Unsupported Visual Studio version ( < 2003 ))
+    }
+  }
 
-#INCLUDEPATH += C:/Users/Nick/Documents/code/gwyddion-2.39/libgwyddion
+  win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+    QMAKE_CXXFLAGS += -MP
+    QMAKE_CXXFLAGS += $$QMAKE_CFLAGS_STL
+  }
 
-#LIBS += -LC:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
-#LIBS += "-LC:/Program Files (x86)/Gwyddion/lib -ldependency"
+    LIBS += -L$$PWD/../lib/qwtplot3d/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
+}
 
-#CONFIG( debug, debug|release ) {
-#        LIBS += -LC:/qwt-6.1.1/lib -lqwtd
-#} else {
-#        LIBS += -LC:/qwt-6.1.1/lib -lqwt
-#}
-#win32:LIBS += C:/qwt-6.1.2/lib/libqwt.a
-#win32:LIBS += C:/Users/Nick/Documents/armadillo-4.450.4/include
-#INCLUDEPATH += C:\qwt-6.1.0\qwt-6.1.0\src
-#include(C:\qwt-6.1.0\features\qwt.prf)
+ARMA_ROOT = $$PWD/../lib/armadillo-5.500.2
+INCLUDEPATH += $${ARMA_ROOT}/include/armadillo_bits
+
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/release/ -larmadillo
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/debug/ -larmadillo
 #else:unix: LIBS += -L$$PWD/../../../../../usr/lib/ -larmadillo
