@@ -5,11 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
-CONFIG   += serialport
+QT       += serialport #QT 5 uses QT rather than CONFIG
 CONFIG   += qwt
-#MOC_DIR  += C:/qwtplot3d-0.3.1-322-src/qwtplot3d-0.3.1-322-src/src/tmp
-#DESTDIR = ../build
-
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -72,8 +69,14 @@ win32{
     LIBS += -L$$PWD/../lib/qwtplot3d/lib -lqwtplot3d -lopengl32 -lglu32 -lgdi32
 }
 
-ARMA_ROOT = $$PWD/../lib/armadillo-5.500.2
-INCLUDEPATH += $${ARMA_ROOT}/include/armadillo_bits
+# Not used for now
+#ARMA_ROOT = $$PWD/../lib/armadillo-5.500.2
+#INCLUDEPATH += $${ARMA_ROOT}/include/armadillo_bits
+
+
+
+
+
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/release/ -larmadillo
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/debug/ -larmadillo

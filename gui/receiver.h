@@ -11,8 +11,8 @@ using std::queue;
 class receiver : public QObject
 {
     Q_OBJECT
-    queue<receivetype>& m_queue;
-    queue<returnBuffer*>& r_queue;
+    queue<receivetype>& recv_queue;
+    queue<returnBuffer*>& rtn_queue;
     queue<returnBuffer*>& graph_queue;
     icspiAFM& r_afm; //afm object to communicate with MCU
 public:
@@ -22,10 +22,10 @@ public:
              queue<returnBuffer*>& graphqueue,
              icspiAFM& afm):
         QObject(parent),
-        m_queue(receivequeue),
-        r_queue(returnqueue),
+        recv_queue(receivequeue),
+        rtn_queue(returnqueue),
         graph_queue(graphqueue),
-        r_afm(afm){}
+        r_afm(afm) {}
     void abort();
     ~receiver();
 

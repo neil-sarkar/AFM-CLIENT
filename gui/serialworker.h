@@ -22,16 +22,18 @@ using std::queue;
 class serialworker : public QObject
 {
     Q_OBJECT
-    queue<commandNode*>& m_queue;
+    queue<commandNode*>& cmd_queue;
     queue<receivetype>& receive_queue;
     icspiAFM& s_afm;
 public:
     serialworker(QObject *parent,
                  queue<commandNode*>& _queue,
-                 queue<receivetype>& _receivequeue, icspiAFM& afm) :
+                 queue<receivetype>& _receivequeue, 
+				 icspiAFM& afm) :
         QObject(parent),
-        m_queue(_queue),
-        receive_queue(_receivequeue), s_afm(afm)  {}
+        cmd_queue(_queue),
+        receive_queue(_receivequeue), 
+		s_afm(afm)  {}
     ~serialworker();
     void abort();
 

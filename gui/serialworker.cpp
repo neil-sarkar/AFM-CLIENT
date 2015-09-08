@@ -36,9 +36,9 @@ void serialworker::mainLoop()
          * the serial port to the receiver thread
          **********************************************************/
 
-        while(!m_queue.empty()){
+        while(!cmd_queue.empty()){
 
-            commandNode* _node = m_queue.front();
+            commandNode* _node = cmd_queue.front();
             _command = _node->getcommandName();
 
             //mutex.lock();
@@ -327,7 +327,7 @@ void serialworker::mainLoop()
                     receivenode.numBytes = 2001;
                     receive_queue.push(receivenode);
             }
-            m_queue.pop();
+            cmd_queue.pop();
             //mutex.unlock();
 
         }

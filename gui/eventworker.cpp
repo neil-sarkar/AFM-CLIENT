@@ -37,9 +37,9 @@ void eventworker::updateGraph()
 
     if(_mainwindow){
         if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
-            //m_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
+            //cmd_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
 
-            m_queue.push(new commandNode(readSignalPhaseOffset));
+            cmd_queue.push(new commandNode(readSignalPhaseOffset));
             if(!graph_queue.empty()){
                 _node = graph_queue.front();
                 if(_node->getReturnType() == READSIGNALPHASEOFFSET)
@@ -50,8 +50,8 @@ void eventworker::updateGraph()
         }
 //        if( _mainwindow->getCurrTab() == 4 ) {
 //            mutex.lock();
-//            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
-//            m_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
+//            cmd_queue.push(new commandNode(readDAC,(qint8)DAC_ZAMP));
+//            cmd_queue.push(new commandNode(readDAC,(qint8)DAC_ZOFFSET_FINE));
 //            mutex.unlock();
 //        }
     }

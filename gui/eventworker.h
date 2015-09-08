@@ -19,7 +19,7 @@ class eventworker : public QObject
 {
     //objects to be set in constructor
     Q_OBJECT
-    queue<commandNode*>& m_queue;
+    queue<commandNode*>& cmd_queue;
     queue<returnBuffer*>& graph_queue;
 
 public:
@@ -28,7 +28,7 @@ public:
                 queue<commandNode*>& _queue,
                 queue<returnBuffer*>& _returnqueue):
         QObject(parent),
-        m_queue(_queue),
+        cmd_queue(_queue),
         graph_queue(_returnqueue) {}
     void abort();
     ~eventworker();

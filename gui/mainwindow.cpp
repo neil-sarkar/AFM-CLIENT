@@ -103,7 +103,7 @@ void MainWindow::Initialize()
     SetPorts();
 
     /*Initialize DAC limits*/
-    SetMaxDACValues();
+    //SetMaxDACValues();
 
     /*Timers*/
     generalTimer = new QTimer(this);

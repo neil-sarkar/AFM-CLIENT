@@ -24,8 +24,10 @@ int icspiAFM::writeByte(char byte)
 QByteArray icspiAFM::waitForData(int timeout)
 {
     QByteArray responseData;
+    //TODO Use event loop and readyRead() since this is not realiable on Windows
+    //See http://doc.qt.io/qt-5/qabstractsocket.html#waitForReadyRead
     while(waitForReadyRead(timeout)){
-        responseData+= readAll();
+        responseData += readAll();
     }
 #if AFM_DEBUG
     qDebug() << "Response Data Size:" << responseData.size();

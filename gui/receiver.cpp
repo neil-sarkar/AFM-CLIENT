@@ -52,10 +52,11 @@ void receiver::mainLoop()
         //TODO: Currently there is a major bug where if there are a ton of events sent to the MCU
         //they get out of order. If i am attempting to read a signal in order to plot and do a continuous
         //approach the events get out of order.
-        if(!m_queue.empty()){
+        if(!recv_queue.empty()){
             isError = false;
-            _node = m_queue.front();
+            _node = recv_queue.front();
 
+            // Take data from AFM and put into the local QByteArray res.
             while(res.isEmpty()){
                 //mutex.lock();
                 if (_abort) {
@@ -73,7 +74,7 @@ void receiver::mainLoop()
                 switch(_node.name){
                     case WRITE:
                         if(res.at(0) == AFM_DAC_WRITE_SELECT){
-                            r_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -83,7 +84,7 @@ void receiver::mainLoop()
                     case DACZOFFSETFINE:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACZOFFSETFINE, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACZOFFSETFINE, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -93,14 +94,14 @@ void receiver::mainLoop()
                     case DACZOFFSETCOARSE:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACZOFFSETCOARSE, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACZOFFSETCOARSE, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                     break;
                     case DACBFRD1:                       
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                              val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACBFRD1, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACBFRD1, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -110,7 +111,7 @@ void receiver::mainLoop()
                     case DACBFRD2:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACBFRD2, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACBFRD2, float(((float)val)/AFM_DAC_SCALING)));
                             shift = 3;
                         }
                         else{
@@ -120,7 +121,7 @@ void receiver::mainLoop()
                     case DACBFRD3:
                         val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
                         if(res.at(2) == AFM_DAC_READ_SELECT){
-                            r_queue.push(new returnBuffer(DACBFRD3, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACBFRD3, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -130,7 +131,7 @@ void receiver::mainLoop()
                     case DACZAMP:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACZAMP, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACZAMP, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -140,7 +141,7 @@ void receiver::mainLoop()
                     case DACBR1:                        
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACBR1, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACBR1, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -150,7 +151,7 @@ void receiver::mainLoop()
                     case DACBR2:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACBR2, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACBR2, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -160,7 +161,7 @@ void receiver::mainLoop()
                     case DACX1:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACX1, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACX1, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -170,7 +171,7 @@ void receiver::mainLoop()
                     case DACX2:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACX2, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACX2, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -180,7 +181,7 @@ void receiver::mainLoop()
                     case DACY1:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACY1, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACY1, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -190,7 +191,7 @@ void receiver::mainLoop()
                     case DACY2:
                         if(res.at(2) == AFM_DAC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(DACY2, float(((float)val)/AFM_DAC_SCALING)));
+                            rtn_queue.push(new returnBuffer(DACY2, float(((float)val)/AFM_DAC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -200,7 +201,7 @@ void receiver::mainLoop()
                     case ADCZOFFSET:                        
                         if(res.at(2) == AFM_ADC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(ADCZOFFSET, float(((float)val)/AFM_ADC_SCALING)));
+                            rtn_queue.push(new returnBuffer(ADCZOFFSET, float(((float)val)/AFM_ADC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -210,7 +211,7 @@ void receiver::mainLoop()
                     case ADCPHASE:
                         if(res.at(2) == AFM_ADC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(ADCPHASE, float(((float)val)/AFM_ADC_SCALING)));
+                            rtn_queue.push(new returnBuffer(ADCPHASE, float(((float)val)/AFM_ADC_SCALING)));
                             shift = _node.numBytes;
                         }
                         else{
@@ -220,7 +221,7 @@ void receiver::mainLoop()
                     case ADC:
                         if(res.at(2) == AFM_ADC_READ_SELECT){
                             val=(((unsigned char)res.at(1) << 8) | (unsigned char)res.at(0));
-                            r_queue.push(new returnBuffer(ADC, float(((float)val)/AFM_ADC_SCALING)));
+                            rtn_queue.push(new returnBuffer(ADC, float(((float)val)/AFM_ADC_SCALING)));
                             shift = 3;
                         }
                         else{
@@ -241,7 +242,7 @@ void receiver::mainLoop()
                     break;
                     case SETDACVALUES:
                         if(res.at(0) == AFM_SET_DAC_MAX){
-                            r_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
                             shift = 1;
                         }
                         else{
@@ -250,7 +251,7 @@ void receiver::mainLoop()
                     break;
                     case STAGESETSTEP:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_STEP_SELECT){
-                            r_queue.push(new returnBuffer(STAGESETSTEP,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(STAGESETSTEP,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -259,7 +260,7 @@ void receiver::mainLoop()
                     break;
                     case SETDIRFORWARD:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_FORW_SELECT){
-                            r_queue.push(new returnBuffer(SETDIRFORWARD,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETDIRFORWARD,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -268,7 +269,7 @@ void receiver::mainLoop()
                     break;
                     case SETDIRBACKWARD:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_DIR_REVERSE_SELECT){
-                            r_queue.push(new returnBuffer(SETDIRBACKWARD,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETDIRBACKWARD,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -277,7 +278,7 @@ void receiver::mainLoop()
                     break;
                     case SETPULSEWIDTH:
                         if(res.at(0) == 'o' && res.at(1) == AFM_STAGE_PW_SELECT){
-                            r_queue.push(new returnBuffer(SETPULSEWIDTH,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETPULSEWIDTH,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -286,7 +287,7 @@ void receiver::mainLoop()
                     break;
                     case ABORTCONTINUOUS:
                         if(res.at(0) == 'o' && res.at(1) == AFM_ABORT_AUTO_APPROACH){
-                            r_queue.push(new returnBuffer(ABORTCONTINUOUS,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(ABORTCONTINUOUS,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -295,11 +296,11 @@ void receiver::mainLoop()
                     break;
                     case AUTOAPPROACH:
                         if(res.at(0) == 'o' && res.at(_node.numBytes) == AFM_AUTOAPPROACH_SELECT){
-                            r_queue.push(new returnBuffer(AUTOAPPROACH,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(AUTOAPPROACH,AFM_SUCCESS));
                             shift = _node.numBytes + 1;
                         }
                         else if(res.at(0) == 'f'){
-                            r_queue.push(new returnBuffer(AUTOAPPROACH,AFM_FAIL));
+                            rtn_queue.push(new returnBuffer(AUTOAPPROACH,AFM_FAIL));
                             shift = 2;
                         }
                         else{
@@ -310,7 +311,7 @@ void receiver::mainLoop()
 
                         if(res.at(1) == AFM_SCAN_PARAMETERS && res.at(0) == 'o'){
                             shift = 2;
-                            r_queue.push(new returnBuffer(SCANPARAMETERS,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SCANPARAMETERS,AFM_SUCCESS));
                         }
                         else{
                             isError = true;
@@ -318,7 +319,7 @@ void receiver::mainLoop()
                     break;
                     case STARTSCAN:
                         if(res.at(0) == AFM_START_SCAN){
-                            r_queue.push(new returnBuffer(STARTSCAN,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(STARTSCAN,AFM_SUCCESS));
                             shift = 1;
                         }
                         else{
@@ -333,7 +334,7 @@ void receiver::mainLoop()
                         }
 
                         if(res.at(_node.numBytes) == AFM_SCAN_STEP){
-                            r_queue.push(new returnBuffer(SCANDATA,AFM_SUCCESS,*z_offset_adc,*z_amp_adc,*z_phase_adc));
+                            rtn_queue.push(new returnBuffer(SCANDATA,AFM_SUCCESS,*z_offset_adc,*z_amp_adc,*z_phase_adc));
                             shift = _node.numBytes+1; //plus one for acknowledgement byte
                         }
                         else{
@@ -342,7 +343,7 @@ void receiver::mainLoop()
                     break;
                     case PIDENABLE:
                         if(res.at(0) == AFM_PID_ENABLE_SELECT){
-                            r_queue.push(new returnBuffer(PIDENABLE,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(PIDENABLE,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -351,7 +352,7 @@ void receiver::mainLoop()
                     break;
                     case PIDDISABLE:
                         if(res.at(0) == AFM_PID_DISABLE_SELECT){
-                            r_queue.push(new returnBuffer(PIDDISABLE,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(PIDDISABLE,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -360,7 +361,7 @@ void receiver::mainLoop()
                     break;
                     case SETP:
                         if(res.at(0) == AFM_PID_P_SELECT){
-                            r_queue.push(new returnBuffer(SETP,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETP,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -369,7 +370,7 @@ void receiver::mainLoop()
                     break;
                     case SETI:
                         if(res.at(0) == AFM_PID_I_SELECT){
-                            r_queue.push(new returnBuffer(SETI,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETI,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -378,7 +379,7 @@ void receiver::mainLoop()
                     break;
                     case SETD:
                         if(res.at(0) == AFM_PID_D_SELECT){
-                            r_queue.push(new returnBuffer(SETD,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETD,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -387,7 +388,7 @@ void receiver::mainLoop()
                     break;
                     case SETPOINT:
                         if(res.at(0) == AFM_PID_SETPOINT_SELECT){
-                            r_queue.push(new returnBuffer(SETPOINT,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(SETPOINT,AFM_SUCCESS));
                             shift = _node.numBytes;
                         }
                         else{
@@ -396,7 +397,7 @@ void receiver::mainLoop()
                     break;
                     case SETDDS:
                         if(res.at(0) == AFM_DDS_SWEEP_SET){
-                           r_queue.push(new returnBuffer(SETDDS,AFM_SUCCESS));
+                           rtn_queue.push(new returnBuffer(SETDDS,AFM_SUCCESS));
                            shift = 1;
                         }
                         else{
@@ -405,7 +406,7 @@ void receiver::mainLoop()
                     break;
                     case SETPGA:
                         if(res.at(0) == 'o' && res.at(1) == AFM_SET_PGA){
-                           r_queue.push(new returnBuffer(SETPGA,AFM_SUCCESS));
+                           rtn_queue.push(new returnBuffer(SETPGA,AFM_SUCCESS));
                            shift = 2;
                         }
                         else{
@@ -415,7 +416,7 @@ void receiver::mainLoop()
                     case DEVICECALIBRATION:
                         if(res.at(_node.numBytes) == 'o')
                         {
-                            r_queue.push(new returnBuffer(DEVICECALIBRATION,AFM_SUCCESS));
+                            rtn_queue.push(new returnBuffer(DEVICECALIBRATION,AFM_SUCCESS));
                             shift = _node.numBytes + 1; //acknowledge byte
                         }
                         else{
@@ -435,7 +436,7 @@ void receiver::mainLoop()
                                 amplitudeData->append( double(intVal)/AFM_ADC_SCALING );
                                 phaseData->append(0);
                             }
-                            r_queue.push(new returnBuffer(FORCECURVE,0,*amplitudeData,*phaseData,_node.numBytes));
+                            rtn_queue.push(new returnBuffer(FORCECURVE,0,*amplitudeData,*phaseData,_node.numBytes));
                             shift = _node.numBytes;
                         }
                         else{
@@ -475,7 +476,7 @@ void receiver::mainLoop()
                         if(res.at(bytesRead-1) == AFM_SWEEP_START){
                                 shift = _node.numBytes;
                                 success = AFM_SUCCESS;
-                                r_queue.push(new returnBuffer(FREQSWEEP,success,*amplitudeData,*phaseData,bytesRead));
+                                rtn_queue.push(new returnBuffer(FREQSWEEP,success,*amplitudeData,*phaseData,bytesRead));
                         }
 
                         break;
@@ -483,14 +484,14 @@ void receiver::mainLoop()
                 }
                 if(isError){
 
-                    while(!m_queue.empty())
-                        m_queue.pop();
+                    while(!recv_queue.empty())
+                        recv_queue.pop();
                     res.clear();
                     emit serialError(); // this isn't necessary for release
                 }
                 else{
                     //we good
-                    m_queue.pop();
+                    recv_queue.pop();
                     //shift the buffer to the next set of data
                     res = res.remove(0,shift);
                 }

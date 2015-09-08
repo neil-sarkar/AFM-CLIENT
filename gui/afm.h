@@ -4,8 +4,10 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
-#include <QtSerialPort/qserialport.h>
-#include <QtSerialPort/qserialportinfo.h>
+//#include <QtSerialPort/qserialport.h>
+//#include <QtSerialPort/qserialportinfo.h>
+#include <QSerialPort> //For QT5
+#include <QSerialPortInfo>
 #include <QString>
 #include <QVector>
 #include <math.h>
