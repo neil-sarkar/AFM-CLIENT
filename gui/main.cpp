@@ -11,12 +11,12 @@
 QMutex mutex;
 int main(int argc, char *argv[])
 {
-
     QApplication a(argc, argv);
-    queue<commandNode*> commandQueue = queue<commandNode*>();
+
+    queue<commandNode *> commandQueue = queue<commandNode *>();
     queue<receivetype> receiveQueue = queue<receivetype>();
-    queue<returnBuffer*> returnQueue = queue<returnBuffer*>();
-    queue<returnBuffer*> graphQueue = queue<returnBuffer*>();
+    queue<returnBuffer *> returnQueue = queue<returnBuffer *>();
+    queue<returnBuffer *> graphQueue = queue<returnBuffer *>();
 
     icspiAFM afm;
     /**********************4 Threads***********************************
@@ -31,15 +31,15 @@ int main(int argc, char *argv[])
      *
      *******************************************************************/
 
-    QThread* serialThread = new QThread();
-    QThread* eventThread = new QThread();
-    QThread* mainThread = new QThread();
-    QThread* receiveThread = new QThread();
+    QThread *serialThread = new QThread();
+    QThread *eventThread = new QThread();
+    QThread *mainThread = new QThread();
+    QThread *receiveThread = new QThread();
 
-    MainWindow* mainWorker = new MainWindow(0,commandQueue,returnQueue);
-    serialworker* serialWorker = new serialworker(0, commandQueue, receiveQueue, afm);
-    eventworker* eventWorker = new eventworker(0,commandQueue,graphQueue);
-    receiver* receiveWorker = new receiver(0,receiveQueue,returnQueue,graphQueue, afm);
+    MainWindow *mainWorker = new MainWindow(0, commandQueue, returnQueue);
+    serialworker *serialWorker = new serialworker(0, commandQueue, receiveQueue, afm);
+    eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
+    receiver *receiveWorker = new receiver(0, receiveQueue, returnQueue, graphQueue, afm);
 
     mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
@@ -57,14 +57,14 @@ int main(int argc, char *argv[])
     eventThread->start();
 
     receiveWorker->moveToThread(receiveThread);
-    QObject::connect(receiveThread, SIGNAL(started()),receiveWorker, SLOT(mainLoop()));
-    QObject::connect(receiveWorker, SIGNAL(finished()),receiveThread, SLOT(quit()), Qt::DirectConnection);
+    QObject::connect(receiveThread, SIGNAL(started()), receiveWorker, SLOT(mainLoop()));
+    QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
     receiveThread->start();
 
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     //QObject::connect(serialWorker, SIGNAL(openPort(QSerialPortInfo)), receiveWorker, SLOT(openPort(QSerialPortInfo)));
-    QObject::connect(receiveWorker,SIGNAL(serialError()),mainWorker,SLOT(serialError()));
-    QObject::connect(eventWorker,SIGNAL(updatePlot(double,int)),mainWorker,SLOT(updatePlot(double,int)));
+    QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
+    QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
 
 
 
@@ -122,4 +122,3 @@ int main(int argc, char *argv[])
 
     //    calculateLineScan(3000,2000,1000);
 }
-

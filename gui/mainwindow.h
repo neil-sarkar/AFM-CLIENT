@@ -29,7 +29,7 @@
 #include <QThread>
 #include <QObject>
 //#include <armadillo>
-//#include <globals.h>
+#include <globals.h>
 #include <QSignalMapper>
 #include <QStatusBar>
 #include <commandNode.h>

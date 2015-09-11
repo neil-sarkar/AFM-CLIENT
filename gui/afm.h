@@ -13,7 +13,7 @@
 #include <math.h>
 
 /*AFM Configuration*/
-#define AFM_DEBUG                            0  // 1: display debug messages
+#define AFM_DEBUG                            1  // 1: display debug messages
 //#define AFM_USE_DUNCAN_BOARD                 0  // 1: Duncan's Board, 0: Mahdi's Board
 #define AFM_MICRO_CONNECTED                  1  // 1: microcontroller, 0: uC not plugged in
 
@@ -111,14 +111,14 @@
 #define AFM_PID_SETPOINT_SELECT 's'
 
 #define AFM_STAGE_PW_SELECT 'j'
-#define AFM_STAGE_STEP_SELECT 'm'
-#define AFM_STAGE_CONT_SELECT 'n'
-#define AFM_ABORT_AUTO_APPROACH 'q'
-#define AFM_STAGE_DIR_FORW_SELECT 'l'
+#define AFM_STAGE_PULSE_STEP 'm'
+#define AFM_STAGE_DIR_FWD_SELECT 'l'
 #define AFM_STAGE_DIR_REVERSE_SELECT 'k'
 
-#define AFM_SWEEP_START 'r'
-
+#define AFM_ABORT 'q'
+#define AFM_DDS_AD9837_SET 'n'
+#define AFM_FREQ_SWEEP_AD9837 'q'
+#define AFM_FREQ_SWEEP_AD5932 'r'
 #define AFM_DDS_SWEEP_SET 'u'
 
 #define AFM_AUTOAPPROACH_SELECT 'v'

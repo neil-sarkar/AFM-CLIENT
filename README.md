@@ -1,10 +1,10 @@
 # AFM SERIAL COMMUNICATION C++ APPLICATION
 
- - Version 0.1
+ - Version 0.1, 2014-12-14
    - Serial communication with the MCU
    - Most main functionality is complete
 
-# BUILD INSTRUCTIONS
+## Build Instructions
 
 Currently only tested on Windows 7 SP1
 
@@ -16,7 +16,7 @@ and at least version 5.3.2 of Qt Creator
 3. Update the .pro project file with the required file paths
 4. Run qmake and build the application and you should be good to go
 
-# CORE COMPONENTS
+## Core Components
 
 The main application is divided into 4 threads
 
@@ -59,18 +59,19 @@ buffer reader: mainThread
 ##### 4.Event thread - graph buffer
 The event thread write to the command buffer when we want to update graphs. This thread should handle all graph updating so that the main thread isn't required to spend  resources updating the graphs
 
-# ADDITIONS
+## Adding new features
 
 All gui additions can be added easily in the mainwindow.ui file
 
 In order to add new MCU functionality several things must be done.
-	1. First the objects must be created in the ui menu. Qt takes care of the events.
-	2. In the mainwindow thread a new node must be pushed onto the commandQueue of type command.
-	2. In the serialworker thread that node must be dequeued and based on the commandName the corresponding afm function is called. The serialworker will also push a node onto the receiveQueue for the receiver thread to act on.
-	3. The afm class must have a corresponding function where the bytes are written.
-	4. The receiver thread must then wait for data to be emitted from the MCU. Then act on the data	and push the buffer back to the main thread to be displayed to the user. The receiver thread	must make sure the shift the response buffer from the MCU by the correct number of bytes.
-		
-# FUTURE IMPROVEMENTS
+
+1. First the objects must be created in the ui menu. Qt takes care of the events.
+2. In the mainwindow thread a new node must be pushed onto the commandQueue of type command.
+2. In the serialworker thread that node must be dequeued and based on the commandName the corresponding afm function is called. The serialworker will also push a node onto the receiveQueue for the receiver thread to act on.
+3. The afm class must have a corresponding function where the bytes are written.
+4. The receiver thread must then wait for data to be emitted from the MCU. Then act on the data	and push the buffer back to the main thread to be displayed to the user. The receiver thread	must make sure the shift the response buffer from the MCU by the correct number of bytes.
+
+## Future Improvements
 
 In order of priority:
 - Template/Polymorphism for commandnode instead of all these constructors. This will greatly improve the readability and modularity of the application.

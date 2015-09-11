@@ -39,7 +39,7 @@ enum returnType{
     SCANSTEP,
     AUTOAPPROACH,
     SETCONTINUOUS,
-    ABORTCONTINUOUS,
+    ABORTAUTOAPPROACH,
     SETP,
     SETI,
     SETD,
