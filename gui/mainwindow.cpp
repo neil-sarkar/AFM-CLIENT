@@ -99,11 +99,10 @@ void MainWindow::Initialize()
 
     /*Push event to get ports from the serialworker*/
     //commandQueue.push(new commandNode(getPorts,(double)0));
-
     SetPorts();
 
     /*Initialize DAC limits*/
-    SetMaxDACValues();
+    //SetMaxDACValues();
 
     /*Timers*/
     generalTimer = new QTimer(this);
@@ -482,15 +481,13 @@ void MainWindow::dequeueReturnBuffer()
             if (_buffer->getData() == AFM_SUCCESS) {
                 QVector<double> zamp = _buffer->getzamp();
                 int _size = zamp.size();
-                //for (int i = 0; i < _size; i++)
-                //{
+                for (int i = 0; i < _size; i++) {
+                    scandata[row] = new double[_size];
 
-                scandata[row] = new double[_size];
-
-                for (int j = 0; j < _size; j++)
-                    scandata[row][j] = zamp.at(row);
-                //}
-                row++;
+                    for (int j = 0; j < _size; j++)
+                        scandata[row][j] = zamp.at(row);
+                    row++;
+                }
                 scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
                 scanPlot.updateGL();
             }

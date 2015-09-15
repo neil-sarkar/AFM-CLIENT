@@ -49,6 +49,7 @@ private:
     int _success;
     returnBuffer* _buffer;
     int _index; //used for serial ports
+    int msg_tag = 0;
 
 signals:
     void finished();

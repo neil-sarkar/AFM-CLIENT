@@ -8,6 +8,8 @@ QT       += core gui
 QT       += serialport #QT 5 uses QT rather than CONFIG
 CONFIG   += qwt
 
+CONFIG   += c++11
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT  += concurrent
