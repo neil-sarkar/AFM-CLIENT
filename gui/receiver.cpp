@@ -12,6 +12,21 @@ void delay(int millisecondsToWait)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+// Waits for the serial port success signal from mainwindow before starting mainLoop
+void receiver::start_wait_for_init()
+{
+    while (!serial_is_ready)
+        delay(10);
+
+    mainLoop();
+}
+
+// Actually starts the mainLoop
+void receiver::serial_ready()
+{
+    serial_is_ready = true;
+}
+
 void receiver::mainLoop()
 {
     receivetype _node;
@@ -61,13 +76,15 @@ void receiver::mainLoop()
             isError = false;
             _node = recv_queue.front();
 
-            // Collect serial rx buffer from SerialObject, and put into the local QByteArray uart_resp.
-            // Using uart_resp.isEmpty() as an indicator of when to read from serial rx buffer is bad,
-            // because there might be partial data that reside within uart_resp when we last read serial rx.
-            // It is much better to use an EOL or End of Message indicator, so that we know a message
-            // inside uart_resp is incomplete. Now we go fetch it from the serial rx buffer, and so forth and
-            // so on. This way we don't care if it was collected midway (Another option is to make r_afm
-            // only return full messages, which would be the case if we use QIODevice readLine)
+            /*
+             * Collect serial rx buffer from SerialObject, and put into the local QByteArray uart_resp.
+             * Using uart_resp.isEmpty() as an indicator of when to read from serial rx buffer is bad,
+             * because there might be partial data that reside within uart_resp when we last read serial rx.
+             * It is much better to use an EOL or End of Message indicator, so that we know a message
+             * inside uart_resp is incomplete. Now we go fetch it from the serial rx buffer, and so forth and
+             * so on. This way we don't care if it was collected midway (Another option is to make r_afm
+             * only return full messages, which would be the case if we use QIODevice readLine)
+             */
 
 
             /*
@@ -107,16 +124,16 @@ void receiver::mainLoop()
                 // If we collect too fast, data might get cut-off halfway through.
 
                 if (_node.name == DEVICECALIBRATION || _node.name == AUTOAPPROACH) {
-                    uart_resp = r_afm.waitForData(AFM_LONG_TIMEOUT);
+                    uart_resp = r_afm.waitForMsg(AFM_LONG_TIMEOUT);
                 }
                 //waitForData doesn't actually wait for anything... if there happens to be data in the buffer, it will take it.
                 //and we cannot ensure that all of the data are in yet.
                 //maybe just enforce a wait?
                 else if (_node.name == FREQSWEEP) {
                     delay(3000); //Force a wait
-                    uart_resp = r_afm.waitForData(AFM_LONG_TIMEOUT);
+                    uart_resp = r_afm.waitForMsg(AFM_LONG_TIMEOUT);
                 } else {
-                    uart_resp = r_afm.waitForData(AFM_SHORT_TIMEOUT);
+                    uart_resp = r_afm.waitForMsg(AFM_SHORT_TIMEOUT);
                 }
                 //mutex.unlock();
             }
@@ -131,9 +148,13 @@ void receiver::mainLoop()
                  * > ...and the viscious cycle continues
                  *
                  */
+
+                // The checking of message legitimacy should be done before the switch statement.
+                // It is redundant to check it in every case.
+
                 switch (_node.name) {
                 case WRITE:
-                    if (uart_resp.at(0) == AFM_DAC_WRITE_SELECT) {
+                    if (uart_resp.at(1) == AFM_DAC_WRITE_SELECT) {
                         rtn_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
                         shift = _node.numBytes;
                     } else {
@@ -285,7 +306,7 @@ void receiver::mainLoop()
                     }
                     break;
                 case SETDACVALUES:
-                    if (uart_resp.at(0) == AFM_SET_DAC_MAX) {
+                    if (uart_resp.at(1) == AFM_SET_DAC_MAX) {
                         rtn_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
                         shift = 1;
                     } else {
@@ -414,7 +435,7 @@ void receiver::mainLoop()
                     }
                     break;
                 case SETPGA:
-                    if (uart_resp.at(0) == 'o' && uart_resp.at(1) == AFM_SET_PGA) {
+                    if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_SET_PGA) {
                         rtn_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
                         shift = 2;
                     } else {
@@ -430,7 +451,6 @@ void receiver::mainLoop()
                     }
                     break;
                 case FORCECURVE:
-
                     if (uart_resp.at(_node.numBytes - 1) == 'N') {
                         amplitudeData->clear();
                         phaseData->clear();
@@ -502,8 +522,8 @@ void receiver::mainLoop()
                 } else {
                     //we good
                     recv_queue.pop();
-                    //shift the buffer to the next set of data
-                    uart_resp = uart_resp.remove(0, shift);
+                    //clear the current msg, so that the next one may be read
+                    uart_resp.clear();
                 }
             }
             //mutex.unlock();
@@ -514,7 +534,7 @@ void receiver::mainLoop()
                 uart_resp.clear();
             }
         } // end if(!recv_queue.empty())
-    }           // end forever
+    }       // end forever
 }               // end main loop
 void receiver::abort()
 {

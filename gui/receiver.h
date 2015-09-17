@@ -33,6 +33,7 @@ private:
     //icspiAFM m_afm;
     bool _abort;
     bool isError;
+    bool serial_is_ready = false;
 
 signals:
     void finished();
@@ -40,6 +41,8 @@ signals:
 
 public slots:
     void mainLoop();
+    void serial_ready();
+    void start_wait_for_init();
 };
 
 #endif // RECEIVER_H

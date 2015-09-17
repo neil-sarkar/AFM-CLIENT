@@ -101,8 +101,12 @@ void MainWindow::Initialize()
     //commandQueue.push(new commandNode(getPorts,(double)0));
     SetPorts();
 
+    // Now that the ports are open, we can start the receive thread
+    // This should prevent Segmentation fault on the receive thread
+    serial_ready();
+
     /*Initialize DAC limits*/
-    //SetMaxDACValues();
+    SetMaxDACValues();
 
     /*Timers*/
     generalTimer = new QTimer(this);
@@ -302,15 +306,16 @@ void MainWindow::CreateGraphs()
 void MainWindow::SetPorts()
 {
     /*Populate the port combobox*/
-    detectedSerialPorts = QSerialPortInfo::availablePorts();
+    detectedSerialPortsList = QSerialPortInfo::availablePorts();
     //mutex.lock();
     ui->cboComPortSelection->clear();
     if (ui->cboComPortSelection) {
-        foreach(const QSerialPortInfo info, detectedSerialPorts) {
-            ui->cboComPortSelection->addItem(info.portName());
+        for(const QSerialPortInfo &port_info : detectedSerialPortsList) {
+            ui->cboComPortSelection->addItem(port_info.portName());
         }
         ui->cboComPortSelection->addItem("Refresh");
     }
+
 //    if(ui->cboComPortSelection->itemText(0) != "Refresh")
 //        commandQueue.push(new commandNode(setPort,(double)0));
     //mutex.unlock();

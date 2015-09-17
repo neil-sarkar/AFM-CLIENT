@@ -9,7 +9,7 @@
 #include <QSerialPort> //For QT5
 #include <QSerialPortInfo>
 #include <QString>
-#include <QVector>
+//#include <QVector>
 #include <math.h>
 
 /*AFM Configuration*/
@@ -137,6 +137,17 @@
 #define PGA_Z_OFFSET 'z'
 #define PGA_AMPLITUDE 'a'
 
+/*
+ *  Serial Communication Specifics
+ */
+
+//Maximum size allowed for a message before it is discarded. For protection against bad serial connection.
+#define SERIAL_MSG_MAX_SIZE 50000
+#define SERIAL_MSG_NEWLINE 0x0A
+#define SERIAL_MSG_ESCAPE 0x10
+#define SERIAL_MSG_MASK 0x80
+
+
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 enum {
     AFM_SUCCESS = 0,
@@ -146,6 +157,9 @@ enum {
 class icspiAFM: public QSerialPort{
 
 private:
+    unsigned __int8 message_tag = 1;
+    QByteArray payload_out_buffer;
+    short serial_send_try = 0;
 
 public:
 
@@ -153,9 +167,14 @@ public:
      * All the functions that will write to the MCU
      * They are all void because the receiver thread handles the return
      */
+    void clearPayloadBuffer();
+    int addPayloadByte(char byte);
     int writeByte(char byte);
+    int writeMsg(char msg_id);
+    int writeMsg(char msg_id, QByteArray payload);
 
     QByteArray waitForData(int timeout);
+    QByteArray waitForMsg(int timeout);
 
     void writeDAC(qint8 dacID,
                  double val);

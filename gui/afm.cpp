@@ -11,22 +11,153 @@
 
 int icspiAFM::writeByte(char byte)
 {
+    serial_send_try = 0;
     //Change it to write sequentially.
-    writeData(&byte, AFM_MAX_DATA_SIZE);
-    waitForBytesWritten(1);
+    write(&byte, AFM_MAX_DATA_SIZE);
 
-//    if(waitForData().at(0) == byte)
-    return AFM_SUCCESS;
-//    else
-//        return AFM_FAIL;
+    if (waitForBytesWritten(-1)) {
+        return AFM_SUCCESS;
+    } else {
+#if AFM_DEBUG
+        QString hex_equivalent_print = QString("%1").arg(byte, 0, 16);
+        qDebug() << "icspiAFM::writeByte failed to write 0x" << hex_equivalent_print;
+#endif
+        return AFM_FAIL;
+    }
 }
+
+
+/*
+ * Collects the bytes to send
+ * After all the bytes are collected, call writeMsg() to actually send it out
+ */
+int icspiAFM::addPayloadByte(char byte)
+{
+    payload_out_buffer += byte;
+}
+
+/*
+ * Clear the payload out buffer before sending anything
+ */
+void icspiAFM::clearPayloadBuffer()
+{
+    payload_out_buffer.clear();
+}
+
+/*
+ * A wrapper function for sending serial message.
+ * writeByte should not be used, since it does not escape special characters.
+ */
+int icspiAFM::writeMsg(char msg_id, QByteArray payload)
+{
+    int writeByte_result; //local var for debugging only
+
+    //Close the last message, in case the last message was bad
+    writeByte_result = writeByte(SERIAL_MSG_NEWLINE);
+
+    //Increment and Write the message tag
+    message_tag++;
+
+    if (message_tag >= 255)
+        message_tag = 1;
+    else if (message_tag == SERIAL_MSG_NEWLINE || message_tag == SERIAL_MSG_ESCAPE)
+        message_tag++; // Assumes the special characters are not consecutive...
+
+    writeByte_result = writeByte(message_tag);
+
+    //Write the message ID
+    writeByte_result = writeByte(msg_id);
+
+    //Write the message payload, and mask as nessessary
+    for (auto payload_byte : payload) {
+        // Special Bytes
+        if (payload_byte == SERIAL_MSG_NEWLINE || payload_byte == SERIAL_MSG_ESCAPE) {
+            writeByte(SERIAL_MSG_ESCAPE);
+            writeByte(payload_byte | SERIAL_MSG_MASK);
+        } else {
+            writeByte(payload_byte);
+        }
+    }
+
+    //Close the message
+    writeByte(SERIAL_MSG_NEWLINE);
+
+    return AFM_SUCCESS;
+}
+
+/*
+ * Send a message with msg_id using payload that is currently stored.
+ */
+int icspiAFM::writeMsg(char msg_id)
+{
+    int result = writeMsg(msg_id, payload_out_buffer);
+
+    payload_out_buffer.clear();
+
+    return result;
+}
+
+/*
+ * Blocking Function.
+ * Waits until there is a complete message received, then returns that message.
+ *
+ * It should only return one message at a time. Masking will be removed.
+ */
+QByteArray icspiAFM::waitForMsg(int timeout)
+{
+    QByteArray raw_response, clean_response;
+
+    while (waitForReadyRead(timeout)) {
+        // Use built-in readLine
+        raw_response = readLine();
+
+        // Check if a full message was received
+        // readLine terminates '\0' to its response, then QByteArray ensures that the byte at position size() is always '\0'
+        if (raw_response.size() >= 3) {
+            // Prevents against segmentation error.. probably?
+            if (raw_response.at(raw_response.size() - 1) == '\n')
+                break;
+        } else if (raw_response.at(0) == '\n') {
+            // Empty message received
+            raw_response.clear();
+        } else if (raw_response.size() > SERIAL_MSG_MAX_SIZE) {
+            // Protection for when lots of gibberish is received
+            raw_response.clear();
+        }
+    }
+
+#if AFM_DEBUG
+    if(raw_response.size() > 0){
+        //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
+        qDebug()	<< "RAW Message Received: 0x" << raw_response.toHex()
+                << " Size:" << raw_response.size();
+    }
+
+#endif
+
+    // Unmask the payload
+    bool escape_char = false;
+    for (auto response_byte : raw_response) {
+        if (response_byte == SERIAL_MSG_ESCAPE && !escape_char) {
+            escape_char = true;
+        } else if (escape_char) {
+            clean_response += response_byte & ~SERIAL_MSG_MASK;
+            escape_char = false;
+        } else {
+            clean_response += response_byte;
+        }
+    }
+
+    return clean_response;
+}
+
 
 QByteArray icspiAFM::waitForData(int timeout)
 {
     QByteArray responseData;
 
     while (waitForReadyRead(timeout))
-        responseData += readAll();
+        responseData += readAll(); //Causes segmentation fault
 
 #if AFM_DEBUG
     qDebug() << "Response Data Size:" << responseData.size();
@@ -44,16 +175,18 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
 #if AFM_DEBUG
     qDebug() << "DAC Digital Value to be written:" << (digitalValue);
 #endif
-    writeByte(AFM_DAC_WRITE_SELECT);
-    writeByte(dacID);
-    writeByte((digitalValue & 0xFF));
-    writeByte((digitalValue >> 8));
+
+    addPayloadByte(dacID);
+    addPayloadByte((digitalValue & 0xFF));
+    addPayloadByte((digitalValue >> 8));
+
+    writeMsg(AFM_DAC_WRITE_SELECT);
 }
 
 void icspiAFM::readDAC(qint8 dacID)
 {
-    writeByte(AFM_DAC_READ_SELECT);
-    writeByte(dacID);
+    addPayloadByte(AFM_DAC_READ_SELECT);
+    addPayloadByte(dacID);
 //#if AFM_DEBUG
 //    qDebug() << "Bytes Read from DAC: " << res.size();
 //#endif
@@ -61,8 +194,8 @@ void icspiAFM::readDAC(qint8 dacID)
 
 void icspiAFM::readADC(qint8 adcID)
 {
-    writeByte(AFM_ADC_READ_SELECT);
-    writeByte(adcID);
+    addPayloadByte(AFM_ADC_READ_SELECT);
+    addPayloadByte(adcID);
 //#if AFM_DEBUG
 //   qDebug() << "ADC Digital Value read" << val;
 //#endif
@@ -103,41 +236,42 @@ void icspiAFM::memsSetBridgeVoltage(double val)
 
 void icspiAFM::pidEnable()
 {
-    writeByte(AFM_PID_ENABLE_SELECT);
+    addPayloadByte(AFM_PID_ENABLE_SELECT);
 }
+
 void icspiAFM::pidDisable()
 {
-    writeByte(AFM_PID_DISABLE_SELECT);
+    addPayloadByte(AFM_PID_DISABLE_SELECT);
     //return AFM_SUCCESS;
 }
 
 void icspiAFM::pidSetP(float P)
 {
-    writeByte(AFM_PID_P_SELECT);
-    writeByte(((char *)&P)[0]);
-    writeByte(((char *)&P)[1]);
-    writeByte(((char *)&P)[2]);
-    writeByte(((char *)&P)[3]);
+    addPayloadByte(AFM_PID_P_SELECT);
+    addPayloadByte(((char *)&P)[0]);
+    addPayloadByte(((char *)&P)[1]);
+    addPayloadByte(((char *)&P)[2]);
+    addPayloadByte(((char *)&P)[3]);
     //There should be a max allowed P value. Return FAIL if P value over the range
 }
 
 void icspiAFM::pidSetI(float I)
 {
-    writeByte(AFM_PID_I_SELECT);
-    writeByte(((char *)&I)[0]);
-    writeByte(((char *)&I)[1]);
-    writeByte(((char *)&I)[2]);
-    writeByte(((char *)&I)[3]);
+    addPayloadByte(AFM_PID_I_SELECT);
+    addPayloadByte(((char *)&I)[0]);
+    addPayloadByte(((char *)&I)[1]);
+    addPayloadByte(((char *)&I)[2]);
+    addPayloadByte(((char *)&I)[3]);
     //There should be a max allowed I value. Return FAIL if I value over the range
 }
 
 void icspiAFM::pidSetD(float D)
 {
-    writeByte(AFM_PID_D_SELECT);
-    writeByte(((char *)&D)[0]);
-    writeByte(((char *)&D)[1]);
-    writeByte(((char *)&D)[2]);
-    writeByte(((char *)&D)[3]);
+    addPayloadByte(AFM_PID_D_SELECT);
+    addPayloadByte(((char *)&D)[0]);
+    addPayloadByte(((char *)&D)[1]);
+    addPayloadByte(((char *)&D)[2]);
+    addPayloadByte(((char *)&D)[3]);
     //There should be a max allowed I value. Return FAIL if D value over the range
 }
 
@@ -150,33 +284,33 @@ void icspiAFM::pidSetValues(qint8 P, qint8 I, qint8 D)
 
 void icspiAFM::pidSetPoint(float val)
 {
-    writeByte(AFM_PID_SETPOINT_SELECT);
+    addPayloadByte(AFM_PID_SETPOINT_SELECT);
 
-    writeByte(((char *)&val)[0]);
-    writeByte(((char *)&val)[1]);
+    addPayloadByte(((char *)&val)[0]);
+    addPayloadByte(((char *)&val)[1]);
     //return AFM_SUCCESS; //Should be checked against a value range
 }
 
 void icspiAFM::stageSetPulseWidth(qint8 val)
 {
     //Val should be checked against a value range
-    writeByte(AFM_STAGE_PW_SELECT);
-    writeByte(val);
+    addPayloadByte(val);
+    writeMsg(AFM_STAGE_PW_SELECT);
 }
 
 void icspiAFM::stageSetDirForward()
 {
-    writeByte(AFM_STAGE_DIR_FWD_SELECT);
+    writeMsg(AFM_STAGE_DIR_FWD_SELECT);
 }
 
 void icspiAFM::stageSetDirBackward()
 {
-    writeByte(AFM_STAGE_DIR_REVERSE_SELECT);
+    writeMsg(AFM_STAGE_DIR_REVERSE_SELECT);
 }
 
 void icspiAFM::stageSetStep()
 {
-    writeByte(AFM_STAGE_PULSE_STEP);
+    writeMsg(AFM_STAGE_PULSE_STEP);
 }
 
 void icspiAFM::stageStepForward()
@@ -207,22 +341,23 @@ void icspiAFM::setDDSSettings(quint16	numPoints,
 {
     qDebug() << "Writing to DDS settings";
     // Set DDS settings
-    writeByte(AFM_DDS_SWEEP_SET);
 
     qDebug() << "Start Freq -> High Byte: " << (quint16)(startFrequency >> 8) << " Low Byte: " << (quint8)startFrequency;
     // start freq
-    writeByte((qint8)startFrequency);               // low byte
-    writeByte((qint8)(startFrequency >> 8));        // high bye
+    addPayloadByte((qint8)startFrequency);                  // low byte
+    addPayloadByte((qint8)(startFrequency >> 8));           // high bye
 
     qDebug() << "Step Size -> High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
     // step size
-    writeByte((qint8)stepSize);             // low byte
-    writeByte((qint8)(stepSize >> 8));      // high bye
+    addPayloadByte((qint8)stepSize);                // low byte
+    addPayloadByte((qint8)(stepSize >> 8));         // high bye
 
     qDebug() << "Num Points -> High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
     // num points
-    writeByte((qint8)numPoints);            // low byte
-    writeByte((qint8)(numPoints >> 8));     // high bye
+    addPayloadByte((qint8)numPoints);               // low byte
+    addPayloadByte((qint8)(numPoints >> 8));        // high bye
+
+    writeMsg(AFM_DDS_SWEEP_SET);
 }
 
 // Start the frequency sweep. The data will be fetched from the receiver
@@ -234,7 +369,7 @@ void icspiAFM::frequencySweep(quint16	numPoints,
     setDDSSettings(numPoints, startFrequency, stepSize);
 
     // start frequency sweep ASSUMING REV 2 BOARD!!!
-    writeByte(AFM_FREQ_SWEEP_AD5932);
+    writeMsg(AFM_FREQ_SWEEP_AD5932);
 }
 
 void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
@@ -244,24 +379,28 @@ void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
 
 void icspiAFM::autoApproach(double setpoint)
 {
-    writeByte(AFM_AUTOAPPROACH_SELECT);
-
     qint16 _setpoint = AFM_DAC_SCALING * setpoint;
 
-    writeByte((_setpoint & 0xFF));
-    writeByte((_setpoint & 0x0F00) >> 8);
+    addPayloadByte((_setpoint & 0xFF));
+    addPayloadByte((_setpoint & 0x0F00) >> 8);
 
-    writeByte((150));
-    writeByte(0);
+    addPayloadByte((150));
+    addPayloadByte(0);
+
+    writeMsg(AFM_AUTOAPPROACH_SELECT);
 }
+
 void icspiAFM::setDACValues(char dacID, double _val)
 {
-    writeByte(AFM_SET_DAC_MAX);
+    clearPayloadBuffer();
+
     qint16 _max = AFM_DAC_SCALING * _val;
 
-    writeByte((char)dacID);
-    writeByte((_max & 0xFF));
-    writeByte((_max & 0x0F00) >> 8);
+    addPayloadByte((char)dacID);
+    addPayloadByte((_max & 0xFF));
+    addPayloadByte((_max & 0x0F00) >> 8);
+
+    writeMsg(AFM_SET_DAC_MAX);
 }
 void icspiAFM::deviceCalibration(double val, char side)
 {
@@ -294,38 +433,38 @@ void icspiAFM::deviceCalibration(double val, char side)
 
 
     //4 bytes (o, ‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)
-    writeByte(AFM_DEVICE_CALIBRATE);
-    writeByte(side);
-    writeByte((_max & 0xFF));
-    writeByte((_max & 0x0F00) >> 8);
+    addPayloadByte(AFM_DEVICE_CALIBRATE);
+    addPayloadByte(side);
+    addPayloadByte((_max & 0xFF));
+    addPayloadByte((_max & 0x0F00) >> 8);
 
     //12 bytes (a, b, c) – fitted quadratic polynomial coefficients for direct p-v relation (single precision floating point)
-    writeByte(_a[0]);
-    writeByte(_a[1]);
-    writeByte(_a[2]);
-    writeByte(_a[3]);
-    writeByte(_b[0]);
-    writeByte(_b[1]);
-    writeByte(_b[2]);
-    writeByte(_b[3]);
-    writeByte(_c[0]);
-    writeByte(_c[1]);
-    writeByte(_c[2]);
-    writeByte(_c[3]);
+    addPayloadByte(_a[0]);
+    addPayloadByte(_a[1]);
+    addPayloadByte(_a[2]);
+    addPayloadByte(_a[3]);
+    addPayloadByte(_b[0]);
+    addPayloadByte(_b[1]);
+    addPayloadByte(_b[2]);
+    addPayloadByte(_b[3]);
+    addPayloadByte(_c[0]);
+    addPayloadByte(_c[1]);
+    addPayloadByte(_c[2]);
+    addPayloadByte(_c[3]);
 
     //12 bytes (d, e, f) – fitted quadratic polynomial coefficients for coupling r-v relation (single precision floating point)
-    writeByte(_d[0]);
-    writeByte(_d[1]);
-    writeByte(_d[2]);
-    writeByte(_d[3]);
-    writeByte(_e[0]);
-    writeByte(_e[1]);
-    writeByte(_e[2]);
-    writeByte(_e[3]);
-    writeByte(_f[0]);
-    writeByte(_f[1]);
-    writeByte(_f[2]);
-    writeByte(_f[3]);
+    addPayloadByte(_d[0]);
+    addPayloadByte(_d[1]);
+    addPayloadByte(_d[2]);
+    addPayloadByte(_d[3]);
+    addPayloadByte(_e[0]);
+    addPayloadByte(_e[1]);
+    addPayloadByte(_e[2]);
+    addPayloadByte(_e[3]);
+    addPayloadByte(_f[0]);
+    addPayloadByte(_f[1]);
+    addPayloadByte(_f[2]);
+    addPayloadByte(_f[3]);
 }
 
 void icspiAFM::scanParameters(double	vmin_line,
@@ -346,53 +485,55 @@ void icspiAFM::scanParameters(double	vmin_line,
     qint16 _numpts = numpts;
     qint16 _numLines = numlines;
 
-    writeByte(AFM_SCAN_PARAMETERS);
+    addPayloadByte(AFM_SCAN_PARAMETERS); //TODO FIX ME
 
-    writeByte(_vminLine & 0xFF);
-    writeByte((_vminLine & 0x0F00) >> 8);
+    addPayloadByte(_vminLine & 0xFF);
+    addPayloadByte((_vminLine & 0x0F00) >> 8);
 
-    writeByte(_vminScan & 0xFF);
-    writeByte((_vminScan & 0x0F00) >> 8);
+    addPayloadByte(_vminScan & 0xFF);
+    addPayloadByte((_vminScan & 0x0F00) >> 8);
 
-    writeByte(_vmax & 0xFF);
-    writeByte((_vmax & 0x0F00) >> 8);
+    addPayloadByte(_vmax & 0xFF);
+    addPayloadByte((_vmax & 0x0F00) >> 8);
 
-    writeByte(_numpts & 0xFF);
-    writeByte((_numpts & 0x0F00) >> 8);
+    addPayloadByte(_numpts & 0xFF);
+    addPayloadByte((_numpts & 0x0F00) >> 8);
 
-    writeByte(_numLines & 0xFF);
-    writeByte((_numLines & 0x0F00) >> 8);
+    addPayloadByte(_numLines & 0xFF);
+    addPayloadByte((_numLines & 0x0F00) >> 8);
 }
 void icspiAFM::startScan()
 {
-    writeByte(AFM_START_SCAN);
+    writeMsg(AFM_START_SCAN);
 }
 
 void icspiAFM::scanStep()
 {
-    writeByte(AFM_SCAN_STEP);
+    writeMsg(AFM_SCAN_STEP);
 }
 
 void icspiAFM::setPGA(char channel, double val)
 {
-    writeByte(AFM_SET_PGA);
-    writeByte(channel);
-    //writeByte(val);
+    clearPayloadBuffer();
+    addPayloadByte(channel);
+
     if (channel == PGA_AMPLITUDE || channel == PGA_Z_OFFSET) {
         qint8 newval = abs(20 * log10(val / 100));
-        writeByte(newval);
+        addPayloadByte(newval);
     } else {
         qint8 newval = (((20 * log10(val / 100)) - 31.5) / 0.5) + 255;
-        writeByte(newval);
+        addPayloadByte(newval);
     }
+
+    writeMsg(AFM_SET_PGA);
 }
 
 void icspiAFM::readSignalPhaseOffset()
 {
-    writeByte(AFM_ADC_READ_SPO);
+    writeMsg(AFM_ADC_READ_SPO);
 }
 
 void icspiAFM::forceCurve()
 {
-    writeByte('N');
+    addPayloadByte('N');
 }

@@ -51,7 +51,7 @@ class MainWindow : public QMainWindow
 
 public:
     //nanoiAFM afm;
-    QList<QSerialPortInfo> detectedSerialPorts; //buffer for serial ports
+    QList<QSerialPortInfo> detectedSerialPortsList; //buffer for serial ports
     MainWindow(QWidget *parent,
                queue<commandNode*>& _queue,
                queue<returnBuffer*>& _returnqueue) :
@@ -88,6 +88,7 @@ private:
 signals:
     void finished();
     void SweepFinished();
+    void serial_ready(); //Emitted when setPort() has exited successfully, to start receive thread mainLoop
 
 public slots:
     //used for the scan graph settings
