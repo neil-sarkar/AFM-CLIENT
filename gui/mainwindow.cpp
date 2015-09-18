@@ -99,11 +99,11 @@ void MainWindow::Initialize()
 
     /*Push event to get ports from the serialworker*/
     //commandQueue.push(new commandNode(getPorts,(double)0));
-    SetPorts();
+    refreshPortsList();
 
     // Now that the ports are open, we can start the receive thread
     // This should prevent Segmentation fault on the receive thread
-    serial_ready();
+    serial_ready(0);
 
     /*Initialize DAC limits*/
     SetMaxDACValues();
@@ -303,7 +303,7 @@ void MainWindow::CreateGraphs()
     forceCurve.resize(500, 100);
     forceCurve.show();
 }
-void MainWindow::SetPorts()
+void MainWindow::refreshPortsList()
 {
     /*Populate the port combobox*/
     detectedSerialPortsList = QSerialPortInfo::availablePorts();
@@ -579,7 +579,7 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
 {
     if (index != -1) {
         if (ui->cboComPortSelection->itemText(index) == "Refresh" && index != 0)
-            SetPorts();
+            refreshPortsList();
         else
             commandQueue.push(new commandNode(setPort, (double)index));
     }

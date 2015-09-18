@@ -61,7 +61,7 @@ public:
 
     //public functions
     void abort();
-    void SetPorts();
+    void refreshPortsList();
     void SetMaxDACValues();
     void Initialize();
     void CreateFreqSweepGraph(QVector<double> amplitudeData,
@@ -88,7 +88,7 @@ private:
 signals:
     void finished();
     void SweepFinished();
-    void serial_ready(); //Emitted when setPort() has exited successfully, to start receive thread mainLoop
+    void serial_ready(int); //Emitted when setPort() has exited successfully, to start receive thread mainLoop
 
 public slots:
     //used for the scan graph settings

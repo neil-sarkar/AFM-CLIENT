@@ -1,11 +1,9 @@
 #ifndef AFM_H
 #define AFM_H
-#define BAUD_RATE 76800
+#define AFM_BAUD_RATE 76800
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
-//#include <QtSerialPort/qserialport.h>
-//#include <QtSerialPort/qserialportinfo.h>
 #include <QSerialPort> //For QT5
 #include <QSerialPortInfo>
 #include <QString>
@@ -158,8 +156,7 @@ class icspiAFM: public QSerialPort{
 
 private:
     unsigned __int8 message_tag = 1;
-    QByteArray payload_out_buffer;
-    short serial_send_try = 0;
+    QByteArray payload_out_buffer, serial_incoming_buffer;
 
 public:
 

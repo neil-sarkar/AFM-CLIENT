@@ -22,8 +22,23 @@ void receiver::start_wait_for_init()
 }
 
 // Actually starts the mainLoop
-void receiver::serial_ready()
+// It appears that we never really opened the r_afm serial object!
+void receiver::serial_ready(int index_)
 {
+   qDebug() << "r_afm openING" << endl;
+   QList<QSerialPortInfo> *detectedSerialPorts = new QList<QSerialPortInfo>();
+
+    *detectedSerialPorts = QSerialPortInfo::availablePorts();
+
+    if (detectedSerialPorts->size() == 0) {
+        qDebug() << "r_afm Unable to find any serial ports." << endl;
+    } else {
+        r_afm.setPort(detectedSerialPorts->at(index_));
+        r_afm.open(QIODevice::ReadWrite);
+        r_afm.setBaudRate(AFM_BAUD_RATE);
+        qDebug() << "r_afm opened" << endl;
+    }
+
     serial_is_ready = true;
 }
 
@@ -47,6 +62,9 @@ void receiver::mainLoop()
     QVector<double> *z_offset_adc = new QVector<double>();
     QVector<double> *z_amp_adc = new QVector<double>();
     QVector<double> *z_phase_adc = new QVector<double>();
+
+    while (!serial_is_ready)
+        delay(10);
 
     forever {
         /**********************************************************
@@ -72,9 +90,21 @@ void receiver::mainLoop()
         //TODO: Currently there is a major bug where if there are a ton of events sent to the MCU
         //they get out of order. If i am attempting to read a signal in order to plot and do a continuous
         //approach the events get out of order.
+
+        // Get the next message block
+        if(serial_is_ready){
+            uart_resp = r_afm.waitForMsg(AFM_SHORT_TIMEOUT);
+        }
+
+
         if (!recv_queue.empty()) {
             isError = false;
             _node = recv_queue.front();
+
+            if (_abort) {
+                emit finished();
+                return;
+            }
 
             /*
              * Collect serial rx buffer from SerialObject, and put into the local QByteArray uart_resp.
@@ -111,31 +141,8 @@ void receiver::mainLoop()
              *
              */
 
-
-
-            while (uart_resp.isEmpty()) {
+            if (uart_resp.isEmpty()) {
                 //mutex.lock();
-                if (_abort) {
-                    emit finished();
-                    return;
-                }
-
-                // Logic to decide when to collect the serial rx buffer
-                // If we collect too fast, data might get cut-off halfway through.
-
-                if (_node.name == DEVICECALIBRATION || _node.name == AUTOAPPROACH) {
-                    uart_resp = r_afm.waitForMsg(AFM_LONG_TIMEOUT);
-                }
-                //waitForData doesn't actually wait for anything... if there happens to be data in the buffer, it will take it.
-                //and we cannot ensure that all of the data are in yet.
-                //maybe just enforce a wait?
-                else if (_node.name == FREQSWEEP) {
-                    delay(3000); //Force a wait
-                    uart_resp = r_afm.waitForMsg(AFM_LONG_TIMEOUT);
-                } else {
-                    uart_resp = r_afm.waitForMsg(AFM_SHORT_TIMEOUT);
-                }
-                //mutex.unlock();
             }
 
             // First make sure the uart_resp array actually has things inside

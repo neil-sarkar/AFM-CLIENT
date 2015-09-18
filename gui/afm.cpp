@@ -11,11 +11,7 @@
 
 int icspiAFM::writeByte(char byte)
 {
-    serial_send_try = 0;
-    //Change it to write sequentially.
-    write(&byte, AFM_MAX_DATA_SIZE);
-
-    if (waitForBytesWritten(-1)) {
+    if (write(&byte, AFM_MAX_DATA_SIZE) > -1) {
         return AFM_SUCCESS;
     } else {
 #if AFM_DEBUG
@@ -25,7 +21,6 @@ int icspiAFM::writeByte(char byte)
         return AFM_FAIL;
     }
 }
-
 
 /*
  * Collects the bytes to send
@@ -82,6 +77,10 @@ int icspiAFM::writeMsg(char msg_id, QByteArray payload)
     //Close the message
     writeByte(SERIAL_MSG_NEWLINE);
 
+#if AFM_DEBUG
+    qDebug() << "Sent TAG " << QString().sprintf("%2p", message_tag) << " ID " << msg_id << " " << QString().sprintf("%2p", msg_id) << " payload 0x" << payload.toHex();
+#endif
+
     return AFM_SUCCESS;
 }
 
@@ -105,50 +104,78 @@ int icspiAFM::writeMsg(char msg_id)
  */
 QByteArray icspiAFM::waitForMsg(int timeout)
 {
-    QByteArray raw_response, clean_response;
+    QByteArray incoming_message;
+    char incoming_byte = 0x00;
+    bool message_complete = false, escape_char_received = false;
+    int msg_length = 0;
 
-    while (waitForReadyRead(timeout)) {
-        // Use built-in readLine
-        raw_response = readLine();
-
-        // Check if a full message was received
-        // readLine terminates '\0' to its response, then QByteArray ensures that the byte at position size() is always '\0'
-        if (raw_response.size() >= 3) {
-            // Prevents against segmentation error.. probably?
-            if (raw_response.at(raw_response.size() - 1) == '\n')
-                break;
-        } else if (raw_response.at(0) == '\n') {
-            // Empty message received
-            raw_response.clear();
-        } else if (raw_response.size() > SERIAL_MSG_MAX_SIZE) {
-            // Protection for when lots of gibberish is received
-            raw_response.clear();
-        }
-    }
+    if (serial_incoming_buffer.isEmpty()) {
+       //  while (waitForReadyRead(timeout)) {
+            serial_incoming_buffer = this->readAll();
+       //  }
 
 #if AFM_DEBUG
-    if(raw_response.size() > 0){
-        //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
-        qDebug()	<< "RAW Message Received: 0x" << raw_response.toHex()
-                << " Size:" << raw_response.size();
-    }
+
+        qDebug()	<< "readAll 0x" << serial_incoming_buffer.toHex();
 
 #endif
+    } // else APPEND!!!
 
-    // Unmask the payload
-    bool escape_char = false;
-    for (auto response_byte : raw_response) {
-        if (response_byte == SERIAL_MSG_ESCAPE && !escape_char) {
-            escape_char = true;
-        } else if (escape_char) {
-            clean_response += response_byte & ~SERIAL_MSG_MASK;
-            escape_char = false;
+    while (!message_complete) {
+        //Read one byte at a time
+        // while(waitForReadyRead(10)); //Wait indefinitely until we get something
+        //  int status = this->read(&incoming_byte, 1);
+        //qDebug() << " SR" << status;
+// QByteArray test_message = readAll();
+        // qDebug() << "  0x" << test_message.toHex();
+
+        //  if(incoming_byte != '\0' && status > 0){
+
+        if (!serial_incoming_buffer.isEmpty()) {
+            incoming_byte = serial_incoming_buffer.at(msg_length);
+            msg_length++;
+            printf(" 0x%02x", incoming_byte);
         } else {
-            clean_response += response_byte;
+            // The incoming buffer is empty but the last message was not a complete one
+            return "";
+        }
+
+        // Take care of the incoming byte...
+
+        if (incoming_byte == SERIAL_MSG_NEWLINE) {
+            // Newline char received. Is everything we got so far a valid message?
+            if (incoming_message.size() >= 2) {
+                // Check length... should be at least two bytes
+                message_complete = true;
+                break;
+            } else {
+                // Otherwise, it was an empty or invalid message. Discard and move on.
+                incoming_message.clear();
+            }
+        } else if (incoming_byte == SERIAL_MSG_ESCAPE && !escape_char_received) {
+            // Is this escape char?
+            escape_char_received = true;
+        } else if (escape_char_received) {
+            // Do we need to unmask this?
+            incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
+            escape_char_received = false;
+        } else {
+            // None of the above. Collect it in message QByteArray
+            incoming_message += incoming_byte;
         }
     }
 
-    return clean_response;
+    serial_incoming_buffer.remove(0, msg_length);
+
+#if AFM_DEBUG
+    if (incoming_message.size() > 0) {
+        //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
+        qDebug()	<< "  0x" << incoming_message.toHex()
+                << " Size:" << incoming_message.size();
+    }
+#endif
+
+    return incoming_message;
 }
 
 

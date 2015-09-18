@@ -238,6 +238,7 @@ void serialworker::mainLoop()
                 receive_queue.push(receivenode);
                 break;
             case setPort:
+                qDebug() << "s_afm openING" << endl;
                 s_afm.close();
                 *detectedSerialPorts = QSerialPortInfo::availablePorts();
                 _node->getdval() == 0 ? _index = 0 : _index = _node->getdval();
@@ -247,7 +248,8 @@ void serialworker::mainLoop()
                 } else {
                     s_afm.setPort(detectedSerialPorts->at(_index));
                     s_afm.open(QIODevice::ReadWrite);
-                    s_afm.setBaudRate(76800);
+                    s_afm.setBaudRate(AFM_BAUD_RATE);
+                    qDebug() << "s_afm opened" << endl;
                 }
                 break;
             case setDDSSettings:
