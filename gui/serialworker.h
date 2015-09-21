@@ -27,7 +27,7 @@ public:
     serialworker(QObject *parent,
                  queue<commandNode*>& _queue,
                  queue<receivetype>& _receivequeue, 
-				 icspiAFM& afm) :
+                 icspiAFM& afm) :
         QObject(parent),
         cmd_queue(_queue),
         receive_queue(_receivequeue), 

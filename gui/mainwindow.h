@@ -88,7 +88,6 @@ private:
 signals:
     void finished();
     void SweepFinished();
-    void serial_ready(int); //Emitted when setPort() has exited successfully, to start receive thread mainLoop
 
 public slots:
     //used for the scan graph settings

@@ -256,9 +256,7 @@ void serialworker::mainLoop()
                 if (detectedSerialPorts->size() == 0) {
                     qDebug() << "Unable to find any serial ports." << endl;
                 } else {
-                    s_afm.setPort(detectedSerialPorts->at(_index));
-                    s_afm.open(QIODevice::ReadWrite);
-                    s_afm.setBaudRate(AFM_BAUD_RATE);
+                    s_afm.open(detectedSerialPorts->at(_index), AFM_BAUD_RATE);
                     qDebug() << "s_afm opened" << endl;
                 }
                 break;

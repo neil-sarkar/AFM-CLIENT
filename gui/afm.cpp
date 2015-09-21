@@ -9,9 +9,31 @@
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
+void icspiAFM::init(){
+   serial = new QSerialPort(this);
+}
+
+bool icspiAFM::open(const QSerialPortInfo & serialPortInfo, qint32 baud_rate)
+{
+    serial->setBaudRate(baud_rate);
+    serial->setPort(serialPortInfo);
+    isOpen = serial->open(QIODevice::ReadWrite);
+    return isOpen;
+}
+
+void icspiAFM::close()
+{
+    // Prevent accidental segmentation -- use protection.
+    if(isOpen){
+        serial->close();
+        isOpen = false;
+    }
+    return;
+}
+
 int icspiAFM::writeByte(char byte)
 {
-    if (write(&byte, AFM_MAX_DATA_SIZE) > -1) {
+    if (serial->write(&byte, AFM_MAX_DATA_SIZE) > -1) {
         return AFM_SUCCESS;
     } else {
 #if AFM_DEBUG
@@ -114,18 +136,20 @@ QByteArray icspiAFM::waitForMsg(int timeout)
     bool message_complete = false, escape_char_received = false;
     int msg_length = 0;
 
-    if (serial_incoming_buffer.isEmpty() && bytesAvailable() > 0) {
-            serial_incoming_buffer += this->readAll();
+//    if (serial_incoming_buffer.isEmpty() && isOpen) {
+//        serial_incoming_buffer += serial->readAll();
 //#if AFM_DEBUG
-////    qDebug() << "readAll 0x" << serial_incoming_buffer.toHex();
+//        qDebug() << "readAll 0x" << serial_incoming_buffer.toHex();
 //#endif
-   } // else APPEND!!!
+//    } // else APPEND!!!
 
     while (!message_complete) {
         //Read one byte at a time
-         //while(waitForReadyRead(10)); //Wait indefinitely until we get something
-       // if (bytesAvailable() > 0)
-      //      int status = this->read(&incoming_byte, 1);
+        //while(waitForReadyRead(10)); //Wait indefinitely until we get something
+         if (isOpen){
+             if (serial->bytesAvailable() > 0)
+              int status = serial->read(&incoming_byte, 1);
+         }
         //qDebug() << " SR" << status;
 // QByteArray test_message = readAll();
         // qDebug() << "  0x" << test_message.toHex();
@@ -184,8 +208,8 @@ QByteArray icspiAFM::waitForData(int timeout)
 {
     QByteArray responseData;
 
-    while (waitForReadyRead(timeout))
-        responseData += readAll(); //Causes segmentation fault?
+    while (serial->waitForReadyRead(timeout))
+        responseData += serial->readAll(); //Causes segmentation fault?
 
 #if AFM_DEBUG
     qDebug() << "Response Data Size:" << responseData.size();
@@ -213,8 +237,8 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
 
 void icspiAFM::readDAC(qint8 dacID)
 {
-    addPayloadByte(AFM_DAC_READ_SELECT);
     addPayloadByte(dacID);
+    writeMsg(AFM_DAC_READ_SELECT);
 //#if AFM_DEBUG
 //    qDebug() << "Bytes Read from DAC: " << res.size();
 //#endif
@@ -222,8 +246,9 @@ void icspiAFM::readDAC(qint8 dacID)
 
 void icspiAFM::readADC(qint8 adcID)
 {
-    addPayloadByte(AFM_ADC_READ_SELECT);
+
     addPayloadByte(adcID);
+    writeMsg(AFM_ADC_READ_SELECT);
 //#if AFM_DEBUG
 //   qDebug() << "ADC Digital Value read" << val;
 //#endif
@@ -275,22 +300,22 @@ void icspiAFM::pidDisable()
 
 void icspiAFM::pidSetP(float P)
 {
-    addPayloadByte(AFM_PID_P_SELECT);
     addPayloadByte(((char *)&P)[0]);
     addPayloadByte(((char *)&P)[1]);
     addPayloadByte(((char *)&P)[2]);
     addPayloadByte(((char *)&P)[3]);
     //There should be a max allowed P value. Return FAIL if P value over the range
+    writeMsg(AFM_PID_P_SELECT);
 }
 
 void icspiAFM::pidSetI(float I)
 {
-    addPayloadByte(AFM_PID_I_SELECT);
     addPayloadByte(((char *)&I)[0]);
     addPayloadByte(((char *)&I)[1]);
     addPayloadByte(((char *)&I)[2]);
     addPayloadByte(((char *)&I)[3]);
     //There should be a max allowed I value. Return FAIL if I value over the range
+    writeMsg(AFM_PID_I_SELECT);
 }
 
 void icspiAFM::pidSetD(float D)
@@ -301,6 +326,7 @@ void icspiAFM::pidSetD(float D)
     addPayloadByte(((char *)&D)[2]);
     addPayloadByte(((char *)&D)[3]);
     //There should be a max allowed I value. Return FAIL if D value over the range
+        writeMsg(AFM_PID_D_SELECT);
 }
 
 void icspiAFM::pidSetValues(qint8 P, qint8 I, qint8 D)
@@ -312,11 +338,11 @@ void icspiAFM::pidSetValues(qint8 P, qint8 I, qint8 D)
 
 void icspiAFM::pidSetPoint(float val)
 {
-    addPayloadByte(AFM_PID_SETPOINT_SELECT);
 
     addPayloadByte(((char *)&val)[0]);
     addPayloadByte(((char *)&val)[1]);
     //return AFM_SUCCESS; //Should be checked against a value range
+        writeMsg(AFM_PID_SETPOINT_SELECT);
 }
 
 void icspiAFM::stageSetPulseWidth(qint8 val)
@@ -461,7 +487,7 @@ void icspiAFM::deviceCalibration(double val, char side)
 
 
     //4 bytes (o, ‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)
-    addPayloadByte(AFM_DEVICE_CALIBRATE);
+
     addPayloadByte(side);
     addPayloadByte((_max & 0xFF));
     addPayloadByte((_max & 0x0F00) >> 8);
@@ -493,6 +519,8 @@ void icspiAFM::deviceCalibration(double val, char side)
     addPayloadByte(_f[1]);
     addPayloadByte(_f[2]);
     addPayloadByte(_f[3]);
+
+        writeMsg(AFM_DEVICE_CALIBRATE);
 }
 
 void icspiAFM::scanParameters(double	vmin_line,
@@ -513,7 +541,7 @@ void icspiAFM::scanParameters(double	vmin_line,
     qint16 _numpts = numpts;
     qint16 _numLines = numlines;
 
-    addPayloadByte(AFM_SCAN_PARAMETERS); //TODO FIX ME
+
 
     addPayloadByte(_vminLine & 0xFF);
     addPayloadByte((_vminLine & 0x0F00) >> 8);
@@ -529,6 +557,8 @@ void icspiAFM::scanParameters(double	vmin_line,
 
     addPayloadByte(_numLines & 0xFF);
     addPayloadByte((_numLines & 0x0F00) >> 8);
+
+        writeMsg(AFM_SCAN_PARAMETERS); //TODO FIX ME
 }
 void icspiAFM::startScan()
 {
@@ -563,5 +593,5 @@ void icspiAFM::readSignalPhaseOffset()
 
 void icspiAFM::forceCurve()
 {
-    addPayloadByte('N');
+    writeMsg('N');
 }

@@ -101,10 +101,6 @@ void MainWindow::Initialize()
     //commandQueue.push(new commandNode(getPorts,(double)0));
     refreshPortsList();
 
-    // Now that the ports are open, we can start the receive thread
-    // This should prevent Segmentation fault on the receive thread
-    serial_ready(0);
-
     /*Initialize DAC limits*/
     SetMaxDACValues();
 

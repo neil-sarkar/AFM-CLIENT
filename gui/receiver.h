@@ -41,8 +41,6 @@ signals:
 
 public slots:
     void mainLoop();
-    void serial_ready(int);
-    void start_wait_for_init();
 };
 
 #endif // RECEIVER_H

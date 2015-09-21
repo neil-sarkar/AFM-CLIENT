@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     queue<returnBuffer *> graphQueue = queue<returnBuffer *>();
 
     icspiAFM afm;
+    afm.init();
     /**********************4 Threads***********************************
      *
      * mainThread:      Handles GUI, pushed events to the serialThread
@@ -54,17 +55,16 @@ int main(int argc, char *argv[])
     eventWorker->moveToThread(eventThread);
     QObject::connect(eventThread, SIGNAL(started()), eventWorker, SLOT(mainLoop()));
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
-   // eventThread->start();
+    eventThread->start();
 
     receiveWorker->moveToThread(receiveThread);
     QObject::connect(receiveThread, SIGNAL(started()), receiveWorker, SLOT(mainLoop()));
     QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
-    //receiveThread->start();
+    receiveThread->start();
 
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
     QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
-    QObject::connect(mainWorker, SIGNAL(serial_ready(int)), receiveWorker, SLOT(serial_ready(int)));
 
 
     int rt = a.exec();

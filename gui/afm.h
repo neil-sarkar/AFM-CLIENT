@@ -152,14 +152,18 @@ enum {
     AFM_FAIL = -1
 };
 
-class icspiAFM: public QSerialPort{
-
+class icspiAFM: public QObject{
 
 private:
     unsigned __int8 message_tag = 1;
     QByteArray payload_out_buffer, serial_incoming_buffer;
+    QSerialPort *serial;
 
 public:
+    void init();
+    bool open(const QSerialPortInfo & serialPortInfo, qint32 baud_rate);
+    void close();
+    bool isOpen = false;
 
     /*
      * All the functions that will write to the MCU

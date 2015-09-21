@@ -12,36 +12,6 @@ void delay(int millisecondsToWait)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
-// Waits for the serial port success signal from mainwindow before starting mainLoop
-void receiver::start_wait_for_init()
-{
-    while (!serial_is_ready)
-        delay(10);
-
-    mainLoop();
-}
-
-// Actually starts the mainLoop
-// It appears that we never really opened the r_afm serial object!
-void receiver::serial_ready(int index_)
-{
-   qDebug() << "r_afm openING" << endl;
-   QList<QSerialPortInfo> *detectedSerialPorts = new QList<QSerialPortInfo>();
-
-    *detectedSerialPorts = QSerialPortInfo::availablePorts();
-
-    if (detectedSerialPorts->size() == 0) {
-        qDebug() << "r_afm Unable to find any serial ports." << endl;
-    } else {
-        r_afm.setPort(detectedSerialPorts->at(index_));
-        r_afm.open(QIODevice::ReadWrite);
-        r_afm.setBaudRate(AFM_BAUD_RATE);
-        qDebug() << "r_afm opened" << endl;
-    }
-
-    serial_is_ready = true;
-}
-
 void receiver::mainLoop()
 {
     receivetype _node;
@@ -63,7 +33,7 @@ void receiver::mainLoop()
     QVector<double> *z_amp_adc = new QVector<double>();
     QVector<double> *z_phase_adc = new QVector<double>();
 
-    while (!serial_is_ready)
+    while (!r_afm.isOpen)
         delay(10);
 
     forever {
