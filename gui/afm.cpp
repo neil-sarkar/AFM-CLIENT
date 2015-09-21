@@ -96,6 +96,11 @@ int icspiAFM::writeMsg(char msg_id)
     return result;
 }
 
+//QByteArray icspiAFM::getNextMsg(){
+//    serial_incoming_buffer += this->readAll();
+
+//}
+
 /*
  * Blocking Function.
  * Waits until there is a complete message received, then returns that message.
@@ -109,22 +114,18 @@ QByteArray icspiAFM::waitForMsg(int timeout)
     bool message_complete = false, escape_char_received = false;
     int msg_length = 0;
 
-    if (serial_incoming_buffer.isEmpty()) {
-       //  while (waitForReadyRead(timeout)) {
-            serial_incoming_buffer = this->readAll();
-       //  }
-
-#if AFM_DEBUG
-
-        qDebug()	<< "readAll 0x" << serial_incoming_buffer.toHex();
-
-#endif
-    } // else APPEND!!!
+    if (serial_incoming_buffer.isEmpty() && bytesAvailable() > 0) {
+            serial_incoming_buffer += this->readAll();
+//#if AFM_DEBUG
+////    qDebug() << "readAll 0x" << serial_incoming_buffer.toHex();
+//#endif
+   } // else APPEND!!!
 
     while (!message_complete) {
         //Read one byte at a time
-        // while(waitForReadyRead(10)); //Wait indefinitely until we get something
-        //  int status = this->read(&incoming_byte, 1);
+         //while(waitForReadyRead(10)); //Wait indefinitely until we get something
+       // if (bytesAvailable() > 0)
+      //      int status = this->read(&incoming_byte, 1);
         //qDebug() << " SR" << status;
 // QByteArray test_message = readAll();
         // qDebug() << "  0x" << test_message.toHex();
@@ -184,7 +185,7 @@ QByteArray icspiAFM::waitForData(int timeout)
     QByteArray responseData;
 
     while (waitForReadyRead(timeout))
-        responseData += readAll(); //Causes segmentation fault
+        responseData += readAll(); //Causes segmentation fault?
 
 #if AFM_DEBUG
     qDebug() << "Response Data Size:" << responseData.size();

@@ -18,6 +18,7 @@ void serialworker::mainLoop()
     _abort = false;
     QList<QSerialPortInfo> *detectedSerialPorts = new QList<QSerialPortInfo>();
     receivetype receivenode;
+    QByteArray uart_resp;
 
     forever {
         if (_abort) {
@@ -25,6 +26,15 @@ void serialworker::mainLoop()
             emit finished();
             return;
         }
+
+        uart_resp = s_afm.waitForMsg(10);
+
+#if AFM_DEBUG
+         if (uart_resp.size() > 0) {
+        //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
+        qDebug()	<< "s_afm get resp  0x" << uart_resp;
+         }
+#endif
 
         /**********************************************************
         * Dequeue the command buffer and based on the command call

@@ -154,6 +154,7 @@ enum {
 
 class icspiAFM: public QSerialPort{
 
+
 private:
     unsigned __int8 message_tag = 1;
     QByteArray payload_out_buffer, serial_incoming_buffer;

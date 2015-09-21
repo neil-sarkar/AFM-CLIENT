@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
     receiver *receiveWorker = new receiver(0, receiveQueue, returnQueue, graphQueue, afm);
 
-    mainWorker->moveToThread(mainThread);
+    //mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
     QObject::connect(mainWorker, SIGNAL(finished()), mainThread, SLOT(quit()), Qt::DirectConnection);
     mainThread->start();
@@ -54,15 +54,14 @@ int main(int argc, char *argv[])
     eventWorker->moveToThread(eventThread);
     QObject::connect(eventThread, SIGNAL(started()), eventWorker, SLOT(mainLoop()));
     QObject::connect(eventWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
-    eventThread->start();
+   // eventThread->start();
 
     receiveWorker->moveToThread(receiveThread);
     QObject::connect(receiveThread, SIGNAL(started()), receiveWorker, SLOT(mainLoop()));
     QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
-    receiveThread->start();
+    //receiveThread->start();
 
     QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
-    //QObject::connect(serialWorker, SIGNAL(openPort(QSerialPortInfo)), receiveWorker, SLOT(openPort(QSerialPortInfo)));
     QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
     QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
     QObject::connect(mainWorker, SIGNAL(serial_ready(int)), receiveWorker, SLOT(serial_ready(int)));

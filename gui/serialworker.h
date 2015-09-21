@@ -17,8 +17,6 @@
 #include <stdlib.h>
 using std::queue;
 
-
-
 class serialworker : public QObject
 {
     Q_OBJECT
@@ -40,6 +38,7 @@ public:
 
 private:
     //icspiAFM m_afm;
+    bool serial_ready = false;
     Command _command;
     double _val;
     qint8 _ID;
