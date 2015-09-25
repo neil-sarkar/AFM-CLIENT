@@ -113,7 +113,6 @@ void icspiAFM::pidSetI(float I)
 
 void icspiAFM::pidSetD(float D)
 {
-    emit addPayloadByte(AFM_PID_D_SELECT);
     emit addPayloadByte(((char *)&D)[0]);
     emit addPayloadByte(((char *)&D)[1]);
     emit addPayloadByte(((char *)&D)[2]);

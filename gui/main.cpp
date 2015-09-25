@@ -15,36 +15,40 @@ int main(int argc, char *argv[])
     queue<returnBuffer *> returnQueue = queue<returnBuffer *>();
     queue<returnBuffer *> graphQueue = queue<returnBuffer *>();
 
+    // Configure the afm abstraction layer and afm_worker thread
     icspiAFM *afm = new icspiAFM();
-    /**********************4 Threads***********************************
-     *
-     * mainThread:      Handles GUI, pushed events to the serialThread
-     * serialThread:    Handles serial communication between the Qt Application
-     *                      and the MCU, sends arguments to the MCU
-     * eventThread:     Creates events on a timer to gather continuous data
-     *                      for plots
-     * receive_workerThread:  Handles the receiving of data from the MCU. Sends data
-     *                      to the mainThread to display to the user
-     *
-     *******************************************************************/
-
-    QThread *sendThread = new QThread();
-    QThread *eventThread = new QThread();
-    QThread *mainThread = new QThread();
-    QThread *receiveThread = new QThread();
-
     QThread *afmThread = new QThread();
     afm_worker *afmWorker = new afm_worker();
     afmWorker->moveToThread(afmThread);
     QObject::connect(afmThread, SIGNAL(started()), afmWorker, SLOT(init()));
     afmThread->start();
 
+    /**********************5 Threads***********************************
+     *
+     * afmThread:   See above
+     * mainThread:      Handles GUI, pushed events to the serialThread
+     * sendThread:    Handles serial communication between the Qt Application
+     *                      and the MCU, sends arguments to the MCU
+     * eventThread:     Creates events on a timer to gather continuous data
+     *                      for plots
+     * receiveThread:  Handles the receiving of data from the MCU. Sends data
+     *                      to the mainThread to display to the user
+     *
+     *******************************************************************/
+
+
+    // QT-specific operation threads
+    QThread *sendThread = new QThread();
+    QThread *eventThread = new QThread();
+    QThread *mainThread = new QThread();
+    QThread *receiveThread = new QThread();
+
     MainWindow *mainWorker = new MainWindow(0, commandQueue, returnQueue);
     send_worker *sendWorker = new send_worker(0, commandQueue, receiveQueue, *afm);
     eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
     receive_worker *receiveWorker = new receive_worker(0, receiveQueue, returnQueue, graphQueue, *afm);
 
-    //mainWorker->moveToThread(mainThread);
+    // Define the basic signals and slots and start the threads
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
     QObject::connect(mainWorker, SIGNAL(finished()), mainThread, SLOT(quit()), Qt::DirectConnection);
     mainThread->start();
@@ -64,20 +68,25 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
     receiveThread->start();
 
+
+    // Define additional signals and slots.
+    // UI Elements
     QObject::connect(sendWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
     QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
-
+    // Serial port operation details
     QObject::connect(sendWorker, SIGNAL(open(QString, qint32)), afmWorker, SLOT(open(QString, qint32)));
     QObject::connect(sendWorker, SIGNAL(close()), afmWorker, SLOT(close()));
-
     QObject::connect(receiveWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
     QObject::connect(sendWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
-    QObject::connect(receiveWorker, SIGNAL(waitForMsg(char)), afmWorker, SLOT(waitForMsg(char)));
+    // afm interfacing
+    QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
-    //QObject::connect(afm, SIGNAL(writeByte(char)), afmWorker, SLOT(writeByte(char)));
     QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
+    QObject::connect(afmWorker, SIGNAL(update_uart_resp(QByteArray)), receiveWorker, SLOT(update_uart_resp(QByteArray)));
+
+
 
     int rt = a.exec();
 

@@ -41,9 +41,13 @@ private:
     QSerialPort *serial;
     bool serial_open = false;
     int writeMsg(char msg_id, QByteArray payload);
+    void getNextMsg1();
 
 public:
     int writeByte(char byte);
+
+signals:
+    void update_uart_resp(QByteArray new_uart_resp);
 
 public slots:
     // Started by main.cpp
@@ -61,11 +65,10 @@ public slots:
     // Used by afm.cpp
     void clearPayloadBuffer();
     int addPayloadByte(char byte);
-  //  int writeByte(char byte);
     int writeMsg(char msg_id);
 
     // Used by receive worker
-    QByteArray waitForMsg();
+    void getNextMsg();
 };
 
 #endif // AFM_H

@@ -33,15 +33,17 @@ private:
     //icspiAFM m_afm;
     bool _abort;
     bool isError;
-    bool serial_is_ready = false;
+    QByteArray uart_resp;
 
 signals:
     void finished();
     void serialError(); //emited to the mainwindow when there is an error
     bool isOpen();
+    void getNextMsg();
 
 public slots:
     void mainLoop();
+    void update_uart_resp(QByteArray new_uart_resp);
 };
 
 #endif // receive_worker_H

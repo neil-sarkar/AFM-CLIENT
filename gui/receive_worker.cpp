@@ -15,7 +15,6 @@ void delay(int millisecondsToWait)
 void receive_worker::mainLoop()
 {
     receivetype _node;
-    QByteArray uart_resp;
     int shift = 0;
 
     _abort = false;
@@ -32,9 +31,6 @@ void receive_worker::mainLoop()
     QVector<double> *z_offset_adc = new QVector<double>();
     QVector<double> *z_amp_adc = new QVector<double>();
     QVector<double> *z_phase_adc = new QVector<double>();
-
-    while (!isOpen()) //TODO change me
-        delay(10);
 
     forever {
         /**********************************************************
@@ -60,12 +56,6 @@ void receive_worker::mainLoop()
         //TODO: Currently there is a major bug where if there are a ton of events sent to the MCU
         //they get out of order. If i am attempting to read a signal in order to plot and do a continuous
         //approach the events get out of order.
-
-        // Get the next message block
-        if(serial_is_ready){
-            uart_resp = r_afm.waitForMsg();
-        }
-
 
         if (!recv_queue.empty()) {
             isError = false;
@@ -111,9 +101,21 @@ void receive_worker::mainLoop()
              *
              */
 
-            if (uart_resp.isEmpty()) {
-                //mutex.lock();
+            // Get the next message block
+            if (uart_resp.isEmpty()){
+                emit getNextMsg();
+                delay(1);
             }
+
+
+#if AFM_DEBUG
+            if (uart_resp.size() > 0)
+                //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
+                qDebug() << "receive_worker get resp  0x" << uart_resp;
+
+#endif
+
+
 
             // First make sure the uart_resp array actually has things inside
             if (!uart_resp.isEmpty() || !uart_resp.isNull()) {
@@ -505,14 +507,19 @@ void receive_worker::mainLoop()
             }
             //mutex.unlock();
             else {
-                //sometimes there are extra bytes in the buffer when we do an
-                //approach. So if there is nothing in the receive queue just
-                //empty the buffer to make sure
-                uart_resp.clear();
+                // do nothing
             }
         } // end if(!recv_queue.empty())
-    }       // end forever
+    }   // end forever
 }               // end main loop
+
+void receive_worker::update_uart_resp(QByteArray new_uart_resp)
+{
+    uart_resp = new_uart_resp;
+}
+
+
+
 void receive_worker::abort()
 {
     _abort = true;
