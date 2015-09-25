@@ -7,6 +7,7 @@
 #include <commandnode.h>
 #include <afm.h>
 #include <returnbuffer.h>
+#include <afm_worker.h>
 
 extern QMutex mutex; //to be used when two threads are trying to access the afm at the same time
 

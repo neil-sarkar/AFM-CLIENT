@@ -1,4 +1,4 @@
-#include <serialworker.h>
+#include <send_worker.h>
 
 using std::queue;
 
@@ -13,7 +13,7 @@ using std::queue;
 *  corresponding method will be called. if _abort is ever set to
 *  true the thread will exit.
 ***********************************************************************/
-void serialworker::mainLoop()
+void send_worker::mainLoop()
 {
     _abort = false;
     QList<QSerialPortInfo> *detectedSerialPorts = new QList<QSerialPortInfo>();
@@ -27,7 +27,7 @@ void serialworker::mainLoop()
             return;
         }
 
-        uart_resp = s_afm.waitForMsg(10);
+        uart_resp = s_afm.waitForMsg();
 
 #if AFM_DEBUG
          if (uart_resp.size() > 0) {
@@ -249,14 +249,15 @@ void serialworker::mainLoop()
                 break;
             case setPort:
                 qDebug() << "s_afm openING" << endl;
-                s_afm.close();
+                emit close();
                 *detectedSerialPorts = QSerialPortInfo::availablePorts();
                 _node->getdval() == 0 ? _index = 0 : _index = _node->getdval();
+                qDebug() << "Gonna open this one: " << detectedSerialPorts->at(_index).portName() << endl;
 
                 if (detectedSerialPorts->size() == 0) {
                     qDebug() << "Unable to find any serial ports." << endl;
                 } else {
-                    s_afm.open(detectedSerialPorts->at(_index), AFM_BAUD_RATE);
+                    emit open(detectedSerialPorts->at(_index).portName(), AFM_BAUD_RATE);
                     qDebug() << "s_afm opened" << endl;
                 }
                 break;
@@ -330,7 +331,7 @@ void serialworker::mainLoop()
     }
 }
 
-void serialworker::abort()
+void send_worker::abort()
 {
     //QMutexLocker locker(&mutex);
     //mutex.unlock();
@@ -338,7 +339,7 @@ void serialworker::abort()
 
     //condition.wakeOne();
 }
-serialworker::~serialworker()
+send_worker::~send_worker()
 {
     emit finished();
 }

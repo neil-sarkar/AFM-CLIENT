@@ -1,5 +1,5 @@
-#ifndef RECEIVER_H
-#define RECEIVER_H
+#ifndef receive_worker_H
+#define receive_worker_H
 #include <QObject>
 #include <queue>
 #include <globals.h>
@@ -8,7 +8,7 @@ using std::queue;
 
 
 
-class receiver : public QObject
+class receive_worker : public QObject
 {
     Q_OBJECT
     queue<receivetype>& recv_queue;
@@ -16,7 +16,7 @@ class receiver : public QObject
     queue<returnBuffer*>& graph_queue;
     icspiAFM& r_afm; //afm object to communicate with MCU
 public:
-    receiver(QObject *parent,
+    receive_worker(QObject *parent,
              queue<receivetype>& receivequeue,
              queue<returnBuffer*>& returnqueue,
              queue<returnBuffer*>& graphqueue,
@@ -27,7 +27,7 @@ public:
         graph_queue(graphqueue),
         r_afm(afm) {}
     void abort();
-    ~receiver();
+    ~receive_worker();
 
 private:
     //icspiAFM m_afm;
@@ -38,9 +38,10 @@ private:
 signals:
     void finished();
     void serialError(); //emited to the mainwindow when there is an error
+    bool isOpen();
 
 public slots:
     void mainLoop();
 };
 
-#endif // RECEIVER_H
+#endif // receive_worker_H

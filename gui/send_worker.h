@@ -17,14 +17,14 @@
 #include <stdlib.h>
 using std::queue;
 
-class serialworker : public QObject
+class send_worker : public QObject
 {
     Q_OBJECT
     queue<commandNode*>& cmd_queue;
     queue<receivetype>& receive_queue;
     icspiAFM& s_afm;
 public:
-    serialworker(QObject *parent,
+    send_worker(QObject *parent,
                  queue<commandNode*>& _queue,
                  queue<receivetype>& _receivequeue, 
                  icspiAFM& afm) :
@@ -32,7 +32,7 @@ public:
         cmd_queue(_queue),
         receive_queue(_receivequeue), 
 		s_afm(afm)  {}
-    ~serialworker();
+    ~send_worker();
     void abort();
 
 
@@ -51,9 +51,13 @@ private:
     int msg_tag = 0;
 
 signals:
+    bool open(QString serialPortName, qint32 baud_rate);
+    bool isOpen();
+    void close();
     void finished();
     void openPort(QSerialPortInfo _port);
     void updateStatusBar(QString _string);
+
 
 public slots:
     void mainLoop();

@@ -1,11 +1,8 @@
 #include <mainwindow.h>
 #include <globals.h>
 #include <QSignalMapper>
-#include <receiver.h>
+#include <receive_worker.h>
 #include <eventworker.h>
-//gotta follow this to add QtSerial Port
-//http://qt-project.org/wiki/QtSerialPort#fn1921400492531950a902bc4
-
 
 
 QMutex mutex;
@@ -18,8 +15,7 @@ int main(int argc, char *argv[])
     queue<returnBuffer *> returnQueue = queue<returnBuffer *>();
     queue<returnBuffer *> graphQueue = queue<returnBuffer *>();
 
-    icspiAFM afm;
-    afm.init();
+    icspiAFM *afm = new icspiAFM();
     /**********************4 Threads***********************************
      *
      * mainThread:      Handles GUI, pushed events to the serialThread
@@ -27,30 +23,36 @@ int main(int argc, char *argv[])
      *                      and the MCU, sends arguments to the MCU
      * eventThread:     Creates events on a timer to gather continuous data
      *                      for plots
-     * receiverThread:  Handles the receiving of data from the MCU. Sends data
+     * receive_workerThread:  Handles the receiving of data from the MCU. Sends data
      *                      to the mainThread to display to the user
      *
      *******************************************************************/
 
-    QThread *serialThread = new QThread();
+    QThread *sendThread = new QThread();
     QThread *eventThread = new QThread();
     QThread *mainThread = new QThread();
     QThread *receiveThread = new QThread();
 
+    QThread *afmThread = new QThread();
+    afm_worker *afmWorker = new afm_worker();
+    afmWorker->moveToThread(afmThread);
+    QObject::connect(afmThread, SIGNAL(started()), afmWorker, SLOT(init()));
+    afmThread->start();
+
     MainWindow *mainWorker = new MainWindow(0, commandQueue, returnQueue);
-    serialworker *serialWorker = new serialworker(0, commandQueue, receiveQueue, afm);
+    send_worker *sendWorker = new send_worker(0, commandQueue, receiveQueue, *afm);
     eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
-    receiver *receiveWorker = new receiver(0, receiveQueue, returnQueue, graphQueue, afm);
+    receive_worker *receiveWorker = new receive_worker(0, receiveQueue, returnQueue, graphQueue, *afm);
 
     //mainWorker->moveToThread(mainThread);
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
     QObject::connect(mainWorker, SIGNAL(finished()), mainThread, SLOT(quit()), Qt::DirectConnection);
     mainThread->start();
 
-    serialWorker->moveToThread(serialThread);
-    QObject::connect(serialThread, SIGNAL(started()), serialWorker, SLOT(mainLoop()));
-    QObject::connect(serialWorker, SIGNAL(finished()), serialThread, SLOT(quit()), Qt::DirectConnection);
-    serialThread->start();
+    sendWorker->moveToThread(sendThread);
+    QObject::connect(sendThread, SIGNAL(started()), sendWorker, SLOT(mainLoop()));
+    QObject::connect(sendWorker, SIGNAL(finished()), sendThread, SLOT(quit()), Qt::DirectConnection);
+    sendThread->start();
 
     eventWorker->moveToThread(eventThread);
     QObject::connect(eventThread, SIGNAL(started()), eventWorker, SLOT(mainLoop()));
@@ -62,16 +64,26 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
     receiveThread->start();
 
-    QObject::connect(serialWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
+    QObject::connect(sendWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
     QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
     QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
 
+    QObject::connect(sendWorker, SIGNAL(open(QString, qint32)), afmWorker, SLOT(open(QString, qint32)));
+    QObject::connect(sendWorker, SIGNAL(close()), afmWorker, SLOT(close()));
+
+    QObject::connect(receiveWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
+    QObject::connect(sendWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
+    QObject::connect(receiveWorker, SIGNAL(waitForMsg(char)), afmWorker, SLOT(waitForMsg(char)));
+    QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
+    QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
+    //QObject::connect(afm, SIGNAL(writeByte(char)), afmWorker, SLOT(writeByte(char)));
+    QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
 
     int rt = a.exec();
 
     /*Terminate threads on close*/
-    serialWorker->abort();
-    serialThread->wait();
+    sendWorker->abort();
+    sendThread->wait();
     receiveWorker->abort();
     receiveThread->wait();
     eventWorker->abort();
@@ -79,45 +91,15 @@ int main(int argc, char *argv[])
     mainWorker->abort();
     mainThread->wait();
 
-    delete serialThread;
+    delete sendThread;
     delete mainThread;
     delete eventThread;
     delete receiveThread;
 
     delete receiveWorker;
-    delete serialWorker;
+    delete sendWorker;
     delete eventWorker;
     delete mainWorker;
 
     return rt;
-    //    //On Startup, populate the COM Port Combobox
-    //    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-    //        qDebug() << "Name        : " << info.portName();
-    //        qDebug() << "Description : " << info.description();
-    //        qDebug() << "Manufacturer: " << info.manufacturer();
-
-    //        if(info.manufacturer()==AFM_MANUFACTURER){
-    //            w.afm.setPort(info);
-    //            if (w.afm.open(QIODevice::ReadWrite)){
-    //                qDebug() << "Sin Value: " << sin(M_PI);
-    //                w.afm.writeDAC(2,1);
-    //                //1+sin and 1-sin
-    //                //qDebug() << "DAC Value: " << w.afm.readDAC(2);
-    //                //qDebug() << "ADC Value: " << w.afm.readADC(1);
-
-    //                while(1){
-    //                    for(int i=0; i< 360; i++){
-    //                         //w.afm.writeDAC(0, 1+sin(i*M_PI/360));
-    //                        // w.afm.writeDAC(0,1);
-    //                        // w.afm.writeDAC(2,2);
-    //                        //sleep(0.1);
-    //                        //w.afm.writeDAC(2, 1-sin(i*M_PI/360));
-    //                        w.afm.writeDAC(11, 2.5 - (i/10));
-    //                    }
-    //                }
-    //                w.afm.close();
-    //            }
-    //        }
-
-    //    calculateLineScan(3000,2000,1000);
 }

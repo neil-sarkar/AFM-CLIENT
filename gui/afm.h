@@ -2,6 +2,7 @@
 #define AFM_H
 #define AFM_BAUD_RATE 76800
 
+#include <QObject>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QSerialPort> //For QT5
@@ -120,15 +121,10 @@
 #define AFM_DDS_SWEEP_SET 'u'
 
 #define AFM_AUTOAPPROACH_SELECT 'v'
-
 #define AFM_SET_DAC_MAX '&'
-
 #define AFM_DEVICE_CALIBRATE 'o'
-
 #define AFM_SCAN_PARAMETERS '@'
-
 #define AFM_START_SCAN '#'
-
 #define AFM_SCAN_STEP '^'
 
 #define AFM_SET_PGA '*'
@@ -147,37 +143,24 @@
 
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
-enum {
-    AFM_SUCCESS = 0,
-    AFM_FAIL = -1
-};
 
 class icspiAFM: public QObject{
+    Q_OBJECT
 
-private:
-    unsigned __int8 message_tag = 1;
-    QByteArray payload_out_buffer, serial_incoming_buffer;
-    QSerialPort *serial;
+signals:
+   bool open(char *serialPortName, qint32 baud_rate);
+   void close();
+
+   // Used
+   void clearPayloadBuffer();
+   int addPayloadByte(char byte);
+   int writeByte(char byte);
+   int writeMsg(char msg_id);
+   QByteArray waitForMsg();
+   bool isOpen();
 
 public:
-    void init();
-    bool open(const QSerialPortInfo & serialPortInfo, qint32 baud_rate);
-    void close();
-    bool isOpen = false;
-
-    /*
-     * All the functions that will write to the MCU
-     * They are all void because the receiver thread handles the return
-     */
-    void clearPayloadBuffer();
-    int addPayloadByte(char byte);
-    int writeByte(char byte);
-    int writeMsg(char msg_id);
     int writeMsg(char msg_id, QByteArray payload);
-
-    QByteArray waitForData(int timeout);
-    QByteArray waitForMsg(int timeout);
-
     void writeDAC(qint8 dacID,
                  double val);
 

@@ -1,4 +1,4 @@
-#include "receiver.h"
+#include "receive_worker.h"
 #include <QTime>
 
 #define AFM_SHORT_TIMEOUT 50
@@ -12,7 +12,7 @@ void delay(int millisecondsToWait)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
-void receiver::mainLoop()
+void receive_worker::mainLoop()
 {
     receivetype _node;
     QByteArray uart_resp;
@@ -33,7 +33,7 @@ void receiver::mainLoop()
     QVector<double> *z_amp_adc = new QVector<double>();
     QVector<double> *z_phase_adc = new QVector<double>();
 
-    while (!r_afm.isOpen)
+    while (!isOpen()) //TODO change me
         delay(10);
 
     forever {
@@ -63,7 +63,7 @@ void receiver::mainLoop()
 
         // Get the next message block
         if(serial_is_ready){
-            uart_resp = r_afm.waitForMsg(AFM_SHORT_TIMEOUT);
+            uart_resp = r_afm.waitForMsg();
         }
 
 
@@ -93,7 +93,7 @@ void receiver::mainLoop()
              * mainThread and eventThread mydeque.push_back(), then serialThread would read and modify the front element.
              * If the message does not need a reply, serialThread would remove that element.
              * If a reply is expected, serialThread leaves it in mydeque.
-             *      receiver will find it and destroy it as needed.
+             *      receive_worker will find it and destroy it as needed.
              *
              * Potential algorithm for QIODevice.readLine():
              *  Read a line, pass to uart_resp
@@ -513,11 +513,11 @@ void receiver::mainLoop()
         } // end if(!recv_queue.empty())
     }       // end forever
 }               // end main loop
-void receiver::abort()
+void receive_worker::abort()
 {
     _abort = true;
 }
-receiver::~receiver()
+receive_worker::~receive_worker()
 {
     emit finished();
 }

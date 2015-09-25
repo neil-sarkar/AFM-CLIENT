@@ -24,21 +24,23 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     afm.cpp \
     plot.cpp \
-    serialworker.cpp \
     eventworker.cpp \
-    receiver.cpp
+    afm_worker.cpp \
+    receive_worker.cpp \
+    send_worker.cpp
 
 HEADERS  += mainwindow.h \
     afm.h \
-    serialworker.h \
     eventworker.h \
     globals.h \
     myplot.h \
-    receiver.h \
     commandnode.h \
     returnbuffer.h \
     XYgenerator.cpp.disabled \
-    XYgenerator.h.disabled
+    XYgenerator.h.disabled \
+    afm_worker.h \
+    receive_worker.h \
+    send_worker.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

@@ -25,7 +25,7 @@
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <QTime>
-#include <serialworker.h>
+#include <send_worker.h>
 #include <QThread>
 #include <QObject>
 //#include <armadillo>
