@@ -13,11 +13,17 @@ using std::queue;
 *  corresponding method will be called. if _abort is ever set to
 *  true the thread will exit.
 ***********************************************************************/
+
+//TODO Eventually want to make this async (event-based) similiar to how
+// receive worker works, instead of an endless loop.
+
+
 void send_worker::mainLoop()
 {
     _abort = false;
     QList<QSerialPortInfo> *detectedSerialPorts = new QList<QSerialPortInfo>();
     receivetype receivenode;
+    returnType return_name;
 
     forever {
         if (_abort) {
@@ -42,73 +48,48 @@ void send_worker::mainLoop()
                 _ID = _node->getqval();
                 _val = _node->getdval();
                 s_afm.writeDAC((qint8)_ID, (double)_val);
-                receivenode.name = WRITE;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = (WRITE);
+                //
                 break;
             case readDAC:
                 _ID = (qint8)_node->getqval();
                 s_afm.readDAC(_ID);
                 switch (_ID) {
                 case DAC_ZOFFSET_FINE:
-                    receivenode.name = DACZOFFSETFINE;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACZOFFSETFINE;
                     break;
                 case DAC_ZOFFSET_COARSE:
-                    receivenode.name = DACZOFFSETCOARSE;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACZOFFSETCOARSE;
                     break;
                 case DAC_BFRD1:
-                    receivenode.name = DACBFRD1;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACBFRD1;
                     break;
                 case DAC_BFRD2:
-                    receivenode.name = DACBFRD2;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACBFRD2;
                     break;
                 case DAC_BFRD3:
-                    receivenode.name = DACBFRD3;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACBFRD3;
                     break;
                 case DAC_ZAMP:
-                    receivenode.name = DACZAMP;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACZAMP;
                     break;
                 case DAC_BR1:
-                    receivenode.name = DACBR1;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACBR1;
                     break;
                 case DAC_BR2:
-                    receivenode.name = DACBR2;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACBR2;
                     break;
                 case DAC_X1:
-                    receivenode.name = DACX1;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACX1;
                     break;
                 case DAC_X2:
-                    receivenode.name = DACX2;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACX2;
                     break;
                 case DAC_Y1:
-                    receivenode.name = DACY1;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACY1;
                     break;
                 case DAC_Y2:
-                    receivenode.name = DACY2;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = DACY2;
                     break;
                 case -1:
                     break;
@@ -118,124 +99,84 @@ void send_worker::mainLoop()
                 _ID = _node->getqval();
                 s_afm.readADC((qint8)_ID);
                 if (_ID == ADC_ZOFFSET) {
-                    receivenode.name = ADCZOFFSET;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = ADCZOFFSET;
                 } else if (_ID = ADC_PHASE) {
-                    receivenode.name = ADCPHASE;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = ADCPHASE;
                 } else {
-                    receivenode.name = ADC;
-                    receivenode.numBytes = 3;
-                    receive_queue.push(receivenode);
+                    return_name = ADC;
                 }
                 break;
             case readSignalPhaseOffset:
                 s_afm.readSignalPhaseOffset();
-                receivenode.name = READSIGNALPHASEOFFSET;
-                receivenode.numBytes = 6;
-                receive_queue.push(receivenode);
+                return_name = READSIGNALPHASEOFFSET;
                 break;
             case setRasterStep:
-                receivenode.name = WRITE;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = WRITE;
                 s_afm.setRasterStep();
                 break;
             case memsSetOffset:
                 _val = _node->getdval();
                 s_afm.memsSetOffset(_val);
-                receivenode.name = SETPGA;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETPGA;
                 break;
             case memsSetFrequency:
                 _val = _node->getdval();
                 s_afm.memsSetFrequency(_val);
-                receivenode.name = SETPGA;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETPGA;
                 break;
             case memsSetAmplitude:
                 _val = _node->getdval();
                 s_afm.memsSetAmplitude(_val);
-                receivenode.name = SETPGA;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETPGA;
                 break;
             case memsSetBridgeVoltage:
                 _val = _node->getdval();
                 s_afm.memsSetBridgeVoltage(_val);
-                receivenode.name = WRITE;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = WRITE;
                 break;
             case stageSetStep:
                 s_afm.stageSetStep();
-                receivenode.name = STAGESETSTEP;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = STAGESETSTEP;
                 break;
             case pidEnable:
                 s_afm.pidEnable();
-                receivenode.name = PIDENABLE;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = PIDENABLE;
                 break;
             case pidDisable:
                 s_afm.pidDisable();
-                receivenode.name = PIDDISABLE;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = PIDDISABLE;
                 break;
             case pidSetP:
                 s_afm.pidSetP((float)_node->getdval());
-                receivenode.name = SETP;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = SETP;
                 break;
             case pidSetI:
                 s_afm.pidSetI((float)_node->getdval());
-                receivenode.name = SETI;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = SETI;
                 break;
             case pidSetD:
                 s_afm.pidSetD((float)_node->getdval());
-                receivenode.name = SETD;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = SETD;
                 break;
             case pidSetPoint:
                 s_afm.pidSetPoint((float)_node->getdval() * AFM_ADC_SCALING);
-                receivenode.name = SETPOINT;
-                receivenode.numBytes = 1;
-                receive_queue.push(receivenode);
+                return_name = SETPOINT;
                 break;
             case stageSetDirBackward:
                 s_afm.stageSetDirBackward();
-                receivenode.name = SETDIRBACKWARD;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETDIRBACKWARD;
                 break;
             case stageSetDirForward:
                 s_afm.stageSetDirForward();
-                receivenode.name = SETDIRFORWARD;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETDIRFORWARD;
                 break;
             case stageSetPulseWidth:
                 s_afm.stageSetPulseWidth(_node->getqval());
-                receivenode.name = SETPULSEWIDTH;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETPULSEWIDTH;
                 break;
             case afmAutoApproach:
                 s_afm.autoApproach(_node->getdval());
-                receivenode.name = AUTOAPPROACH;
-                receivenode.numBytes = 3;
-                receive_queue.push(receivenode);
+                return_name = AUTOAPPROACH;
                 break;
             case setPort:
                 qDebug() << "s_afm openING" << endl;
@@ -253,66 +194,53 @@ void send_worker::mainLoop()
                 break;
             case setDDSSettings:
                 s_afm.setDDSSettings(0, _node->getdval(), 0);
-                receivenode.name = SETDDS;
-                receivenode.numBytes = 2;
-                receive_queue.push(receivenode);
+                return_name = SETDDS;
                 emit updateStatusBar("DDS Set");
                 break;
             case frequencySweep:
                 emit updateStatusBar("Starting Frequency Sweep...");
                 s_afm.frequencySweep(
-                    _node->getnumPoints(),
-                    _node->getstartFrequency(), _node->getstepSize());
-                receivenode.name = FREQSWEEP;
-                receivenode.numBytes = _node->getnumPoints() * 4 + 1;
-                receive_queue.push(receivenode);
+                        _node->getnumPoints(),
+                        _node->getstartFrequency(), _node->getstepSize());
+                return_name = FREQSWEEP;
+           //     receivenode.numBytes = _node->getnumPoints() * 4 + 1;
+
                 emit updateStatusBar("Done");
                 break;
             case setDacValues:
                 s_afm.setDACValues(_node->getqval(), _node->getdval());
-                receivenode.name = SETDACVALUES;
-                receivenode.numBytes = 8;
-                receive_queue.push(receivenode);
+                return_name = SETDACVALUES;
                 break;
             case deviceCalibration:
                 emit updateStatusBar("Calibrating...");
                 s_afm.deviceCalibration(_node->getdval(), 'l');
                 s_afm.deviceCalibration(_node->getdval(), 'r');
-                receivenode.name = DEVICECALIBRATION;
-                receivenode.numBytes = 16380;
-                receive_queue.push(receivenode);
-                receive_queue.push(receivenode);
+                return_name = DEVICECALIBRATION;
                 emit updateStatusBar("Finished calibrating");
                 break;
             case scanParameters:
                 emit updateStatusBar("Setting scan parameters");
                 s_afm.scanParameters(_node->getvminLine(),
-                             _node->getvminScan(), _node->getvmax(),
-                             _node->getnumpts(), _node->getnumLines());
-                receivenode.name = SCANPARAMETERS;
-                receivenode.numBytes = 8;
-                receive_queue.push(receivenode);
+                                     _node->getvminScan(), _node->getvmax(),
+                                     _node->getnumpts(), _node->getnumLines());
+                return_name = SCANPARAMETERS;
                 emit updateStatusBar("Scan parameters set");
                 break;
             case startScan:
                 emit updateStatusBar("Scan started");
                 s_afm.startScan();
-                receivenode.name = STARTSCAN;
-                receivenode.numBytes = 8;
-                receive_queue.push(receivenode);
+                return_name = STARTSCAN;
                 break;
             case getScanData:
                 s_afm.scanStep();
-                receivenode.name = SCANDATA;
-                receivenode.numBytes = 48;
-                receive_queue.push(receivenode);
+                return_name = SCANDATA;
                 break;
             case ForceCurve:
                 s_afm.forceCurve();
-                receivenode.name = FORCECURVE;
-                receivenode.numBytes = 2001;
-                receive_queue.push(receivenode);
-            }
+                return_name = FORCECURVE;
+                break;
+            } // end switch(_command)
+            emit push_recv_queue(return_name);
             cmd_queue.pop();
             //mutex.unlock();
         }

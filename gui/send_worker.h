@@ -57,7 +57,7 @@ signals:
     void finished();
     void openPort(QSerialPortInfo _port);
     void updateStatusBar(QString _string);
-
+    void push_recv_queue(returnType name);
 
 public slots:
     void mainLoop();

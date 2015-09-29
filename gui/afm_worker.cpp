@@ -10,16 +10,9 @@
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
-void delay_1(int millisecondsToWait)
-{
-    QTime dieTime = QTime::currentTime().addMSecs(millisecondsToWait);
-
-    while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-}
-
 void afm_worker::init(){
     serial = new QSerialPort(this);
+    connect(this->serial, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 }
 
 bool afm_worker::open(QString serialPortName, qint32 baud_rate)
@@ -46,7 +39,7 @@ bool afm_worker::isOpen(){
 
 int afm_worker::writeByte(char byte)
 {
-    if (serial->write(&byte, AFM_MAX_DATA_SIZE) > -1) {
+    if (serial->write(&byte, 1) == 1) {
         return AFM_SUCCESS;
     } else {
 #if AFM_DEBUG
@@ -77,157 +70,103 @@ void afm_worker::clearPayloadBuffer()
 /*
  * A wrapper function for sending serial message.
  * writeByte should not be used, since it does not escape special characters.
+ *
+ * Emits the writeMsg_finished() signal once finished
  */
-int afm_worker::writeMsg(char msg_id, QByteArray payload)
+void afm_worker::writeMsg(char message_id, QByteArray payload)
 {
-    int writeByte_result; //local var for debugging only
+    /* the outcome of sending. 0 if all successful, and negative number
+     * indicates the number of bytes that failed to send.
+     */
+    int writeByte_result = 0;
 
     //Close the last message, in case the last message was bad
-    writeByte_result = writeByte(SERIAL_MSG_NEWLINE);
+    writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
     //Increment and Write the message tag
     message_tag++;
-
-    if (message_tag >= 255)
+    if (message_tag >= 255) {
         message_tag = 1;
-    else if (message_tag == SERIAL_MSG_NEWLINE || message_tag == SERIAL_MSG_ESCAPE)
+    } else if (message_tag == SERIAL_MSG_NEWLINE || message_tag == SERIAL_MSG_ESCAPE) {
         message_tag++; // Assumes the special characters are not consecutive...
-
-    writeByte_result = writeByte(message_tag);
+    }
+    writeByte_result += writeByte(message_tag);
 
     //Write the message ID
-    writeByte_result = writeByte(msg_id);
+    writeByte_result += writeByte(message_id);
 
     //Write the message payload, and mask as nessessary
     for (auto payload_byte : payload) {
         // Special Bytes
         if (payload_byte == SERIAL_MSG_NEWLINE || payload_byte == SERIAL_MSG_ESCAPE) {
-            writeByte(SERIAL_MSG_ESCAPE);
-            writeByte(payload_byte | SERIAL_MSG_MASK);
+            writeByte_result += writeByte(SERIAL_MSG_ESCAPE);
+            writeByte_result += writeByte(payload_byte | SERIAL_MSG_MASK);
         } else {
-            writeByte(payload_byte);
+            writeByte_result += writeByte(payload_byte);
         }
     }
 
     //Close the message
-    writeByte(SERIAL_MSG_NEWLINE);
+    writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
 #if AFM_DEBUG
-    qDebug() << "Sent TAG " << QString().sprintf("%2p", message_tag) << " ID " << msg_id << " " << QString().sprintf("%2p", msg_id) << " payload 0x" << payload.toHex();
+    qDebug() << "Sent TAG " << QString().sprintf("%2p", message_tag) << " ID " << message_id << " " << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success? " << writeByte_result;
 #endif
 
-    return AFM_SUCCESS;
+    emit push_recv_queue(message_id, message_tag, writeByte_result);
+
+    return;
 }
+
 
 /*
  * Send a message with msg_id using payload that is currently stored.
  */
-int afm_worker::writeMsg(char msg_id)
+void afm_worker::writeMsg(char message_id)
 {
-    int result = writeMsg(msg_id, payload_out_buffer);
+    writeMsg(message_id, payload_out_buffer);
 
     payload_out_buffer.clear();
-
-    return result;
 }
 
+void afm_worker::onReadyRead(){
+    qDebug() << "Signal readyRead is emitted and caught successfull:";
+    serial_incoming_buffer += serial->readAll();
+    qDebug() << "  0x" << serial_incoming_buffer.toHex();
+    processIncomingBuffer();
+}
 
-
-void afm_worker::getNextMsg(){
-    forever {
-        QByteArray incoming_message;
-        char incoming_byte = 0x00;
-        bool message_complete = false, escape_char_received = false;
-        int msg_length = 0;
-        int status = -1;
-
-        while (!message_complete) {
-            //Read one byte at a time
-            // If the port is not open then we don't bother.
-            if(serial_open) {
-                if (serial->bytesAvailable() > 0) {
-                    status = serial->read(&incoming_byte, 1);
-                    qDebug() << " SR" << status;
-                    // QByteArray test_message = readAll();
-                    qDebug() << "RECV  0x" << incoming_byte;
-                } else {
-                    delay_1(10);
-                }
-            }
-            // Take care of the incoming byte...
-
-            if (incoming_byte == SERIAL_MSG_NEWLINE) {
-                // Newline char received. Is everything we got so far a valid message?
-                if (incoming_message.size() >= 2) {
-                    // Check length... should be at least two bytes
-                    message_complete = true;
-                    break;
-                } else {
-                    // Otherwise, it was an empty or invalid message. Discard and move on.
-                    incoming_message.clear();
-                }
-            } else if (incoming_byte == SERIAL_MSG_ESCAPE && !escape_char_received) {
-                // Is this escape char?
-                escape_char_received = true;
-            } else if (escape_char_received) {
-                // Do we need to unmask this?
-                incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
-                escape_char_received = false;
-            } else {
-                // None of the above. Collect it in message QByteArray
-                incoming_message += incoming_byte;
-            }
-        }
-
-    #if AFM_DEBUG
-        if (incoming_message.size() > 0) {
-            //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
-            qDebug() << "  0x" << incoming_message.toHex()
-                     << " Size:" << incoming_message.size();
-        }
-    #endif
+void afm_worker::processIncomingBuffer(){
+    while(serial_incoming_buffer.length() >= 2) {
+        getNextMsg();
     }
+    return;
 }
+
 
 /*
- * Waits until there is a complete message received, then returns that message.
- *
- * It should only return one message at a time. Masking will be removed.
+ * Takes stuff from the incoming_bytes array and makes sense of them
  */
-void afm_worker::getNextMsg1()
-{
-    // If the port is not open then we don't bother.
-    if(!serial_open) {
-        return;
-    }
-
+void afm_worker::getNextMsg(){
     QByteArray incoming_message;
     char incoming_byte = 0x00;
     bool message_complete = false, escape_char_received = false;
-    int msg_length = 0;
+    int message_position = 0;
+    int status = -1;
 
     while (!message_complete) {
-        //Read one byte at a time
-        if (serial->bytesAvailable() > 0)
-            int status = serial->read(&incoming_byte, 1);
-        //qDebug() << " SR" << status;
-// QByteArray test_message = readAll();
-        // qDebug() << "  0x" << test_message.toHex();
-
-        //  if(incoming_byte != '\0' && status > 0){
-
-        if (!serial_incoming_buffer.isEmpty()) {
-            incoming_byte = serial_incoming_buffer.at(msg_length);
-            msg_length++;
-            printf(" 0x%02x", incoming_byte);
+        //Read one byte at a time from the incoming buffer QByteaArray
+        //Note that position is zero-based, and QByteArray.size() returns the size which starts from 1.
+        if (!serial_incoming_buffer.isEmpty() && message_position < serial_incoming_buffer.length()) {
+            incoming_byte = serial_incoming_buffer.at(message_position);
+            message_position++;
+            //  printf(" 0x%02x", incoming_byte);
         } else {
             // The incoming buffer is empty but the last message was not a complete one
-            // Do nothing and return
             return;
         }
 
         // Take care of the incoming byte...
-
         if (incoming_byte == SERIAL_MSG_NEWLINE) {
             // Newline char received. Is everything we got so far a valid message?
             if (incoming_message.size() >= 2) {
@@ -237,6 +176,8 @@ void afm_worker::getNextMsg1()
             } else {
                 // Otherwise, it was an empty or invalid message. Discard and move on.
                 incoming_message.clear();
+                serial_incoming_buffer.remove(0, message_position);
+                message_position = 0;
             }
         } else if (incoming_byte == SERIAL_MSG_ESCAPE && !escape_char_received) {
             // Is this escape char?
@@ -245,24 +186,30 @@ void afm_worker::getNextMsg1()
             // Do we need to unmask this?
             incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
             escape_char_received = false;
+        } else if (message_position == serial_incoming_buffer.length() - 1 && incoming_byte != SERIAL_MSG_NEWLINE) {
+            // We have reached end of our sequence, but the message is not yet complete.
+            // Discard and return.
+            serial_incoming_buffer.remove(0, message_position);
+            return;
         } else {
             // None of the above. Collect it in message QByteArray
             incoming_message += incoming_byte;
         }
     }
 
-    serial_incoming_buffer.remove(0, msg_length);
+    serial_incoming_buffer.remove(0, message_position);
 
-#if AFM_DEBUG
+    #if AFM_DEBUG
     if (incoming_message.size() > 0) {
         //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
         qDebug() << "  0x" << incoming_message.toHex()
                  << " Size:" << incoming_message.size();
     }
-#endif
+    #endif
 
-    update_uart_resp(incoming_message);
+    emit process_uart_resp(incoming_message);
     return;
 }
+
 
 

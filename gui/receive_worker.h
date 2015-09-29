@@ -10,40 +10,47 @@ using std::queue;
 
 class receive_worker : public QObject
 {
-    Q_OBJECT
-    queue<receivetype>& recv_queue;
-    queue<returnBuffer*>& rtn_queue;
-    queue<returnBuffer*>& graph_queue;
-    icspiAFM& r_afm; //afm object to communicate with MCU
+Q_OBJECT
+queue<receivetype>& receive_queue;
+queue<returnBuffer*>& return_queue;
+queue<returnBuffer*>& graph_queue;
+icspiAFM& r_afm;     //TODO remove me?
 public:
-    receive_worker(QObject *parent,
-             queue<receivetype>& receivequeue,
-             queue<returnBuffer*>& returnqueue,
-             queue<returnBuffer*>& graphqueue,
-             icspiAFM& afm):
-        QObject(parent),
-        recv_queue(receivequeue),
-        rtn_queue(returnqueue),
-        graph_queue(graphqueue),
-        r_afm(afm) {}
-    void abort();
-    ~receive_worker();
+receive_worker(QObject *parent,
+               queue<receivetype>& receivequeue,
+               queue<returnBuffer*>& returnqueue,
+               queue<returnBuffer*>& graphqueue,
+               icspiAFM& afm) :
+    QObject(parent),
+    receive_queue(receivequeue),
+    return_queue(returnqueue),
+    graph_queue(graphqueue),
+    r_afm(afm) {
+}
+void abort();
+~receive_worker();
 
 private:
-    //icspiAFM m_afm;
-    bool _abort;
-    bool isError;
-    QByteArray uart_resp;
+bool _abort;
+bool isError;
+QByteArray uart_resp;
+bool next_command_clear_to_write = true;
+returnType next_command_name;
+char next_command_message_id;
+char next_command_message_tag;
+int next_command_writeByte_result;
 
 signals:
-    void finished();
-    void serialError(); //emited to the mainwindow when there is an error
-    bool isOpen();
-    void getNextMsg();
+void finished();
+void serialError();     //emited to the mainwindow when there is an error
+bool isOpen();
+void getNextMsg();
 
 public slots:
-    void mainLoop();
-    void update_uart_resp(QByteArray new_uart_resp);
+void mainLoop();
+void process_uart_resp(QByteArray new_uart_resp);
+void push_recv_queue(returnType name);
+void push_recv_queue(char message_id, char message_tag, int writeByte_result);
 };
 
 #endif // receive_worker_H

@@ -84,8 +84,11 @@ int main(int argc, char *argv[])
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
     QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
-    QObject::connect(afmWorker, SIGNAL(update_uart_resp(QByteArray)), receiveWorker, SLOT(update_uart_resp(QByteArray)));
+    QObject::connect(afmWorker, SIGNAL(process_uart_resp(QByteArray)), receiveWorker, SLOT(process_uart_resp(QByteArray)));
 
+    //receive queue callbacks
+    QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
+    QObject::connect(afmWorker, SIGNAL(push_recv_queue(char, char, int)), receiveWorker, SLOT(push_recv_queue(char, char, int)));
 
 
     int rt = a.exec();

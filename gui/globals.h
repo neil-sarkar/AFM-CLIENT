@@ -14,9 +14,9 @@ extern QMutex mutex; //to be used when two threads are trying to access the afm 
 //node struct for receiveQueue
 struct receivetype{
     returnType name;
-    int numBytes;
+    char message_id;
+    char message_tag;
+    int writeByte_result;
 };
-
-//nanoiAFM *m_afm;
 
 #endif// GLOBALS_H
