@@ -3,7 +3,7 @@
 #include <QSignalMapper>
 #include <receive_worker.h>
 #include <eventworker.h>
-
+#include <deque>
 
 QMutex mutex;
 int main(int argc, char *argv[])
@@ -87,7 +87,8 @@ int main(int argc, char *argv[])
     QObject::connect(afmWorker, SIGNAL(process_uart_resp(QByteArray)), receiveWorker, SLOT(process_uart_resp(QByteArray)));
 
     //receive queue callbacks
-    QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
+    qRegisterMetaType<returnType>("returnType");
+    //QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
     QObject::connect(afmWorker, SIGNAL(push_recv_queue(char, char, int)), receiveWorker, SLOT(push_recv_queue(char, char, int)));
 
 

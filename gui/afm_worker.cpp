@@ -10,6 +10,38 @@
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
+/*
+ * Collect serial rx buffer from SerialObject, and put into the local QByteArray uart_resp.
+ * Using uart_resp.isEmpty() as an indicator of when to read from serial rx buffer is bad,
+ * because there might be partial data that reside within uart_resp when we last read serial rx.
+ * It is much better to use an EOL or End of Message indicator, so that we know a message
+ * inside uart_resp is incomplete. Now we go fetch it from the serial rx buffer, and so forth and
+ * so on. This way we don't care if it was collected midway (Another option is to make r_afm
+ * only return full messages, which would be the case if we use QIODevice readLine)
+ */
+
+
+/*
+ * Replacing receive buffer with command buffer... using deque!
+ *
+ * mainThread and eventThread mydeque.push_back(), then serialThread would read and modify the front element.
+ * If the message does not need a reply, serialThread would remove that element.
+ * If a reply is expected, serialThread leaves it in mydeque.
+ *      receive_worker will find it and destroy it as needed.
+ *
+ * Potential algorithm for QIODevice.readLine():
+ *  Read a line, pass to uart_resp
+ *      After we read a line, we would be sure that the next line is a full msg.
+ *  uart_resp handlers do its thing. If it was not a full msg, we would discard it
+ * >>> What if we miss a message? Does that ever happen?
+ * >>> QT logic: look for matching Tag AND Cmd/Msg ID by look into the cmd deque
+ *     Search through cmd deque with mydeque.at(i)
+ *     If found a matching item, then mydeque.erase(mydeque.begin()+i); and proceed as usual
+ *          (we missed those messages)
+ *     If we did not find matching item, then increment error counter by 1. Load uart_resp with the next Line
+ *          (unknown state. when err counter reaches some value, show error on UI and clear the deque with mydeque.clear())
+ */
+
 void afm_worker::init(){
     serial = new QSerialPort(this);
     connect(this->serial, SIGNAL(readyRead()), this, SLOT(onReadyRead()));

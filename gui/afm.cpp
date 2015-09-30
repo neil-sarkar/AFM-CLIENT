@@ -211,6 +211,7 @@ void icspiAFM::frequencySweep(quint16	numPoints,
     setDDSSettings(numPoints, startFrequency, stepSize);
 
     // start frequency sweep ASSUMING REV 2 BOARD!!!
+    emit clearPayloadBuffer();
     emit writeMsg(AFM_FREQ_SWEEP_AD5932);
 }
 
@@ -244,6 +245,7 @@ void icspiAFM::setDACValues(char dacID, double _val)
 
     emit writeMsg(AFM_SET_DAC_MAX);
 }
+
 void icspiAFM::deviceCalibration(double val, char side)
 {
     qint16 _max = AFM_DAC_SCALING * val;

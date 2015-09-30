@@ -3,9 +3,11 @@
 
 #include <QEventLoop>
 #include <QSerialPortInfo>
+#include <QMetaType>
 
 //TODO: make constructor template
 enum returnType{
+    NONE,
     DACBFRD1,
     DACBFRD2,
     DACBR2,
@@ -50,6 +52,8 @@ enum returnType{
     READSIGNALPHASEOFFSET,
     FORCECURVE
 };
+
+Q_DECLARE_METATYPE(returnType)
 
 class returnBuffer
 {

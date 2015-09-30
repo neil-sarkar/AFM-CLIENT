@@ -49,7 +49,7 @@ void getNextMsg();
 public slots:
 void mainLoop();
 void process_uart_resp(QByteArray new_uart_resp);
-void push_recv_queue(returnType name);
+//Q_SLOT void push_recv_queue(returnType name);
 void push_recv_queue(char message_id, char message_tag, int writeByte_result);
 };
 

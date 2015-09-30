@@ -203,8 +203,6 @@ void send_worker::mainLoop()
                         _node->getnumPoints(),
                         _node->getstartFrequency(), _node->getstepSize());
                 return_name = FREQSWEEP;
-           //     receivenode.numBytes = _node->getnumPoints() * 4 + 1;
-
                 emit updateStatusBar("Done");
                 break;
             case setDacValues:
@@ -240,7 +238,7 @@ void send_worker::mainLoop()
                 return_name = FORCECURVE;
                 break;
             } // end switch(_command)
-            emit push_recv_queue(return_name);
+         //   emit push_recv_queue(return_name);
             cmd_queue.pop();
             //mutex.unlock();
         }
