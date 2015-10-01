@@ -83,4 +83,10 @@ In order of priority:
 - Explore the functionality of the 3D plotting software. Seems pretty powerful
 - Use private variables in places where there are currently macros
 - Clean up the code
+
+## Python-based automatic C code generation
+Save message definition file in CSV (MS-DOS), otherwise Python does not read...
+
+
+
 	

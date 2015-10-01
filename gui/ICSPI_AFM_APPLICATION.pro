@@ -77,11 +77,6 @@ win32{
 #ARMA_ROOT = $$PWD/../lib/armadillo-5.500.2
 #INCLUDEPATH += $${ARMA_ROOT}/include/armadillo_bits
 
-
-
-
-
-
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/release/ -larmadillo
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../usr/lib/debug/ -larmadillo
 #else:unix: LIBS += -L$$PWD/../../../../../usr/lib/ -larmadillo

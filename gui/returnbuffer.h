@@ -7,6 +7,7 @@
 
 //TODO: make constructor template
 enum returnType{
+    ERR_MSG_MISSED,
     NONE,
     DACBFRD1,
     DACBFRD2,
@@ -61,6 +62,8 @@ class returnBuffer
 
     returnType m_returnType;
     int i_data;
+    char cdata_1;
+    char cdata_2;
     QVector<double> m_amplitude;
     QVector<double> m_phase;
     int m_bytesRead;
@@ -81,6 +84,13 @@ public:
                   int idata) :
          m_returnType(_returnType),
          i_data(idata) { }
+
+     returnBuffer(returnType _returnType,
+                  char cdata1,
+                  char cdata2) :
+         m_returnType(_returnType),
+         cdata_1(cdata1),
+         cdata_2(cdata2)   { }
 
      returnBuffer(returnType _returnType,
                   float data) :
@@ -109,7 +119,6 @@ public:
          d_offset(offset),
          d_phase(phase) { }
 
-
      returnBuffer(returnType _returnType,
                   int _success,
                   QVector<double>& z_offset_adc,
@@ -120,8 +129,6 @@ public:
          m_zoffset(z_offset_adc),
          m_zamp(z_amp_adc),
          m_zphase(z_phase_adc){}
-
-
 
      returnBuffer(returnType _returnType,
                   QList<QSerialPortInfo> &list) :

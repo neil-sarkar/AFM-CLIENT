@@ -3,7 +3,6 @@
 #include <QSignalMapper>
 #include <receive_worker.h>
 #include <eventworker.h>
-#include <deque>
 
 QMutex mutex;
 int main(int argc, char *argv[])

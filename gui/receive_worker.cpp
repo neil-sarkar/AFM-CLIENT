@@ -51,9 +51,66 @@ void receive_worker::push_recv_queue(char message_id, char message_tag, int writ
     receivenode.message_id = message_id;
     receivenode.message_tag = message_tag;
     receivenode.writeByte_result = writeByte_result;
-    receive_queue.push(receivenode);
+    receive_queue.push_back(receivenode);
     //  next_command_clear_to_write = true;
 
+}
+
+void receive_worker::handle_error(short error_id){
+    switch(error_id) {
+    case ERR_MSG_ID_MISMATCH:
+        /*
+         * The message ID received differs from what was recorded
+         * in receive_queue. This should never happen. Check MCU code.
+         */
+        emit serialError();
+        break;
+    case ERR_MSG_TAG_MISMATCH:
+        /* The message tag received differs from what is expected.
+         * Possible causes include:
+         * - Qt missed some messages sent by MCU
+         * - MCU reply arrived before receive_queue has received a record of it
+         *        (possible, but highly unlikely!)
+         * - MCU firmware bugs
+         * Remedy algorithm:
+         * - Loop through all elements in the receive_queue, and see if the said tag
+         *   already exists AND matches the ID expected. (Although tag rolling counter
+         *   is only 255, the probability of having a matching tag and ID is low)
+         * - If a match is found, that means receive_queue is behind in time with MCU.
+         *   Disregard all messages prior to the match, and announce them as missing.
+         * - If cannot find a match, then silently disregard this message
+         */
+        unsigned i = 0;
+        bool match_found = false;
+        for(auto _node:receive_queue) {
+            if(uart_resp.at(0)==_node.message_tag && uart_resp.at(1) == _node.message_id) {
+                match_found = true;
+                break;
+            }
+            ++i;
+        }
+
+        if(match_found) {
+            for(int j=0; j<=i; j++) {
+                return_queue.push(new returnBuffer(ERR_MSG_MISSED, receive_queue.at(0).message_tag,receive_queue.at(0).message_id));
+                receive_queue.pop_front();
+            }
+        }
+        break;
+    case ERR_MSG_SIZE_MISMATCH:
+        /*
+         * The message received has correct ID and tag but size is incorrect.
+         * Check MCU code.
+         */
+        receive_queue.pop_front();
+        break;
+    default:
+        /*
+         * All other cases... do nothing and move on.
+         * ERR_MSG_UNSOLICITED We received a message but we aren't expecting anything.
+         */
+        break;
+    }
 }
 
 /*
@@ -110,13 +167,16 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         isError = false;
         _node = receive_queue.front();
     } else {
+        handle_error(ERR_MSG_UNSOLICITED);
         return; //TODO change these to like, error handlers or something
     }
 
     // 2. Make sure the uart_resp array actually has things inside
     if (uart_resp.isEmpty() || uart_resp.isNull()) {
+        qDebug() << "An empty or null uart_resp is received at receive_worker::process_uart_resp. This should not happen. ";
         return;
     }
+
     /* Now look at the next element in receive_queue (_node)
      * Compare this _node with what is received in uart_resp
      * Do they match? They should match, by temporal sequence.
@@ -131,18 +191,23 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     // 3. The message ID shall match.
     // If not, start the investigation sequence, throw error, pop, and continue
     if(uart_resp.at(0) != _node.message_tag) {
-        isError=true;
+        handle_error(ERR_MSG_TAG_MISMATCH);
         return;
     }
 
     // 4. All looks good. Let's start actually processing!
+    /*
+     * IMPORTANT NOTICE
+     * Only uart_resp.at(0) and uart_resp.at(1) are guaranteed to have data.
+     * In order to acess data beyond index 1, the case processor MUST check
+     * size of uart_resp. Neglecting to do this will result in ASSERT/Segmentation!
+     */
     switch (_node.message_id) {
     case AFM_DAC_WRITE_SELECT:
         if (uart_resp.at(1) == AFM_DAC_WRITE_SELECT) {
             return_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
-
         } else {
-            isError = true;
+            handle_error(ERR_MSG_ID_MISMATCH);
         }
         break;
     case AFM_DAC_READ_SELECT:
@@ -150,7 +215,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             //TODO change me!
             val = (((unsigned char)uart_resp.at(1) << 8) | (unsigned char)uart_resp.at(0));
             returnType type = NONE;
-            switch(uart_resp.at(3)) {
+            switch(uart_resp.at(2)) {
             case DAC_ZOFFSET_FINE:
                 type = DACZOFFSETFINE;
                 break;
@@ -192,7 +257,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             }
             return_queue.push(new returnBuffer(type, float(((float)val) / AFM_DAC_SCALING)));
         } else {
-            isError = true;
+            handle_error(ERR_MSG_ID_MISMATCH);
         }
         break;
     case AFM_ADC_READ_SELECT:
@@ -225,13 +290,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 //            isError = true;
 //        }
 //        break;
-    case AFM_SET_DAC_MAX:
-        if (uart_resp.at(1) == AFM_SET_DAC_MAX) {
-            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
+
 //    case SETDIRBACKWARD:
 //        if (uart_resp.at(1) == 'o' && uart_resp.at(1) == AFM_STAGE_DIR_REVERSE_SELECT) {
 //            return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_SUCCESS));
@@ -294,6 +353,15 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 //                    isError = true;
 //                }
 //        break;
+
+    /* CANDIDATES FOR AUTOMATIC CODE GENERATION */
+    case AFM_SET_DAC_MAX:
+        if (uart_resp.at(1) == AFM_SET_DAC_MAX) {
+            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
+        } else {
+            isError = true;
+        }
+        break;
     case AFM_PID_ENABLE_SELECT:
         if (uart_resp.at(1) == AFM_PID_ENABLE_SELECT) {
             return_queue.push(new returnBuffer(PIDENABLE, AFM_SUCCESS));
@@ -343,21 +411,30 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             isError = true;
         }
         break;
-    case AFM_SET_PGA:
-        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_SET_PGA) {
+    case AFM_SET_PGA: //This is very streamlined, and has no nesting. Should be the template for future auto code gen!
+        if (uart_resp.at(1) == AFM_SET_PGA) {
+            handle_error(ERR_MSG_ID_MISMATCH);
+            break;
+        }
+        if(uart_resp.size() < AFM_SET_PGA_RSPLEN) {
+            handle_error(ERR_MSG_SIZE_MISMATCH);
+            break;
+        }
+        if(uart_resp.at(2) == 'o') {
             return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
         } else {
-            isError = true;
+            // Respose bad
+            handle_error(ERR_COMMAND_FAILED);
         }
         break;
-//            case DEVICECALIBRATION:
-//                if (uart_resp.at(1) == 'o') {
-//                    return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
-//                     //acknowledge byte
-//                } else {
-//                    isError = true;
-//                }
-//                break;
+//	case DEVICECALIBRATION:
+//		if (uart_resp.at(1) == 'o') {
+//			return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
+//			//acknowledge byte
+//		} else {
+//			isError = true;
+//		}
+//		break;
 //            case FORCECURVE:
 //                if (uart_resp.at(_node.numBytes - 1) == 'N') {
 //                    amplitudeData->clear();
@@ -406,7 +483,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         }
         break;
 
-    }     // End switch
+    } // End switch
 
     // Post-processing
     /* If there is a serial comm mismatch or error, clear the following to 'reset':
@@ -415,14 +492,14 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
      * 3. Serial incoming array (uart_resp)
      */
     if (isError) {
-        if (!receive_queue.empty()) {
-            receive_queue.pop();
-        }
+//        if (!receive_queue.empty()) {
+//            receive_queue.pop_front();
+//        }
         uart_resp.clear();
         emit serialError(); // this isn't necessary for release
     } else {
         //we good
-        receive_queue.pop();
+        receive_queue.pop_front();
         //clear the current msg, so that the next one may be read
         uart_resp.clear();
     }

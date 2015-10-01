@@ -162,9 +162,8 @@ void afm_worker::writeMsg(char message_id)
 }
 
 void afm_worker::onReadyRead(){
-    qDebug() << "Signal readyRead is emitted and caught successfull:";
     serial_incoming_buffer += serial->readAll();
-    qDebug() << "  0x" << serial_incoming_buffer.toHex();
+    qDebug() << "afm_worker received readAll 0x" << serial_incoming_buffer.toHex();
     processIncomingBuffer();
 }
 
@@ -184,7 +183,6 @@ void afm_worker::getNextMsg(){
     char incoming_byte = 0x00;
     bool message_complete = false, escape_char_received = false;
     int message_position = 0;
-    int status = -1;
 
     while (!message_complete) {
         //Read one byte at a time from the incoming buffer QByteaArray
@@ -202,7 +200,7 @@ void afm_worker::getNextMsg(){
         if (incoming_byte == SERIAL_MSG_NEWLINE) {
             // Newline char received. Is everything we got so far a valid message?
             if (incoming_message.size() >= 2) {
-                // Check length... should be at least two bytes
+                // Check length... the message should be at least two bytes in size
                 message_complete = true;
                 break;
             } else {
@@ -219,8 +217,19 @@ void afm_worker::getNextMsg(){
             incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
             escape_char_received = false;
         } else if (message_position == serial_incoming_buffer.length() - 1 && incoming_byte != SERIAL_MSG_NEWLINE) {
-            // We have reached end of our sequence, but the message is not yet complete.
-            // Discard and return.
+            /*
+             * We have reached end of our sequence, but the message is not yet complete.
+             * Leave serial_incoming_buffer intact as the way it was, because there may
+             * be more data incoming at the next onReadyRead() event by readAll().
+             * Discard incoming_message and move on.
+             */
+            return;
+        }  else if (message_position > SERIAL_MSG_MAX_SIZE){
+            /*
+             * A serial message should not be this long, like ever.
+             * So we probably received a bunch of garbage data.
+             * Clean serial_incoming_buffer and move on.
+             */
             serial_incoming_buffer.remove(0, message_position);
             return;
         } else {

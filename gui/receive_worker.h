@@ -3,18 +3,26 @@
 #include <QObject>
 #include <queue>
 #include <globals.h>
+#include <deque>
+
+#define ERR_MSG_TAG_MISMATCH 1
+#define ERR_MSG_ID_MISMATCH 2
+#define ERR_MSG_SIZE_MISMATCH 3
+#define ERR_COMMAND_FAILED 4
+#define ERR_MSG_MISSING 5
+#define ERR_MSG_UNSOLICITED 6
 
 using std::queue;
-
-
+using std::deque;
 
 class receive_worker : public QObject
 {
 Q_OBJECT
-queue<receivetype>& receive_queue;
+queue<receivetype>& receive_queue_old;
 queue<returnBuffer*>& return_queue;
 queue<returnBuffer*>& graph_queue;
 icspiAFM& r_afm;     //TODO remove me?
+
 public:
 receive_worker(QObject *parent,
                queue<receivetype>& receivequeue,
@@ -22,7 +30,7 @@ receive_worker(QObject *parent,
                queue<returnBuffer*>& graphqueue,
                icspiAFM& afm) :
     QObject(parent),
-    receive_queue(receivequeue),
+    receive_queue_old(receivequeue),
     return_queue(returnqueue),
     graph_queue(graphqueue),
     r_afm(afm) {
@@ -39,6 +47,8 @@ returnType next_command_name;
 char next_command_message_id;
 char next_command_message_tag;
 int next_command_writeByte_result;
+deque<receivetype> receive_queue = deque<receivetype>();
+void handle_error(short error_id);
 
 signals:
 void finished();
