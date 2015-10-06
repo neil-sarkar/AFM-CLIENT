@@ -24,6 +24,8 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
     emit addPayloadByte((digitalValue >> 8));
 
     emit writeMsg(AFM_DAC_WRITE_SELECT);
+
+     //qDebug() << "afmThread.isRunning: " << *afmThread->isRunning();
 }
 
 void icspiAFM::readDAC(qint8 dacID)

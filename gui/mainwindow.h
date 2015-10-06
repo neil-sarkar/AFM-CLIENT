@@ -106,6 +106,7 @@ public slots:
     void showNormals(bool val);
     //slots for updates from other threads
     void serialError();
+    void afmWorkerError();
     void setDDSFrequency(const QPointF &p);
     void updatePlot(double _signal, int _plot);
 

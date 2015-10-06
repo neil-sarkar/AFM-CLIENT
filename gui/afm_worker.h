@@ -27,7 +27,8 @@
 #define SERIAL_MSG_NEWLINE 0x0A
 #define SERIAL_MSG_ESCAPE 0x10
 #define SERIAL_MSG_MASK 0x80
-
+#define AFM_WORKER_SERIAL_MSG_INCOMPLETE -1
+#define AFM_WORKER_SERIAL_MSG_TOO_LONG -2
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
@@ -46,10 +47,12 @@ private:
 
 public:
     int writeByte(char byte);
+     ~afm_worker();
 
 signals:
     void process_uart_resp(QByteArray new_uart_resp);
     void push_recv_queue(char message_id, char message_tag, int writeByte_result);
+    void finished();
 
 public slots:
     // Started by main.cpp
@@ -70,7 +73,7 @@ public slots:
     void writeMsg(char msg_id);
 
     // Used by receive worker
-    void getNextMsg();
+    int getNextMsg();
     void onReadyRead();
 };
 

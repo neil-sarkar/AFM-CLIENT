@@ -6,7 +6,7 @@
 
 QMutex mutex;
 int main(int argc, char *argv[])
-{
+{    
     QApplication a(argc, argv);
 
     queue<commandNode *> commandQueue = queue<commandNode *>();
@@ -15,12 +15,13 @@ int main(int argc, char *argv[])
     queue<returnBuffer *> graphQueue = queue<returnBuffer *>();
 
     // Configure the afm abstraction layer and afm_worker thread
-    icspiAFM *afm = new icspiAFM();
     QThread *afmThread = new QThread();
     afm_worker *afmWorker = new afm_worker();
     afmWorker->moveToThread(afmThread);
     QObject::connect(afmThread, SIGNAL(started()), afmWorker, SLOT(init()));
-    afmThread->start();
+    QObject::connect(afmWorker, SIGNAL(finished()), afmThread, SLOT(quit()), Qt::DirectConnection);
+    afmThread->start(QThread::HighPriority);
+    icspiAFM *afm = new icspiAFM();
 
     /**********************5 Threads***********************************
      *
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
     QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
     QObject::connect(afmWorker, SIGNAL(process_uart_resp(QByteArray)), receiveWorker, SLOT(process_uart_resp(QByteArray)));
+    QObject::connect(afmWorker, SIGNAL(finished()), mainWorker, SLOT(afmWorkerError()));
 
     //receive queue callbacks
     qRegisterMetaType<returnType>("returnType");

@@ -1,4 +1,5 @@
 #include <mainwindow.h>
+#include <QDateTime>
 
 
 //#include <gwyddion.h>
@@ -80,6 +81,8 @@ void MainWindow::abort()
  */
 void MainWindow::Initialize()
 {
+    qDebug() << "AFM-CLIENT Debug Started: " << QDateTime::currentDateTime().toString() << endl;
+
     /*State Variables*/
     continuousStep = false;
     isAutoApproach = false;
@@ -102,7 +105,7 @@ void MainWindow::Initialize()
     refreshPortsList();
 
     /*Initialize DAC limits*/
-    SetMaxDACValues();
+    //SetMaxDACValues();
 
     /*Timers*/
     generalTimer = new QTimer(this);
@@ -120,15 +123,14 @@ void MainWindow::Initialize()
     CreateGraphs();
 
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
-    on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
-    on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
+    //on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
+    //on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
     //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
 
     /* future watcher for auto approaching*/
     future = new QFuture<void>;
     watcher = new QFutureWatcher<void>;
-    connect(watcher, SIGNAL(finished()),
-        this, SLOT(finishedThread()));
+    connect(watcher, SIGNAL(finished()),this, SLOT(finishedThread()));
 
     /*Event mapping for setting labels and statuses - I DONT THINK THIS IS NEEDED*/
     QSignalMapper *signalMapper = new QSignalMapper(ui->sweepButton);
@@ -1015,6 +1017,14 @@ void MainWindow::on_gwyddionButton_clicked()
     QString program = "C:\\Program Files (x86)\\Gwyddion\\bin\\gwyddion.exe";
 
     process->startDetached(program, QStringList());
+}
+
+void MainWindow::afmWorkerError()
+{
+    //if(!msgBox.isEnabled()) {
+    msgBox.setText("AFM Worker left!");
+    msgBox.exec();
+    //}
 }
 
 void MainWindow::serialError()

@@ -101,14 +101,12 @@
  * uses this information to check length of the response before attempting
  * to access it, to avoid segmentation fault.
  */
-
-/* Cog Automatic Code Generation
+/* Automatically Generated Code - Editing is futile!
 [[[cog
 from CodeValet import CodeValet
 c = CodeValet()
 c.msg_id_define()
 ]]]*/
-/* Automatically Generated Code - Editing is futile! */
 #define AFM_DAC_WRITE_SELECT  0x61
 #define AFM_DAC_WRITE_SELECT_RSPLEN    2
 #define AFM_DAC_READ_SELECT  0x62
@@ -159,7 +157,7 @@ c.msg_id_define()
 #define AFM_START_SCAN_RSPLEN    2
 #define AFM_SCAN_STEP  0x5E
 #define AFM_SCAN_STEP_RSPLEN    49
-#define AFM_SET_PGA  0x2A
+#define AFM_SET_PGA 0x2A
 #define AFM_SET_PGA_RSPLEN    3
 //[[[end]]]
 
@@ -187,7 +185,7 @@ signals:
    bool open(char *serialPortName, qint32 baud_rate);
    void close();
 
-   // Used
+   // Used for afm_worker
    void clearPayloadBuffer();
    int addPayloadByte(char byte);
    int writeByte(char byte);
@@ -196,6 +194,8 @@ signals:
    bool isOpen();
 
 public:
+//    icspiAFM(QThread** afm_thread_temp_var):
+//        afmThread(afm_thread_temp_var) {}
     int writeMsg(char msg_id, QByteArray payload);
     void writeDAC(qint8 dacID,
                  double val);
@@ -216,15 +216,12 @@ public:
     void pidSetP(float P);
     void pidSetI(float I);
     void pidSetD(float D);
-
     void pidSetValues(qint8 P,
                      qint8 I,
                      qint8 D);
-
     void pidSetPoint(float val);
 
     void stageSetPulseWidth(qint8 val);
-
     void stageSetDirForward();
     void stageSetDirBackward();
     void stageSetStep();
@@ -234,37 +231,28 @@ public:
     void stageStepBackward();
     void stageMoveForward();
     void stageMoveBackward();
-
     void setDDSSettings(quint16 numPoints,
                        quint16 startFrequency,
                        quint16 stepSize);
-
     void frequencySweep(quint16 numPoints,
                        quint16 startFrequency,
                        quint16 stepSize);
-
     void rasterStep(float val1,
                     float val2);
 
     void autoApproach(double setpoint);
-
     void setDACValues(char dacID,
                      double _val);
-
     void deviceCalibration(double val,
                           char side);
-
     void scanParameters(double vmin_line,
                        double vmin_scan,
                        double vmax,
                        double numpts,
                        double numlines);
     void startScan();
-
     void scanStep();
-
     void readSignalPhaseOffset();
-
     void forceCurve();
 };
 

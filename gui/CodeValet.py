@@ -1,8 +1,10 @@
 import csv
 import cog
 
-# for row in input_file:
-    # print(row)
+# Code Valet
+# Automatically generate code for mundane things
+
+
 	
 class CodeValet:
 	def __init__ (self):

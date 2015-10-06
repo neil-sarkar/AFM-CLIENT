@@ -100,10 +100,24 @@ void afm_worker::clearPayloadBuffer()
 }
 
 /*
+ * Send a message with msg_id using payload that is currently stored.
+ */
+void afm_worker::writeMsg(char message_id)
+{
+#if AFM_DEBUG
+    QString hex_equivalent_print = QString("%1").arg(message_id, 0, 16);
+    qDebug() << "afm_worker::writeMsg 0x" << hex_equivalent_print;
+#endif
+    writeMsg(message_id, payload_out_buffer);
+
+    payload_out_buffer.clear();
+}
+
+/*
  * A wrapper function for sending serial message.
- * writeByte should not be used, since it does not escape special characters.
+ * writeByte should not normally be used, since it does not escape special characters.
  *
- * Emits the writeMsg_finished() signal once finished
+ * Emits the push_recv_queue() signal once finished
  */
 void afm_worker::writeMsg(char message_id, QByteArray payload)
 {
@@ -142,7 +156,7 @@ void afm_worker::writeMsg(char message_id, QByteArray payload)
     writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
 #if AFM_DEBUG
-    qDebug() << "Sent TAG " << QString().sprintf("%2p", message_tag) << " ID " << message_id << " " << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success? " << writeByte_result;
+    qDebug() << "Sent TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success?" << writeByte_result;
 #endif
 
     emit push_recv_queue(message_id, message_tag, writeByte_result);
@@ -150,26 +164,16 @@ void afm_worker::writeMsg(char message_id, QByteArray payload)
     return;
 }
 
-
-/*
- * Send a message with msg_id using payload that is currently stored.
- */
-void afm_worker::writeMsg(char message_id)
-{
-    writeMsg(message_id, payload_out_buffer);
-
-    payload_out_buffer.clear();
-}
-
 void afm_worker::onReadyRead(){
     serial_incoming_buffer += serial->readAll();
-    qDebug() << "afm_worker received readAll 0x" << serial_incoming_buffer.toHex();
+    qDebug() << "afm_worker received readAll. serial_incoming_buffer = 0x" << serial_incoming_buffer.toHex();
     processIncomingBuffer();
 }
 
 void afm_worker::processIncomingBuffer(){
-    while(serial_incoming_buffer.length() >= 2) {
-        getNextMsg();
+    int last_message_length = 0;
+    while(last_message_length >= 0) {
+        last_message_length = getNextMsg();
     }
     return;
 }
@@ -178,7 +182,7 @@ void afm_worker::processIncomingBuffer(){
 /*
  * Takes stuff from the incoming_bytes array and makes sense of them
  */
-void afm_worker::getNextMsg(){
+int afm_worker::getNextMsg(){
     QByteArray incoming_message;
     char incoming_byte = 0x00;
     bool message_complete = false, escape_char_received = false;
@@ -187,13 +191,14 @@ void afm_worker::getNextMsg(){
     while (!message_complete) {
         //Read one byte at a time from the incoming buffer QByteaArray
         //Note that position is zero-based, and QByteArray.size() returns the size which starts from 1.
-        if (!serial_incoming_buffer.isEmpty() && message_position < serial_incoming_buffer.length()) {
+        //The serial_incoming_buffer should have enough bytes for a minimum message, including the escape byte
+        if (message_position < serial_incoming_buffer.length() && serial_incoming_buffer.length() >= 3) {
             incoming_byte = serial_incoming_buffer.at(message_position);
             message_position++;
             //  printf(" 0x%02x", incoming_byte);
         } else {
-            // The incoming buffer is empty but the last message was not a complete one
-            return;
+            // Nothing left. Leave.
+            return AFM_WORKER_SERIAL_MSG_INCOMPLETE;
         }
 
         // Take care of the incoming byte...
@@ -201,6 +206,7 @@ void afm_worker::getNextMsg(){
             // Newline char received. Is everything we got so far a valid message?
             if (incoming_message.size() >= 2) {
                 // Check length... the message should be at least two bytes in size
+                // Message size does not include the newline char
                 message_complete = true;
                 break;
             } else {
@@ -223,15 +229,15 @@ void afm_worker::getNextMsg(){
              * be more data incoming at the next onReadyRead() event by readAll().
              * Discard incoming_message and move on.
              */
-            return;
-        }  else if (message_position > SERIAL_MSG_MAX_SIZE){
+            return AFM_WORKER_SERIAL_MSG_INCOMPLETE;
+        }  else if (message_position > SERIAL_MSG_MAX_SIZE) {
             /*
              * A serial message should not be this long, like ever.
              * So we probably received a bunch of garbage data.
              * Clean serial_incoming_buffer and move on.
              */
             serial_incoming_buffer.remove(0, message_position);
-            return;
+            return AFM_WORKER_SERIAL_MSG_TOO_LONG;
         } else {
             // None of the above. Collect it in message QByteArray
             incoming_message += incoming_byte;
@@ -248,9 +254,15 @@ void afm_worker::getNextMsg(){
     }
     #endif
 
-    emit process_uart_resp(incoming_message);
-    return;
+    if (incoming_message.size() > 0) {
+        emit process_uart_resp(incoming_message);
+    }
+
+    //Return how long the incoming_message was
+    return message_position;
 }
 
-
-
+afm_worker::~afm_worker()
+{
+    emit finished();
+}
