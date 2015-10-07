@@ -320,8 +320,27 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             isError = true;
         }
         break;
+    case AFM_FORCE_CURVE:
+        if (uart_resp.at(1) == AFM_FORCE_CURVE) {
+            amplitudeData->clear();
+            phaseData->clear();
+            quint16 intVal;
+            //quint16 phaseVal;
+            for (int i = 2; i < uart_resp.size(); i++) {
+                intVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i++]);
+                //phaseVal = BYTES_TO_WORD((quint8)uart_resp[i+2],(quint8)uart_resp[i+3]);
+                amplitudeData->append(double(intVal) / AFM_ADC_SCALING);
+                phaseData->append(0);
+            }
+            return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, uart_resp.size()));
 
-//    case READSIGNALPHASEOFFSET:
+        } else {
+            isError = true;
+        }
+        isError=false; //temp placeholder
+        break;
+
+//    case AFM_ADC_READ_SPO:
 //        if (uart_resp.at(1) == AFM_ADC_READ_SPO) {
 //            signal = (((unsigned char)uart_resp.at(1) << 8) | (unsigned char)uart_resp.at(0));
 //            offset = (((unsigned char)uart_resp.at(3) << 8) | (unsigned char)uart_resp.at(1));
@@ -347,163 +366,227 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 //                }
 //        break;
 
+    //    case AFM_ABORT:
+    //        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_ABORT) {
+    //            return_queue.push(new returnBuffer(ABORTAUTOAPPROACH, AFM_SUCCESS));
+    //        } else {
+    //            isError = true;
+    //        }
+    //        break;
+
     /* CANDIDATES FOR AUTOMATIC CODE GENERATION */
-    case AFM_DAC_WRITE_SELECT:
-        if (uart_resp.at(1) == AFM_DAC_WRITE_SELECT) {
-            return_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
-        } else {
-            handle_error(ERR_MSG_ID_MISMATCH);
-        }
-        break;
-    case AFM_SET_DAC_MAX:
-        if (uart_resp.at(1) == AFM_SET_DAC_MAX) {
-            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_ENABLE_SELECT:
-        if (uart_resp.at(1) == AFM_PID_ENABLE_SELECT) {
-            return_queue.push(new returnBuffer(PIDENABLE, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_DISABLE_SELECT:
-        if (uart_resp.at(1) == AFM_PID_DISABLE_SELECT) {
-            return_queue.push(new returnBuffer(PIDDISABLE, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_P_SELECT:
-        if (uart_resp.at(1) == AFM_PID_P_SELECT) {
-            return_queue.push(new returnBuffer(SETP, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_I_SELECT:
-        if (uart_resp.at(1) == AFM_PID_I_SELECT) {
-            return_queue.push(new returnBuffer(SETI, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_D_SELECT:
-        if (uart_resp.at(1) == AFM_PID_D_SELECT) {
-            return_queue.push(new returnBuffer(SETD, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_PID_SETPOINT_SELECT:
-        if (uart_resp.at(1) == AFM_PID_SETPOINT_SELECT) {
-            return_queue.push(new returnBuffer(SETPOINT, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_DDS_SWEEP_SET:
-        if (uart_resp.at(1) == AFM_DDS_SWEEP_SET) {
-            return_queue.push(new returnBuffer(SETDDS, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_STAGE_DIR_REVERSE_SELECT:
-        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_STAGE_DIR_REVERSE_SELECT) {
-            return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_SUCCESS));
-
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_STAGE_PW_SELECT:
-        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_STAGE_PW_SELECT) {
-            return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_SUCCESS));
-
-        } else {
-            isError = true;
-        }
-        break;
-//    case AFM_ABORT:
-//        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_ABORT) {
-//            return_queue.push(new returnBuffer(ABORTAUTOAPPROACH, AFM_SUCCESS));
-//        } else {
-//            isError = true;
-//        }
-//        break;
-    case AFM_AUTOAPPROACH_SELECT:
-        if (uart_resp.at(2) == 'o' && uart_resp.at(1) == AFM_AUTOAPPROACH_SELECT) {
-            return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_SUCCESS));
-
-        } else if (uart_resp.at(1) == 'f') {
-            return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_FAIL));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_SCAN_PARAMETERS:
-        if (uart_resp.at(1) == AFM_SCAN_PARAMETERS && uart_resp.at(2) == 'o') {
-            return_queue.push(new returnBuffer(SCANPARAMETERS, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_START_SCAN:
-        if (uart_resp.at(1) == AFM_START_SCAN) {
-            return_queue.push(new returnBuffer(STARTSCAN, AFM_SUCCESS));
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_SET_PGA: //This is very streamlined, and has no nesting. Should be the template for future auto code gen!
-        if (uart_resp.at(1) != AFM_SET_PGA) {
-            handle_error(ERR_MSG_ID_MISMATCH);
-            return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
-            break;
-        }
-        if(uart_resp.size() < AFM_SET_PGA_RSPLEN) {
-            handle_error(ERR_MSG_SIZE_MISMATCH);
-            return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
-            break;
-        }
-        if(uart_resp.at(2) == 'o') {
-            return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
-        } else {
-            // Respose bad
-            handle_error(ERR_COMMAND_FAILED);
-            return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
-        }
-        break;
-    case AFM_DEVICE_CALIBRATE:
-        if (uart_resp.at(1) == AFM_DEVICE_CALIBRATE) {
-            return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
-            //acknowledge byte
-        } else {
-            isError = true;
-        }
-        break;
-    case AFM_FORCE_CURVE:
-        if (uart_resp.at(1) == AFM_FORCE_CURVE) {
-            amplitudeData->clear();
-            phaseData->clear();
-            quint16 intVal;
-            //quint16 phaseVal;
-            for (int i = 2; i < _node.numBytes; i++) {
-                intVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i++]);
-                //phaseVal = BYTES_TO_WORD((quint8)uart_resp[i+2],(quint8)uart_resp[i+3]);
-                amplitudeData->append(double(intVal) / AFM_ADC_SCALING);
-                phaseData->append(0);
-            }
-            return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, _node.numBytes));
-
-        } else {
-            isError = true;
-        }
-        isError=false; //temp placeholder
-        break;
+    /* Automatically Code Generation BEGIN
+       [[[cog
+       from CodeValet import CodeValet
+       c = CodeValet()
+       c.receive_worker_switch()
+       ]]]*/
+       case AFM_DAC_WRITE_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_DAC_WRITE_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(WRITE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_DAC_WRITE_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(WRITE, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(WRITE, AFM_SUCCESS));
+       break;
+       case AFM_PID_ENABLE_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_ENABLE_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(PIDENABLE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_ENABLE_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(PIDENABLE, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(PIDENABLE, AFM_SUCCESS));
+       break;
+       case AFM_PID_DISABLE_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_DISABLE_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(PIDDISABLE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_DISABLE_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(PIDDISABLE, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(PIDDISABLE, AFM_SUCCESS));
+       break;
+       case AFM_PID_P_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_P_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETP, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_P_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETP, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETP, AFM_SUCCESS));
+       break;
+       case AFM_PID_I_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_I_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETI, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_I_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETI, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETI, AFM_SUCCESS));
+       break;
+       case AFM_PID_D_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_D_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETD, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_D_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETD, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETD, AFM_SUCCESS));
+       break;
+       case AFM_PID_SETPOINT_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PID_SETPOINT_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETPOINT, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_PID_SETPOINT_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETPOINT, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETPOINT, AFM_SUCCESS));
+       break;
+       case AFM_STAGE_PW_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STAGE_PW_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STAGE_PW_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_FAIL));}
+       break;
+       case AFM_DDS_SWEEP_SET:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_DDS_SWEEP_SET) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_DDS_SWEEP_SET_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETDDS, AFM_SUCCESS));
+       break;
+       case AFM_STAGE_DIR_FWD_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STAGE_DIR_FWD_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STAGE_DIR_FWD_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));}
+       break;
+       case AFM_STAGE_DIR_REVERSE_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STAGE_DIR_REVERSE_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STAGE_DIR_REVERSE_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_FAIL));}
+       break;
+       case AFM_AUTOAPPROACH_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_AUTOAPPROACH_SELECT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_AUTOAPPROACH_SELECT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_FAIL));}
+       break;
+       case AFM_SET_DAC_MAX:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SET_DAC_MAX) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SET_DAC_MAX_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
+       break;
+       case AFM_DEVICE_CALIBRATE:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_DEVICE_CALIBRATE) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_DEVICE_CALIBRATE_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
+       break;
+       case AFM_SCAN_PARAMETERS:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SCAN_PARAMETERS) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SCANPARAMETERS, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SCAN_PARAMETERS_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SCANPARAMETERS, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SCANPARAMETERS, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SCANPARAMETERS, AFM_FAIL));}
+       break;
+       case AFM_START_SCAN:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_START_SCAN) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STARTSCAN, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_START_SCAN_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STARTSCAN, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STARTSCAN, AFM_SUCCESS));
+       break;
+       case AFM_SET_PGA:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SET_PGA) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SET_PGA_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));}
+       break;
+       //[[[end]]]
 
 
     } // End switch

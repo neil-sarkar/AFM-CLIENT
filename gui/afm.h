@@ -101,16 +101,17 @@
  * uses this information to check length of the response before attempting
  * to access it, to avoid segmentation fault.
  */
-/* Automatically Generated Code - Editing is futile!
+/* Automatically Code Generation BEGIN
 [[[cog
 from CodeValet import CodeValet
 c = CodeValet()
 c.msg_id_define()
 ]]]*/
+/* Automatically Generated Code - Editing is futile! */
 #define AFM_DAC_WRITE_SELECT  0x61
 #define AFM_DAC_WRITE_SELECT_RSPLEN    2
 #define AFM_DAC_READ_SELECT  0x62
-#define AFM_DAC_READ_SELECT_RSPLEN    4
+#define AFM_DAC_READ_SELECT_RSPLEN    5
 #define AFM_ADC_READ_SELECT  0x63
 #define AFM_ADC_READ_SELECT_RSPLEN    4
 #define AFM_ADC_READ_SPO  0x65
@@ -148,7 +149,7 @@ c.msg_id_define()
 #define AFM_AUTOAPPROACH_SELECT  0x76
 #define AFM_AUTOAPPROACH_SELECT_RSPLEN    3
 #define AFM_SET_DAC_MAX  0x26
-#define AFM_SET_DAC_MAX_RSPLEN    3
+#define AFM_SET_DAC_MAX_RSPLEN    4
 #define AFM_DEVICE_CALIBRATE  0x6F
 #define AFM_DEVICE_CALIBRATE_RSPLEN    5
 #define AFM_SCAN_PARAMETERS  0x40
@@ -157,9 +158,13 @@ c.msg_id_define()
 #define AFM_START_SCAN_RSPLEN    2
 #define AFM_SCAN_STEP  0x5E
 #define AFM_SCAN_STEP_RSPLEN    49
-#define AFM_SET_PGA 0x2A
+#define AFM_SET_PGA  0x2A
 #define AFM_SET_PGA_RSPLEN    3
-//[[[end]]]
+#define AFM_FORCE_CURVE  0x4E
+#define AFM_FORCE_CURVE_RSPLEN    
+#define AFM_CMD_NOTFOUND  0xF1
+#define AFM_CMD_NOTFOUND_RSPLEN    0
+//[[[end]]] (checksum: c114bc73712ae851d0620d2bb998e8b9)
 
 // Misc Enums
 #define PGA_Z_OFFSET 'z'

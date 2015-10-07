@@ -101,7 +101,7 @@ public:
                   int success,
                   QVector<double>& _amplitude,
                   QVector<double>& _phase,
-                  int &_bytesRead):
+                  int _bytesRead):
          m_returnType(_returnType),
          i_data(success),
          m_amplitude(_amplitude),
