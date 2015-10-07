@@ -105,7 +105,7 @@ void MainWindow::Initialize()
     refreshPortsList();
 
     /*Initialize DAC limits*/
-    //SetMaxDACValues();
+    SetMaxDACValues();
 
     /*Timers*/
     generalTimer = new QTimer(this);

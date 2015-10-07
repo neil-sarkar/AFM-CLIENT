@@ -53,7 +53,7 @@ void handle_error(short error_id);
 signals:
 void finished();
 void serialError();     //emited to the mainwindow when there is an error
-bool isOpen();
+bool serial_port_is_open();
 void getNextMsg();
 
 public slots:

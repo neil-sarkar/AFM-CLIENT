@@ -51,9 +51,9 @@ private:
     int msg_tag = 0;
 
 signals:
-    bool open(QString serialPortName, qint32 baud_rate);
-    bool isOpen();
-    void close();
+    bool open_serial_port(QString serialPortName, qint32 baud_rate);
+    bool serial_port_is_open();
+    void close_serial_port();
     void finished();
     void updateStatusBar(QString _string);
     Q_SIGNAL void push_recv_queue(returnType name);

@@ -39,10 +39,12 @@ class afm_worker: public QObject{
 private:
     unsigned __int8 message_tag = 1;
     QByteArray payload_out_buffer, serial_incoming_buffer;
+    QByteArray incoming_message;
     QSerialPort *serial;
+    bool escape_char_received = false;
     bool serial_open = false;
     void writeMsg(char message_id, QByteArray payload);
-    void getNextMsg1();
+    void getNextMsg(char incoming_byte);
     void processIncomingBuffer();
 
 public:
@@ -56,12 +58,12 @@ signals:
 
 public slots:
     // Started by main.cpp
-    void init();
+    void init_serial_port();
     // Used by send worker
-    bool open(QString serialPortName, qint32 baud_rate);
-    void close();
+    bool open_serial_port(QString serialPortName, qint32 baud_rate);
+    void close_serial_port();
     // Not sure
-    bool isOpen();
+    bool serial_port_is_open();
 
     /*
      * All the functions that will write to the MCU
@@ -73,7 +75,6 @@ public slots:
     void writeMsg(char msg_id);
 
     // Used by receive worker
-    int getNextMsg();
     void onReadyRead();
 };
 

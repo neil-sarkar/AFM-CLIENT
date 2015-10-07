@@ -42,12 +42,12 @@
  *          (unknown state. when err counter reaches some value, show error on UI and clear the deque with mydeque.clear())
  */
 
-void afm_worker::init(){
+void afm_worker::init_serial_port(){
     serial = new QSerialPort(this);
     connect(this->serial, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 }
 
-bool afm_worker::open(QString serialPortName, qint32 baud_rate)
+bool afm_worker::open_serial_port(QString serialPortName, qint32 baud_rate)
 {
     serial->setBaudRate(baud_rate);
     serial->setPortName(serialPortName);
@@ -55,7 +55,7 @@ bool afm_worker::open(QString serialPortName, qint32 baud_rate)
     return serial_open;
 }
 
-void afm_worker::close()
+void afm_worker::close_serial_port()
 {
     // Prevent accidental segmentation -- use protection.
     if(serial_open) {
@@ -65,7 +65,7 @@ void afm_worker::close()
     return;
 }
 
-bool afm_worker::isOpen(){
+bool afm_worker::serial_port_is_open(){
     return serial_open;
 }
 
@@ -172,8 +172,9 @@ void afm_worker::onReadyRead(){
 
 void afm_worker::processIncomingBuffer(){
     int last_message_length = 0;
-    while(last_message_length >= 0) {
-        last_message_length = getNextMsg();
+    while(serial_incoming_buffer.length() > 0) {
+        getNextMsg(serial_incoming_buffer.at(0));
+        serial_incoming_buffer.remove(0, 1);
     }
     return;
 }
@@ -182,84 +183,73 @@ void afm_worker::processIncomingBuffer(){
 /*
  * Takes stuff from the incoming_bytes array and makes sense of them
  */
-int afm_worker::getNextMsg(){
-    QByteArray incoming_message;
-    char incoming_byte = 0x00;
-    bool message_complete = false, escape_char_received = false;
-    int message_position = 0;
+void afm_worker::getNextMsg(char incoming_byte){
+    // char incoming_byte = 0x00;
+    bool message_complete = false;
 
-    while (!message_complete) {
-        //Read one byte at a time from the incoming buffer QByteaArray
-        //Note that position is zero-based, and QByteArray.size() returns the size which starts from 1.
-        //The serial_incoming_buffer should have enough bytes for a minimum message, including the escape byte
-        if (message_position < serial_incoming_buffer.length() && serial_incoming_buffer.length() >= 3) {
-            incoming_byte = serial_incoming_buffer.at(message_position);
-            message_position++;
-            //  printf(" 0x%02x", incoming_byte);
-        } else {
-            // Nothing left. Leave.
-            return AFM_WORKER_SERIAL_MSG_INCOMPLETE;
-        }
+    //Read one byte at a time from the incoming buffer QByteaArray
+    //Note that position is zero-based, and QByteArray.size() returns the size which starts from 1.
+    //The serial_incoming_buffer should have enough bytes for a minimum message, including the escape byte
+//        if (serial_incoming_buffer.length() > 0) {
+//            incoming_byte = serial_incoming_buffer.at(0);
+//            serial_incoming_buffer.remove(0, 1);
+//        } else {
+//            return -1;
+//        }
 
-        // Take care of the incoming byte...
-        if (incoming_byte == SERIAL_MSG_NEWLINE) {
-            // Newline char received. Is everything we got so far a valid message?
-            if (incoming_message.size() >= 2) {
-                // Check length... the message should be at least two bytes in size
-                // Message size does not include the newline char
-                message_complete = true;
-                break;
-            } else {
-                // Otherwise, it was an empty or invalid message. Discard and move on.
-                incoming_message.clear();
-                serial_incoming_buffer.remove(0, message_position);
-                message_position = 0;
-            }
-        } else if (incoming_byte == SERIAL_MSG_ESCAPE && !escape_char_received) {
-            // Is this escape char?
-            escape_char_received = true;
-        } else if (escape_char_received) {
-            // Do we need to unmask this?
-            incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
-            escape_char_received = false;
-        } else if (message_position == serial_incoming_buffer.length() - 1 && incoming_byte != SERIAL_MSG_NEWLINE) {
-            /*
-             * We have reached end of our sequence, but the message is not yet complete.
-             * Leave serial_incoming_buffer intact as the way it was, because there may
-             * be more data incoming at the next onReadyRead() event by readAll().
-             * Discard incoming_message and move on.
-             */
-            return AFM_WORKER_SERIAL_MSG_INCOMPLETE;
-        }  else if (message_position > SERIAL_MSG_MAX_SIZE) {
-            /*
-             * A serial message should not be this long, like ever.
-             * So we probably received a bunch of garbage data.
-             * Clean serial_incoming_buffer and move on.
-             */
-            serial_incoming_buffer.remove(0, message_position);
-            return AFM_WORKER_SERIAL_MSG_TOO_LONG;
+    // Take care of the incoming byte...
+    if (incoming_byte == SERIAL_MSG_NEWLINE) {
+        // Newline char received. Is everything we got so far a valid message?
+        if (incoming_message.size() >= 2) {
+            // Check length... the message should be at least two bytes in size
+            // Message size does not include the newline char
+            message_complete = true;
         } else {
-            // None of the above. Collect it in message QByteArray
-            incoming_message += incoming_byte;
+            // Otherwise, it was an empty or invalid message. Discard and move on.
+            // Use message_position plus one to remove the newline char
+            incoming_message.clear();
+            return;
         }
+    } else if (incoming_byte == SERIAL_MSG_ESCAPE && !escape_char_received) {
+        // Is this escape char?
+        escape_char_received = true;
+    } else if (escape_char_received) {
+        // Do we need to unmask this?
+        incoming_message += incoming_byte & ~SERIAL_MSG_MASK;
+        escape_char_received = false;
+    } else {
+        // None of the above. Collect it in incoming_message QByteArray
+        incoming_message += incoming_byte;
     }
 
-    serial_incoming_buffer.remove(0, message_position);
+    if (incoming_message.length() > SERIAL_MSG_MAX_SIZE) {
+        /*
+         * A serial message should not be this long, like ever.
+         * So we probably received a bunch of garbage data.
+         * Clear incoming_message and move on.
+         */
+        incoming_message.clear();
+        return;
+    }
 
+    if (message_complete) {
     #if AFM_DEBUG
-    if (incoming_message.size() > 0) {
-        //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
-        qDebug() << "  0x" << incoming_message.toHex()
-                 << " Size:" << incoming_message.size();
-    }
+        if (incoming_message.size() > 0) {
+            //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
+            qDebug() << "  0x" << incoming_message.toHex()
+                     << " Size:" << incoming_message.size();
+        }
     #endif
 
-    if (incoming_message.size() > 0) {
-        emit process_uart_resp(incoming_message);
+        if (incoming_message.size() > 0) {
+            emit process_uart_resp(incoming_message);
+            incoming_message.clear();
+        }
+        //Return how long the incoming_message was
+        return;
+    } else {
+        return;
     }
-
-    //Return how long the incoming_message was
-    return message_position;
 }
 
 afm_worker::~afm_worker()

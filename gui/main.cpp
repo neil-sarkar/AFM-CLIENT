@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     QThread *afmThread = new QThread();
     afm_worker *afmWorker = new afm_worker();
     afmWorker->moveToThread(afmThread);
-    QObject::connect(afmThread, SIGNAL(started()), afmWorker, SLOT(init()));
+    QObject::connect(afmThread, SIGNAL(started()), afmWorker, SLOT(init_serial_port()));
     QObject::connect(afmWorker, SIGNAL(finished()), afmThread, SLOT(quit()), Qt::DirectConnection);
     afmThread->start(QThread::HighPriority);
     icspiAFM *afm = new icspiAFM();
@@ -75,10 +75,10 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(serialError()), mainWorker, SLOT(serialError()));
     QObject::connect(eventWorker, SIGNAL(updatePlot(double, int)), mainWorker, SLOT(updatePlot(double, int)));
     // Serial port operation details
-    QObject::connect(sendWorker, SIGNAL(open(QString, qint32)), afmWorker, SLOT(open(QString, qint32)));
-    QObject::connect(sendWorker, SIGNAL(close()), afmWorker, SLOT(close()));
-    QObject::connect(receiveWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
-    QObject::connect(sendWorker, SIGNAL(isOpen()), afmWorker, SLOT(isOpen()));
+    QObject::connect(sendWorker, SIGNAL(open_serial_port(QString, qint32)), afmWorker, SLOT(open_serial_port(QString, qint32)));
+    QObject::connect(sendWorker, SIGNAL(close_serial_port()), afmWorker, SLOT(close_serial_port()));
+    QObject::connect(receiveWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
+    QObject::connect(sendWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
     // afm interfacing
     QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));

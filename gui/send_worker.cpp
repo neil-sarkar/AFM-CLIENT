@@ -180,7 +180,7 @@ void send_worker::mainLoop()
                 break;
             case setPort:
                 qDebug() << "s_afm openING" << endl;
-                emit close();
+                emit close_serial_port();
                 *detectedSerialPorts = QSerialPortInfo::availablePorts();
                 _node->getdval() == 0 ? _index = 0 : _index = _node->getdval();
                 qDebug() << "Gonna open this one: " << detectedSerialPorts->at(_index).portName() << endl;
@@ -188,7 +188,7 @@ void send_worker::mainLoop()
                 if (detectedSerialPorts->size() == 0) {
                     qDebug() << "Unable to find any serial ports." << endl;
                 } else {
-                    emit open(detectedSerialPorts->at(_index).portName(), AFM_BAUD_RATE);
+                    emit open_serial_port(detectedSerialPorts->at(_index).portName(), AFM_BAUD_RATE);
                     qDebug() << "s_afm opened" << endl;
                 }
                 break;
