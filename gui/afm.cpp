@@ -385,5 +385,5 @@ void icspiAFM::readSignalPhaseOffset()
 
 void icspiAFM::forceCurve()
 {
-    emit writeMsg('N');
+    emit writeMsg(AFM_FORCE_CURVE);
 }

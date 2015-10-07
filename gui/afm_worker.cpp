@@ -171,7 +171,6 @@ void afm_worker::onReadyRead(){
 }
 
 void afm_worker::processIncomingBuffer(){
-    int last_message_length = 0;
     while(serial_incoming_buffer.length() > 0) {
         getNextMsg(serial_incoming_buffer.at(0));
         serial_incoming_buffer.remove(0, 1);

@@ -61,7 +61,7 @@ void receive_worker::handle_error(short error_id){
          * The message ID received differs from what was recorded
          * in receive_queue. This should never happen. Check MCU code.
          */
-        emit serialError();
+        //emit serialError();
         qDebug() << "ERR_MSG_ID_MISMATCH for 0x" << uart_resp.toHex();
         break;
     case ERR_MSG_TAG_MISMATCH:
@@ -104,6 +104,9 @@ void receive_worker::handle_error(short error_id){
          */
         receive_queue.pop_front();
         qDebug() << "ERR_MSG_SIZE_MISMATCH - Check MCU Code?";
+        break;
+    case ERR_MSG_UNSOLICITED:
+        qDebug() << "ERR_MSG_UNSOLICITED 0x" << uart_resp.toHex();
         break;
     default:
         /*
@@ -158,7 +161,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     }
 
     // 0. Is this an empty message?
-    if(uart_resp.at(0) == SERIAL_MSG_NEWLINE){
+    if(uart_resp.at(0) == SERIAL_MSG_NEWLINE) {
         return;
     }
 
@@ -215,7 +218,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     switch (_node.message_id) {
     // Manual logic required
     case AFM_DAC_READ_SELECT:
-        if (uart_resp.at(1) == AFM_DAC_READ_SELECT) {
+        if (uart_resp.at(1) != AFM_DAC_READ_SELECT) {
             handle_error(ERR_MSG_ID_MISMATCH);
             break;
         }
@@ -268,7 +271,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         return_queue.push(new returnBuffer(type, float(((float)val) / AFM_DAC_SCALING)));
         break;
     case AFM_ADC_READ_SELECT:
-        if (uart_resp.at(1) == AFM_ADC_READ_SELECT) {
+        if (uart_resp.at(1) != AFM_ADC_READ_SELECT) {
             handle_error(ERR_MSG_ID_MISMATCH);
             break;
         }
@@ -474,33 +477,33 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
         }
         break;
-//	case DEVICECALIBRATION:
-//		if (uart_resp.at(1) == 'o') {
-//			return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
-//			//acknowledge byte
-//		} else {
-//			isError = true;
-//		}
-//		break;
-//            case FORCECURVE:
-//                if (uart_resp.at(_node.numBytes - 1) == 'N') {
-//                    amplitudeData->clear();
-//                    phaseData->clear();
-//                    quint16 intVal;
-//                    //quint16 phaseVal;
-//                    for (int i = 0; i < _node.numBytes - 1; i++) {
-//                        intVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i++]);
-//                        //phaseVal = BYTES_TO_WORD((quint8)uart_resp[i+2],(quint8)uart_resp[i+3]);
-//                        amplitudeData->append(double(intVal) / AFM_ADC_SCALING);
-//                        phaseData->append(0);
-//                    }
-//                    return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, _node.numBytes));
+    case AFM_DEVICE_CALIBRATE:
+        if (uart_resp.at(1) == AFM_DEVICE_CALIBRATE) {
+            return_queue.push(new returnBuffer(DEVICECALIBRATION, AFM_SUCCESS));
+            //acknowledge byte
+        } else {
+            isError = true;
+        }
+        break;
+    case AFM_FORCE_CURVE:
+        if (uart_resp.at(1) == AFM_FORCE_CURVE) {
+            amplitudeData->clear();
+            phaseData->clear();
+            quint16 intVal;
+            //quint16 phaseVal;
+            for (int i = 2; i < _node.numBytes; i++) {
+                intVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i++]);
+                //phaseVal = BYTES_TO_WORD((quint8)uart_resp[i+2],(quint8)uart_resp[i+3]);
+                amplitudeData->append(double(intVal) / AFM_ADC_SCALING);
+                phaseData->append(0);
+            }
+            return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, _node.numBytes));
 
-//                } else {
-//                    isError = true;
-//                }
-//            isError=false;     //temp placeholder
-//            break;
+        } else {
+            isError = true;
+        }
+        isError=false; //temp placeholder
+        break;
 
 
     } // End switch

@@ -75,6 +75,7 @@ public:
     float getADC5(){return adc5;}
     int getCurrTab(){return currTab;}
 
+    void closeEvent(QCloseEvent *event);
     ~MainWindow();
 
 protected:

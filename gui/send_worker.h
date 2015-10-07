@@ -15,6 +15,7 @@
 #include <returnBuffer.h>
 #include <string>
 #include <stdlib.h>
+#include <QTimer>
 using std::queue;
 
 class send_worker : public QObject
@@ -38,6 +39,7 @@ public:
 
 private:
     //icspiAFM m_afm;
+    QTimer *queue_check_timer;
     bool serial_ready = false;
     Command _command;
     double _val;
@@ -60,6 +62,9 @@ signals:
 
 public slots:
     void mainLoop();
+
+private slots:
+    void queue_check();
 };
 
 #endif // SERIALWORKER_H

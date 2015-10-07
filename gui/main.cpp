@@ -6,7 +6,7 @@
 
 QMutex mutex;
 int main(int argc, char *argv[])
-{    
+{
     QApplication a(argc, argv);
 
     queue<commandNode *> commandQueue = queue<commandNode *>();
@@ -68,7 +68,6 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
     receiveThread->start();
 
-
     // Define additional signals and slots.
     // UI Elements
     QObject::connect(sendWorker, SIGNAL(updateStatusBar(QString)), mainWorker, SLOT(updateStatusBar(QString)));
@@ -80,18 +79,21 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
     QObject::connect(sendWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
     // afm interfacing
-    QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
+    //QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
     QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
     QObject::connect(afmWorker, SIGNAL(process_uart_resp(QByteArray)), receiveWorker, SLOT(process_uart_resp(QByteArray)));
     QObject::connect(afmWorker, SIGNAL(finished()), mainWorker, SLOT(afmWorkerError()));
-
     //receive queue callbacks
     qRegisterMetaType<returnType>("returnType");
     //QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
     QObject::connect(afmWorker, SIGNAL(push_recv_queue(char, char, int)), receiveWorker, SLOT(push_recv_queue(char, char, int)));
-
+    //MainWindow close - thread termination
+    QObject::connect(mainWorker, SIGNAL(finished()), sendThread, SLOT(quit()), Qt::DirectConnection);
+    QObject::connect(mainWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);
+    QObject::connect(mainWorker, SIGNAL(finished()), receiveThread, SLOT(quit()), Qt::DirectConnection);
+    QObject::connect(mainWorker, SIGNAL(finished()), afmThread, SLOT(quit()), Qt::DirectConnection);
 
     int rt = a.exec();
 

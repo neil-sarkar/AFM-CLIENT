@@ -57,7 +57,7 @@ void MainWindow::MainWindowLoop()
 
 void MainWindow::finishedThread()
 {
-    qDebug() << "Finished Thread";
+    qDebug() << "Finished mainwindow Thread";
 }
 
 MainWindow::~MainWindow()
@@ -67,7 +67,15 @@ MainWindow::~MainWindow()
 }
 void MainWindow::abort()
 {
+    qDebug() << "MainWindow::abort()";
     emit finished();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug() << "MainWindow::closeEvent()";
+    emit finished();
+    QMainWindow::closeEvent(event);
 }
 
 /* Initialization:
