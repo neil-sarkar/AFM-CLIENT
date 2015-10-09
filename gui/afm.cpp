@@ -25,7 +25,7 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
 
     emit writeMsg(AFM_DAC_WRITE_SELECT);
 
-     //qDebug() << "afmThread.isRunning: " << *afmThread->isRunning();
+    //qDebug() << "afmThread.isRunning: " << *afmThread->isRunning();
 }
 
 void icspiAFM::readDAC(qint8 dacID)
@@ -144,12 +144,12 @@ void icspiAFM::stageSetPulseWidth(qint8 val)
 
 void icspiAFM::stageSetDirForward()
 {
-    emit writeMsg(AFM_STAGE_DIR_FWD_SELECT);
+    emit writeMsg(AFM_PCBMOT_STAGE_DIR_FWD_SELECT);
 }
 
 void icspiAFM::stageSetDirBackward()
 {
-    emit writeMsg(AFM_STAGE_DIR_REVERSE_SELECT);
+    emit writeMsg(AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT);
 }
 
 void icspiAFM::stageSetStep()
@@ -169,45 +169,157 @@ void icspiAFM::stageStepBackward()
     stageSetStep();
 }
 
-void icspiAFM::stageMoveForward()
-{
-    stageSetDirForward();
+void icspiAFM::stepMotSetSpeed(int speed){
+    qDebug() << "Set Motor Speed" << speed;
+    emit addPayloadByte((qint8)speed); //low byte
+    emit addPayloadByte(qint8(speed >> 8)); //high byte
+    emit writeMsg(AFM_STEPMOT_SPEED);
 }
 
-void icspiAFM::stageMoveBackward()
-{
-    stageSetDirBackward();
+void icspiAFM::stepMotSetState(int state){
+    qDebug() << "Set Motor State" << state;
+    if(state == MOT_SLEEP) { //Sleep
+        emit clearPayloadBuffer();
+        emit writeMsg(AFM_STEPMOT_SLEEP);
+    } else if (state == MOT_WAKE) { //Wake
+        emit clearPayloadBuffer();
+        emit writeMsg(AFM_STEPMOT_WAKE);
+    }
 }
 
-void icspiAFM::setDDSSettings(quint16	numPoints,
-                  quint16	startFrequency,
-                  quint16	stepSize)
+void icspiAFM::stepMotSetDir(int dir){
+    if(dir==MOT_FWD) { //Forward
+        emit addPayloadByte(0x66);
+        emit writeMsg(AFM_STEPMOT_DIR);
+    } else if (dir == MOT_BACK) { //Backward
+        emit addPayloadByte(0x62);
+        emit writeMsg(AFM_STEPMOT_DIR);
+    }
+}
+
+void icspiAFM::stepMotSetMicrostep(int microstep_enum){
+    emit addPayloadByte((qint8)microstep_enum);
+    emit writeMsg(AFM_STEPMOT_MICROSTEP);
+}
+
+void icspiAFM::stepMotContGo(){
+    emit clearPayloadBuffer();
+    emit writeMsg(AFM_STEPMOT_CONT_GO);
+}
+
+void icspiAFM::stepMotContStop(){
+    emit clearPayloadBuffer();
+    emit writeMsg(AFM_STEPMOT_CONT_STOP);
+}
+
+void icspiAFM::stepMotSingleStep(){
+    emit clearPayloadBuffer();
+    emit writeMsg(AFM_STEPMOT_SINGLESTEP);
+}
+
+void icspiAFM::autoapproach_pcb2_stop(){
+    stepMotContStop();
+    stepMotSetState(MOT_SLEEP);
+    qDebug() << "ABORT Inside State Machine i=" << autoapproach_state++;
+    task1_timer->stop();
+}
+
+void icspiAFM::autoApproach_pcb2_start(double setpoint){
+    autoapproach_state = 1; //Initial state
+    //Prepare the task1_timer
+    task1_timer = new QTimer(this);
+    connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
+    //Launch the autoApproach_state_machine
+    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+}
+
+void icspiAFM::autoApproach_state_machine(){
+    qDebug() << "Inside State Machine i=" << autoapproach_state++;
+    switch(autoapproach_state) {
+    case 1: //Wake up and intialization.
+        stepMotSetState(MOT_SLEEP);
+        stepMotSetDir(MOT_FWD); //Forward is down...
+        stepMotSetSpeed(26300);
+        stepMotSetMicrostep(1);
+        autoapproach_state++;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 2:
+        stepMotContGo();
+        autoapproach_state++;
+        QTimer::singleShot(200, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 3:
+        stepMotContStop();
+        stepMotSetDir(MOT_BACK);
+        //Measure Signal
+        autoapproach_state++;
+        QTimer::singleShot(500, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 4:
+        stepMotContGo();
+        autoapproach_state++;
+        task1_timer->start(1);
+        break;
+    case 5: //Abort available here.
+        // Get measured signal
+        // If measured signal is less than whatever, do whatever
+        task1_timer->stop();
+        autoapproach_state++;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+case 6:
+        stepMotSetMicrostep(3);
+        stepMotSetSpeed(20000);
+        autoapproach_state++;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+    case 7://Abort available here.
+        //Loop like 5
+        task1_timer->stop();
+        autoapproach_state++;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 8:
+        stepMotContStop();
+        stepMotSetState(MOT_SLEEP);
+        //UPDATE UI
+        //Turn on PID
+        pidEnable();
+        break;
+    }
+
+
+}
+
+void icspiAFM::setDDSSettings(quint16 numPoints,
+                              quint16 startFrequency,
+                              quint16 stepSize)
 {
     qDebug() << "Writing to DDS settings";
     // Set DDS settings
 
     qDebug() << "Start Freq -> High Byte: " << (quint16)(startFrequency >> 8) << " Low Byte: " << (quint8)startFrequency;
     // start freq
-    emit addPayloadByte((qint8)startFrequency);                     // low byte
-    emit addPayloadByte((qint8)(startFrequency >> 8));              // high bye
+    emit addPayloadByte((qint8)startFrequency);     // low byte
+    emit addPayloadByte((qint8)(startFrequency >> 8)); // high bye
 
     qDebug() << "Step Size -> High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
     // step size
-    emit addPayloadByte((qint8)stepSize);                   // low byte
-    emit addPayloadByte((qint8)(stepSize >> 8));            // high bye
+    emit addPayloadByte((qint8)stepSize);   // low byte
+    emit addPayloadByte((qint8)(stepSize >> 8)); // high bye
 
     qDebug() << "Num Points -> High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
     // num points
-    emit addPayloadByte((qint8)numPoints);                  // low byte
-    emit addPayloadByte((qint8)(numPoints >> 8));           // high bye
+    emit addPayloadByte((qint8)numPoints);  // low byte
+    emit addPayloadByte((qint8)(numPoints >> 8)); // high bye
 
     emit writeMsg(AFM_DDS_SWEEP_SET);
 }
 
 // Start the frequency sweep. The data will be fetched from the receiver
-void icspiAFM::frequencySweep(quint16	numPoints,
-                  quint16	startFrequency,
-                  quint16	stepSize)
+void icspiAFM::frequencySweep(quint16 numPoints,
+                              quint16 startFrequency,
+                              quint16 stepSize)
 {
     //writeDAC(AFM_DAC_VCO_ID, 0); // write 0V
     setDDSSettings(numPoints, startFrequency, stepSize);
@@ -315,11 +427,11 @@ void icspiAFM::deviceCalibration(double val, char side)
     emit writeMsg(AFM_DEVICE_CALIBRATE);
 }
 
-void icspiAFM::scanParameters(double	vmin_line,
-                  double	vmin_scan,
-                  double	vmax,
-                  double	numpts,
-                  double	numlines)
+void icspiAFM::scanParameters(double vmin_line,
+                              double vmin_scan,
+                              double vmax,
+                              double numpts,
+                              double numlines)
 {
     /* We need to check that these parameters are valid
      * How?
@@ -352,6 +464,7 @@ void icspiAFM::scanParameters(double	vmin_line,
 
     emit writeMsg(AFM_SCAN_PARAMETERS); //TODO FIX ME
 }
+
 void icspiAFM::startScan()
 {
     emit writeMsg(AFM_START_SCAN);

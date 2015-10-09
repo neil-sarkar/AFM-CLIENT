@@ -111,6 +111,7 @@ void send_worker::queue_check(){
                 return_name = ADC;
             }
             break;
+        /* CANDIDATES FOR AUTOMATIC CODE GEN */
         case readSignalPhaseOffset:
             s_afm.readSignalPhaseOffset();
             return_name = READSIGNALPHASEOFFSET;
@@ -182,6 +183,34 @@ void send_worker::queue_check(){
         case afmAutoApproach:
             s_afm.autoApproach(_node->getdval());
             return_name = AUTOAPPROACH;
+            break;
+        case stepMotSetSpeed:
+            s_afm.stepMotSetSpeed(int(_node->getdval()));
+            return_name = STEPMOTSETSPEED;
+            break;
+        case stepMotSetDir:
+            s_afm.stepMotSetDir(_node->getqval());
+            return_name = STEPMOTSETDIR;
+            break;
+        case stepMotSetMicrostep:
+            s_afm.stepMotSetMicrostep(_node->getqval());
+            return_name = STEPMOTSETMICROSTEP;
+            break;
+        case stepMotSetState:
+            s_afm.stepMotSetState(_node->getqval());
+            return_name=STEPMOTSETSTATE;
+            break;
+        case stepMotContGo:
+            s_afm.stepMotContGo();
+            return_name=STEPMOTCONTGO;
+            break;
+        case stepMotContStop:
+            s_afm.stepMotContStop();
+            return_name=STEPMOTCONTSTOP;
+            break;
+        case stepMotSingleStep:
+            s_afm.stepMotSingleStep();
+            return_name=STEPMOTSINGLESTEP;
             break;
         case setPort:
             qDebug() << "s_afm openING" << endl;

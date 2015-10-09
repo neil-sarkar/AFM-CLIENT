@@ -148,8 +148,15 @@ private slots:
     void on_checkBox_clicked(bool checked);
 
     void on_sldAmplitudeVoltage_3_valueChanged(int value);
-
-
+    void on_sld_stepmot_speed_valueChanged(int value);
+    void on_cbo_microstep_currentIndexChanged(int index);
+    void on_btn_stepmot_cont_go_clicked();
+    void on_btn_stepmot_cont_stop_clicked();
+    void on_btn_stepmot_singlestep_clicked();
+    void on_radio_stepmot_fwd_clicked();
+    void on_radio_stepmot_back_clicked();
+    void on_btn_stepmot_sleep_clicked();
+    void on_btn_stepmot_wake_clicked();
 
     void on_retreatButton_clicked();
 

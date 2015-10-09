@@ -487,28 +487,16 @@ border-bottom: 1px solid black;
                    </item>
                   </layout>
                  </item>
-                 <item>
-                  <widget class="QPushButton" name="btnPidToggle">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true"/>
-                   </property>
-                   <property name="text">
-                    <string>PID</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
                 </layout>
                </item>
               </layout>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="chkbox_pid">
+               <property name="text">
+                <string>PID ON</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -742,7 +730,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="controlTab">
        <attribute name="title">
@@ -838,7 +826,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
           <item row="0" column="0">
            <widget class="QTabWidget" name="tabScan">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tabScanForward">
              <attribute name="title">
@@ -1285,7 +1273,7 @@ QLabel {  color : red; };</string>
                    <rect>
                     <x>10</x>
                     <y>10</y>
-                    <width>163</width>
+                    <width>167</width>
                     <height>232</height>
                    </rect>
                   </property>
@@ -1910,10 +1898,10 @@ border-radius: 4px;
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>50</x>
-          <y>80</y>
-          <width>307</width>
-          <height>123</height>
+          <x>30</x>
+          <y>10</y>
+          <width>651</width>
+          <height>210</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -2022,15 +2010,200 @@ border-radius: 4px;
            </item>
           </layout>
          </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Stepper Motor Controls</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_46">
+             <item>
+              <widget class="QRadioButton" name="radio_stepmot_fwd">
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string>Fwd</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radio_stepmot_back">
+               <property name="text">
+                <string>Back</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_45">
+             <item>
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>Microstep 1/th</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="cbo_microstep">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">    QComboBox  {
+        border: 1px solid gray;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+     
+    QComboBox:editable  {
+        background: white;
+    }
+     
+    QComboBox:!editable, QComboBox::drop-down:editable  {
+         background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                     stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                     stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+    }
+     
+    /* QComboBox gets the &quot;on&quot; state when the popup is open */
+    QComboBox:!editable:on, QComboBox::drop-down:editable:on  {
+        background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                    stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+    }
+     
+    QComboBox:on  { /* shift the text when the popup opens */
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+     
+    QComboBox::drop-down  {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 15px;
+     
+        border-left-width: 1px;
+        border-left-color: darkgray;
+        border-left-style: solid; /* just a single line */
+        border-top-right-radius: 3px; /* same radius as the QComboBox */
+        border-bottom-right-radius: 3px;
+    }
+     
+    QComboBox::down-arrow  {
+        image: url(C:/Qt/Tools/QtCreator/bin/qml/QtQuick/Controls/Styles/Base/images/arrow-down.png);
+    }
+     
+    QComboBox::down-arrow:on  { /* shift the arrow when popup is open */
+        top: 1px;
+        left: 1px;
+    }
+</string>
+               </property>
+               <property name="editable">
+                <bool>false</bool>
+               </property>
+               <property name="currentText">
+                <string/>
+               </property>
+               <property name="currentIndex">
+                <number>-1</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_47">
+             <item>
+              <widget class="QLabel" name="label_27">
+               <property name="text">
+                <string>Speed</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lbl_stepmot_speed">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QSlider" name="sld_stepmot_speed">
+             <property name="maximum">
+              <number>26300</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_48">
+             <item>
+              <widget class="QPushButton" name="btn_stepmot_sleep">
+               <property name="text">
+                <string>Sleep</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_stepmot_wake">
+               <property name="text">
+                <string>Wake</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_42">
+             <item>
+              <widget class="QPushButton" name="btn_stepmot_cont_go">
+               <property name="text">
+                <string>GO</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_stepmot_cont_stop">
+               <property name="text">
+                <string>STOP</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_stepmot_singlestep">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>STEP</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="layoutWidget_2">
         <property name="geometry">
          <rect>
-          <x>50</x>
+          <x>30</x>
           <y>220</y>
           <width>209</width>
-          <height>141</height>
+          <height>145</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
@@ -2275,7 +2448,7 @@ border-radius: 4px;
        <widget class="QPushButton" name="btnForceCurve">
         <property name="geometry">
          <rect>
-          <x>290</x>
+          <x>240</x>
           <y>340</y>
           <width>75</width>
           <height>23</height>

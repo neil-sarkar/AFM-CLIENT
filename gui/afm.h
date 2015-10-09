@@ -10,6 +10,7 @@
 #include <QString>
 //#include <QVector>
 #include <math.h>
+#include <QTimer>
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            1  // 1: display debug messages
@@ -142,10 +143,10 @@ c.msg_id_define()
 #define AFM_FREQ_SWEEP_AD5932_RSPLEN    6
 #define AFM_DDS_SWEEP_SET  0x75
 #define AFM_DDS_SWEEP_SET_RSPLEN    2
-#define AFM_STAGE_DIR_FWD_SELECT  0x6C
-#define AFM_STAGE_DIR_FWD_SELECT_RSPLEN    3
-#define AFM_STAGE_DIR_REVERSE_SELECT  0x6B
-#define AFM_STAGE_DIR_REVERSE_SELECT_RSPLEN    3
+#define AFM_PCBMOT_STAGE_DIR_FWD_SELECT  0x6C
+#define AFM_PCBMOT_STAGE_DIR_FWD_SELECT_RSPLEN    3
+#define AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT  0x6B
+#define AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT_RSPLEN    3
 #define AFM_AUTOAPPROACH_SELECT  0x76
 #define AFM_AUTOAPPROACH_SELECT_RSPLEN    3
 #define AFM_SET_DAC_MAX  0x26
@@ -164,12 +165,31 @@ c.msg_id_define()
 #define AFM_FORCE_CURVE_RSPLEN    
 #define AFM_CMD_NOTFOUND  0xF1
 #define AFM_CMD_NOTFOUND_RSPLEN    0
-//[[[end]]] (checksum: c114bc73712ae851d0620d2bb998e8b9)
+#define AFM_STEPMOT_WAKE  0x35
+#define AFM_STEPMOT_WAKE_RSPLEN    1
+#define AFM_STEPMOT_SLEEP  0x34
+#define AFM_STEPMOT_SLEEP_RSPLEN    1
+#define AFM_STEPMOT_SPEED  0x32
+#define AFM_STEPMOT_SPEED_RSPLEN    1
+#define AFM_STEPMOT_DIR  0x36
+#define AFM_STEPMOT_DIR_RSPLEN    1
+#define AFM_STEPMOT_CONT_GO  0x33
+#define AFM_STEPMOT_CONT_GO_RSPLEN    1
+#define AFM_STEPMOT_CONT_STOP  0x37
+#define AFM_STEPMOT_CONT_STOP_RSPLEN    1
+#define AFM_STEPMOT_MICROSTEP  0x30
+#define AFM_STEPMOT_MICROSTEP_RSPLEN    1
+#define AFM_STEPMOT_SINGLESTEP  0x31
+#define AFM_STEPMOT_SINGLESTEP_RSPLEN    1
+//[[[end]]] (checksum: e542cdeeb187173599e8d1bab1c810c8)
 
 // Misc Enums
 #define PGA_Z_OFFSET 'z'
 #define PGA_AMPLITUDE 'a'
-
+#define MOT_FWD 1
+#define MOT_BACK 2
+#define MOT_SLEEP 1
+#define MOT_WAKE 2
 
 /*
  *  Serial Communication Specifics
@@ -234,8 +254,6 @@ public:
     void stageAbortContinuous();
     void stageStepForward();
     void stageStepBackward();
-    void stageMoveForward();
-    void stageMoveBackward();
     void setDDSSettings(quint16 numPoints,
                        quint16 startFrequency,
                        quint16 stepSize);
@@ -259,6 +277,23 @@ public:
     void scanStep();
     void readSignalPhaseOffset();
     void forceCurve();
+    void stepMotSetSpeed(int speed);
+    void stepMotSetState(int state);
+    void stepMotSetDir(int dir);
+    void stepMotSetMicrostep(int microstep_enum);
+    void stepMotContGo();
+    void stepMotContStop();
+    void stepMotSingleStep();
+    void autoapproach_pcb2(int operation);
+        void autoapproach_pcb2(int operation, double setpoint);
+
+private:
+        QTimer *task1_timer;   //For auto approach
+        int autoapproach_state = 0;
+        bool autoapproach_abort = false;
+        double autoapproach_setpoint = 0;
+    private slots:
+        void autoApproach_state_machine();
 };
 
 #endif // AFM_H

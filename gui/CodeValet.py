@@ -1,6 +1,6 @@
 import csv
 import cog
-
+import urllib.request
 # Code Valet
 # Automatically generate code for mundane things
 
@@ -8,7 +8,10 @@ import cog
 	
 class CodeValet:
 	def __init__ (self):
-		self.input_file = csv.DictReader(open("Serial Message Specifications - Rickey Proposal - Messages.csv")) 
+		# Download latest version from Google Drive
+		url = "https://docs.google.com/spreadsheets/d/12pyWhpnUc2WIkpixExfhn6BQ4HnPdwTVp-OGuGELdZY/pub?gid=1325505480&single=true&output=csv"
+		urllib.request.urlretrieve(url, "message_spec.ignore.csv")
+		self.input_file = csv.DictReader(open("message_spec.ignore.csv")) 
 		# print("CSV is open")
 	# for row in input_file:
 		# if len(row['Serial Port Message']) > 0:

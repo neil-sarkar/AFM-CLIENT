@@ -30,8 +30,6 @@ enum Command{
     stageAbortContinuous,
     stageStepForward,
     stageStepBackward,
-    stageMoveForward,
-    stageMoveBackward,
     setDDSSettings,
     frequencySweep,
     afmAutoApproach,
@@ -44,7 +42,14 @@ enum Command{
     setPGA,
     readSignalPhaseOffset,
     getScanData,
-    ForceCurve
+    ForceCurve,
+    stepMotSetState,
+    stepMotSetDir,
+    stepMotSetMicrostep,
+    stepMotContGo,
+    stepMotContStop,
+    stepMotSingleStep,
+    stepMotSetSpeed
 };
 
 
@@ -168,9 +173,8 @@ class commandNode
                 double vmin_scan,
                 double vmax,
                 double numpts,
-                double numlines)
-
-          : m_commandName(commandName),
+                double numlines):
+            m_commandName(commandName),
             m_vminLine(vmin_line),
             m_vminScan(vmin_scan),
             m_vmax(vmax),

@@ -130,6 +130,11 @@ void MainWindow::Initialize()
     /*Intialize Graphs*/
     CreateGraphs();
 
+    // Stepper Motor controls
+    QStringList microstep_options;
+    microstep_options << "1" << "1/2" << "1/4" << "1/8" << "1/16" << "1/32";
+    ui->cbo_microstep->addItems(microstep_options);
+
     /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
     //on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
     //on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
@@ -239,8 +244,8 @@ void MainWindow::CreateGraphs()
 
     // add frequency sweep plot
     MyPlot::PlotFields fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Amplitude (V)", \
-                               QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Red"),
-                               false, true);
+                                                   QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Red"),
+                                                   false, true);
 
     freqPlot.SetPlot(fields, ui->freqWidget);
     ui->gridLayout_17->setSpacing(0);
@@ -256,8 +261,8 @@ void MainWindow::CreateGraphs()
 
     //phase plot
     fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Phase (Deg)", \
-                    QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Blue"),
-                    false, true);
+                                QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Blue"),
+                                false, true);
 
     phasePlot.SetPlot(fields, ui->freqWidget);
     ui->gridLayout_17->addWidget(&phasePlot, 2, 0);
@@ -268,8 +273,8 @@ void MainWindow::CreateGraphs()
 
     // add approach plot
     fields = MyPlot::PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)", \
-                    QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
-                    false);
+                                QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
+                                false);
     approachPlot.SetPlot(fields, ui->approachWidget);
     ui->gridLayout_24->setSpacing(0);
     ui->gridLayout_24->addWidget(&approachPlot, 1, 0);
@@ -280,8 +285,8 @@ void MainWindow::CreateGraphs()
 
     // add signal plot 1
     fields = MyPlot::PlotFields("Z Offset", false, "Time", "Z Offset (V)", \
-                    QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
-                    false);
+                                QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
+                                false);
     signalPlot1.SetPlot(fields, ui->signalWidget);
     ui->gridLayout_10->setSpacing(0);
     ui->gridLayout_10->addWidget(&signalPlot1, 1, 0);
@@ -290,8 +295,8 @@ void MainWindow::CreateGraphs()
 
     // add signal plot 2
     fields = MyPlot::PlotFields("Error (V)", false, "Time", "Error", \
-                    QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
-                    false);
+                                QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
+                                false);
     signalPlot2.SetPlot(fields, ui->signalWidget);
 
     ui->gridLayout_10->addWidget(&signalPlot2, 2, 0);
@@ -300,8 +305,8 @@ void MainWindow::CreateGraphs()
 
     //force curve
     fields = MyPlot::PlotFields("Force Curve", true, "Z Offset (V)", "Z Amplitude", \
-                    QPair<double, double>(0, 1000), QPair<double, double>(0, 10), QColor("Blue"),
-                    false, true);
+                                QPair<double, double>(0, 1000), QPair<double, double>(0, 10), QColor("Blue"),
+                                false, true);
     forceCurve.SetPlot(fields, ui->forceWidget);
     ui->forcecurve_gridlayout->setSpacing(0);
     ui->forcecurve_gridlayout->addWidget(&forceCurve, 1, 0);
@@ -504,7 +509,13 @@ void MainWindow::dequeueReturnBuffer()
             }
 
             break;
-        }
+        case PIDDISABLE:
+            ui->chkbox_pid->setChecked(false);
+            break;
+        case PIDENABLE:
+            ui->chkbox_pid->setChecked(true);
+            break;
+        } //end Switch
 
         if (currTab == 3) {
 //            approachPlot.update(time, signal, currTab == Approach ? true: false);
@@ -536,7 +547,7 @@ void MainWindow::on_spnBridgeVoltage_valueChanged(double arg1)
     commandQueue.push(new commandNode(memsSetBridgeVoltage, (double)arg1));//afm.memsSetBridgeVoltage(arg1);
 }
 
-void MainWindow::on_btnPidToggle_toggled(bool checked)
+void MainWindow::on_chkbox_pid_toggled(bool checked)
 {
     if (checked) {
         //mutex.lock();
@@ -596,8 +607,8 @@ void MainWindow::displayComPortInfo(const QSerialPortInfo& info)
     QMessageBox msgBox;
 
     msgBox.setText("Comport Selected: " + info.portName() + "\n"
-               "Description: " + info.manufacturer() + "\n"
-               "Manufacturer: " + info.description());
+                   "Description: " + info.manufacturer() + "\n"
+                   "Manufacturer: " + info.description());
     msgBox.exec();
 }
 
@@ -645,9 +656,64 @@ void MainWindow::on_approachButton_clicked()
 void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 {
     ui->lblAmplitude->setText(QString::number(value));
-    //mutex.lock();
+    mutex.lock();
     commandQueue.push(new commandNode(stageSetPulseWidth, (qint8)value));//afm.stageSetPulseWidth(value);
-    //mutex.unlock();
+    mutex.unlock();
+}
+
+void MainWindow::on_sld_stepmot_speed_valueChanged(int value){
+    ui->lbl_stepmot_speed->setText(QString::number(value));
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetSpeed, (double)value)); //int8 is not large enough, so use double.
+    mutex.unlock();
+}
+
+void MainWindow::on_cbo_microstep_currentIndexChanged(int index){
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)index)); //int8 is not large enough, so use double.
+    mutex.unlock();
+}
+
+void MainWindow::on_btn_stepmot_cont_go_clicked(){
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotContGo)); //int8 is not large enough, so use double.
+    mutex.unlock();
+}
+
+void MainWindow::on_btn_stepmot_cont_stop_clicked(){
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotContStop)); //int8 is not large enough, so use double.
+    mutex.unlock();
+}
+
+void MainWindow::on_btn_stepmot_singlestep_clicked(){
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSingleStep)); //int8 is not large enough, so use double.
+    mutex.unlock();
+}
+void MainWindow::on_radio_stepmot_fwd_clicked()
+{
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetDir, qint8(1)));//afm.stageSetDirBackward();
+    mutex.unlock();
+}
+void MainWindow::on_radio_stepmot_back_clicked()
+{
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetDir, qint8(2)));//afm.stageSetDirForward();
+    mutex.unlock();
+}
+void MainWindow::on_btn_stepmot_sleep_clicked()
+{
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetState, qint8(1)));//afm.stageSetDirBackward();
+    mutex.unlock();
+}
+void MainWindow::on_btn_stepmot_wake_clicked()
+{
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotSetState, qint8(2)));//afm.stageSetDirForward();
+    mutex.unlock();
 }
 
 void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
@@ -701,9 +767,9 @@ void MainWindow::on_stepButton_clicked()
     mutex.unlock();
 }
 
-void MainWindow::CreateFreqSweepGraph(QVector<double>	amplitudeData,
-                      QVector<double>	phaseData,
-                      int		bytesRead)
+void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
+                                      QVector<double>   phaseData,
+                                      int bytesRead)
 {
     ui->freqProgressLabel->setText("TRUE");
     ui->freqProgressLabel->setStyleSheet("QLabel { color : Green; }");
@@ -719,17 +785,22 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>	amplitudeData,
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
         msg.setText(QString("Size of Freq Data: %1. Expected Size: %2").arg( \
-                    QString::number(bytesRead), QString::number(ui->numFreqPoints->value() * 4)));
+                            QString::number(bytesRead), QString::number(ui->numFreqPoints->value() * 4)));
         msg.exec();
     } else {
         //qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for (int i = 0; i < ui->numFreqPoints->value(); i++) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
             freqVal = ((ui->startFrequency->value() + i * ui->stepSize->value()) * scale);
-            phaseVal = phaseData.at(i);
-            ampVal = amplitudeData.at(i);
-            freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
-            phasePlot.update(freqVal, phaseVal, false);
+            if(i < phaseData.size() && i < amplitudeData.size()) {
+                phaseVal = phaseData.at(i);
+                ampVal = amplitudeData.at(i);
+                freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
+                phasePlot.update(freqVal, phaseVal, false);
+            } else {
+                qDebug() << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
+                break;
+            }
         }
         phasePlot.replot();
         freqPlot.replot(); // show the frequency sweep

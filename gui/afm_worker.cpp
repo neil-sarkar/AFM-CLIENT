@@ -105,8 +105,8 @@ void afm_worker::clearPayloadBuffer()
 void afm_worker::writeMsg(char message_id)
 {
 #if AFM_DEBUG
-    QString hex_equivalent_print = QString("%1").arg(message_id, 0, 16);
-    qDebug() << "afm_worker::writeMsg 0x" << hex_equivalent_print;
+//    QString hex_equivalent_print = QString("%1").arg(message_id, 0, 16);
+//    qDebug() << "afm_worker::writeMsg 0x" << hex_equivalent_print;
 #endif
     writeMsg(message_id, payload_out_buffer);
 

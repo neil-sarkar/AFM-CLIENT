@@ -483,12 +483,12 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        break;}
        return_queue.push(new returnBuffer(SETDDS, AFM_SUCCESS));
        break;
-       case AFM_STAGE_DIR_FWD_SELECT:   //CodeValet autogen
-       if (uart_resp.at(1) != AFM_STAGE_DIR_FWD_SELECT) {
+       case AFM_PCBMOT_STAGE_DIR_FWD_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PCBMOT_STAGE_DIR_FWD_SELECT) {
        handle_error(ERR_MSG_ID_MISMATCH);
        return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));
        break;}
-       if (uart_resp.size() < AFM_STAGE_DIR_FWD_SELECT_RSPLEN) {
+       if (uart_resp.size() < AFM_PCBMOT_STAGE_DIR_FWD_SELECT_RSPLEN) {
        handle_error(ERR_MSG_SIZE_MISMATCH);
        return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));
        break;}
@@ -497,12 +497,12 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(SETDIRFORWARD, AFM_FAIL));}
        break;
-       case AFM_STAGE_DIR_REVERSE_SELECT:   //CodeValet autogen
-       if (uart_resp.at(1) != AFM_STAGE_DIR_REVERSE_SELECT) {
+       case AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT) {
        handle_error(ERR_MSG_ID_MISMATCH);
        return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_FAIL));
        break;}
-       if (uart_resp.size() < AFM_STAGE_DIR_REVERSE_SELECT_RSPLEN) {
+       if (uart_resp.size() < AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT_RSPLEN) {
        handle_error(ERR_MSG_SIZE_MISMATCH);
        return_queue.push(new returnBuffer(SETDIRBACKWARD, AFM_FAIL));
        break;}
@@ -585,6 +585,94 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));}
+       break;
+       case AFM_STEPMOT_WAKE:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_WAKE) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_WAKE_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_SLEEP:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_SLEEP) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_SLEEP_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSETSTATE, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_SPEED:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_SPEED) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSPEED, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_SPEED_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETSPEED, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSETSPEED, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_DIR:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_DIR) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETDIR, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_DIR_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETDIR, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSETDIR, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_CONT_GO:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_CONT_GO) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTCONTGO, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_CONT_GO_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTCONTGO, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTCONTGO, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_CONT_STOP:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_CONT_STOP) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTCONTSTOP, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_CONT_STOP_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTCONTSTOP, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTCONTSTOP, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_MICROSTEP:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_MICROSTEP) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETMICROSTEP, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_MICROSTEP_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSETMICROSTEP, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSETMICROSTEP, AFM_SUCCESS));
+       break;
+       case AFM_STEPMOT_SINGLESTEP:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_STEPMOT_SINGLESTEP) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_STEPMOT_SINGLESTEP_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_SUCCESS));
        break;
        //[[[end]]]
 
