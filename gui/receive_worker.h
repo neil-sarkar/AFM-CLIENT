@@ -39,6 +39,7 @@ void abort();
 ~receive_worker();
 
 private:
+QTimer *cleaner_timer;
 bool _abort;
 bool isError;
 QByteArray uart_resp;
@@ -55,12 +56,14 @@ void finished();
 void serialError();     //emited to the mainwindow when there is an error
 bool serial_port_is_open();
 void getNextMsg();
+void afm_worker_onReadyRead();
 
 public slots:
 void mainLoop();
 void process_uart_resp(QByteArray new_uart_resp);
 //Q_SLOT void push_recv_queue(returnType name);
 void push_recv_queue(char message_id, char message_tag, int writeByte_result);
+void queue_cleaner();
 };
 
 #endif // receive_worker_H

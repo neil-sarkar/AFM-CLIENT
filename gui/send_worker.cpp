@@ -272,7 +272,6 @@ void send_worker::queue_check(){
             return_name = FORCECURVE;
             break;
         } // end switch(_command)
-        //   emit push_recv_queue(return_name);
         cmd_queue.pop();
         //mutex.unlock();
     }

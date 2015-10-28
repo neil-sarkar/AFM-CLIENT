@@ -38,7 +38,6 @@ void eventworker::updateGraph()
     if(_mainwindow){
         if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
             //cmd_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
-
             cmd_queue.push(new commandNode(readSignalPhaseOffset));
             if(!graph_queue.empty()){
                 _node = graph_queue.front();
@@ -46,7 +45,6 @@ void eventworker::updateGraph()
                     emit updatePlot(_node->getdsignal(),1);
                 graph_queue.pop();
             }
-
         }
 //        if( _mainwindow->getCurrTab() == 4 ) {
 //            mutex.lock();

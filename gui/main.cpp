@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
     qRegisterMetaType<returnType>("returnType");
     //QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
     QObject::connect(afmWorker, SIGNAL(push_recv_queue(char, char, int)), receiveWorker, SLOT(push_recv_queue(char, char, int)));
+    QObject::connect(receiveWorker, SIGNAL(afm_worker_onReadyRead()), afmWorker, SLOT(onReadyRead()));
+
     //MainWindow close - thread termination
     QObject::connect(mainWorker, SIGNAL(finished()), sendThread, SLOT(quit()), Qt::DirectConnection);
     QObject::connect(mainWorker, SIGNAL(finished()), eventThread, SLOT(quit()), Qt::DirectConnection);

@@ -244,7 +244,7 @@ void MainWindow::CreateGraphs()
 
     // add frequency sweep plot
     MyPlot::PlotFields fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Amplitude (V)", \
-                                                   QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Red"),
+                                                   QPair<double, double>(3000, 12000), QPair<double, double>(0, 0.2), QColor("Red"),
                                                    false, true);
 
     freqPlot.SetPlot(fields, ui->freqWidget);
@@ -261,7 +261,7 @@ void MainWindow::CreateGraphs()
 
     //phase plot
     fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Phase (Deg)", \
-                                QPair<double, double>(3800, 4800), QPair<double, double>(0, 0.12), QColor("Blue"),
+                                QPair<double, double>(3000, 12000), QPair<double, double>(0, 2), QColor("Blue"),
                                 false, true);
 
     phasePlot.SetPlot(fields, ui->freqWidget);
@@ -334,8 +334,6 @@ void MainWindow::refreshPortsList()
 
 /*
  * Need to initialize the DAC limits
- *
- *
  *
  */
 void MainWindow::SetMaxDACValues()
@@ -430,10 +428,13 @@ void MainWindow::dequeueReturnBuffer()
             ui->dacValue->setValue(_buffer->getFData());
             break;
         case ADCZOFFSET:
-            bfrd3 = _buffer->getFData();
+            adcZ = _buffer->getFData();
             if (useBridgeSignalAsSetpoint) {
                 //ui->spnPidSetpoint->setValue(double(bfrd3));
                 //ui->currPIDSetpoint->setValue(double(bfrd3));
+            }
+            if (autoapproach_state > 0) {
+                autoappr_measurement = adcZ;
             }
             break;
         case ADCPHASE:
@@ -510,10 +511,10 @@ void MainWindow::dequeueReturnBuffer()
 
             break;
         case PIDDISABLE:
-            ui->chkbox_pid->setChecked(false);
+            ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
         case PIDENABLE:
-            ui->chkbox_pid->setChecked(true);
+            ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
             break;
         } //end Switch
 
@@ -547,22 +548,7 @@ void MainWindow::on_spnBridgeVoltage_valueChanged(double arg1)
     commandQueue.push(new commandNode(memsSetBridgeVoltage, (double)arg1));//afm.memsSetBridgeVoltage(arg1);
 }
 
-void MainWindow::on_chkbox_pid_toggled(bool checked)
-{
-    if (checked) {
-        //mutex.lock();
-        commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
-//        commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
-//        commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
-//        commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
-//        commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
-        //mutex.unlock();
-    } else {
-        //mutex.lock();
-        commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
-        //mutex.unlock();
-    }
-}
+
 
 void MainWindow::on_spnPidValueP_valueChanged(double arg1)
 {
@@ -664,56 +650,240 @@ void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
 void MainWindow::on_sld_stepmot_speed_valueChanged(int value){
     ui->lbl_stepmot_speed->setText(QString::number(value));
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetSpeed, (double)value)); //int8 is not large enough, so use double.
+    commandQueue.push(new commandNode(stepMotSetSpeed, (double)value)); //int8 commandnode is not large enough, so use double.
     mutex.unlock();
 }
 
 void MainWindow::on_cbo_microstep_currentIndexChanged(int index){
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)index)); //int8 is not large enough, so use double.
+    commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)index));
     mutex.unlock();
 }
 
 void MainWindow::on_btn_stepmot_cont_go_clicked(){
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotContGo)); //int8 is not large enough, so use double.
+    commandQueue.push(new commandNode(stepMotContGo));
     mutex.unlock();
 }
 
 void MainWindow::on_btn_stepmot_cont_stop_clicked(){
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotContStop)); //int8 is not large enough, so use double.
+    commandQueue.push(new commandNode(stepMotContStop));
     mutex.unlock();
 }
 
 void MainWindow::on_btn_stepmot_singlestep_clicked(){
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSingleStep)); //int8 is not large enough, so use double.
+    commandQueue.push(new commandNode(stepMotSingleStep));
     mutex.unlock();
 }
 void MainWindow::on_radio_stepmot_fwd_clicked()
 {
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetDir, qint8(1)));//afm.stageSetDirBackward();
+    commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));//afm.stageSetDirBackward();
     mutex.unlock();
 }
 void MainWindow::on_radio_stepmot_back_clicked()
 {
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetDir, qint8(2)));//afm.stageSetDirForward();
+    commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_FWD)));//afm.stageSetDirForward();
     mutex.unlock();
 }
 void MainWindow::on_btn_stepmot_sleep_clicked()
 {
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetState, qint8(1)));//afm.stageSetDirBackward();
+    commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));//afm.stageSetDirBackward();
     mutex.unlock();
 }
 void MainWindow::on_btn_stepmot_wake_clicked()
 {
     mutex.lock();
-    commandQueue.push(new commandNode(stepMotSetState, qint8(2)));//afm.stageSetDirForward();
+    commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_WAKE)));//afm.stageSetDirForward();
     mutex.unlock();
+}
+
+void MainWindow::on_btn_autoappr_go_clicked()
+{
+    autoapproach_state = 1; //Initial state
+    //Grab current setpoint value
+    autoappr_setpoint = ui->spinbox_autoappr_setpoint->value();
+    ui->spinbox_autoappr_setpoint->setEnabled(false);
+    //Prepare the task1_timer
+    task1_timer = new QTimer(this);
+    connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
+    //Launch the autoApproach_state_machine
+    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+}
+
+
+void MainWindow::on_btn_autoappr_stop_clicked(){
+    qDebug() << "ABORT Inside State Machine i=" << autoapproach_state;
+    autoapproach_state = 0;
+    mutex.lock();
+    commandQueue.push(new commandNode(stepMotContStop));
+    commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
+    mutex.unlock();
+    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+}
+
+void MainWindow::autoApproach_state_machine(){
+    qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
+    switch(autoapproach_state) {
+    case 0: //Disabled state
+        task1_timer->stop();
+        ui->progbar_autoappr->setValue(0);
+        ui->spinbox_autoappr_setpoint->setEnabled(true);
+        commandQueue.push(new commandNode(stepMotContStop));
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
+        break;
+    case 1: //Wake up and intialization.
+        ui->progbar_autoappr->setValue(1);
+        mutex.lock();
+        //Turn OFF PID
+        commandQueue.push(new commandNode(pidDisable));
+        //Stop and sleep the motor
+        commandQueue.push(new commandNode(stepMotContStop));
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
+        //Now wake it up
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_WAKE)));
+        commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_FWD))); //Forward is down...
+        commandQueue.push(new commandNode(stepMotSetSpeed, (double)26300));
+        commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)1));
+        mutex.unlock();
+        autoapproach_state++;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 2: //Back-up a bit
+        ui->progbar_autoappr->setValue(2);
+        mutex.lock();
+        commandQueue.push(new commandNode(stepMotContGo)); //int8 is not large enough, so use double.
+        mutex.unlock();
+        autoapproach_state++;
+        QTimer::singleShot(200, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 3: //Get initial measurement
+        ui->progbar_autoappr->setValue(3);
+        mutex.lock();
+        commandQueue.push(new commandNode(stepMotContStop));
+        commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));
+        mutex.unlock();
+        //Measure Signal... ADC_ZOFFSET
+        //Clear existing first
+        autoappr_measurement = -1;
+        //Note that handler for ADCZOFFSET updates autoappr_measurement!
+        commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        autoapproach_state++;
+        QTimer::singleShot(600, this, SLOT(autoApproach_state_machine()));
+        break;
+    case 4: //Continuous ON
+        ui->progbar_autoappr->setValue(4);
+        // The callback for readADC ADCZOFFSET should update autoappr_measurement
+        if(autoappr_measurement > 0) {
+            //if signal received then save measurement_init and proceed.
+            autoappr_measurement_init = autoappr_measurement;
+            mutex.lock();
+            commandQueue.push(new commandNode(stepMotContGo));
+            mutex.unlock();
+            autoapproach_state++;
+            task1_timer->start(30);
+        } else {
+            //if signal not measured, then stop and throw err!
+            QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+            autoapproach_state = 0;
+            qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
+            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+
+        }
+        break;
+    case 5: //Abort available here.
+        ui->progbar_autoappr->setValue(5);
+        // Get measured signal. If measured signal expected has not been received, then uhhh
+        // If measured signal is less than whatever, do whatever
+        // if not yet at .95 init, etc...)
+
+        // Update display
+        if(autoappr_measurement > 0) {
+            QString s = QString::number(autoappr_measurement);
+            ui->label_autoappr_meas->setText(s);
+        }
+
+        // Actual logic
+        // First check measurement validity
+        if (autoappr_measurement == -1 && autoapproach_fault_count < MAX_AUTOAPPR_FAULT_COUNT) {
+            qDebug() << "autoappr_measurement has not been updated yet!";
+            autoapproach_fault_count++;
+        } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
+            autoapproach_state = 0;
+            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            break;
+        } else {
+            autoapproach_fault_count = 0;
+        }
+        // Now check measurement against target value
+        if((autoappr_measurement <= (0.95*autoappr_measurement_init)) && autoappr_measurement > 0) {
+            task1_timer->stop();
+            autoapproach_state++;
+            QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        } else if (autoappr_measurement != -1) {
+            //Continue running the motor
+            //Measure Signal... from ADC_ZOFFSET
+            //task1_timer will keep calling the state machine
+            commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        }
+        // Reset measurement var
+        autoappr_measurement = -1;
+        break;
+    case 6: //Reduce speed
+        ui->progbar_autoappr->setValue(6);
+        commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)3));
+        commandQueue.push(new commandNode(stepMotSetSpeed, (double)20000));
+        commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        autoapproach_state++;
+        task1_timer->start(30);
+    case 7://Abort available here.
+        ui->progbar_autoappr->setValue(7);
+        // Update display
+        if(autoappr_measurement > 0) {
+            QString s = QString::number(autoappr_measurement);
+            ui->label_autoappr_meas->setText(s);
+        }
+        //Loop like state #5
+        // First check measurement validity
+        if (autoappr_measurement == -1 && autoapproach_fault_count < MAX_AUTOAPPR_FAULT_COUNT) {
+            qDebug() << "autoappr_measurement has not been updated yet!";
+            autoapproach_fault_count++;
+        } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
+            autoapproach_state = 0;
+            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            break;
+        } else {
+            autoapproach_fault_count = 0;
+        }
+        // Check if measurement is at setpoint autoappr_setpoint
+        if((autoappr_measurement <= autoappr_setpoint) && autoappr_measurement > 0) {
+            task1_timer->stop();
+            autoapproach_state++;
+            QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        } else if (autoappr_measurement != -1) {
+            //Continue running the motor
+            //Measure Signal... from ADC_ZOFFSET
+            //task1_timer will keep calling the state machine
+            commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        }
+        autoappr_measurement = -1;
+        break;
+    case 8:
+        ui->progbar_autoappr->setValue(8);
+        commandQueue.push(new commandNode(stepMotContStop));
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
+        //UPDATE UI
+        //Turn on PID
+        commandQueue.push(new commandNode(pidEnable));
+        //Clean Up
+        autoapproach_state = 0;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+    }
 }
 
 void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
@@ -780,7 +950,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     double freqVal;
     double ampVal;
     double phaseVal;
-    double scale = (25000000.0 / 16777216.0);
+    double scale = double(qPow(5.0,10^6) / qPow(2.0,28)); //TODO config
     if (freqRetVal != AFM_SUCCESS) {
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
@@ -802,8 +972,12 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
                 break;
             }
         }
-        phasePlot.replot();
-        freqPlot.replot(); // show the frequency sweep
+        freqPlot.setAxisAutoScale(QwtPlot::yLeft);
+        freqPlot.setAxisAutoScale(QwtPlot::xBottom);
+        freqPlot.replot();
+        phasePlot.setAxisAutoScale(QwtPlot::yLeft);
+        phasePlot.setAxisAutoScale(QwtPlot::xBottom);
+        phasePlot.replot(); // show the frequency sweep
     }
 
     //frequencyData.clear();
@@ -871,11 +1045,12 @@ void MainWindow::on_buttonReadIO_clicked()
     commandQueue.push(_node);
 }
 
-void MainWindow::on_freqAutoScale_clicked(bool checked)
+void MainWindow::on_freqAutoScale_clicked()
 {
-    freqPlot.setAutoScale(checked);
-    phasePlot.setAutoScale(checked);
-    ui->freqAutoScale->setChecked(checked);
+    freqPlot.setAxisAutoScale(QwtPlot::yLeft);
+    freqPlot.replot();
+    phasePlot.setAxisAutoScale(QwtPlot::yLeft);
+    phasePlot.replot();
 }
 
 void MainWindow::on_spnFrequencyVoltage_2_valueChanged(double arg1)
@@ -888,7 +1063,7 @@ void MainWindow::on_spnFrequencyVoltage_2_valueChanged(double arg1)
 void MainWindow::on_buttonSendSweep_clicked()
 {
     //mutex.lock();
-    commandQueue.push(new commandNode(setDDSSettings, (qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(), (qint16)ui->stepSize->value()));//afm.setDDSSettings(ui->numFreqPoints->value(), ui->currFreqVal->value(), ui->stepSize->value());
+    commandQueue.push(new commandNode(setDDSSettings, (qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(), (qint16)ui->stepSize->value()));
     // mutex.unlock();
 }
 
@@ -1119,8 +1294,7 @@ void MainWindow::setDDSFrequency(const QPointF& p)
     double frequency = p.x();
 
     ui->currFreqVal->setValue(frequency);
-    double scale = (25000000.0 / 16777216.0);
-    commandQueue.push(new commandNode(setDDSSettings, frequency / scale));
+    commandQueue.push(new commandNode(setDDSSettings, frequency));
 }
 
 void MainWindow::on_spnBoxFineZRange_valueChanged(int arg1)
@@ -1162,4 +1336,24 @@ void MainWindow::updatePlot(double _signal, int _plot)
 void MainWindow::on_btnForceCurve_clicked()
 {
     commandQueue.push(new commandNode(ForceCurve));
+}
+
+void MainWindow::on_btn_pid_on_clicked()
+{
+    qDebug() << "pid on clicked";
+    //mutex.lock();
+    commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
+//        commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+//        commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+//        commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+//        commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
+    //mutex.unlock();
+}
+
+void MainWindow::on_btn_pid_off_clicked()
+{
+    qDebug() << "pid off clicked";
+    //mutex.lock();
+    commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
+    //mutex.unlock();
 }

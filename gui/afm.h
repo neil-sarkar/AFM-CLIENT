@@ -11,6 +11,7 @@
 //#include <QVector>
 #include <math.h>
 #include <QTimer>
+#include <QtCore/qmath.h>
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            1  // 1: display debug messages
@@ -141,8 +142,8 @@ c.msg_id_define()
 #define AFM_FREQ_SWEEP_AD9837_RSPLEN    6
 #define AFM_FREQ_SWEEP_AD5932  0x72
 #define AFM_FREQ_SWEEP_AD5932_RSPLEN    6
-#define AFM_DDS_SWEEP_SET  0x75
-#define AFM_DDS_SWEEP_SET_RSPLEN    2
+#define AFM_DDS_AD5932_SET  0x75
+#define AFM_DDS_AD5932_SET_RSPLEN    2
 #define AFM_PCBMOT_STAGE_DIR_FWD_SELECT  0x6C
 #define AFM_PCBMOT_STAGE_DIR_FWD_SELECT_RSPLEN    3
 #define AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT  0x6B
@@ -181,7 +182,7 @@ c.msg_id_define()
 #define AFM_STEPMOT_MICROSTEP_RSPLEN    1
 #define AFM_STEPMOT_SINGLESTEP  0x31
 #define AFM_STEPMOT_SINGLESTEP_RSPLEN    1
-//[[[end]]] (checksum: e542cdeeb187173599e8d1bab1c810c8)
+//[[[end]]] (checksum: b50663dc896a1e7b700b46590a5a6c2b)
 
 // Misc Enums
 #define PGA_Z_OFFSET 'z'
@@ -190,6 +191,7 @@ c.msg_id_define()
 #define MOT_BACK 2
 #define MOT_SLEEP 1
 #define MOT_WAKE 2
+#define AFM_AUTOAPPR_ADC 5
 
 /*
  *  Serial Communication Specifics
@@ -255,7 +257,7 @@ public:
     void stageStepForward();
     void stageStepBackward();
     void setDDSSettings(quint16 numPoints,
-                       quint16 startFrequency,
+                       quint32 startFrequency,
                        quint16 stepSize);
     void frequencySweep(quint16 numPoints,
                        quint16 startFrequency,
@@ -284,16 +286,6 @@ public:
     void stepMotContGo();
     void stepMotContStop();
     void stepMotSingleStep();
-    void autoapproach_pcb2(int operation);
-        void autoapproach_pcb2(int operation, double setpoint);
-
-private:
-        QTimer *task1_timer;   //For auto approach
-        int autoapproach_state = 0;
-        bool autoapproach_abort = false;
-        double autoapproach_setpoint = 0;
-    private slots:
-        void autoApproach_state_machine();
 };
 
 #endif // AFM_H

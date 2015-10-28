@@ -5,6 +5,8 @@
 #include <QVector>
 
 //TODO: make constructor template
+//TODO Automatic generation of command enums. Separate Qt app-specific command node enums
+//     from serial protocol enums.
 enum Command{
     writeDAC,
     readDAC,

@@ -35,6 +35,9 @@
 #include <commandNode.h>
 
 #include <QProcess>
+
+#define MAX_AUTOAPPR_FAULT_COUNT 20
+
 using std::queue;
 using namespace Qwt3D;
 
@@ -118,36 +121,22 @@ private slots:
     void approachTimerUp();
     void finishedThread();
 
-
     // GUI elements
     void on_spnOffsetVoltage_valueChanged(double arg1);
-
     void on_spnBridgeVoltage_valueChanged(double arg1);
-
     void on_spnPidValueP_valueChanged(double arg1);
-
     void on_spnPidValueI_valueChanged(double arg1);
-
     void on_spnPidValueD_valueChanged(double arg1);
-
     void on_spnPidSetpoint_valueChanged(double arg1);
-
-    void on_btnPidToggle_toggled(bool checked);
-
     void on_cboComPortSelection_currentIndexChanged(int index);
-
     void on_refreshSpinBox_valueChanged(int arg1);
-
-
     void on_pushButton_22_clicked(bool checked);
-
     void on_pushButton_4_clicked(bool checked);
-
     void on_pushButton_5_clicked(bool checked);
-
     void on_checkBox_clicked(bool checked);
-
     void on_sldAmplitudeVoltage_3_valueChanged(int value);
+
+    /* Stepper motor and auto approach */
     void on_sld_stepmot_speed_valueChanged(int value);
     void on_cbo_microstep_currentIndexChanged(int index);
     void on_btn_stepmot_cont_go_clicked();
@@ -157,6 +146,8 @@ private slots:
     void on_radio_stepmot_back_clicked();
     void on_btn_stepmot_sleep_clicked();
     void on_btn_stepmot_wake_clicked();
+    void on_btn_autoappr_go_clicked();
+    void on_btn_autoappr_stop_clicked();
 
     void on_retreatButton_clicked();
 
@@ -179,7 +170,7 @@ private slots:
 
     void on_buttonReadIO_clicked();
 
-    void on_freqAutoScale_clicked(bool checked);
+    void on_freqAutoScale_clicked();
 
     void on_spnFrequencyVoltage_2_valueChanged(double arg1);
 
@@ -251,6 +242,16 @@ private:
     QFuture<void> *future;
     QFutureWatcher<void> *watcher;
 
+    /* Auto Approach Feature */
+    QTimer *task1_timer;   //For auto approach
+    int autoapproach_state = 0;
+    bool autoapproach_abort = false;
+    double autoapproach_setpoint = 0;
+    double autoappr_setpoint = 1; //A made-up value so we dont crash and burnnnn
+    double autoappr_measurement_init = 1;
+    double autoappr_measurement = 1;
+    int autoapproach_fault_count = 0;
+
     //placeholders for returned data
     returnBuffer* _buffer;
     float zOffsetCoarse;
@@ -258,6 +259,7 @@ private:
     float bfrd1;
     float bfrd2;
     float bfrd3;
+    float adcZ;
     float br2;
     float br1;
     float zAmp;
@@ -270,6 +272,12 @@ private:
     double phase;
     double *scandata[256];
     int row;
+
+private slots:
+    void autoApproach_state_machine();
+
+    void on_btn_pid_on_clicked();
+    void on_btn_pid_off_clicked();
 };
 
 #endif // MAINWINDOW_H

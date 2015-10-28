@@ -80,28 +80,6 @@ border-bottom: 1px solid black;
           </sizepolicy>
          </property>
          <layout class="QGridLayout" name="_2">
-          <item row="6" column="0">
-           <widget class="QPushButton" name="calibrateButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string>Calibrate</string>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0">
            <widget class="QGroupBox" name="grpScanControl">
             <property name="sizePolicy">
@@ -393,7 +371,7 @@ border-bottom: 1px solid black;
              <string>PID Control</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
+             <item row="0" column="0" colspan="2">
               <layout class="QGridLayout" name="gridLayout_5">
                <item row="0" column="0">
                 <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -492,9 +470,33 @@ border-bottom: 1px solid black;
               </layout>
              </item>
              <item row="1" column="0">
-              <widget class="QCheckBox" name="chkbox_pid">
+              <widget class="QLabel" name="label_30">
                <property name="text">
-                <string>PID ON</string>
+                <string>PID</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" rowspan="2">
+              <widget class="QPushButton" name="btn_pid_on">
+               <property name="text">
+                <string>ON</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0" rowspan="2">
+              <widget class="QLabel" name="label_pid_indicator">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="resources.qrc">:/icons/icons/1413858973_ballred-24.png</pixmap>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QPushButton" name="btn_pid_off">
+               <property name="text">
+                <string>OFF</string>
                </property>
               </widget>
              </item>
@@ -659,6 +661,28 @@ border-bottom: 1px solid black;
             </property>
            </widget>
           </item>
+          <item row="6" column="0">
+           <widget class="QPushButton" name="calibrateButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>Calibrate</string>
+            </property>
+           </widget>
+          </item>
           <item row="4" column="0">
            <widget class="QPushButton" name="btnSetScanParameters">
             <property name="text">
@@ -730,7 +754,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="controlTab">
        <attribute name="title">
@@ -1014,7 +1038,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                            <string notr="true"/>
                           </property>
                           <property name="text">
-                           <string>Auto Scale</string>
+                           <string>Auto Scale Graph Y</string>
                           </property>
                           <property name="checkable">
                            <bool>true</bool>
@@ -2479,6 +2503,106 @@ border-radius: 4px;
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QPushButton" name="btn_autoappr_go">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>290</y>
+          <width>171</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Qt AutoApproach Go</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_28">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>260</y>
+          <width>111</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Auto appr setpoint</string>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="spinbox_autoappr_setpoint">
+        <property name="geometry">
+         <rect>
+          <x>480</x>
+          <y>260</y>
+          <width>62</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>3.200000000000000</double>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btn_autoappr_stop">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>320</y>
+          <width>171</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Qt AutoApproach STOP</string>
+        </property>
+       </widget>
+       <widget class="QProgressBar" name="progbar_autoappr">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>230</y>
+          <width>161</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>8</number>
+        </property>
+        <property name="value">
+         <number>8</number>
+        </property>
+        <property name="format">
+         <string>Step %v</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_29">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>250</y>
+          <width>71</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>ADCZOFFSET</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_autoappr_meas">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>270</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>NO SIGNAL</string>
+        </property>
        </widget>
       </widget>
      </widget>

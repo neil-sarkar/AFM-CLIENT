@@ -3,19 +3,21 @@
 
 void receive_worker::mainLoop()
 {
-//	forever {
-    /**********************************************************
-    * check to see if the buffer is not empty. If !empty read
-    * data from the serial port. Based on the node in the queue
-    * shift the serial buffer by the appropriate number of bytes.
-    * Push a node onto the return queue with the data
-    * Repeat.
-    **********************************************************/
+    //Initial setup
 
-//	} // end forever
-}               // end main loop
+    //Start a timer, which calls the cleaner once in a while to manually call the afm_worker's serial receive.
+    cleaner_timer = new QTimer(this);
+    connect(cleaner_timer, SIGNAL(timeout()), this, SLOT(queue_cleaner()));
+   // cleaner_timer->start(2500);
+}
 
-
+void receive_worker::queue_cleaner(){
+    //If we still have unprocessed things in the receive_queue, get afm_worker to check serial
+    if(receive_queue.size() > 0 && receive_queue.size() < 3){
+        qDebug() << "queue_cleaner";
+        emit afm_worker_onReadyRead();
+    }
+}
 
 /*
  * The overloaded push_recv_queue function is to be invoked from both
@@ -217,6 +219,22 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     returnType type = NONE;
     switch (_node.message_id) {
     // Manual logic required
+    case AFM_SET_DAC_MAX:
+        if (uart_resp.at(1) != AFM_SET_DAC_MAX) {
+            handle_error(ERR_MSG_ID_MISMATCH);
+            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
+            break;
+        }
+        if (uart_resp.size() < AFM_SET_DAC_MAX_RSPLEN) {
+            handle_error(ERR_MSG_SIZE_MISMATCH);
+            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
+            break;
+        }
+        if (uart_resp.at(3) == 'o') {
+            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
+        }else{handle_error(ERR_COMMAND_FAILED);
+              return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL)); }
+        break;
     case AFM_DAC_READ_SELECT:
         if (uart_resp.at(1) != AFM_DAC_READ_SELECT) {
             handle_error(ERR_MSG_ID_MISMATCH);
@@ -292,8 +310,9 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         }
         return_queue.push(new returnBuffer(type, float(((float)val) / AFM_ADC_SCALING)));
         break;
+    case AFM_FREQ_SWEEP_AD9837:
     case AFM_FREQ_SWEEP_AD5932:
-        if (uart_resp.at(1) == AFM_FREQ_SWEEP_AD5932 && uart_resp.size() >= 6) {
+        if ((uart_resp.at(1) == AFM_FREQ_SWEEP_AD5932 || uart_resp.at(1) == AFM_FREQ_SWEEP_AD9837) && uart_resp.size() >= 6) {
             int bytesRead;
             int success;
             bytesRead = uart_resp.size();
@@ -472,12 +491,23 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(SETPULSEWIDTH, AFM_FAIL));}
        break;
-       case AFM_DDS_SWEEP_SET:   //CodeValet autogen
-       if (uart_resp.at(1) != AFM_DDS_SWEEP_SET) {
+       case AFM_DDS_AD9837_SET:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_DDS_AD9837_SET) {
        handle_error(ERR_MSG_ID_MISMATCH);
        return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
        break;}
-       if (uart_resp.size() < AFM_DDS_SWEEP_SET_RSPLEN) {
+       if (uart_resp.size() < AFM_DDS_AD9837_SET_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETDDS, AFM_SUCCESS));
+       break;
+       case AFM_DDS_AD5932_SET:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_DDS_AD5932_SET) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_DDS_AD5932_SET_RSPLEN) {
        handle_error(ERR_MSG_SIZE_MISMATCH);
        return_queue.push(new returnBuffer(SETDDS, AFM_FAIL));
        break;}
@@ -524,17 +554,6 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_SUCCESS));
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(AUTOAPPROACH, AFM_FAIL));}
-       break;
-       case AFM_SET_DAC_MAX:   //CodeValet autogen
-       if (uart_resp.at(1) != AFM_SET_DAC_MAX) {
-       handle_error(ERR_MSG_ID_MISMATCH);
-       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
-       break;}
-       if (uart_resp.size() < AFM_SET_DAC_MAX_RSPLEN) {
-       handle_error(ERR_MSG_SIZE_MISMATCH);
-       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
-       break;}
-       return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
        break;
        case AFM_DEVICE_CALIBRATE:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_DEVICE_CALIBRATE) {
@@ -674,7 +693,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        break;}
        return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_SUCCESS));
        break;
-       //[[[end]]]
+        //[[[end]]]
 
 
     } // End switch

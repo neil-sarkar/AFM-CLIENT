@@ -81,13 +81,14 @@ void icspiAFM::memsSetBridgeVoltage(double val)
 
 void icspiAFM::pidEnable()
 {
-    emit addPayloadByte(AFM_PID_ENABLE_SELECT);
+    clearPayloadBuffer();
+    emit writeMsg(AFM_PID_ENABLE_SELECT);
 }
 
 void icspiAFM::pidDisable()
 {
-    emit addPayloadByte(AFM_PID_DISABLE_SELECT);
-    //return AFM_SUCCESS;
+    clearPayloadBuffer();
+    emit writeMsg(AFM_PID_DISABLE_SELECT);
 }
 
 void icspiAFM::pidSetP(float P)
@@ -217,94 +218,27 @@ void icspiAFM::stepMotSingleStep(){
     emit writeMsg(AFM_STEPMOT_SINGLESTEP);
 }
 
-void icspiAFM::autoapproach_pcb2_stop(){
-    stepMotContStop();
-    stepMotSetState(MOT_SLEEP);
-    qDebug() << "ABORT Inside State Machine i=" << autoapproach_state++;
-    task1_timer->stop();
-}
-
-void icspiAFM::autoApproach_pcb2_start(double setpoint){
-    autoapproach_state = 1; //Initial state
-    //Prepare the task1_timer
-    task1_timer = new QTimer(this);
-    connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
-    //Launch the autoApproach_state_machine
-    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-}
-
-void icspiAFM::autoApproach_state_machine(){
-    qDebug() << "Inside State Machine i=" << autoapproach_state++;
-    switch(autoapproach_state) {
-    case 1: //Wake up and intialization.
-        stepMotSetState(MOT_SLEEP);
-        stepMotSetDir(MOT_FWD); //Forward is down...
-        stepMotSetSpeed(26300);
-        stepMotSetMicrostep(1);
-        autoapproach_state++;
-        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-        break;
-    case 2:
-        stepMotContGo();
-        autoapproach_state++;
-        QTimer::singleShot(200, this, SLOT(autoApproach_state_machine()));
-        break;
-    case 3:
-        stepMotContStop();
-        stepMotSetDir(MOT_BACK);
-        //Measure Signal
-        autoapproach_state++;
-        QTimer::singleShot(500, this, SLOT(autoApproach_state_machine()));
-        break;
-    case 4:
-        stepMotContGo();
-        autoapproach_state++;
-        task1_timer->start(1);
-        break;
-    case 5: //Abort available here.
-        // Get measured signal
-        // If measured signal is less than whatever, do whatever
-        task1_timer->stop();
-        autoapproach_state++;
-        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-        break;
-case 6:
-        stepMotSetMicrostep(3);
-        stepMotSetSpeed(20000);
-        autoapproach_state++;
-        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-    case 7://Abort available here.
-        //Loop like 5
-        task1_timer->stop();
-        autoapproach_state++;
-        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-        break;
-    case 8:
-        stepMotContStop();
-        stepMotSetState(MOT_SLEEP);
-        //UPDATE UI
-        //Turn on PID
-        pidEnable();
-        break;
-    }
-
-
-}
-
 void icspiAFM::setDDSSettings(quint16 numPoints,
-                              quint16 startFrequency,
+                              quint32 startFrequency,
                               quint16 stepSize)
 {
     qDebug() << "Writing to DDS settings";
     // Set DDS settings
 
-    qDebug() << "Start Freq -> High Byte: " << (quint16)(startFrequency >> 8) << " Low Byte: " << (quint8)startFrequency;
+    qDebug() << "Start Freq -> " << (quint32)startFrequency;
     // start freq
-    emit addPayloadByte((qint8)startFrequency);     // low byte
-    emit addPayloadByte((qint8)(startFrequency >> 8)); // high bye
+    // Scale according to the device
+    //TODO config device
+    double scale = double(qPow(2.0,28) / (5.0*qPow(10,6))); //todo make me constant
+    startFrequency = double(startFrequency) * scale;
+    emit addPayloadByte((qint8)startFrequency);     // LSB low byte
+    emit addPayloadByte((qint8)(startFrequency >> 8)); // LSB high byte
+    emit addPayloadByte((qint8)(startFrequency >> 16)); // MSB low byte
+    emit addPayloadByte((qint8)(startFrequency >> 24)); // MSB high byte
 
     qDebug() << "Step Size -> High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
     // step size
+    stepSize = double(stepSize) * scale;
     emit addPayloadByte((qint8)stepSize);   // low byte
     emit addPayloadByte((qint8)(stepSize >> 8)); // high bye
 
@@ -313,7 +247,7 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
     emit addPayloadByte((qint8)numPoints);  // low byte
     emit addPayloadByte((qint8)(numPoints >> 8)); // high bye
 
-    emit writeMsg(AFM_DDS_SWEEP_SET);
+    emit writeMsg(AFM_DDS_AD9837_SET); //TODO make this configurable
 }
 
 // Start the frequency sweep. The data will be fetched from the receiver
@@ -324,9 +258,9 @@ void icspiAFM::frequencySweep(quint16 numPoints,
     //writeDAC(AFM_DAC_VCO_ID, 0); // write 0V
     setDDSSettings(numPoints, startFrequency, stepSize);
 
-    // start frequency sweep ASSUMING REV 2 BOARD!!!
+    // start frequency sweep ASSUMING REV 3 BOARD!!!
     emit clearPayloadBuffer();
-    emit writeMsg(AFM_FREQ_SWEEP_AD5932);
+    emit writeMsg(AFM_FREQ_SWEEP_AD9837); //TODO make this configurable
 }
 
 void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
