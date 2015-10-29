@@ -801,16 +801,23 @@ void MainWindow::autoApproach_state_machine(){
             } else {
                 //if signal received then save measurement_init and proceed.
                 autoappr_measurement_init = autoappr_measurement;
-                mutex.lock();
-                commandQueue.push(new commandNode(stepMotContGo));
-                mutex.unlock();
-                autoapproach_state++;
-                task1_timer->start(30);
+                // VERY IMPORTANT We also double check that the target is less than 95% of the init to begin with.
+                // If it is more than 95%, then we should skip straight to state 6.
+                if(autoappr_setpoint <= (0.95*autoappr_measurement_init)){
+                    mutex.lock();
+                    commandQueue.push(new commandNode(stepMotContGo));
+                    mutex.unlock();
+                    autoapproach_state++;
+                    task1_timer->start(20);
+                } else {
+                    autoapproach_state = 6;
+                    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+                }
             }
         } else {
             //if signal not measured, then stop and throw err!
-            QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
             autoapproach_state = 0;
+            QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
             qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
         }
@@ -839,7 +846,7 @@ void MainWindow::autoApproach_state_machine(){
         } else {
             autoapproach_fault_count = 0;
         }
-        // Now check measurement against target value
+        // Now check measurement against target value.
         if((autoappr_measurement <= (0.95*autoappr_measurement_init)) && autoappr_measurement > 0) {
             task1_timer->stop();
             autoapproach_state++;
@@ -858,8 +865,9 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)3));
         commandQueue.push(new commandNode(stepMotSetSpeed, (double)20000));
         commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        commandQueue.push(new commandNode(stepMotContGo));
         autoapproach_state++;
-        task1_timer->start(30);
+        task1_timer->start(20);
     case 7://Abort available here.
         ui->progbar_autoappr->setValue(7);
         // Update display
@@ -970,6 +978,8 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     double freqVal;
     double ampVal;
     double phaseVal;
+    double maxAmp=0;
+    double maxAmpFreq=0;
     if (freqRetVal != AFM_SUCCESS) {
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
@@ -980,12 +990,18 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
         //qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for (int i = 0; i < ui->numFreqPoints->value(); i++) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqVal = ui->startFrequency->value() + i * ui->stepSize->value();
+            quint16 step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
+            freqVal = ui->startFrequency->value() + i * step_size;
             if(i < phaseData.size() && i < amplitudeData.size()) {
                 phaseVal = phaseData.at(i);
                 ampVal = amplitudeData.at(i);
                 freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
                 phasePlot.update(freqVal, phaseVal, false);
+                // Keep track of our maximum so far
+                if(ampVal > maxAmp){
+                    maxAmp = ampVal;
+                    maxAmpFreq = freqVal;
+                }
             } else {
                 qDebug() << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
                 break;
@@ -1006,15 +1022,22 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     ui->freqProgressLabel->setStyleSheet("QLabel { color : red; }");
 
     QApplication::restoreOverrideCursor();
+
+    //call some function with the max values
+
+}
+
+void MainWindow::auto_freqsweep(){
+//Also a state machine paradigm??
 }
 
 // Frequency sweep
 void MainWindow::on_sweepButton_clicked()
 {
     //QApplication::setOverrideCursor(Qt::WaitCursor);
-
+    quint16 step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
     mutex.lock();
-    commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)ui->stepSize->value()));
+    commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
     mutex.unlock();
 }
 
@@ -1022,6 +1045,7 @@ void MainWindow::on_useCurrFreqVal_clicked()
 {
     ui->spnFrequencyVoltage->setValue(ui->currFreqVal->value());
 }
+
 void MainWindow::on_pushButton_6_clicked()
 {
 //    mutex.lock();
@@ -1078,14 +1102,6 @@ void MainWindow::on_spnFrequencyVoltage_2_valueChanged(double arg1)
     commandQueue.push(new commandNode(memsSetAmplitude, arg1));//afm.memsSetAmplitude(arg1);
     mutex.unlock();
 }
-
-void MainWindow::on_buttonSendSweep_clicked()
-{
-    //mutex.lock();
-    commandQueue.push(new commandNode(setDDSSettings, (qint16)ui->numFreqPoints->value(), (qint16)ui->currFreqVal->value(), (qint16)ui->stepSize->value()));
-    // mutex.unlock();
-}
-
 
 void MainWindow::on_buttonAutoApproachMCU_clicked(bool checked)
 {
@@ -1429,15 +1445,15 @@ void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
             commandQueue.push(new commandNode(stepMotSingleStep));
             // Assign callback
             stepmot_callback_operation = operation;
-            // single shot. 160ms is just a tad longer than an avg mouseclick.
-            QTimer::singleShot(160, this, SLOT(stepmot_user_control_callback()));
+            // single shot. 200ms is just a tad longer than an avg mouseclick (~120ms).
+            QTimer::singleShot(200, this, SLOT(stepmot_user_control_callback()));
         } else {
             //Check if the buttons are still pressed?
             //Then Start in cont mode
             if(operation==APPR && ui->btn_stepmot_user_up->isDown()){
                commandQueue.push(new commandNode(stepMotContGo));
             } else if (operation==RETR && ui->btn_stepmot_user_down->isDown()){
-
+               commandQueue.push(new commandNode(stepMotContGo));
             }
         }
     }

@@ -54,8 +54,8 @@ class MainWindow : public QMainWindow
 
     enum UserStepMotOp {APPR, RETR, STOP};
     //Also needs constexpr int MainWindow::UserSpd_to_Microsteps[]; in the global scope of C++ file to work
-    constexpr static  int UserSpd_to_Microsteps[5] = {3,3,2,2,1};
-    constexpr static  double UserSpd_to_Speed[5] = {0,20000,20000,26300,26300};
+    constexpr static  int UserSpd_to_Microsteps[5] = {3,3,4,3,1};
+    constexpr static  double UserSpd_to_Speed[5] = {0,20000,26300,26300,26300};
 
 public:
     //nanoiAFM afm;
@@ -172,41 +172,22 @@ private slots:
    // void on_pushButton_22_clicked();
 
     void on_buttonWriteToDAC_clicked();
-
     void on_buttonReadIO_clicked();
-
     void on_freqAutoScale_clicked();
-
     void on_spnFrequencyVoltage_2_valueChanged(double arg1);
-
-    void on_buttonSendSweep_clicked();
-
     void on_buttonAutoApproachMCU_clicked(bool checked);
-
     void on_approachButton_clicked();
-
     void on_setMaxDACValuesButton_clicked();
-
     void on_calibrateButton_clicked();
-
     void on_tabWidget_currentChanged(int index);
-
     void on_continuousButton_pressed();
-
     void on_continuousButton_released();
-
     void on_gwyddionButton_clicked();
-
     void on_spnBoxFineZRange_valueChanged(int arg1);
-
     void on_spnBoxCoarseZ_valueChanged(double arg1);
-
     void on_spnBoxFineZ_valueChanged(double arg1);
-
     void on_btnSetScanParameters_clicked();
-
     void on_spnFrequencyVoltage_valueChanged(double arg1);
-
     void on_btnForceCurve_clicked();
 
 private:
