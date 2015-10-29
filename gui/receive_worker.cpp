@@ -308,7 +308,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         default:
             type=ADC;
         }
-        return_queue.push(new returnBuffer(type, float(((float)val) / AFM_ADC_SCALING)));
+        return_queue.push(new returnBuffer(type, float(((float)val) * AFM_ADC_SCALING)));
         break;
     case AFM_FREQ_SWEEP_AD9837:
     case AFM_FREQ_SWEEP_AD5932:
@@ -328,10 +328,10 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
                 ampVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i + 1]);
                 phaseVal = BYTES_TO_WORD((quint8)uart_resp[i + 2], (quint8)uart_resp[i + 3]);
 
-                amplitudeData->append(double(ampVal) / AFM_ADC_SCALING);
-                phaseData->append(double(phaseVal) / AFM_ADC_SCALING);
+                amplitudeData->append(double(ampVal) * AFM_ADC_SCALING);
+                phaseData->append(double(phaseVal) * AFM_ADC_SCALING);
 
-                qDebug() << "Freq Sweep Amplitude: " << double(ampVal) / AFM_ADC_SCALING << " Phase: " << double(phaseVal) / AFM_ADC_SCALING;
+                qDebug() << "Freq Sweep Amplitude: " << double(ampVal) * AFM_ADC_SCALING << " Phase: " << double(phaseVal) * AFM_ADC_SCALING;
             }
 
             return_queue.push(new returnBuffer(FREQSWEEP, AFM_SUCCESS, *amplitudeData, *phaseData, bytesRead));
@@ -348,7 +348,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             for (int i = 2; i < uart_resp.size(); i++) {
                 intVal = BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i++]);
                 //phaseVal = BYTES_TO_WORD((quint8)uart_resp[i+2],(quint8)uart_resp[i+3]);
-                amplitudeData->append(double(intVal) / AFM_ADC_SCALING);
+                amplitudeData->append(double(intVal) * AFM_ADC_SCALING);
                 phaseData->append(0);
             }
             return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, uart_resp.size()));

@@ -16,6 +16,9 @@
 
 using namespace Qwt3D;
 
+constexpr int MainWindow::UserSpd_to_Microsteps[];
+constexpr double MainWindow::UserSpd_to_Speed[];
+
 class Rosenbrock : public Function
 {
 public:
@@ -130,7 +133,7 @@ void MainWindow::Initialize()
     /*Intialize Graphs*/
     CreateGraphs();
 
-    // Stepper Motor controls
+    // Stepper Motor controls and static variable initialization
     QStringList microstep_options;
     microstep_options << "1" << "1/2" << "1/4" << "1/8" << "1/16" << "1/32";
     ui->cbo_microstep->addItems(microstep_options);
@@ -244,7 +247,7 @@ void MainWindow::CreateGraphs()
 
     // add frequency sweep plot
     MyPlot::PlotFields fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Amplitude (V)", \
-                                                   QPair<double, double>(3000, 12000), QPair<double, double>(0, 0.2), QColor("Red"),
+                                                   QPair<double, double>(3000, 12000), QPair<double, double>(0, 3), QColor("Red"),
                                                    false, true);
 
     freqPlot.SetPlot(fields, ui->freqWidget);
@@ -261,7 +264,7 @@ void MainWindow::CreateGraphs()
 
     //phase plot
     fields = MyPlot::PlotFields("", true, "Frequency (Hz)", "Phase (Deg)", \
-                                QPair<double, double>(3000, 12000), QPair<double, double>(0, 2), QColor("Blue"),
+                                QPair<double, double>(3000, 12000), QPair<double, double>(0, 3), QColor("Blue"),
                                 false, true);
 
     phasePlot.SetPlot(fields, ui->freqWidget);
@@ -380,55 +383,57 @@ void MainWindow::dequeueReturnBuffer()
 
     while (!returnQueue.empty()) {
         //updateStatusBar("Working...");
+        QString fdata;
         _buffer = returnQueue.front();
         switch (_buffer->getReturnType()) {
         case DACBFRD1:
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             bfrd1 = _buffer->getFData();
             break;
         case DACBFRD2:
             bfrd2 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACBR2:
             br2 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACZAMP:
             zAmp = _buffer->getFData();
             break;
         case DACBR1:
             br1 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACBFRD3:
             bfrd3 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACZOFFSETFINE:
             zOffsetFine = _buffer->getFData();
             break;
         case DACY1:
             y1 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACZOFFSETCOARSE:
             zOffsetCoarse = _buffer->getFData();
             break;
         case DACY2:
             y2 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACX1:
             x1 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case DACX2:
             x2 = _buffer->getFData();
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case ADCZOFFSET:
             adcZ = _buffer->getFData();
+            ui->adcValue->setText(QString::number(_buffer->getFData()));
             if (useBridgeSignalAsSetpoint) {
                 //ui->spnPidSetpoint->setValue(double(bfrd3));
                 //ui->currPIDSetpoint->setValue(double(bfrd3));
@@ -456,10 +461,11 @@ void MainWindow::dequeueReturnBuffer()
             zOffsetFine = _buffer->getFData();
             break;
         case DAC:
-            ui->dacValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
             break;
         case ADC:
-            ui->adcValue->setValue(_buffer->getFData());
+            fdata = QString::number(_buffer->getFData());
+            ui->adcValue->setText(fdata);
             break;
         case FREQSWEEP:
             freqRetVal = _buffer->getData();
@@ -494,7 +500,6 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case SCANDATA:
             //update GRAPH
-
             if (_buffer->getData() == AFM_SUCCESS) {
                 QVector<double> zamp = _buffer->getzamp();
                 int _size = zamp.size();
@@ -727,6 +732,9 @@ void MainWindow::on_btn_autoappr_stop_clicked(){
 }
 
 void MainWindow::autoApproach_state_machine(){
+    //DEBUG ONLY!
+    //autoappr_measurement = ui->spinbox_autoappr_meas_test->value();
+
     qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
     switch(autoapproach_state) {
     case 0: //Disabled state
@@ -776,23 +784,35 @@ void MainWindow::autoApproach_state_machine(){
         QTimer::singleShot(600, this, SLOT(autoApproach_state_machine()));
         break;
     case 4: //Continuous ON
+        //Update UI
         ui->progbar_autoappr->setValue(4);
+        if(autoappr_measurement > 0) {
+            QString s = QString::number(autoappr_measurement);
+            ui->label_autoappr_meas->setText(s);
+        }
+
         // The callback for readADC ADCZOFFSET should update autoappr_measurement
         if(autoappr_measurement > 0) {
-            //if signal received then save measurement_init and proceed.
-            autoappr_measurement_init = autoappr_measurement;
-            mutex.lock();
-            commandQueue.push(new commandNode(stepMotContGo));
-            mutex.unlock();
-            autoapproach_state++;
-            task1_timer->start(30);
+            if(autoappr_measurement <= autoappr_setpoint) {
+                //Make sure that setpoint is OK.
+                autoapproach_state = 8;
+                QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+                break;
+            } else {
+                //if signal received then save measurement_init and proceed.
+                autoappr_measurement_init = autoappr_measurement;
+                mutex.lock();
+                commandQueue.push(new commandNode(stepMotContGo));
+                mutex.unlock();
+                autoapproach_state++;
+                task1_timer->start(30);
+            }
         } else {
             //if signal not measured, then stop and throw err!
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
             autoapproach_state = 0;
             qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
-
         }
         break;
     case 5: //Abort available here.
@@ -950,7 +970,6 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     double freqVal;
     double ampVal;
     double phaseVal;
-    double scale = double(qPow(5.0,10^6) / qPow(2.0,28)); //TODO config
     if (freqRetVal != AFM_SUCCESS) {
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
@@ -961,7 +980,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
         //qDebug() << "Size of X Data: " << frequencyData.size() << "Size of Y Data: " << amplitudeData.size();
         for (int i = 0; i < ui->numFreqPoints->value(); i++) {
             //qDebug() << "Freq: " << frequencyData[i] << " Amplitude: " << amplitudeData[i];
-            freqVal = ((ui->startFrequency->value() + i * ui->stepSize->value()) * scale);
+            freqVal = ui->startFrequency->value() + i * ui->stepSize->value();
             if(i < phaseData.size() && i < amplitudeData.size()) {
                 phaseVal = phaseData.at(i);
                 ampVal = amplitudeData.at(i);
@@ -992,7 +1011,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
 // Frequency sweep
 void MainWindow::on_sweepButton_clicked()
 {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+    //QApplication::setOverrideCursor(Qt::WaitCursor);
 
     mutex.lock();
     commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)ui->stepSize->value()));
@@ -1356,4 +1375,91 @@ void MainWindow::on_btn_pid_off_clicked()
     //mutex.lock();
     commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
     //mutex.unlock();
+}
+
+void MainWindow::on_btn_stepmot_user_up_2_pressed()
+{
+    qDebug() << "on_btn_stepmot_user_up_2_pressed";
+}
+
+void MainWindow::on_btn_stepmot_user_up_2_released()
+{
+    qDebug() << "on_btn_stepmot_user_up_2_released";
+}
+
+void MainWindow::on_sld_stepmot_user_spd_valueChanged(int value)
+{
+    ui->lbl_stepmot_user_spd->setText(QString::number(value));
+}
+
+void MainWindow::stepmot_user_control_callback(){
+    stepmot_user_control(stepmot_callback_operation, false);
+}
+
+void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
+{
+    // Stop autoapproach always
+    autoapproach_state = 0;
+
+    if(operation==STOP){
+        //Stop and sleep motor at once
+        mutex.lock();
+        commandQueue.push(new commandNode(stepMotContStop));
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
+        //Reset speed so we dont have any surprises
+        commandQueue.push(new commandNode(stepMotSetSpeed, (double)UserSpd_to_Speed[0]));
+        commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)UserSpd_to_Microsteps[0]));
+        mutex.unlock();
+        return;
+    } else {
+        // Using lookup table for computing the speed
+        // Set Speed and Microsteps
+        commandQueue.push(new commandNode(stepMotSetSpeed, (double)UserSpd_to_Speed[ui->sld_stepmot_user_spd->value()]));
+        commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)UserSpd_to_Microsteps[ui->sld_stepmot_user_spd->value()]));
+        //Set direction
+        if(operation==APPR) {
+            commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_FWD)));
+        } else if (operation==RETR){
+            commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));
+        }
+        //Wake motor
+        commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_WAKE)));
+        if(isStep) {
+            //Move a step only, and then callback. No need to sleep here.
+            commandQueue.push(new commandNode(stepMotSingleStep));
+            // Assign callback
+            stepmot_callback_operation = operation;
+            // single shot. 160ms is just a tad longer than an avg mouseclick.
+            QTimer::singleShot(160, this, SLOT(stepmot_user_control_callback()));
+        } else {
+            //Check if the buttons are still pressed?
+            //Then Start in cont mode
+            if(operation==APPR && ui->btn_stepmot_user_up->isDown()){
+               commandQueue.push(new commandNode(stepMotContGo));
+            } else if (operation==RETR && ui->btn_stepmot_user_down->isDown()){
+
+            }
+        }
+    }
+    return;
+}
+
+void MainWindow::on_btn_stepmot_user_up_pressed()
+{
+    stepmot_user_control(APPR, true);
+}
+
+void MainWindow::on_btn_stepmot_user_up_released()
+{
+    stepmot_user_control(STOP, true);
+}
+
+void MainWindow::on_btn_stepmot_user_down_pressed()
+{
+    stepmot_user_control(RETR, true);
+}
+
+void MainWindow::on_btn_stepmot_user_down_released()
+{
+    stepmot_user_control(STOP, true);
 }

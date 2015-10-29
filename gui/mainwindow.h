@@ -52,6 +52,11 @@ class MainWindow : public QMainWindow
     queue<commandNode*>& commandQueue;
     queue<returnBuffer*>& returnQueue;
 
+    enum UserStepMotOp {APPR, RETR, STOP};
+    //Also needs constexpr int MainWindow::UserSpd_to_Microsteps[]; in the global scope of C++ file to work
+    constexpr static  int UserSpd_to_Microsteps[5] = {3,3,2,2,1};
+    constexpr static  double UserSpd_to_Speed[5] = {0,20000,20000,26300,26300};
+
 public:
     //nanoiAFM afm;
     QList<QSerialPortInfo> detectedSerialPortsList; //buffer for serial ports
@@ -273,11 +278,21 @@ private:
     double *scandata[256];
     int row;
 
+    void stepmot_user_control(UserStepMotOp operation, bool isStep);
+    UserStepMotOp stepmot_callback_operation;
+
 private slots:
     void autoApproach_state_machine();
-
+    void stepmot_user_control_callback();
     void on_btn_pid_on_clicked();
     void on_btn_pid_off_clicked();
+    void on_btn_stepmot_user_up_2_pressed();
+    void on_btn_stepmot_user_up_2_released();
+    void on_sld_stepmot_user_spd_valueChanged(int value);
+    void on_btn_stepmot_user_up_pressed();
+    void on_btn_stepmot_user_up_released();
+    void on_btn_stepmot_user_down_pressed();
+    void on_btn_stepmot_user_down_released();
 };
 
 #endif // MAINWINDOW_H
