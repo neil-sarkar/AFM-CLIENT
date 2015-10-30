@@ -89,11 +89,6 @@ public:
 protected:
     //void timerEvent( QTimerEvent * );
 
-private:
-    QMessageBox msgBox;
-    //eventworker *eventWorker;
-    //QMutex mutex;
-
 signals:
     void finished();
     void SweepFinished();
@@ -190,8 +185,11 @@ private slots:
     void on_spnFrequencyVoltage_valueChanged(double arg1);
     void on_btnForceCurve_clicked();
 
-private:
 
+private:
+    QMessageBox msgBox;
+    //eventworker *eventWorker;
+    //QMutex mutex;
     enum TabType{
         Control,
         Scan,
@@ -262,6 +260,9 @@ private:
     void stepmot_user_control(UserStepMotOp operation, bool isStep);
     UserStepMotOp stepmot_callback_operation;
 
+    int auto_freqsweep_state=0;
+    void auto_freqsweep(double max_amp, double max_amp_freq);
+
 private slots:
     void autoApproach_state_machine();
     void stepmot_user_control_callback();
@@ -274,6 +275,7 @@ private slots:
     void on_btn_stepmot_user_up_released();
     void on_btn_stepmot_user_down_pressed();
     void on_btn_stepmot_user_down_released();
+    void on_btn_auto_freqsweep_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -1044,6 +1044,13 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                           </property>
                          </widget>
                         </item>
+                        <item>
+                         <widget class="QPushButton" name="btn_auto_freqsweep">
+                          <property name="text">
+                           <string>Auto Find Freq Max</string>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </item>
                       <item row="1" column="0" colspan="2">
@@ -1122,7 +1129,7 @@ QLabel {  color : red; };</string>
                              <enum>QAbstractSpinBox::UpDownArrows</enum>
                             </property>
                             <property name="maximum">
-                             <number>10000</number>
+                             <number>20000</number>
                             </property>
                             <property name="singleStep">
                              <number>100</number>
@@ -1165,7 +1172,7 @@ QLabel {  color : red; };</string>
                              <enum>QAbstractSpinBox::UpDownArrows</enum>
                             </property>
                             <property name="maximum">
-                             <number>15000</number>
+                             <number>20000</number>
                             </property>
                             <property name="singleStep">
                              <number>100</number>
@@ -1223,20 +1230,6 @@ QLabel {  color : red; };</string>
                        </layout>
                       </item>
                      </layout>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_34">
-                      <property name="text">
-                       <string>Maximum Point: </string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="lbl_freqsweep_max">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
                     </item>
                    </layout>
                   </item>

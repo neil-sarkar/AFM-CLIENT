@@ -331,7 +331,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
                 amplitudeData->append(double(ampVal) * AFM_ADC_SCALING);
                 phaseData->append(double(phaseVal) * AFM_ADC_SCALING);
 
-                qDebug() << "Freq Sweep Amplitude: " << double(ampVal) * AFM_ADC_SCALING << " Phase: " << double(phaseVal) * AFM_ADC_SCALING;
+               // qDebug() << "Freq Sweep Amplitude: " << double(ampVal) * AFM_ADC_SCALING << " Phase: " << double(phaseVal) * AFM_ADC_SCALING;
             }
 
             return_queue.push(new returnBuffer(FREQSWEEP, AFM_SUCCESS, *amplitudeData, *phaseData, bytesRead));

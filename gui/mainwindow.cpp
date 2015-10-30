@@ -387,49 +387,49 @@ void MainWindow::dequeueReturnBuffer()
         _buffer = returnQueue.front();
         switch (_buffer->getReturnType()) {
         case DACBFRD1:
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             bfrd1 = _buffer->getFData();
             break;
         case DACBFRD2:
             bfrd2 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACBR2:
             br2 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACZAMP:
             zAmp = _buffer->getFData();
             break;
         case DACBR1:
             br1 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACBFRD3:
             bfrd3 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACZOFFSETFINE:
             zOffsetFine = _buffer->getFData();
             break;
         case DACY1:
             y1 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACZOFFSETCOARSE:
             zOffsetCoarse = _buffer->getFData();
             break;
         case DACY2:
             y2 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACX1:
             x1 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACX2:
             x2 = _buffer->getFData();
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case ADCZOFFSET:
             adcZ = _buffer->getFData();
@@ -461,7 +461,7 @@ void MainWindow::dequeueReturnBuffer()
             zOffsetFine = _buffer->getFData();
             break;
         case DAC:
-            fdata = QString::number(_buffer->getFData());ui->dacValue->setText(fdata);
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case ADC:
             fdata = QString::number(_buffer->getFData());
@@ -803,7 +803,7 @@ void MainWindow::autoApproach_state_machine(){
                 autoappr_measurement_init = autoappr_measurement;
                 // VERY IMPORTANT We also double check that the target is less than 95% of the init to begin with.
                 // If it is more than 95%, then we should skip straight to state 6.
-                if(autoappr_setpoint <= (0.95*autoappr_measurement_init)){
+                if(autoappr_setpoint <= (0.95*autoappr_measurement_init)) {
                     mutex.lock();
                     commandQueue.push(new commandNode(stepMotContGo));
                     mutex.unlock();
@@ -998,7 +998,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
                 freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
                 phasePlot.update(freqVal, phaseVal, false);
                 // Keep track of our maximum so far
-                if(ampVal > maxAmp){
+                if(ampVal > maxAmp) {
                     maxAmp = ampVal;
                     maxAmpFreq = freqVal;
                 }
@@ -1024,11 +1024,44 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     QApplication::restoreOverrideCursor();
 
     //call some function with the max values
-
+    auto_freqsweep(maxAmp, maxAmpFreq);
 }
 
-void MainWindow::auto_freqsweep(){
+void MainWindow::auto_freqsweep(double max_amp, double max_amp_freq){
 //Also a state machine paradigm??
+    quint16 step_size;
+    qDebug() << "auto_freqsweep state=" <<auto_freqsweep_state;
+    switch(auto_freqsweep_state) {
+    //State 0 is disabled
+    case 1:
+        // Begin max sweep
+        ui->endFrequency->setValue(15000);
+        ui->startFrequency->setValue(1000);
+        ui->numFreqPoints->setValue(250);
+        step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
+        commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
+        auto_freqsweep_state++;
+        break;
+    case 2:
+        // Second sweep
+        ui->endFrequency->setValue(max_amp_freq + 500);
+        ui->startFrequency->setValue(max_amp_freq - 500);
+        ui->numFreqPoints->setValue(100);
+        step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
+        commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
+        auto_freqsweep_state++;
+        break;
+    case 3:
+        // Check if max_amp is greater than 1.5. This is it.
+        if(max_amp >= 1.5){
+            ui->currFreqVal->setValue(max_amp_freq);
+            commandQueue.push(new commandNode(setDDSSettings, max_amp_freq));
+        } else {
+            qDebug() << "No max found";
+        }
+        auto_freqsweep_state = 0;
+        break;
+    }
 }
 
 // Frequency sweep
@@ -1417,7 +1450,7 @@ void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
     // Stop autoapproach always
     autoapproach_state = 0;
 
-    if(operation==STOP){
+    if(operation==STOP) {
         //Stop and sleep motor at once
         mutex.lock();
         commandQueue.push(new commandNode(stepMotContStop));
@@ -1435,7 +1468,7 @@ void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
         //Set direction
         if(operation==APPR) {
             commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_FWD)));
-        } else if (operation==RETR){
+        } else if (operation==RETR) {
             commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));
         }
         //Wake motor
@@ -1450,10 +1483,10 @@ void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
         } else {
             //Check if the buttons are still pressed?
             //Then Start in cont mode
-            if(operation==APPR && ui->btn_stepmot_user_up->isDown()){
-               commandQueue.push(new commandNode(stepMotContGo));
-            } else if (operation==RETR && ui->btn_stepmot_user_down->isDown()){
-               commandQueue.push(new commandNode(stepMotContGo));
+            if(operation==APPR && ui->btn_stepmot_user_up->isDown()) {
+                commandQueue.push(new commandNode(stepMotContGo));
+            } else if (operation==RETR && ui->btn_stepmot_user_down->isDown()) {
+                commandQueue.push(new commandNode(stepMotContGo));
             }
         }
     }
@@ -1478,4 +1511,10 @@ void MainWindow::on_btn_stepmot_user_down_pressed()
 void MainWindow::on_btn_stepmot_user_down_released()
 {
     stepmot_user_control(STOP, true);
+}
+
+void MainWindow::on_btn_auto_freqsweep_clicked()
+{
+    auto_freqsweep_state = 1;
+    auto_freqsweep(0,0);
 }
