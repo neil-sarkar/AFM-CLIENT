@@ -6,7 +6,7 @@
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
-
+//constexpr int pcb3_dacTable;
 
 void icspiAFM::writeDAC(qint8 dacID, double val)
 {
@@ -231,7 +231,7 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
     //TODO config device
     double scale = double(qPow(2.0,28) / (5.0*qPow(10,6))); //todo make me constant
     startFrequency = double(startFrequency) * scale;
-    emit addPayloadByte((qint8)startFrequency);     // LSB low byte
+    emit addPayloadByte((qint8)startFrequency); // LSB low byte
     emit addPayloadByte((qint8)(startFrequency >> 8)); // LSB high byte
     emit addPayloadByte((qint8)(startFrequency >> 16)); // MSB low byte
     emit addPayloadByte((qint8)(startFrequency >> 24)); // MSB high byte
@@ -239,12 +239,12 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
     qDebug() << "Step Size -> High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
     // step size
     stepSize = double(stepSize) * scale;
-    emit addPayloadByte((qint8)stepSize);   // low byte
+    emit addPayloadByte((qint8)stepSize); // low byte
     emit addPayloadByte((qint8)(stepSize >> 8)); // high bye
 
     qDebug() << "Num Points -> High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
     // num points
-    emit addPayloadByte((qint8)numPoints);  // low byte
+    emit addPayloadByte((qint8)numPoints); // low byte
     emit addPayloadByte((qint8)(numPoints >> 8)); // high bye
 
     emit writeMsg(AFM_DDS_AD9837_SET); //TODO make this configurable
@@ -379,8 +379,6 @@ void icspiAFM::scanParameters(double vmin_line,
     qint16 _numpts = numpts;
     qint16 _numLines = numlines;
 
-
-
     emit addPayloadByte(_vminLine & 0xFF);
     emit addPayloadByte((_vminLine & 0x0F00) >> 8);
 
@@ -409,6 +407,16 @@ void icspiAFM::scanStep()
     emit writeMsg(AFM_SCAN_STEP);
 }
 
+void icspiAFM::startScan_4act()
+{
+    emit writeMsg(AFM_START_SCAN_4ACT);
+}
+
+void icspiAFM::scanStep_4act()
+{
+    emit writeMsg(AFM_SCAN_STEP_4ACT);
+}
+
 void icspiAFM::setPGA(char channel, double val)
 {
     clearPayloadBuffer();
@@ -433,4 +441,149 @@ void icspiAFM::readSignalPhaseOffset()
 void icspiAFM::forceCurve()
 {
     emit writeMsg(AFM_FORCE_CURVE);
+}
+
+/*
+ * Sends the DAC Table to uC
+ * Type:
+ *      0 - This is a new request. The function shall transmit the DAC Table from beginning
+ *      1 - This is a callback from a previous request.
+ *          The function shall transmit next memory block of DAC Table
+ *          THe function shall do nothing if all of DAC Table has been transmitted.
+ */
+
+void icspiAFM::setDACTable(int type)
+{
+    if(type==0){
+        roll=0;
+    }
+
+   //Send the DACTable in batches of 256 points, each point is 2 bytes
+    // so total 512 bytes per message
+
+   int num_msg = 4096 / AFM_DACTABLE_BLK_SIZE;
+
+
+   /*
+   for(auto current_value:pcb3_dacTable){
+       if(i < (AFM_DACTABLE_BLK_SIZE * 2)){
+           emit addPayloadByte(current_value & 0xFF);
+           i++;
+           emit addPayloadByte((current_value & 0x0F00) >> 8);
+           i++;
+       } else {
+           emit writeMsg(AFM_SET_DACTABLE);
+           i = 0;
+           qDebug() << "set DAC Table msg #" << j;
+           j++;
+           break; //temp debug
+       }
+   }
+   */
+
+   if(roll == num_msg){
+       //stop
+       qDebug() << "ROLL at max value, msg #" << roll;
+   } else {
+       unsigned i = 0, j = 0;
+       emit clearPayloadBuffer();
+       i = roll * 256;
+       for(int k=i; k < i+256; k++){
+           auto current_value = pcb3_dacTable[k];
+           emit addPayloadByte(current_value & 0xFF);
+           emit addPayloadByte((current_value & 0x0F00) >> 8);
+       }
+       emit writeMsg(AFM_SET_DACTABLE);
+       qDebug() << "ROLL DAC Table msg #" << roll;
+       roll++;
+       //The receive worker should call this function again
+   }
+
+
+
+    /*** ARCHIVED CODE ***
+     * Generating the DAC Table in C++. First half is good. Second half is GG.
+     * It's easier to just pre-generate it in MATLAB then send it out.
+     * RIP
+
+       //Generate the table
+       int vmax=3971; //3.2V
+       int vmin=124;  //0.1V
+
+       int numpts=4096; //This assumes we always want an array of 4096 points
+       quint64 maxpwr=qPow(vmax,2);
+       auto minpwr=qPow(vmin,2);
+       quint64 linepwr=maxpwr+minpwr;                    //calculate constant power dissipation for the entire line
+       auto vstart=qSqrt(linepwr/2);            //Midpoint chosen as a place to start our calculations
+       auto lin=linspace(vmin,vstart,vstart-vmin+1);  //Linear array starting at vmin and incrementing by 1 bit
+
+       for(auto i=0; i < vstart-vmin; i++){ //MATLAB uses 1-indexing. C++ uses 0-indexing.
+       lin.push_back(double(qSqrt(linepwr-qPow(lin[vstart-vmin-i+1],2))));
+       //extending our 'lin' array by calculating the value that would give a constant power
+       }
+
+       auto stepSize=(maxpwr-minpwr)/(numpts-1);  //Used to create 4096 steps of equal displacement (equal power increase)
+       auto absArray = lin;
+       quint16 grid[4096] = {0};
+
+       qDebug() << "BEGIN GRID";
+
+       for (auto i=0; i < numpts; i++){
+       unsigned j = 0;
+       for(auto currentElem:absArray){
+          absArray[j] = qFabs(qPow(currentElem,2)-stepSize*(i-1)-double(minpwr));
+          j++;
+       }
+       //auto index = ;  //This indexing function probably isn't available in C
+       grid[i]=lin[minElementIndex(absArray)];
+       qDebug() << grid[i] << ",";
+       }
+     */
+    /*
+     * Generates n points linearly spaced vector. The spacing between the points is (x2-x1)/(n-1).
+     *
+     * x1,x2 — Point interval, pair of numeric scalars
+     * Point interval, specified as a pair of numeric scalars.
+     * x1 and x2 define the interval over which linspace generates points.
+     * x1 and x2 must be real, in this C++ implementation.
+     * x2 can be either larger or smaller than x1.
+     * If x2 is smaller than x1, then the vector contains descending values.
+     *
+     * n — Number of points real numeric scalar
+     * Number of points, specified as a real numeric scalar.
+
+       std::vector<qreal> icspiAFM::linspace(double x1, double x2, int n) {
+        std::vector<qreal> array;
+        double step = (x2-x1) / (n-1);
+
+        if(x1 < x2){
+            while(x1 <= x2) {
+                array.push_back(x1);
+                x1 += step;           // could recode to better handle rounding errors
+            }
+        } else {
+            while(x1 >= x2) {
+                array.push_back(x1);
+                x1 -= step;           // could recode to better handle rounding errors
+            }
+        }
+        return array;
+       }
+     */
+}
+
+void icspiAFM::sigGen(quint8 ratio,double numpts,double numlines)
+{
+    qint16 _numpts = numpts;
+    qint16 _numLines = numlines;
+
+    emit addPayloadByte(ratio);
+
+    emit addPayloadByte(_numpts & 0xFF);
+    emit addPayloadByte((_numpts & 0x0F00) >> 8);
+
+    emit addPayloadByte(_numLines & 0xFF);
+    emit addPayloadByte((_numLines & 0x0F00) >> 8);
+
+    emit writeMsg(AFM_SET_SIGGEN);
 }

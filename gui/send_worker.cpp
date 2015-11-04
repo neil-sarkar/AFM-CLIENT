@@ -271,6 +271,25 @@ void send_worker::queue_check(){
             s_afm.forceCurve();
             return_name = FORCECURVE;
             break;
+        case setDACTable:
+            s_afm.setDACTable(_node->getqval());
+            return_name = SETDACTABLE;
+            break;
+        case SigGen:
+            emit updateStatusBar("Setting 4ACT SIG GEN scan parameters");
+            s_afm.sigGen(_node->getqval(), _node->getnumpts(), _node->getnumLines());
+            return_name = SIGGEN;
+            emit updateStatusBar("Scan parameters set");
+            break;
+        case startScan_4act:
+            s_afm.startScan_4act();
+             emit updateStatusBar("Scan started");
+            return_name = STARTSCAN;
+            break;
+        case scanStep_4act:
+            s_afm.scanStep_4act();
+            return_name = SCANDATA;
+            break;
         } // end switch(_command)
         cmd_queue.pop();
         //mutex.unlock();

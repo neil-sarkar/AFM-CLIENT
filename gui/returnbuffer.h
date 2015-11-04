@@ -6,6 +6,7 @@
 #include <QMetaType>
 
 //TODO: make constructor template
+//TODO Automate this
 enum returnType{
     ERR_MSG_MISSED,
     NONE,
@@ -58,7 +59,11 @@ enum returnType{
     STEPMOTCONTGO,
     STEPMOTCONTSTOP,
     STEPMOTSINGLESTEP,
-    STEPMOTSETSPEED
+    STEPMOTSETSPEED,
+    SETDACTABLE,
+    SIGGEN,
+    STARTSCAN_4ACT,
+    SCANSTEP_4ACT
 };
 
 Q_DECLARE_METATYPE(returnType)

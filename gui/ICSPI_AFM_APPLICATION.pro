@@ -40,7 +40,8 @@ HEADERS  += mainwindow.h \
     XYgenerator.h.disabled \
     afm_worker.h \
     receive_worker.h \
-    send_worker.h
+    send_worker.h \
+    icspi_products.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

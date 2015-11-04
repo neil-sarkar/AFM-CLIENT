@@ -8,12 +8,12 @@ void receive_worker::mainLoop()
     //Start a timer, which calls the cleaner once in a while to manually call the afm_worker's serial receive.
     cleaner_timer = new QTimer(this);
     connect(cleaner_timer, SIGNAL(timeout()), this, SLOT(queue_cleaner()));
-   // cleaner_timer->start(2500);
+    // cleaner_timer->start(2500);
 }
 
 void receive_worker::queue_cleaner(){
     //If we still have unprocessed things in the receive_queue, get afm_worker to check serial
-    if(receive_queue.size() > 0 && receive_queue.size() < 3){
+    if(receive_queue.size() > 0 && receive_queue.size() < 3) {
         qDebug() << "queue_cleaner";
         emit afm_worker_onReadyRead();
     }
@@ -86,7 +86,7 @@ void receive_worker::handle_error(short error_id){
                 match_found = true;
                 break;
             }
-            ++i;
+            i++;
         }
 
         if(match_found) {
@@ -331,7 +331,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
                 amplitudeData->append(double(ampVal) * AFM_ADC_SCALING);
                 phaseData->append(double(phaseVal) * AFM_ADC_SCALING);
 
-               // qDebug() << "Freq Sweep Amplitude: " << double(ampVal) * AFM_ADC_SCALING << " Phase: " << double(phaseVal) * AFM_ADC_SCALING;
+                // qDebug() << "Freq Sweep Amplitude: " << double(ampVal) * AFM_ADC_SCALING << " Phase: " << double(phaseVal) * AFM_ADC_SCALING;
             }
 
             return_queue.push(new returnBuffer(FREQSWEEP, AFM_SUCCESS, *amplitudeData, *phaseData, bytesRead));
@@ -357,6 +357,22 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             isError = true;
         }
         isError=false; //temp placeholder
+        break;
+    case AFM_SCAN_STEP_4ACT:
+        if (uart_resp.at(1) != AFM_SCAN_STEP_4ACT) {
+            handle_error(ERR_MSG_ID_MISMATCH);
+            break;
+        }
+        if(uart_resp.size() < AFM_SCAN_STEP_4ACT_RSPLEN) {
+            handle_error(ERR_MSG_SIZE_MISMATCH);
+            break;
+        }
+        for (int i = 2; i < AFM_SCAN_STEP_4ACT_RSPLEN; i++) {
+            z_offset_adc->append(uart_resp.at(i) & uart_resp.at(++i));
+            z_amp_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
+            z_phase_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
+        }
+        return_queue.push(new returnBuffer(SCANDATA, AFM_SUCCESS, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         break;
 
 //    case AFM_ADC_READ_SPO:
@@ -591,6 +607,20 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        break;}
        return_queue.push(new returnBuffer(STARTSCAN, AFM_SUCCESS));
        break;
+       case AFM_SET_DACTABLE:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SET_DACTABLE) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETDACTABLE, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SET_DACTABLE_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETDACTABLE, AFM_FAIL));
+       break;}
+       if (uart_resp.at(2) == 'o') {
+       return_queue.push(new returnBuffer(SETDACTABLE, AFM_SUCCESS));
+       }else{handle_error(ERR_COMMAND_FAILED);
+       return_queue.push(new returnBuffer(SETDACTABLE, AFM_FAIL));}
+       break;
        case AFM_SET_PGA:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_SET_PGA) {
        handle_error(ERR_MSG_ID_MISMATCH);
@@ -604,6 +634,28 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));}
+       break;
+       case AFM_SET_SIGGEN:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SET_SIGGEN) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SIGGEN, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SET_SIGGEN_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SIGGEN, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SIGGEN, AFM_SUCCESS));
+       break;
+       case AFM_START_SCAN_4ACT:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_START_SCAN_4ACT) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(STARTSCAN_4ACT, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_START_SCAN_4ACT_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(STARTSCAN_4ACT, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(STARTSCAN_4ACT, AFM_SUCCESS));
        break;
        case AFM_STEPMOT_WAKE:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_STEPMOT_WAKE) {

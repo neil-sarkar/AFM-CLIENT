@@ -276,6 +276,10 @@ private slots:
     void on_btn_stepmot_user_down_pressed();
     void on_btn_stepmot_user_down_released();
     void on_btn_auto_freqsweep_clicked();
+    void on_btn_setDACTable_clicked();
+    void on_btn_siggen_clicked();
+    void on_btn_scan_start_clicked();
+    void on_btn_scan_next_clicked();
 };
 
 #endif // MAINWINDOW_H

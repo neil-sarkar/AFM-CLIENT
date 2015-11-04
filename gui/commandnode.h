@@ -51,14 +51,16 @@ enum Command{
     stepMotContGo,
     stepMotContStop,
     stepMotSingleStep,
-    stepMotSetSpeed
+    stepMotSetSpeed,
+    setDACTable,
+    SigGen,
+    startScan_4act,
+    scanStep_4act
 };
 
 
 class commandNode
 {
-
-
   public:
 
     /* Template constructors are hard.
@@ -170,6 +172,7 @@ class commandNode
             m_startFrequency(startFrequency),
             m_stepSize(stepSize) {}
 
+    // For Set Scan Parameters
     commandNode(Command commandName ,
                 double vmin_line,
                 double vmin_scan,
@@ -182,6 +185,16 @@ class commandNode
             m_vmax(vmax),
             m_numpts(numpts),
             m_numLines(numlines){}
+
+    // For Sig Gen
+    commandNode(Command commandName,
+                qint8 ratio,
+                double numpts,
+                double numlines):
+        m_commandName(commandName),
+        m_qval(ratio),
+        m_numpts(numpts),
+        m_numLines(numlines){}
 
     ~commandNode() {}
 

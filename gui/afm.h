@@ -8,10 +8,13 @@
 #include <QSerialPort> //For QT5
 #include <QSerialPortInfo>
 #include <QString>
-//#include <QVector>
+#include <QVector>
 #include <math.h>
 #include <QTimer>
 #include <QtCore/qmath.h>
+#include <vector>
+#include <cmath>
+#include <icspi_products.h>
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            1  // 1: display debug messages
@@ -160,29 +163,37 @@ c.msg_id_define()
 #define AFM_START_SCAN_RSPLEN    2
 #define AFM_SCAN_STEP  0x5E
 #define AFM_SCAN_STEP_RSPLEN    49
+#define AFM_SET_DACTABLE  0x53
+#define AFM_SET_DACTABLE_RSPLEN    3
 #define AFM_SET_PGA  0x2A
 #define AFM_SET_PGA_RSPLEN    3
+#define AFM_SET_SIGGEN  0x50
+#define AFM_SET_SIGGEN_RSPLEN    2
+#define AFM_START_SCAN_4ACT  0x51
+#define AFM_START_SCAN_4ACT_RSPLEN    2
+#define AFM_SCAN_STEP_4ACT  0x52
+#define AFM_SCAN_STEP_4ACT_RSPLEN    50
 #define AFM_FORCE_CURVE  0x4E
 #define AFM_FORCE_CURVE_RSPLEN    
 #define AFM_CMD_NOTFOUND  0xF1
 #define AFM_CMD_NOTFOUND_RSPLEN    0
 #define AFM_STEPMOT_WAKE  0x35
-#define AFM_STEPMOT_WAKE_RSPLEN    1
+#define AFM_STEPMOT_WAKE_RSPLEN    2
 #define AFM_STEPMOT_SLEEP  0x34
-#define AFM_STEPMOT_SLEEP_RSPLEN    1
+#define AFM_STEPMOT_SLEEP_RSPLEN    2
 #define AFM_STEPMOT_SPEED  0x32
-#define AFM_STEPMOT_SPEED_RSPLEN    1
+#define AFM_STEPMOT_SPEED_RSPLEN    2
 #define AFM_STEPMOT_DIR  0x36
-#define AFM_STEPMOT_DIR_RSPLEN    1
+#define AFM_STEPMOT_DIR_RSPLEN    2
 #define AFM_STEPMOT_CONT_GO  0x33
-#define AFM_STEPMOT_CONT_GO_RSPLEN    1
+#define AFM_STEPMOT_CONT_GO_RSPLEN    2
 #define AFM_STEPMOT_CONT_STOP  0x37
-#define AFM_STEPMOT_CONT_STOP_RSPLEN    1
+#define AFM_STEPMOT_CONT_STOP_RSPLEN    2
 #define AFM_STEPMOT_MICROSTEP  0x30
-#define AFM_STEPMOT_MICROSTEP_RSPLEN    1
+#define AFM_STEPMOT_MICROSTEP_RSPLEN    2
 #define AFM_STEPMOT_SINGLESTEP  0x31
-#define AFM_STEPMOT_SINGLESTEP_RSPLEN    1
-//[[[end]]] (checksum: b50663dc896a1e7b700b46590a5a6c2b)
+#define AFM_STEPMOT_SINGLESTEP_RSPLEN    2
+//[[[end]]] (checksum: f118259c3eb66a2f6c7b2641ae4ef881)
 
 // Misc Enums
 #define PGA_Z_OFFSET 'z'
@@ -192,6 +203,7 @@ c.msg_id_define()
 #define MOT_SLEEP 1
 #define MOT_WAKE 2
 #define AFM_AUTOAPPR_ADC 5
+#define AFM_DACTABLE_BLK_SIZE 256
 
 /*
  *  Serial Communication Specifics
@@ -221,6 +233,8 @@ signals:
    bool isOpen();
 
 public:
+   //temp debug
+   int roll=0;
 //    icspiAFM(QThread** afm_thread_temp_var):
 //        afmThread(afm_thread_temp_var) {}
     int writeMsg(char msg_id, QByteArray payload);
@@ -275,8 +289,11 @@ public:
                        double vmax,
                        double numpts,
                        double numlines);
+
     void startScan();
     void scanStep();
+    void startScan_4act();
+    void scanStep_4act();
     void readSignalPhaseOffset();
     void forceCurve();
     void stepMotSetSpeed(int speed);
@@ -286,6 +303,12 @@ public:
     void stepMotContGo();
     void stepMotContStop();
     void stepMotSingleStep();
+    void setDACTable(int type);
+    void sigGen(quint8 ratio,
+                 double numpts,
+                 double numlines);
+
 };
 
 #endif // AFM_H
+

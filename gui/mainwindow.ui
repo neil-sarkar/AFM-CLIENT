@@ -80,194 +80,7 @@ border-bottom: 1px solid black;
           </sizepolicy>
          </property>
          <layout class="QGridLayout" name="_2">
-          <item row="2" column="0">
-           <widget class="QPushButton" name="pushButton_6">
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string>SCAN</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="5" column="0">
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <property name="sizeConstraint">
-               <enum>QLayout::SetFixedSize</enum>
-              </property>
-             </layout>
-            </item>
-            <item row="2" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_23">
-              <item>
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Plot Refresh (ms):</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="refreshSpinBox">
-                <property name="maximum">
-                 <number>10000</number>
-                </property>
-                <property name="value">
-                 <number>100</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="1" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLabel" name="lblComPortSelection">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>COM:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="cboComPortSelection">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">    QComboBox  {
-        border: 1px solid gray;
-        border-radius: 3px;
-        padding: 1px 18px 1px 3px;
-        min-width: 6em;
-    }
-     
-    QComboBox:editable  {
-        background: white;
-    }
-     
-    QComboBox:!editable, QComboBox::drop-down:editable  {
-         background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                     stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                     stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-    }
-     
-    /* QComboBox gets the &quot;on&quot; state when the popup is open */
-    QComboBox:!editable:on, QComboBox::drop-down:editable:on  {
-        background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                    stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-    }
-     
-    QComboBox:on  { /* shift the text when the popup opens */
-        padding-top: 3px;
-        padding-left: 4px;
-    }
-     
-    QComboBox::drop-down  {
-        subcontrol-origin: padding;
-        subcontrol-position: top right;
-        width: 15px;
-     
-        border-left-width: 1px;
-        border-left-color: darkgray;
-        border-left-style: solid; /* just a single line */
-        border-top-right-radius: 3px; /* same radius as the QComboBox */
-        border-bottom-right-radius: 3px;
-    }
-     
-    QComboBox::down-arrow  {
-        image: url(C:/Qt/Tools/QtCreator/bin/qml/QtQuick/Controls/Styles/Base/images/arrow-down.png);
-    }
-     
-    QComboBox::down-arrow:on  { /* shift the arrow when popup is open */
-        top: 1px;
-        left: 1px;
-    }
-</string>
-                </property>
-                <property name="editable">
-                 <bool>false</bool>
-                </property>
-                <property name="currentText">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="3" column="0">
-             <layout class="QHBoxLayout" name="horizontalLayout_40">
-              <item>
-               <widget class="QLabel" name="label_14">
-                <property name="text">
-                 <string>Calibrated:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_13">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="resources.qrc">:/icons/icons/1413858973_ballred-24.png</pixmap>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item row="6" column="0">
-           <widget class="QPushButton" name="calibrateButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string>Calibrate</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QPushButton" name="btnSetScanParameters">
-            <property name="text">
-             <string>Set Scan Parameters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
+          <item row="5" column="0">
            <widget class="QGroupBox" name="grpScanControl">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -526,7 +339,7 @@ border-bottom: 1px solid black;
             </layout>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="7" column="0">
            <widget class="QGroupBox" name="grpPIDControl">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -690,6 +503,193 @@ border-bottom: 1px solid black;
             </layout>
            </widget>
           </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="5" column="0">
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetFixedSize</enum>
+              </property>
+             </layout>
+            </item>
+            <item row="2" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Plot Refresh (ms):</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="refreshSpinBox">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="lblComPortSelection">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>COM:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cboComPortSelection">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">    QComboBox  {
+        border: 1px solid gray;
+        border-radius: 3px;
+        padding: 1px 18px 1px 3px;
+        min-width: 6em;
+    }
+     
+    QComboBox:editable  {
+        background: white;
+    }
+     
+    QComboBox:!editable, QComboBox::drop-down:editable  {
+         background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                     stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                     stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+    }
+     
+    /* QComboBox gets the &quot;on&quot; state when the popup is open */
+    QComboBox:!editable:on, QComboBox::drop-down:editable:on  {
+        background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                    stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+    }
+     
+    QComboBox:on  { /* shift the text when the popup opens */
+        padding-top: 3px;
+        padding-left: 4px;
+    }
+     
+    QComboBox::drop-down  {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 15px;
+     
+        border-left-width: 1px;
+        border-left-color: darkgray;
+        border-left-style: solid; /* just a single line */
+        border-top-right-radius: 3px; /* same radius as the QComboBox */
+        border-bottom-right-radius: 3px;
+    }
+     
+    QComboBox::down-arrow  {
+        image: url(C:/Qt/Tools/QtCreator/bin/qml/QtQuick/Controls/Styles/Base/images/arrow-down.png);
+    }
+     
+    QComboBox::down-arrow:on  { /* shift the arrow when popup is open */
+        top: 1px;
+        left: 1px;
+    }
+</string>
+                </property>
+                <property name="editable">
+                 <bool>false</bool>
+                </property>
+                <property name="currentText">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_40">
+              <item>
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Calibrated:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="pixmap">
+                 <pixmap resource="resources.qrc">:/icons/icons/1413858973_ballred-24.png</pixmap>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="pushButton_6">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>SCAN</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QPushButton" name="calibrateButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="text">
+             <string>Calibrate</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QPushButton" name="btnSetScanParameters">
+            <property name="text">
+             <string>Set Scan Parameters</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -754,7 +754,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="controlTab">
        <attribute name="title">
@@ -844,72 +844,134 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
        <attribute name="title">
         <string>Scan</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_9">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QTabWidget" name="tabScan">
-            <property name="currentIndex">
-             <number>1</number>
-            </property>
-            <widget class="QWidget" name="tabScanForward">
-             <attribute name="title">
-              <string>Forward</string>
-             </attribute>
-             <layout class="QGridLayout" name="gridLayout_13">
-              <item row="1" column="0">
-               <widget class="QFrame" name="frame">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Sunken</enum>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_41">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_11">
-                   <property name="spacing">
-                    <number>0</number>
-                   </property>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="gwyddionButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="layoutDirection">
-                 <enum>Qt::RightToLeft</enum>
-                </property>
-                <property name="text">
-                 <string>Open Gwyddion</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>18</y>
+          <width>681</width>
+          <height>521</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_15">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="2" column="3">
+            <widget class="QPushButton" name="btn_scan_start">
+             <property name="text">
+              <string>Enter Scan Mode</string>
+             </property>
             </widget>
-            <widget class="QWidget" name="tabScanReverse">
-             <attribute name="title">
-              <string>Reverse</string>
-             </attribute>
+           </item>
+           <item row="2" column="0">
+            <widget class="QSpinBox" name="cmb_scanRatio"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_34">
+             <property name="text">
+              <string>Ratio ENUM</string>
+             </property>
             </widget>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="btn_setDACTable">
+             <property name="text">
+              <string>DAC Table because Keil</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="btn_siggen">
+             <property name="text">
+              <string>SigGen</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="5">
+            <widget class="QPushButton" name="btn_scan_next">
+             <property name="text">
+              <string>Next Points</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QTabWidget" name="tabScan">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="tabScanForward">
+              <attribute name="title">
+               <string>Forward</string>
+              </attribute>
+              <widget class="QFrame" name="frame">
+               <property name="geometry">
+                <rect>
+                 <x>9</x>
+                 <y>38</y>
+                 <width>631</width>
+                 <height>381</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_41">
+                <item>
+                 <layout class="QGridLayout" name="gridLayout_11">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QPushButton" name="gwyddionButton">
+               <property name="geometry">
+                <rect>
+                 <x>39</x>
+                 <y>9</y>
+                 <width>84</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string>Open Gwyddion</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="tabScanReverse">
+              <attribute name="title">
+               <string>Reverse</string>
+              </attribute>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabFreqSweep">
        <attribute name="title">

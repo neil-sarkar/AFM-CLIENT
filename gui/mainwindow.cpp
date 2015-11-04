@@ -500,6 +500,7 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case SCANDATA:
             //update GRAPH
+            /*
             if (_buffer->getData() == AFM_SUCCESS) {
                 QVector<double> zamp = _buffer->getzamp();
                 int _size = zamp.size();
@@ -512,14 +513,34 @@ void MainWindow::dequeueReturnBuffer()
                 }
                 scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
                 scanPlot.updateGL();
+                qDebug() << "Scan Data is in!";
             }
-
+*/
             break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
         case PIDENABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+            break;
+        case SETDACTABLE:
+            if (_buffer->getData() == AFM_SUCCESS) {
+                qDebug() << "SETDACTABLE success. Call again.";
+                commandQueue.push(new commandNode(setDACTable, qint8(1)));
+            } else {
+                qDebug() << "SETDACTABLE fail. gg.";
+            }
+            break;
+        case SIGGEN:
+            if (_buffer->getData() == AFM_SUCCESS) {
+//                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+                msgBox.setText("Scan Parameters Set Success");
+                msgBox.exec();
+            } else {
+                ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
+                msgBox.setText("Scan Parameters Set Failed");
+                msgBox.exec();
+            }
             break;
         } //end Switch
 
@@ -1517,4 +1538,28 @@ void MainWindow::on_btn_auto_freqsweep_clicked()
 {
     auto_freqsweep_state = 1;
     auto_freqsweep(0,0);
+}
+
+void MainWindow::on_btn_setDACTable_clicked()
+{
+    commandQueue.push(new commandNode(setDACTable, qint8(0)));
+}
+
+void MainWindow::on_btn_siggen_clicked()
+{
+    quint8 ratioEnum = ui->cmb_scanRatio->value();
+    double numlines = ui->cmbScanNumLines->currentText().toDouble();
+    double numpts = ui->cmbScanNumPoints->currentText().toDouble();
+
+    commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
+}
+
+void MainWindow::on_btn_scan_start_clicked()
+{
+    commandQueue.push(new commandNode(startScan_4act));
+}
+
+void MainWindow::on_btn_scan_next_clicked()
+{
+     commandQueue.push(new commandNode(scanStep_4act));
 }

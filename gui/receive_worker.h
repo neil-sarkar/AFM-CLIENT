@@ -57,6 +57,7 @@ void serialError();     //emited to the mainwindow when there is an error
 bool serial_port_is_open();
 void getNextMsg();
 void afm_worker_onReadyRead();
+void afm_callback(int callback_operation);
 
 public slots:
 void mainLoop();
