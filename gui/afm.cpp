@@ -55,6 +55,7 @@ void icspiAFM::setRasterStep()
 //    writeByte();
 }
 
+/*
 void icspiAFM::memsSetOffset(double val)
 {
     setPGA_pcb3(PGA_Z_OFFSET, val);
@@ -73,6 +74,7 @@ void icspiAFM::memsSetAmplitude(double val)
     setPGA_pcb3(PGA_AMPLITUDE, val);
     //return AFM_SUCCESS;
 }
+*/
 
 void icspiAFM::memsSetBridgeVoltage(double val)
 {
@@ -417,12 +419,12 @@ void icspiAFM::scanStep_4act()
     emit writeMsg(AFM_SCAN_STEP_4ACT);
 }
 
-void icspiAFM::setPGA_pcb3(char channel, double val)
+void icspiAFM::setPGA_pcb3(int channel, double val)
 {
     clearPayloadBuffer();
     emit addPayloadByte(channel);
 
-    if (channel == PGA_AMPLITUDE || channel == PGA_Z_OFFSET) {
+    if (channel == PGA_DDS_AMPLITUDE || channel == PGA_ZFINE) {
         qint8 newval = abs(20 * log10(val / 100));
         emit addPayloadByte(newval);
     } else {
@@ -457,8 +459,8 @@ void icspiAFM::setDACTable(int block)
    //Send the DACTable in batches of 256 points, each point is 2 bytes
    // so total 512 bytes per message
    emit clearPayloadBuffer();
-   block = roll * (AFM_DACTABLE_BLK_SIZE);
-   for(int k=block; k < block+256; k++){
+   int start_byte = block * (AFM_DACTABLE_BLK_SIZE);
+   for(int k=start_byte; k < start_byte+256; k++){
        auto current_value = pcb3_dacTable[k];
        emit addPayloadByte(current_value & 0xFF);
        emit addPayloadByte((current_value & 0x0F00) >> 8);

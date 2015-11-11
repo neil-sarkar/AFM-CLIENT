@@ -120,19 +120,8 @@ void send_worker::queue_check(){
             return_name = WRITE;
             s_afm.setRasterStep();
             break;
-        case memsSetOffset:
-            _val = _node->getdval();
-            s_afm.memsSetOffset(_val);
-            return_name = SETPGA;
-            break;
-        case memsSetFrequency:
-            _val = _node->getdval();
-            s_afm.memsSetFrequency(_val);
-            return_name = SETPGA;
-            break;
-        case memsSetAmplitude:
-            _val = _node->getdval();
-            s_afm.memsSetAmplitude(_val);
+        case setPGA:
+            s_afm.setPGA_pcb3(_node->getqval(),_node->getdval());
             return_name = SETPGA;
             break;
         case memsSetBridgeVoltage:

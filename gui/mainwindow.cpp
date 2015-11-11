@@ -111,6 +111,8 @@ void MainWindow::Initialize()
     zOffsetFine = 0;
     zAmp = 0;
 
+    scan_result = new afm_data(0,0,1);
+
     /*Push event to get ports from the serialworker*/
     //commandQueue.push(new commandNode(getPorts,(double)0));
     refreshPortsList();
@@ -516,9 +518,11 @@ void MainWindow::dequeueReturnBuffer()
                     row++;
                 }
              */
-            int append_result = scan_result.append_data(_buffer->getzoffset(),
-                                                        _buffer->getzamp(),
-                                                        _buffer->getzphase());
+        {
+            //int append_result = scan_result->append_data(_buffer->getzoffset(),
+             //                                           _buffer->getzamp(),
+             //                                           _buffer->getzphase());
+            int append_result = 0;
             if(append_result == 0) {
                  qDebug() << "Scan Data is in success!";
                 // commandQueue.push(new commandNode(scanStep_4act));
@@ -533,6 +537,7 @@ void MainWindow::dequeueReturnBuffer()
             //  qDebug() << "Scan Data is in!";
             //Callback to the state machine
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+        }
             break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
@@ -1692,8 +1697,8 @@ void MainWindow::scan_state_machine(){
         double numpts = ui->cmbScanNumPoints->currentText().toDouble();
         commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
         commandQueue.push(new commandNode(startScan_4act));
-        delete scan_result;
-        scan_result = new afm_data(numpts, numlines, ratioEnum);
+       // delete scan_result;
+       // scan_result = new afm_data(numpts, numlines, ratioEnum);
         scan_state++;
     }
     break;
@@ -1703,12 +1708,12 @@ void MainWindow::scan_state_machine(){
          * EXIT: When all data points are received, single-shot
          * Saves data, plot graph, keeps track of where we are, and requests the next data block
          */
-        if(scan_result.is_data_full() == false) {
-            commandQueue.push(new commandNode(scanStep_4act));
-        } else{
-            scan_state++;
-            QTimer::singleShot(1, this, SLOT(scan_state_machine()))
-        }
+//        if(scan_result->is_data_full() == false) {
+//            commandQueue.push(new commandNode(scanStep_4act));
+//        } else{
+//            scan_state++;
+//            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+//        }
 
     }
     break;
@@ -1747,5 +1752,5 @@ void MainWindow::on_btn_scan_stop_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    scan_result.print_all();
+    //scan_result->print_all();
 }

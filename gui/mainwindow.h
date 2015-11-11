@@ -52,6 +52,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     queue<commandNode*>& commandQueue;
     queue<returnBuffer*>& returnQueue;
+    afm_data * scan_result;
 
     enum UserStepMotOp {APPR, RETR, STOP};
     //Also needs constexpr int MainWindow::UserSpd_to_Microsteps[]; in the global scope of C++ file to work
@@ -197,7 +198,6 @@ private:
     void set_DAC_table_state_machine(int type);
 
     int scan_state = 0;
-    afm_data scan_result;
 
 private slots:
     void MainWindowLoop();

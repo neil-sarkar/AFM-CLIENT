@@ -27,6 +27,7 @@ SOURCES += main.cpp\
     eventworker.cpp \
     afm_worker.cpp \
     receive_worker.cpp \
+    afm_data.cpp \
     send_worker.cpp
 
 HEADERS  += mainwindow.h \
@@ -41,6 +42,7 @@ HEADERS  += mainwindow.h \
     afm_worker.h \
     receive_worker.h \
     send_worker.h \
+    afm_data.h \
     icspi_products.h
 
 FORMS    += mainwindow.ui

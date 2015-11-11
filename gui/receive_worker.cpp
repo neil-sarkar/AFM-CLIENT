@@ -648,13 +648,13 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        case AFM_SET_PGA_PCB3:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_SET_PGA_PCB3) {
        handle_error(ERR_MSG_ID_MISMATCH);
-       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_FAIL));
+       return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
        break;}
        if (uart_resp.size() < AFM_SET_PGA_PCB3_RSPLEN) {
        handle_error(ERR_MSG_SIZE_MISMATCH);
-       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_FAIL));
+       return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));
        break;}
-       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_SUCCESS));
+       return_queue.push(new returnBuffer(SETPGA, AFM_SUCCESS));
        break;
        case AFM_SET_SIGGEN:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_SET_SIGGEN) {

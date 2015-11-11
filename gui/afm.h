@@ -260,12 +260,9 @@ public:
 
     void readDAC(qint8 dacID);
     void readADC(qint8 adcID);
-    void setPGA_pcb3(char channel, double val);
+    void setPGA_pcb3(int channel, double val);
     void setRasterStep();
 
-    void memsSetOffset(double val);
-    void memsSetFrequency(double val);
-    void memsSetAmplitude(double val);
     void memsSetBridgeVoltage(double val);
 
     void pidEnable();
