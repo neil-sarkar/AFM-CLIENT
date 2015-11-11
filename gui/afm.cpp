@@ -57,20 +57,20 @@ void icspiAFM::setRasterStep()
 
 void icspiAFM::memsSetOffset(double val)
 {
-    setPGA(PGA_Z_OFFSET, val);
+    setPGA_pcb3(PGA_Z_OFFSET, val);
     //There should be a comparison against a maximum value for offset voltage
 }
 
 void icspiAFM::memsSetFrequency(double val)
 {
-    setPGA(PGA_Z_OFFSET, val);
+    setPGA_pcb3(PGA_Z_OFFSET, val);
     //return AFM_SUCCESS;
 }
 
 void icspiAFM::memsSetAmplitude(double val)
 {
     //writeDAC(DAC_ZAMP, val);
-    setPGA(PGA_AMPLITUDE, val);
+    setPGA_pcb3(PGA_AMPLITUDE, val);
     //return AFM_SUCCESS;
 }
 
@@ -417,7 +417,7 @@ void icspiAFM::scanStep_4act()
     emit writeMsg(AFM_SCAN_STEP_4ACT);
 }
 
-void icspiAFM::setPGA(char channel, double val)
+void icspiAFM::setPGA_pcb3(char channel, double val)
 {
     clearPayloadBuffer();
     emit addPayloadByte(channel);
@@ -430,7 +430,7 @@ void icspiAFM::setPGA(char channel, double val)
         emit addPayloadByte(newval);
     }
 
-    emit writeMsg(AFM_SET_PGA);
+    emit writeMsg(AFM_SET_PGA_PCB3);
 }
 
 void icspiAFM::readSignalPhaseOffset()
@@ -452,54 +452,20 @@ void icspiAFM::forceCurve()
  *          THe function shall do nothing if all of DAC Table has been transmitted.
  */
 
-void icspiAFM::setDACTable(int type)
+void icspiAFM::setDACTable(int block)
 {
-    if(type==0){
-        roll=0;
-    }
-
    //Send the DACTable in batches of 256 points, each point is 2 bytes
-    // so total 512 bytes per message
-
-   int num_msg = 4096 / AFM_DACTABLE_BLK_SIZE;
-
-
-   /*
-   for(auto current_value:pcb3_dacTable){
-       if(i < (AFM_DACTABLE_BLK_SIZE * 2)){
-           emit addPayloadByte(current_value & 0xFF);
-           i++;
-           emit addPayloadByte((current_value & 0x0F00) >> 8);
-           i++;
-       } else {
-           emit writeMsg(AFM_SET_DACTABLE);
-           i = 0;
-           qDebug() << "set DAC Table msg #" << j;
-           j++;
-           break; //temp debug
-       }
+   // so total 512 bytes per message
+   emit clearPayloadBuffer();
+   block = roll * (AFM_DACTABLE_BLK_SIZE);
+   for(int k=block; k < block+256; k++){
+       auto current_value = pcb3_dacTable[k];
+       emit addPayloadByte(current_value & 0xFF);
+       emit addPayloadByte((current_value & 0x0F00) >> 8);
    }
-   */
+   emit writeMsg(AFM_SET_DACTABLE);
 
-   if(roll == num_msg){
-       //stop
-       qDebug() << "ROLL at max value, msg #" << roll;
-   } else {
-       unsigned i = 0, j = 0;
-       emit clearPayloadBuffer();
-       i = roll * 256;
-       for(int k=i; k < i+256; k++){
-           auto current_value = pcb3_dacTable[k];
-           emit addPayloadByte(current_value & 0xFF);
-           emit addPayloadByte((current_value & 0x0F00) >> 8);
-       }
-       emit writeMsg(AFM_SET_DACTABLE);
-       qDebug() << "ROLL DAC Table msg #" << roll;
-       roll++;
-       //The receive worker should call this function again
-   }
-
-
+}
 
     /*** ARCHIVED CODE ***
      * Generating the DAC Table in C++. First half is good. Second half is GG.
@@ -570,7 +536,7 @@ void icspiAFM::setDACTable(int type)
         return array;
        }
      */
-}
+
 
 void icspiAFM::sigGen(quint8 ratio,double numpts,double numlines)
 {

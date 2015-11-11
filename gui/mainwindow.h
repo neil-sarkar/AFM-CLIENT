@@ -33,6 +33,7 @@
 #include <QSignalMapper>
 #include <QStatusBar>
 #include <commandNode.h>
+#include <afm_data.h>
 
 #include <QProcess>
 
@@ -114,78 +115,6 @@ public slots:
     void setDDSFrequency(const QPointF &p);
     void updatePlot(double _signal, int _plot);
 
-private slots:
-    void MainWindowLoop();
-    void dequeueReturnBuffer();
-    void generalTimerUpdate();
-    void approachTimerUp();
-    void finishedThread();
-
-    // GUI elements
-    void on_spnOffsetVoltage_valueChanged(double arg1);
-    void on_spnBridgeVoltage_valueChanged(double arg1);
-    void on_spnPidValueP_valueChanged(double arg1);
-    void on_spnPidValueI_valueChanged(double arg1);
-    void on_spnPidValueD_valueChanged(double arg1);
-    void on_spnPidSetpoint_valueChanged(double arg1);
-    void on_cboComPortSelection_currentIndexChanged(int index);
-    void on_refreshSpinBox_valueChanged(int arg1);
-    void on_pushButton_22_clicked(bool checked);
-    void on_pushButton_4_clicked(bool checked);
-    void on_pushButton_5_clicked(bool checked);
-    void on_checkBox_clicked(bool checked);
-    void on_sldAmplitudeVoltage_3_valueChanged(int value);
-
-    /* Stepper motor and auto approach */
-    void on_sld_stepmot_speed_valueChanged(int value);
-    void on_cbo_microstep_currentIndexChanged(int index);
-    void on_btn_stepmot_cont_go_clicked();
-    void on_btn_stepmot_cont_stop_clicked();
-    void on_btn_stepmot_singlestep_clicked();
-    void on_radio_stepmot_fwd_clicked();
-    void on_radio_stepmot_back_clicked();
-    void on_btn_stepmot_sleep_clicked();
-    void on_btn_stepmot_wake_clicked();
-    void on_btn_autoappr_go_clicked();
-    void on_btn_autoappr_stop_clicked();
-
-    void on_retreatButton_clicked();
-
-    void on_stepButton_clicked();
-
-    void on_buttonCurrValuePidSetpoint_clicked(bool checked);
-
-    void on_sweepButton_clicked();
-
-
-    void on_useCurrFreqVal_clicked();
-
-   // void on_retreatButton_2_clicked();
-
-    void on_pushButton_6_clicked();
-
-   // void on_pushButton_22_clicked();
-
-    void on_buttonWriteToDAC_clicked();
-    void on_buttonReadIO_clicked();
-    void on_freqAutoScale_clicked();
-    void on_spnFrequencyVoltage_2_valueChanged(double arg1);
-    void on_buttonAutoApproachMCU_clicked(bool checked);
-    void on_approachButton_clicked();
-    void on_setMaxDACValuesButton_clicked();
-    void on_calibrateButton_clicked();
-    void on_tabWidget_currentChanged(int index);
-    void on_continuousButton_pressed();
-    void on_continuousButton_released();
-    void on_gwyddionButton_clicked();
-    void on_spnBoxFineZRange_valueChanged(int arg1);
-    void on_spnBoxCoarseZ_valueChanged(double arg1);
-    void on_spnBoxFineZ_valueChanged(double arg1);
-    void on_btnSetScanParameters_clicked();
-    void on_spnFrequencyVoltage_valueChanged(double arg1);
-    void on_btnForceCurve_clicked();
-
-
 private:
     QMessageBox msgBox;
     //eventworker *eventWorker;
@@ -257,15 +186,83 @@ private:
     double *scandata[256];
     int row;
 
+
     void stepmot_user_control(UserStepMotOp operation, bool isStep);
     UserStepMotOp stepmot_callback_operation;
 
     int auto_freqsweep_state=0;
     void auto_freqsweep(double max_amp, double max_amp_freq);
 
+    int dac_table_current_block=0;
+    void set_DAC_table_state_machine(int type);
+
+    int scan_state = 0;
+    afm_data scan_result;
+
 private slots:
+    void MainWindowLoop();
+    void dequeueReturnBuffer();
+    void generalTimerUpdate();
+    void approachTimerUp();
+    void finishedThread();
+
+    /* Stepper motor and auto approach */
     void autoApproach_state_machine();
     void stepmot_user_control_callback();
+
+    /* Scan */
+    void scan_state_machine();
+
+
+    // GUI elements
+    void on_sld_stepmot_speed_valueChanged(int value);
+    void on_cbo_microstep_currentIndexChanged(int index);
+    void on_btn_stepmot_cont_go_clicked();
+    void on_btn_stepmot_cont_stop_clicked();
+    void on_btn_stepmot_singlestep_clicked();
+    void on_radio_stepmot_fwd_clicked();
+    void on_radio_stepmot_back_clicked();
+    void on_btn_stepmot_sleep_clicked();
+    void on_btn_stepmot_wake_clicked();
+    void on_btn_autoappr_go_clicked();
+    void on_btn_autoappr_stop_clicked();
+    void on_retreatButton_clicked();
+    void on_stepButton_clicked();
+    void on_spnOffsetVoltage_valueChanged(double arg1);
+    void on_spnBridgeVoltage_valueChanged(double arg1);
+    void on_spnPidValueP_valueChanged(double arg1);
+    void on_spnPidValueI_valueChanged(double arg1);
+    void on_spnPidValueD_valueChanged(double arg1);
+    void on_spnPidSetpoint_valueChanged(double arg1);
+    void on_cboComPortSelection_currentIndexChanged(int index);
+    void on_refreshSpinBox_valueChanged(int arg1);
+    void on_pushButton_22_clicked(bool checked);
+    void on_pushButton_4_clicked(bool checked);
+    void on_pushButton_5_clicked(bool checked);
+    void on_checkBox_clicked(bool checked);
+    void on_sldAmplitudeVoltage_3_valueChanged(int value);
+    void on_buttonCurrValuePidSetpoint_clicked(bool checked);
+    void on_sweepButton_clicked();
+    void on_useCurrFreqVal_clicked();
+    void on_pushButton_6_clicked();
+    void on_buttonWriteToDAC_clicked();
+    void on_buttonReadIO_clicked();
+    void on_freqAutoScale_clicked();
+    void on_spnFrequencyVoltage_2_valueChanged(double arg1);
+    void on_buttonAutoApproachMCU_clicked(bool checked);
+    void on_approachButton_clicked();
+    void on_setMaxDACValuesButton_clicked();
+    void on_calibrateButton_clicked();
+    void on_tabWidget_currentChanged(int index);
+    void on_continuousButton_pressed();
+    void on_continuousButton_released();
+    void on_gwyddionButton_clicked();
+    void on_spnBoxFineZRange_valueChanged(int arg1);
+    void on_spnBoxCoarseZ_valueChanged(double arg1);
+    void on_spnBoxFineZ_valueChanged(double arg1);
+    void on_btnSetScanParameters_clicked();
+    void on_spnFrequencyVoltage_valueChanged(double arg1);
+    void on_btnForceCurve_clicked();
     void on_btn_pid_on_clicked();
     void on_btn_pid_off_clicked();
     void on_btn_stepmot_user_up_2_pressed();
@@ -280,6 +277,10 @@ private slots:
     void on_btn_siggen_clicked();
     void on_btn_scan_start_clicked();
     void on_btn_scan_next_clicked();
+    void on_btn_re_init_clicked();
+    void on_btn_scan_begin_clicked();
+    void on_btn_scan_stop_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // MAINWINDOW_H

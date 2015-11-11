@@ -498,10 +498,14 @@ void MainWindow::dequeueReturnBuffer()
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             }
             break;
+        case STARTSCAN_4ACT:
+            //Callback to the state machine
+            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+            break;
         case SCANDATA:
-            //update GRAPH
+            //Take the data out from _buffer and make it into something useful for state machine
             /*
-            if (_buffer->getData() == AFM_SUCCESS) {
+               if (_buffer->getData() == AFM_SUCCESS) {
                 QVector<double> zamp = _buffer->getzamp();
                 int _size = zamp.size();
                 for (int i = 0; i < _size; i++) {
@@ -511,22 +515,38 @@ void MainWindow::dequeueReturnBuffer()
                         scandata[row][j] = zamp.at(row);
                     row++;
                 }
-                scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
-                scanPlot.updateGL();
-                qDebug() << "Scan Data is in!";
+             */
+            int append_result = scan_result.append_data(_buffer->getzoffset(),
+                                                        _buffer->getzamp(),
+                                                        _buffer->getzphase());
+            if(append_result == 0) {
+                 qDebug() << "Scan Data is in success!";
+                // commandQueue.push(new commandNode(scanStep_4act));
+            } else if (append_result == 1) {
+                qDebug() << "afm_data append_scan_data is full";
+            } else {
+                //We have a fault
+                qDebug() << "afm_data append_scan_data failed";
             }
-*/
+            //scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
+            //scanPlot.updateGL();
+            //  qDebug() << "Scan Data is in!";
+            //Callback to the state machine
+            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
             break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
         case PIDENABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+            if(scan_state==2) {
+                QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+            }
             break;
         case SETDACTABLE:
             if (_buffer->getData() == AFM_SUCCESS) {
                 qDebug() << "SETDACTABLE success. Call again.";
-                commandQueue.push(new commandNode(setDACTable, qint8(1)));
+                set_DAC_table_state_machine(1);
             } else {
                 qDebug() << "SETDACTABLE fail. gg.";
             }
@@ -743,7 +763,7 @@ void MainWindow::on_btn_autoappr_go_clicked()
 
 
 void MainWindow::on_btn_autoappr_stop_clicked(){
-    qDebug() << "ABORT Inside State Machine i=" << autoapproach_state;
+    qDebug() << "ABORT Inside AutoAppr State Machine i=" << autoapproach_state;
     autoapproach_state = 0;
     mutex.lock();
     commandQueue.push(new commandNode(stepMotContStop));
@@ -751,6 +771,12 @@ void MainWindow::on_btn_autoappr_stop_clicked(){
     mutex.unlock();
     QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
 }
+
+/**
+ * @brief MainWindow::autoApproach_state_machine is the core algorithm for
+ *        auto approach. The autoapproach_state variable defines the state
+ *        of operation.
+ */
 
 void MainWindow::autoApproach_state_machine(){
     //DEBUG ONLY!
@@ -1048,15 +1074,26 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     auto_freqsweep(maxAmp, maxAmpFreq);
 }
 
+/**
+ * @brief MainWindow::auto_freqsweep automatically scans the frequency range and selects the peak amplitude.
+ *        Notifies user if it cannot find it.
+ *        The frequency sweep graphing function should callback to auto_freqsweep.
+ *
+ * @param max_amp The maximum amplitude from frequency sweep callback
+ * @param max_amp_freq The frequency at maximum amplitude from frequency sweep callback
+ */
+
 void MainWindow::auto_freqsweep(double max_amp, double max_amp_freq){
 //Also a state machine paradigm??
     quint16 step_size;
     qDebug() << "auto_freqsweep state=" <<auto_freqsweep_state;
     switch(auto_freqsweep_state) {
-    //State 0 is disabled
+    //State 0 does nothing
+    case 0:
+        break;
     case 1:
         // Begin max sweep
-        ui->endFrequency->setValue(15000);
+        ui->endFrequency->setValue(15000); //TODO The 15kHz and 1Khz range can be changed
         ui->startFrequency->setValue(1000);
         ui->numFreqPoints->setValue(250);
         step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
@@ -1074,11 +1111,13 @@ void MainWindow::auto_freqsweep(double max_amp, double max_amp_freq){
         break;
     case 3:
         // Check if max_amp is greater than 1.5. This is it.
-        if(max_amp >= 1.5){
+        if(max_amp >= 1.5) {
             ui->currFreqVal->setValue(max_amp_freq);
             commandQueue.push(new commandNode(setDDSSettings, max_amp_freq));
         } else {
             qDebug() << "No max found";
+            msgBox.setText("Could not automatically locate the resonant frequency =(");
+            msgBox.exec();
         }
         auto_freqsweep_state = 0;
         break;
@@ -1365,7 +1404,7 @@ void MainWindow::on_gwyddionButton_clicked()
 void MainWindow::afmWorkerError()
 {
     //if(!msgBox.isEnabled()) {
-    msgBox.setText("AFM Worker left!");
+    msgBox.setText("AFM Worker found an error and ran off with him");
     msgBox.exec();
     //}
 }
@@ -1431,11 +1470,11 @@ void MainWindow::on_btn_pid_on_clicked()
 {
     qDebug() << "pid on clicked";
     //mutex.lock();
+    commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+    commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+    commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+    commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
     commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
-//        commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
-//        commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
-//        commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
-//        commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
     //mutex.unlock();
 }
 
@@ -1542,7 +1581,7 @@ void MainWindow::on_btn_auto_freqsweep_clicked()
 
 void MainWindow::on_btn_setDACTable_clicked()
 {
-    commandQueue.push(new commandNode(setDACTable, qint8(0)));
+    set_DAC_table_state_machine(0);
 }
 
 void MainWindow::on_btn_siggen_clicked()
@@ -1561,5 +1600,152 @@ void MainWindow::on_btn_scan_start_clicked()
 
 void MainWindow::on_btn_scan_next_clicked()
 {
-     commandQueue.push(new commandNode(scanStep_4act));
+    commandQueue.push(new commandNode(scanStep_4act));
+}
+
+void MainWindow::on_btn_re_init_clicked()
+{
+    SetMaxDACValues();
+}
+
+/**
+ * @fn MainWindow::send_DAC_table_state_machine
+ * @brief Send the DAC table in blocks
+ * @param type If type is 1, then this function is called from a callback, and it will continue next block of DAC table
+ *             If type is 0, then this function is invoked by user or some other thing, and it will start over
+ */
+
+void MainWindow::set_DAC_table_state_machine(int type)
+{
+    if(type==0) {
+        dac_table_current_block=0;
+    }
+
+    // Send the DACTable in batches of 256 points, each point is 2 bytes
+    // so total 512 bytes per message
+
+    int num_msg = 4096 / AFM_DACTABLE_BLK_SIZE;
+
+    if(dac_table_current_block == num_msg) {
+        //Stop and reset
+        qDebug() << "dac_table_current_block at max value, msg #" << dac_table_current_block;
+        //If we are in the appropriate scanning state, callback to the scan_state_machine
+        if(scan_state == 3) {
+            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+        }
+    } else {
+        commandQueue.push(new commandNode(setDACTable, qint8(dac_table_current_block)));
+        qDebug() << "ROLL DAC Table msg #" << dac_table_current_block;
+        dac_table_current_block++;
+        //The dequeue receiver should call this function again
+    }
+
+}
+
+/**
+ * @brief MainWindow::scan_state_machine
+ */
+
+void MainWindow::scan_state_machine(){
+    qDebug() << "Scan State Machine i=" << scan_state;
+    switch(scan_state) {
+    case 0: //
+        /* ENTRY: User button click or any other interrupt for scan
+         * EXIT: N/A
+         * Disabled state, safe to call at any time.
+         * Stops the scan.
+         */
+        ui->progbar_scan->setValue(0);
+        ui->label_scan_status->setText("Stopped");
+        //enable UI elements
+        //No need to inf
+        break;
+    case 1:
+        /* ENTRY: User button click
+         * EXIT: Command enable PID to uC
+         * Initialize
+         * Set PID params and turn on PID
+         */
+        commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+        commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+        commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+        commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
+        commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
+        scan_state++;
+        break;
+    case 2:
+        /* ENTRY: PIDENABLE callback in dequeueReturnBuffer
+         * EXIT: Begin command sequence for DAC Table
+         * Send DAC Table
+         */
+        set_DAC_table_state_machine(0);
+        scan_state++;
+        break;
+    case 3:
+    {
+        /* ENTRY: DAC Table loading complete, via afm_callback
+         * EXIT: Send command "Q" to enter scan mode in uC
+         * SIGGEN and BEGIN_SCAN,  create new afm_data object
+         */
+        quint8 ratioEnum = ui->cmb_scanRatio->value();
+        double numlines = ui->cmbScanNumLines->currentText().toDouble();
+        double numpts = ui->cmbScanNumPoints->currentText().toDouble();
+        commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
+        commandQueue.push(new commandNode(startScan_4act));
+        delete scan_result;
+        scan_result = new afm_data(numpts, numlines, ratioEnum);
+        scan_state++;
+    }
+    break;
+    case 4:
+    {
+        /* ENTRY: Callback from AFM_START_SCAN_4ACT acknowledge (STARTSCAN_4ACT), and recursive call from SCANDATA in dequeueReturnBuffer
+         * EXIT: When all data points are received, single-shot
+         * Saves data, plot graph, keeps track of where we are, and requests the next data block
+         */
+        if(scan_result.is_data_full() == false) {
+            commandQueue.push(new commandNode(scanStep_4act));
+        } else{
+            scan_state++;
+            QTimer::singleShot(1, this, SLOT(scan_state_machine()))
+        }
+
+    }
+    break;
+    case 5:
+        /* ENTRY: When all data points are received
+         * EXIT: Reset to disabled state
+         * Clean-up activitie, if any.
+         */
+        //UPDATE UI
+        //Clean Up
+        scan_state = 0;
+        QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+        break;
+    }
+}
+
+void MainWindow::on_btn_scan_begin_clicked()
+{
+    autoapproach_state = 1; //Initial state
+    //Grab current setpoint value
+    autoappr_setpoint = ui->spinbox_autoappr_setpoint->value();
+    ui->spinbox_autoappr_setpoint->setEnabled(false);
+    //Prepare the task1_timer
+    task1_timer = new QTimer(this);
+    connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
+    //Launch the autoApproach_state_machine
+    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+}
+
+void MainWindow::on_btn_scan_stop_clicked()
+{
+    qDebug() << "ABORT Inside Scan State Machine i=" << scan_state;
+    scan_state = 0;
+    QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    scan_result.print_all();
 }

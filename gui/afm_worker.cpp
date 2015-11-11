@@ -3,7 +3,7 @@
 #include <QTime>
 
 /* Serial Configuration */
-#define AFM_MANUFACTURER "FTDI" //Should change this later on to ICPI
+#define AFM_MANUFACTURER "FTDI" //Should change this later on to ICSPI
 #define AFM_MAX_DATA_SIZE 1     //Basically write 1 character at a time
 #define AFM_POLL_TIMEOUT 50     //Poll the buffer every 1ms
 #define AFM_LONG_TIMEOUT 5000   //Longer timeout for large data

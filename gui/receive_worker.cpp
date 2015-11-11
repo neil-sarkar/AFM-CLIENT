@@ -169,7 +169,6 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 
     // 1. Are we expecting to receive something?
     if (!receive_queue.empty()) {
-        isError = false;
         _node = receive_queue.front();
     } else {
         handle_error(ERR_MSG_UNSOLICITED);
@@ -186,7 +185,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
      * Compare this _node with what is received in uart_resp
      * Do they match? They should match, by temporal sequence.
      * If they do not, throw serial error, then empty the uart_resp.
-     * Wait to be called by the afm_worker signal next time!
+     * Wait to be called by the afm_worker signal next time.
      *
      */
 
@@ -336,7 +335,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 
             return_queue.push(new returnBuffer(FREQSWEEP, AFM_SUCCESS, *amplitudeData, *phaseData, bytesRead));
         } else {
-            isError = true;
+            handle_error(ERR_COMMAND_FAILED);
         }
         break;
     case AFM_FORCE_CURVE:
@@ -354,9 +353,8 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             return_queue.push(new returnBuffer(FORCECURVE, 0, *amplitudeData, *phaseData, uart_resp.size()));
 
         } else {
-            isError = true;
+            handle_error(ERR_COMMAND_FAILED);
         }
-        isError=false; //temp placeholder
         break;
     case AFM_SCAN_STEP_4ACT:
         if (uart_resp.at(1) != AFM_SCAN_STEP_4ACT) {
@@ -367,6 +365,17 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             handle_error(ERR_MSG_SIZE_MISMATCH);
             break;
         }
+        /*
+         * Receive up to however many points we need.
+         * For 4ACT PCB3, Eight points of data received.
+         * Clear the three scan data buffers, and store the new data in.
+         * z_offset_adc,  z_amp_adc, and z_phase_adc are cleared each time
+         * this function is called, so make sure you do not request new data
+         * until the existing data has been saved
+         */
+        z_offset_adc->clear();
+        z_amp_adc->clear();
+        z_phase_adc->clear();
         for (int i = 2; i < AFM_SCAN_STEP_4ACT_RSPLEN; i++) {
             z_offset_adc->append(uart_resp.at(i) & uart_resp.at(++i));
             z_amp_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
@@ -375,6 +384,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         return_queue.push(new returnBuffer(SCANDATA, AFM_SUCCESS, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         break;
 
+        //ANCIENT CODE BELOW:
 //    case AFM_ADC_READ_SPO:
 //        if (uart_resp.at(1) == AFM_ADC_READ_SPO) {
 //            signal = (((unsigned char)uart_resp.at(1) << 8) | (unsigned char)uart_resp.at(0));
@@ -409,7 +419,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     //        }
     //        break;
 
-    /* CANDIDATES FOR AUTOMATIC CODE GENERATION */
+    /* AUTOMATIC CODE GENERATION */
     /* Automatically Code Generation BEGIN
        [[[cog
        from CodeValet import CodeValet
@@ -635,6 +645,17 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        }else{handle_error(ERR_COMMAND_FAILED);
        return_queue.push(new returnBuffer(SETPGA, AFM_FAIL));}
        break;
+       case AFM_SET_PGA_PCB3:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_SET_PGA_PCB3) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_SET_PGA_PCB3_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(SETPGA_PCB3, AFM_SUCCESS));
+       break;
        case AFM_SET_SIGGEN:   //CodeValet autogen
        if (uart_resp.at(1) != AFM_SET_SIGGEN) {
        handle_error(ERR_MSG_ID_MISMATCH);
@@ -749,26 +770,6 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 
 
     } // End switch
-
-    // Post-processing
-    /* If there is a serial comm mismatch or error, clear the following to 'reset':
-     * 1. Receive queue
-     * 2. Serial incoming buffer
-     * 3. Serial incoming array (uart_resp)
-     */
-    if (isError) { //Legacy use only
-//        if (!receive_queue.empty()) {
-//            receive_queue.pop_front();
-//        }
-        uart_resp.clear();
-        emit serialError(); // this isn't necessary for release
-    } else {
-        //we good
-        receive_queue.pop_front();
-        //clear the current msg, so that the next one may be read
-        uart_resp.clear();
-    }
-
 } // end process_uart_resp
 
 

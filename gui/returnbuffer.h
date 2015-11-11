@@ -133,7 +133,7 @@ public:
 
      returnBuffer(returnType _returnType,
                   int _success,
-                  QVector<double>& z_offset_adc,
+                  QVector<double> z_offset_adc,
                   QVector<double> z_amp_adc,
                   QVector<double> z_phase_adc):
          m_returnType(_returnType),

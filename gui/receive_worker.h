@@ -41,7 +41,6 @@ void abort();
 private:
 QTimer *cleaner_timer;
 bool _abort;
-bool isError;
 QByteArray uart_resp;
 bool next_command_clear_to_write = true;
 returnType next_command_name;
