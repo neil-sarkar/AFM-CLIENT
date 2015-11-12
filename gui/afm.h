@@ -157,7 +157,7 @@ c.afm_h_define()
 #define AFM_START_SCAN  0x23
 #define AFM_START_SCAN_RSPLEN    2
 #define AFM_SCAN_STEP  0x5E
-#define AFM_SCAN_STEP_RSPLEN    49
+#define AFM_SCAN_STEP_RSPLEN    2
 #define AFM_SET_DACTABLE  0x53
 #define AFM_SET_DACTABLE_RSPLEN    3
 #define AFM_SET_PGA  0x2A
@@ -169,7 +169,7 @@ c.afm_h_define()
 #define AFM_START_SCAN_4ACT  0x51
 #define AFM_START_SCAN_4ACT_RSPLEN    2
 #define AFM_SCAN_STEP_4ACT  0x52
-#define AFM_SCAN_STEP_4ACT_RSPLEN    50
+#define AFM_SCAN_STEP_4ACT_RSPLEN    2
 #define AFM_FORCE_CURVE  0x4E
 #define AFM_FORCE_CURVE_RSPLEN    
 #define AFM_CMD_NOTFOUND  0xF1
@@ -210,7 +210,7 @@ c.afm_h_define()
 #define AFM_DAC_MAX_VOLTAGE  3.3
 #define AFM_DAC_DATA_RANGE  4096
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE  0.4
-//[[[end]]] (checksum: 92015655294565df5858885b1d862c2c)
+//[[[end]]] (checksum: 29d87ba49cc392f30761394c7eb7153d)
 
 // Misc Program-Specific Enums
 #define MOT_FWD 1

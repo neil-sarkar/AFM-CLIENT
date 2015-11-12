@@ -315,6 +315,9 @@ border-bottom: 1px solid black;
                </item>
                <item>
                 <widget class="QComboBox" name="cmbScanNumLines">
+                 <property name="currentText">
+                  <string>8</string>
+                 </property>
                  <item>
                   <property name="text">
                    <string>1</string>
@@ -385,6 +388,9 @@ border-bottom: 1px solid black;
                </item>
                <item>
                 <widget class="QComboBox" name="cmbScanNumPoints">
+                 <property name="currentText">
+                  <string>8</string>
+                 </property>
                  <item>
                   <property name="text">
                    <string>1</string>
@@ -462,6 +468,26 @@ border-bottom: 1px solid black;
                </item>
               </layout>
              </item>
+             <item>
+              <widget class="QLabel" name="label_scan_param_light">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="resources.qrc">:/icons/icons/1413858973_ballred-24.png</pixmap>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_pid_indicator_2">
+               <property name="text">
+                <string>Parameter Set Status</string>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="resources.qrc">:/icons/icons/1413858973_ballred-24.png</pixmap>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -477,14 +503,14 @@ border-bottom: 1px solid black;
         <item row="6" column="0">
          <widget class="QProgressBar" name="progbar_scan">
           <property name="value">
-           <number>24</number>
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="5" column="0">
          <widget class="QLabel" name="label_scan_status">
           <property name="text">
-           <string>TextLabel</string>
+           <string> </string>
           </property>
          </widget>
         </item>
@@ -558,7 +584,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -878,6 +904,301 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
               </property>
              </widget>
             </widget>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>220</y>
+               <width>341</width>
+               <height>301</height>
+              </rect>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>251</width>
+               <height>244</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">    QGroupBox  {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                          stop: 0 #E0E0E0, stop: 1 #FFFFFF);
+        border: 2px solid gray;
+        border-radius: 5px;
+        margin-top: 1ex; /* leave space at the top for the title */
+    }
+     
+    QGroupBox::title  {
+        subcontrol-origin: margin;
+        subcontrol-position: top center; /* position at the top center */
+        padding: 0 3px;
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                          stop: 0 #FFOECE, stop: 1 #FFFFFF);
+    }
+</string>
+             </property>
+             <property name="title">
+              <string>Programmable Gain Amplifier PGA</string>
+             </property>
+             <widget class="QWidget" name="">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>10</y>
+                <width>303</width>
+                <height>255</height>
+               </rect>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_19">
+               <item row="14" column="1">
+                <widget class="QSpinBox" name="spn_freq_y1">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="2">
+                <widget class="QSpinBox" name="spn_freq_x2">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>x1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="1">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>y1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="3">
+                <widget class="QSpinBox" name="spn_freq_y2">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="lblAmplitudeVoltage_2">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Leveling</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QDoubleSpinBox" name="spn_leveling">
+                 <property name="decimals">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>4ACT Frequency (%):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QSpinBox" name="spn_freq_x1">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="spnBridgeVoltage">
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>2.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QDoubleSpinBox" name="spnFrequencyVoltage">
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1">
+                <widget class="QDoubleSpinBox" name="spn_dds_amplitude">
+                 <property name="decimals">
+                  <number>0</number>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>60.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="2">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>x2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="fineZRangeLabel">
+                 <property name="text">
+                  <string>Fine Z Range (%)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="lblFrequencyVoltage">
+                 <property name="text">
+                  <string>Frequency (V):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="coarseZLabel">
+                 <property name="text">
+                  <string>Coarse Z (%)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <widget class="QLabel" name="lblAmplitudeVoltage">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>DDS Amplitude (%):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="lblBridgeVoltage">
+                 <property name="text">
+                  <string>Bridge Voltage (V):</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="lblOffsetVoltage">
+                 <property name="text">
+                  <string>Fine Z (%)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="spn_zfine">
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>10.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="3">
+                <widget class="QLabel" name="label_39">
+                 <property name="text">
+                  <string>y2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="spn_zcoarse">
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>100.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QSpinBox" name="spnBoxFineZRange">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0" colspan="4">
+                <widget class="QPushButton" name="btn_set_pga">
+                 <property name="text">
+                  <string>Set</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
            </widget>
           </item>
          </layout>
@@ -952,6 +1273,13 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
           <widget class="QPushButton" name="pushButton">
            <property name="text">
             <string>Print afm_data</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QPushButton" name="btn_print_offset">
+           <property name="text">
+            <string>Print amp for gwyddion</string>
            </property>
           </widget>
          </item>
@@ -1405,175 +1733,6 @@ QLabel {  color : red; };</string>
                 </size>
                </property>
               </spacer>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupBox_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>251</width>
-                 <height>244</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">    QGroupBox  {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                          stop: 0 #E0E0E0, stop: 1 #FFFFFF);
-        border: 2px solid gray;
-        border-radius: 5px;
-        margin-top: 1ex; /* leave space at the top for the title */
-    }
-     
-    QGroupBox::title  {
-        subcontrol-origin: margin;
-        subcontrol-position: top center; /* position at the top center */
-        padding: 0 3px;
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                          stop: 0 #FFOECE, stop: 1 #FFFFFF);
-    }
-</string>
-               </property>
-               <property name="title">
-                <string>MEMS Control</string>
-               </property>
-               <widget class="QWidget" name="layoutWidget_3">
-                <property name="geometry">
-                 <rect>
-                  <x>10</x>
-                  <y>10</y>
-                  <width>167</width>
-                  <height>232</height>
-                 </rect>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_19">
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="lblFrequencyVoltage">
-                     <property name="text">
-                      <string>Frequency (V):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="fineZRangeLabel">
-                     <property name="text">
-                      <string>Fine Z Range (%)</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="0">
-                    <widget class="QLabel" name="lblAmplitudeVoltage">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="text">
-                      <string>Amplitude (%):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="coarseZLabel">
-                     <property name="text">
-                      <string>Coarse Z:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="lblOffsetVoltage">
-                     <property name="text">
-                      <string>Fine Z:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="lblBridgeVoltage">
-                     <property name="text">
-                      <string>Bridge Voltage (V):</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QDoubleSpinBox" name="spnBoxCoarseZ"/>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QDoubleSpinBox" name="spnBoxFineZ">
-                     <property name="decimals">
-                      <number>4</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>0.045000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QSpinBox" name="spnBoxFineZRange">
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                     <property name="value">
-                      <number>1</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="1">
-                    <widget class="QDoubleSpinBox" name="spnBridgeVoltage">
-                     <property name="decimals">
-                      <number>4</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>2.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QDoubleSpinBox" name="spnFrequencyVoltage">
-                     <property name="decimals">
-                      <number>4</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QDoubleSpinBox" name="spnFrequencyVoltage_2">
-                     <property name="decimals">
-                      <number>0</number>
-                     </property>
-                     <property name="maximum">
-                      <double>100.000000000000000</double>
-                     </property>
-                     <property name="singleStep">
-                      <double>1.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>25.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </widget>
              </item>
              <item>
               <spacer name="horizontalSpacer_13">

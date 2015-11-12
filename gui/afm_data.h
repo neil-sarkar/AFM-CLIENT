@@ -33,6 +33,7 @@ private:
 int numpts, numlines, ratio;
 double delta_x;
 double delta_y;
+bool append_error;
 
 /*
  * Note - the data doesn't have to be in grid form.
@@ -58,6 +59,8 @@ void print_all();
 int get_numpts();
 int get_numlines();
 int get_ratio();
+bool has_error();
+void print_amp();
 
 };
 

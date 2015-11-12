@@ -280,6 +280,8 @@ private slots:
     void on_btn_scan_begin_clicked();
     void on_btn_scan_stop_clicked();
     void on_pushButton_clicked();
+    void on_btn_print_offset_clicked();
+    void on_btn_set_pga_clicked();
 };
 
 #endif // MAINWINDOW_H

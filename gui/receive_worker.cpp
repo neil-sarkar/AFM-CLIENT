@@ -354,12 +354,18 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         z_offset_adc->clear();
         z_amp_adc->clear();
         z_phase_adc->clear();
-        for (int i = 2; i < AFM_SCAN_STEP_4ACT_RSPLEN; i++) {
-            z_offset_adc->append(uart_resp.at(i) & uart_resp.at(++i));
-            z_amp_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
-            z_phase_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
+        if(uart_resp.size() > AFM_SCAN_STEP_4ACT_RSPLEN &&
+                ((uart_resp.size()-2) % 6 == 0)){
+            for (int i = 2; i < uart_resp.size(); i++) {
+                z_amp_adc->append(uart_resp.at(i) & uart_resp.at(++i));
+                z_offset_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
+                z_phase_adc->append(uart_resp.at(++i) & uart_resp.at(++i));
+            }
+            return_queue.push(new returnBuffer(SCANDATA, AFM_SUCCESS, *z_offset_adc, *z_amp_adc, *z_phase_adc));
+        } else {
+            qDebug() << "!!! Bad scan data.";
+            return_queue.push(new returnBuffer(SCANDATA, AFM_FAIL, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         }
-        return_queue.push(new returnBuffer(SCANDATA, AFM_SUCCESS, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         break;
 
         //ANCIENT CODE BELOW:

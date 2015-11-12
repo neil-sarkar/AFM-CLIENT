@@ -519,18 +519,25 @@ void MainWindow::dequeueReturnBuffer()
                 }
              */
         {
-            //int append_result = scan_result->append_data(_buffer->getzoffset(),
-             //                                           _buffer->getzamp(),
-             //                                           _buffer->getzphase());
-            int append_result = 0;
+            if (_buffer->getData() == AFM_FAIL) {
+                qDebug() << "afm bad scan data received";
+                scan_state = 0;
+                QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+                break;
+            }
+
+            int append_result = scan_result->append_data(_buffer->getzoffset(),
+                                                         _buffer->getzamp(),
+                                                         _buffer->getzphase());
             if(append_result == 0) {
-                 qDebug() << "Scan Data is in success!";
+                qDebug() << "Scan Data is in success!";
                 // commandQueue.push(new commandNode(scanStep_4act));
             } else if (append_result == 1) {
                 qDebug() << "afm_data append_scan_data is full";
             } else {
                 //We have a fault
                 qDebug() << "afm_data append_scan_data failed";
+                scan_state = 0;
             }
             //scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
             //scanPlot.updateGL();
@@ -538,7 +545,7 @@ void MainWindow::dequeueReturnBuffer()
             //Callback to the state machine
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         }
-            break;
+        break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
@@ -558,11 +565,11 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case SIGGEN:
             if (_buffer->getData() == AFM_SUCCESS) {
-//                ui->label_13->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
-                msgBox.setText("Scan Parameters Set Success");
-                msgBox.exec();
+                ui->label_scan_param_light->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
+                //msgBox.setText("Scan Parameters Set Success");
+                //msgBox.exec();
             } else {
-                ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
+                ui->label_scan_param_light->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
                 msgBox.setText("Scan Parameters Set Failed");
                 msgBox.exec();
             }
@@ -1636,6 +1643,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
         qDebug() << "dac_table_current_block at max value, msg #" << dac_table_current_block;
         //If we are in the appropriate scanning state, callback to the scan_state_machine
         if(scan_state == 3) {
+            ui->progbar_scan->setValue((ui->progbar_scan->value())+1);
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         }
     } else {
@@ -1643,6 +1651,10 @@ void MainWindow::set_DAC_table_state_machine(int type)
         qDebug() << "ROLL DAC Table msg #" << dac_table_current_block;
         dac_table_current_block++;
         //The dequeue receiver should call this function again
+        //UI stuff
+        if(scan_state == 3) {
+            ui->progbar_scan->setValue((ui->progbar_scan->value())+1);
+        }
     }
 
 }
@@ -1662,6 +1674,7 @@ void MainWindow::scan_state_machine(){
          */
         ui->progbar_scan->setValue(0);
         ui->label_scan_status->setText("Stopped");
+        ui->label_scan_param_light->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
         //enable UI elements
         //No need to inf
         break;
@@ -1671,6 +1684,17 @@ void MainWindow::scan_state_machine(){
          * Initialize
          * Set PID params and turn on PID
          */
+        ui->progbar_scan->setValue(3);
+        ui->label_scan_status->setText("Setting PGA");
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
+        commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
+        ui->label_scan_status->setText("Setting PID");
         commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
         commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
         commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
@@ -1683,6 +1707,8 @@ void MainWindow::scan_state_machine(){
          * EXIT: Begin command sequence for DAC Table
          * Send DAC Table
          */
+        ui->progbar_scan->setValue(7);
+        ui->label_scan_status->setText("Preparing AFM chip");
         set_DAC_table_state_machine(0);
         scan_state++;
         break;
@@ -1697,8 +1723,9 @@ void MainWindow::scan_state_machine(){
         double numpts = ui->cmbScanNumPoints->currentText().toDouble();
         commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
         commandQueue.push(new commandNode(startScan_4act));
-       // delete scan_result;
-       // scan_result = new afm_data(numpts, numlines, ratioEnum);
+        delete scan_result;
+        scan_result = new afm_data(numpts, numlines, ratioEnum);
+        ui->label_scan_status->setText("Scanning...");
         scan_state++;
     }
     break;
@@ -1708,13 +1735,16 @@ void MainWindow::scan_state_machine(){
          * EXIT: When all data points are received, single-shot
          * Saves data, plot graph, keeps track of where we are, and requests the next data block
          */
-//        if(scan_result->is_data_full() == false) {
-//            commandQueue.push(new commandNode(scanStep_4act));
-//        } else{
-//            scan_state++;
-//            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
-//        }
-
+        if(scan_result->is_data_full() == false && scan_result->has_error() == false) {
+            commandQueue.push(new commandNode(scanStep_4act));
+        } else if ( scan_result->has_error() == true) {
+            scan_state = 0;
+            ui->label_scan_status->setText("Error while scanning");
+            QTimer::singleShot(5000, this, SLOT(scan_state_machine()));
+        } else {
+            scan_state++;
+            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+        }
     }
     break;
     case 5:
@@ -1732,15 +1762,9 @@ void MainWindow::scan_state_machine(){
 
 void MainWindow::on_btn_scan_begin_clicked()
 {
-    autoapproach_state = 1; //Initial state
-    //Grab current setpoint value
-    autoappr_setpoint = ui->spinbox_autoappr_setpoint->value();
-    ui->spinbox_autoappr_setpoint->setEnabled(false);
-    //Prepare the task1_timer
-    task1_timer = new QTimer(this);
-    connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
-    //Launch the autoApproach_state_machine
-    QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+    scan_state = 1; //Initial state
+    //Launch the scan_state_machine
+    QTimer::singleShot(1, this, SLOT(scan_state_machine()));
 }
 
 void MainWindow::on_btn_scan_stop_clicked()
@@ -1752,5 +1776,22 @@ void MainWindow::on_btn_scan_stop_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    //scan_result->print_all();
+    scan_result->print_all();
+}
+
+void MainWindow::on_btn_print_offset_clicked()
+{
+    scan_result->print_amp();
+}
+
+void MainWindow::on_btn_set_pga_clicked()
+{
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
 }
