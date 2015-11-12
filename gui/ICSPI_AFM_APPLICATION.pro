@@ -37,13 +37,13 @@ HEADERS  += mainwindow.h \
     myplot.h \
     commandnode.h \
     returnbuffer.h \
-    XYgenerator.cpp.disabled \
-    XYgenerator.h.disabled \
     afm_worker.h \
     receive_worker.h \
     send_worker.h \
+    icspi_products.h \
     afm_data.h \
-    icspi_products.h
+    XYgenerator.cpp.disabled \
+    XYgenerator.h.disabled
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

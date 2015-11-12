@@ -558,7 +558,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -2199,7 +2199,7 @@ border-radius: 4px;
          <item>
           <widget class="QPushButton" name="btn_re_init">
            <property name="text">
-            <string>Re-Initialize</string>
+            <string>Re-Initialize DAC</string>
            </property>
           </widget>
          </item>

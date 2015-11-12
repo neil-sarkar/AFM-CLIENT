@@ -1475,10 +1475,10 @@ void MainWindow::on_btn_pid_on_clicked()
 {
     qDebug() << "pid on clicked";
     //mutex.lock();
-    commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
-    commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
-    commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
-    commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
+//    commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+//    commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+//    commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+//    commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
     commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
     //mutex.unlock();
 }

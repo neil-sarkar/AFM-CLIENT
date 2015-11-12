@@ -1,6 +1,7 @@
 #ifndef receive_worker_H
 #define receive_worker_H
 #include <QObject>
+#include <QTime>
 #include <queue>
 #include <globals.h>
 #include <deque>

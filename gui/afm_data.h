@@ -6,8 +6,6 @@
 #include <QtCore/QDebug>
 #include <QVector>
 
-#include "globals.h"
-
 /**
  * @brief   The afm_data class manages scan data returned by the
  *          AFM and generation of gwyddion files. Each afm_data
@@ -21,8 +19,11 @@
    c = CodeValet()
    c.afm_data_h_define()
    ]]]*/
-/* Automatically Generated Code - Editing is futile! */
-
+   /* Automatically Generated Code - Editing is futile! */
+   #define RATIO_7_1  8
+   #define RATIO_3_1  4
+   #define RATIO_1_1  2
+   #define RATIO_0_1  1
 //[[[end]]]
 
 class afm_data : public QObject {
@@ -47,7 +48,6 @@ QVector<double> zamp;
 QVector<double> zphase;
 
 public:
-~afm_data();
 afm_data(int n_pts, int n_lines, int _ratio); //Constructor
 int append_data(QVector<double> z_offset_adc,
                 QVector<double> z_amp_adc,

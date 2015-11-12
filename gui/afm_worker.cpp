@@ -1,6 +1,4 @@
 #include "afm_worker.h"
-#include <QMessageBox>
-#include <QTime>
 
 /* Serial Configuration */
 #define AFM_MANUFACTURER "FTDI" //Should change this later on to ICSPI
@@ -86,7 +84,7 @@ int afm_worker::writeByte(char byte)
  * Collects the bytes to send
  * After all the bytes are collected, call writeMsg() to actually send it out
  */
-int afm_worker::addPayloadByte(char byte)
+void afm_worker::addPayloadByte(char byte)
 {
     payload_out_buffer += byte;
 }
@@ -155,12 +153,11 @@ void afm_worker::writeMsg(char message_id, QByteArray payload)
     //Close the message
     writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
+    emit push_recv_queue(message_id, message_tag, writeByte_result);
+
 #if AFM_DEBUG
     qDebug() << "Sent TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success?" << writeByte_result;
 #endif
-
-    emit push_recv_queue(message_id, message_tag, writeByte_result);
-
     return;
 }
 

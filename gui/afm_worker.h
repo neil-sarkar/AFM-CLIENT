@@ -10,6 +10,7 @@
 #include <QString>
 //#include <QVector>
 #include <math.h>
+#include <QTime>
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            1  // 1: display debug messages
@@ -71,7 +72,7 @@ public slots:
      */
     // Used by afm.cpp
     void clearPayloadBuffer();
-    int addPayloadByte(char byte);
+    void addPayloadByte(char byte);
     void writeMsg(char msg_id);
 
     // Used by receive worker
@@ -79,4 +80,3 @@ public slots:
 };
 
 #endif // AFM_H
-

@@ -1,5 +1,4 @@
 #include "afm.h"
-#include <QMessageBox>
 
 /* Serial Configuration */
 #define AFM_MANUFACTURER "FTDI" //Should change this later on to ICPI

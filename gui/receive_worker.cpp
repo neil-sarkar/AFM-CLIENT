@@ -1,5 +1,5 @@
 #include "receive_worker.h"
-#include <QTime>
+
 
 void receive_worker::mainLoop()
 {
@@ -23,29 +23,7 @@ void receive_worker::queue_cleaner(){
  * The overloaded push_recv_queue function is to be invoked from both
  * afm_worker (which provides the message ID, TAG, and Result) and
  * send_worker (provides returnType)
- *
- * Since we do not know which worker will call first, the flag
- * next_command_clear_to_write is used to indicate if data has
- * already been received from afm or send worker.
- *
- * TODO There might be a better way to do this.
- *
  */
-//void receive_worker::push_recv_queue(returnType name){
-//    if(next_command_clear_to_write) {
-//        next_command_name = name;
-//        next_command_clear_to_write = false;
-//    } else {
-//        receivetype receivenode;
-//        receivenode.name = name;
-//        receivenode.message_id = next_command_message_id;
-//        receivenode.message_tag = next_command_message_tag;
-//        receivenode.writeByte_result = next_command_writeByte_result;
-//        receive_queue.push(receivenode);
-//        next_command_clear_to_write = true;
-//    }
-//}
-
 void receive_worker::push_recv_queue(char message_id, char message_tag, int writeByte_result){
     receivetype receivenode;
     receivenode.message_id = message_id;
@@ -767,9 +745,14 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_SUCCESS));
        break;
         //[[[end]]]
-
-
     } // End switch
+
+    /* IMPORTANT! */
+    // Cool, the message was processed without errors
+    receive_queue.pop_front();
+    //clear the current msg, so that the next one may be read
+    uart_resp.clear();
+
 } // end process_uart_resp
 
 

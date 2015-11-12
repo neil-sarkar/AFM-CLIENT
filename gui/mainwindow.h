@@ -33,7 +33,6 @@
 #include <QSignalMapper>
 #include <QStatusBar>
 #include <commandNode.h>
-#include <afm_data.h>
 
 #include <QProcess>
 
@@ -67,7 +66,7 @@ public:
                queue<returnBuffer*>& _returnqueue) :
         QMainWindow(parent),
         commandQueue(_queue),
-        returnQueue(_returnqueue) {}
+        returnQueue(_returnqueue){}
 
     //public functions
     void abort();
