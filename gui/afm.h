@@ -206,11 +206,11 @@ c.afm_h_define()
 #define RATIO_1_1  2
 #define RATIO_0_1  1
 #define AFM_ADC_MAX_VOLTAGE  2.5
-#define AFM_ADC_DATA_RANGE  4096
+#define AFM_ADC_DATA_RANGE  4095
 #define AFM_DAC_MAX_VOLTAGE  3.3
-#define AFM_DAC_DATA_RANGE  4096
+#define AFM_DAC_DATA_RANGE  4095
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE  0.4
-//[[[end]]] (checksum: 29d87ba49cc392f30761394c7eb7153d)
+//[[[end]]] (checksum: 92f09d782dd7a94b383664c29a603280)
 
 // Misc Program-Specific Enums
 #define MOT_FWD 1
@@ -294,7 +294,7 @@ public:
                     float val2);
 
     void autoApproach(double setpoint);
-    void setDACValues(char dacID,
+    void setDACMaxValues(char dacID,
                      double _val);
     void deviceCalibration(double val,
                           char side);

@@ -37,7 +37,7 @@ enum Command{
     afmAutoApproach,
     setPort,
     mainWindowTimerEvent,
-    setDacValues,
+    setDacMaxValues,
     deviceCalibration,
     scanParameters,
     startScan,

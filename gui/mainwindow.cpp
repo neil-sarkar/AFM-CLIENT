@@ -119,6 +119,18 @@ void MainWindow::Initialize()
 
     /*Initialize DAC limits*/
     SetMaxDACValues();
+    /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
+    //on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
+    //on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
+    //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
 
     /*Timers*/
     generalTimer = new QTimer(this);
@@ -139,11 +151,6 @@ void MainWindow::Initialize()
     QStringList microstep_options;
     microstep_options << "1" << "1/2" << "1/4" << "1/8" << "1/16" << "1/32";
     ui->cbo_microstep->addItems(microstep_options);
-
-    /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
-    //on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
-    //on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
-    //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
 
     /* future watcher for auto approaching*/
     future = new QFuture<void>;
@@ -343,18 +350,18 @@ void MainWindow::refreshPortsList()
  */
 void MainWindow::SetMaxDACValues()
 {
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_BFRD1, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_BFRD2, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_BR2, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_ZAMP, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_BR1, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_BFRD3, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_ZOFFSET_FINE, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_Y1, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_ZOFFSET_COARSE, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_Y2, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_X1, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_X2, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD1, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD2, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_BR2, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_ZAMP, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_BR1, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD3, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_FINE, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y1, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_COARSE, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y2, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_X1, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_X2, AFM_DAC_MAX_VOLTAGE));
 }
 
 void MainWindow::approachTimerUp()
@@ -413,6 +420,7 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case DACZOFFSETFINE:
             zOffsetFine = _buffer->getFData();
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACY1:
             y1 = _buffer->getFData();
@@ -420,6 +428,7 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case DACZOFFSETCOARSE:
             zOffsetCoarse = _buffer->getFData();
+            fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACY2:
             y2 = _buffer->getFData();
@@ -489,7 +498,6 @@ void MainWindow::dequeueReturnBuffer()
                 ui->label_13->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
         case SCANPARAMETERS:
-
             QApplication::restoreOverrideCursor();
 
             if (_buffer->getData() == AFM_SUCCESS) {
@@ -764,8 +772,8 @@ void MainWindow::on_btn_autoappr_go_clicked()
 {
     autoapproach_state = 1; //Initial state
     //Grab current setpoint value
-    autoappr_setpoint = ui->spinbox_autoappr_setpoint->value();
-    ui->spinbox_autoappr_setpoint->setEnabled(false);
+    autoappr_setpoint = ui->spnPidSetpoint->value();
+    ui->spnPidSetpoint->setEnabled(false);
     //Prepare the task1_timer
     task1_timer = new QTimer(this);
     connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
@@ -799,7 +807,7 @@ void MainWindow::autoApproach_state_machine(){
     case 0: //Disabled state
         task1_timer->stop();
         ui->progbar_autoappr->setValue(0);
-        ui->spinbox_autoappr_setpoint->setEnabled(true);
+        ui->spnPidSetpoint->setEnabled(true);
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
         break;
@@ -1187,8 +1195,8 @@ void MainWindow::on_buttonReadIO_clicked()
 {
     //ui->dacValue->setValue(afm.readDAC(ui->dacNumber->value()));
     commandNode *_node = new commandNode(readDAC, (qint8)ui->dacNumber->value());
-
     commandQueue.push(_node);
+
     _node = new commandNode(readADC, (qint8)ui->adcNumber->value());
     commandQueue.push(_node);
 }
@@ -1227,12 +1235,12 @@ void MainWindow::on_buttonAutoApproachMCU_clicked(bool checked)
 void MainWindow::on_setMaxDACValuesButton_clicked()
 {
     updateStatusBar("Setting DAC Values...");
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_Y1, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_Y2, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_X1, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_X2, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_ZOFFSET_COARSE, ui->ZfineSpinBox->value()));
-    commandQueue.push(new commandNode(setDacValues, (double)DAC_ZOFFSET_FINE, ui->ZcoarseSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_Y1, ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_Y2, ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_X1, ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_X2, ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_ZOFFSET_COARSE, ui->ZfineSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_ZOFFSET_FINE, ui->ZcoarseSpinBox->value()));
 
     ui->label_10->setVisible(true);
     ui->label_11->setVisible(true);

@@ -282,11 +282,11 @@ void icspiAFM::autoApproach(double setpoint)
     emit writeMsg(AFM_AUTOAPPROACH_SELECT);
 }
 
-void icspiAFM::setDACValues(char dacID, double _val)
+void icspiAFM::setDACMaxValues(char dacID, double _val)
 {
     clearPayloadBuffer();
 
-    qint16 _max = AFM_DAC_SCALING * _val;
+    quint16 _max = (double)AFM_DAC_SCALING * (double)_val;
 
     emit addPayloadByte((char)dacID);
     emit addPayloadByte((_max & 0xFF));
@@ -423,13 +423,8 @@ void icspiAFM::setPGA_pcb3(int channel, double val)
     clearPayloadBuffer();
     emit addPayloadByte(channel);
 
-    if (channel == PGA_DDS_AMPLITUDE || channel == PGA_ZFINE) {
-        qint8 newval = abs(20 * log10(val / 100));
-        emit addPayloadByte(newval);
-    } else {
-        qint8 newval = (((20 * log10(val / 100)) - 31.5) / 0.5) + 255;
-        emit addPayloadByte(newval);
-    }
+    qint8 newval = round(20 * log10(val / 100))*2+210;
+    emit addPayloadByte(newval);
 
     emit writeMsg(AFM_SET_PGA_PCB3);
 }

@@ -228,9 +228,9 @@ void send_worker::queue_check(){
             return_name = FREQSWEEP;
             emit updateStatusBar("Done");
             break;
-        case setDacValues:
-            s_afm.setDACValues(_node->getqval(), _node->getdval());
-            return_name = SETDACVALUES;
+        case setDacMaxValues:
+            s_afm.setDACMaxValues(_node->getqval(), _node->getdval());
+            return_name = SETDACMAXVALUES;
             break;
         case deviceCalibration:
             emit updateStatusBar("Calibrating...");
