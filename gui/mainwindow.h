@@ -96,7 +96,6 @@ signals:
 
 public slots:
     //used for the scan graph settings
-    void on_buttonAutoApproachClient_clicked(bool checked);
     void updateStatusBar(QString _string);
     void pickPlotStyle( QAction* );
     void setLeftGrid( bool b );
@@ -139,6 +138,7 @@ private:
     MyPlot::Plot freqPlot;
     MyPlot::Plot phasePlot;
     MyPlot::Plot approachPlot;
+    MyPlot::Plot approachPlot2;
     MyPlot::Plot signalPlot1;
     MyPlot::Plot signalPlot2;
     MyPlot::Plot forceCurve;
@@ -239,8 +239,6 @@ private slots:
     void on_pushButton_4_clicked(bool checked);
     void on_pushButton_5_clicked(bool checked);
     void on_checkBox_clicked(bool checked);
-    void on_sldAmplitudeVoltage_3_valueChanged(int value);
-    void on_buttonCurrValuePidSetpoint_clicked(bool checked);
     void on_sweepButton_clicked();
     void on_useCurrFreqVal_clicked();
     void on_pushButton_6_clicked();
@@ -282,6 +280,7 @@ private slots:
     void on_pushButton_clicked();
     void on_btn_print_offset_clicked();
     void on_btn_set_pga_clicked();
+    void on_spnPidSetpoint_2_valueChanged(double arg1);
 };
 
 #endif // MAINWINDOW_H

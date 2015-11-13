@@ -369,19 +369,25 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             return_queue.push(new returnBuffer(SCANDATA, AFM_FAIL, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         }
         break;
-
-        //ANCIENT CODE BELOW:
-//    case AFM_ADC_READ_SPO:
-//        if (uart_resp.at(1) == AFM_ADC_READ_SPO) {
-//            signal = (((unsigned char)uart_resp.at(1) << 8) | (unsigned char)uart_resp.at(0));
-//            offset = (((unsigned char)uart_resp.at(3) << 8) | (unsigned char)uart_resp.at(1));
-//            phase = (((unsigned char)uart_resp.at(5) << 8) | (unsigned char)uart_resp.at(4));
-//            graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal / AFM_DAC_SCALING, offset / AFM_DAC_SCALING, phase / AFM_DAC_SCALING));
-
-//        } else {
-//            isError = true;
-//        }
-//        break;
+    case AFM_ADC_READ_SPO:
+        if (uart_resp.at(1) != AFM_ADC_READ_SPO) {
+            handle_error(ERR_MSG_ID_MISMATCH);
+            break;
+        }
+        if(uart_resp.size() < AFM_ADC_READ_SPO_RSPLEN) {
+            handle_error(ERR_MSG_SIZE_MISMATCH);
+            break;
+        }
+        {
+        int i=2;
+        signal = (double)BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i+1]);
+        offset = (double)BYTES_TO_WORD((quint8)uart_resp[i+2], (quint8)uart_resp[i+3]);
+        phase = (double)BYTES_TO_WORD((quint8)uart_resp[i+4], (quint8)uart_resp[i+5]);
+        graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal / AFM_DAC_SCALING, offset / AFM_DAC_SCALING, phase / AFM_DAC_SCALING));
+        return_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal / AFM_DAC_SCALING, offset / AFM_DAC_SCALING, phase / AFM_DAC_SCALING));
+        }
+        break;
+                //ANCIENT CODE BELOW:
 //    case SCANDATA:
 //                for (int i = 0; i < _node.numBytes - 1; i++) {
 //                    z_offset_adc->append(uart_resp.at(i) & uart_resp.at(++i));

@@ -137,7 +137,7 @@ void Plot::update(double x, double y, bool toReplot ) {
             this->dataCount = 1;
             this->xData.clear();
             this->yData.clear();
-            this->setAxisScale( QwtPlot::xBottom, x, x + xAxisRange );
+            this->setAxisScale(QwtPlot::xBottom, x, x + xAxisRange );
             this->xAxisStart = x;
         }
     }

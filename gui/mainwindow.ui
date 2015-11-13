@@ -521,7 +521,7 @@ border-bottom: 1px solid black;
      <rect>
       <x>206</x>
       <y>0</y>
-      <width>695</width>
+      <width>701</width>
       <height>601</height>
      </rect>
     </property>
@@ -581,7 +581,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -1234,188 +1234,6 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
              <property name="title">
               <string>Platform Controls</string>
              </property>
-             <widget class="QProgressBar" name="progbar_autoappr">
-              <property name="geometry">
-               <rect>
-                <x>22</x>
-                <y>32</y>
-                <width>151</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="maximum">
-               <number>8</number>
-              </property>
-              <property name="value">
-               <number>8</number>
-              </property>
-              <property name="format">
-               <string>Step %v</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_28">
-              <property name="geometry">
-               <rect>
-                <x>22</x>
-                <y>59</y>
-                <width>90</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Setpoint: </string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_29">
-              <property name="geometry">
-               <rect>
-                <x>175</x>
-                <y>32</y>
-                <width>65</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>ADCZOFFSET</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="btn_autoappr_go">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>80</y>
-                <width>108</width>
-                <height>23</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Qt AutoApproach Go</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_autoappr_meas">
-              <property name="geometry">
-               <rect>
-                <x>180</x>
-                <y>60</y>
-                <width>54</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>NO SIGNAL</string>
-              </property>
-             </widget>
-             <widget class="QPushButton" name="btn_autoappr_stop">
-              <property name="geometry">
-               <rect>
-                <x>130</x>
-                <y>80</y>
-                <width>121</width>
-                <height>23</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Qt AutoApproach STOP</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="lbl_setpoint_val">
-              <property name="geometry">
-               <rect>
-                <x>80</x>
-                <y>60</y>
-                <width>47</width>
-                <height>13</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-             <widget class="QWidget" name="layoutWidget">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>200</y>
-                <width>229</width>
-                <height>139</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_13">
-               <item row="0" column="0" colspan="3">
-                <widget class="QLabel" name="label_32">
-                 <property name="text">
-                  <string>User-friendly platform controls</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QLabel" name="lbl_stepmot_user_spd">
-                 <property name="text">
-                  <string>1</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QLabel" name="label_31">
-                 <property name="text">
-                  <string>Speed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="3">
-                <widget class="QSlider" name="sld_stepmot_user_spd">
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>4</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0" colspan="3">
-                <widget class="QLabel" name="label_33">
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Press to operate Release to stop</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1" colspan="2">
-                <widget class="QPushButton" name="btn_stepmot_user_up">
-                 <property name="autoFillBackground">
-                  <bool>true</bool>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">background: rgb(255, 147, 15)</string>
-                 </property>
-                 <property name="text">
-                  <string>Retract</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QPushButton" name="btn_stepmot_user_down">
-                 <property name="autoFillBackground">
-                  <bool>false</bool>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>Approach</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
             </widget>
            </widget>
           </item>
@@ -1998,32 +1816,6 @@ QLabel {  color : red; };</string>
                 <item row="0" column="1">
                  <layout class="QVBoxLayout" name="verticalLayout_2">
                   <item>
-                   <widget class="QPushButton" name="pushButton_22">
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string>Auto Scale</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="buttonCurrValuePidSetpoint">
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string>Current Value as PID Setpoint</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_32">
                     <item>
                      <widget class="QLabel" name="label_21">
@@ -2073,7 +1865,7 @@ QLabel {  color : red; };</string>
                     <item>
                      <widget class="QLabel" name="label_25">
                       <property name="text">
-                       <string>Current Value:</string>
+                       <string>Current Signal:</string>
                       </property>
                      </widget>
                     </item>
@@ -2092,45 +1884,93 @@ QLabel {  color : red; };</string>
                     </item>
                    </layout>
                   </item>
-                  <item>
-                   <widget class="QPushButton" name="buttonAutoApproachMCU">
-                    <property name="styleSheet">
-                     <string notr="true"/>
+                 </layout>
+                </item>
+                <item row="1" column="0" colspan="2">
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="0" colspan="6">
+                   <widget class="QProgressBar" name="progbar_autoappr">
+                    <property name="maximum">
+                     <number>8</number>
                     </property>
-                    <property name="text">
-                     <string>Auto Approach MCU</string>
+                    <property name="value">
+                     <number>8</number>
                     </property>
-                    <property name="checkable">
-                     <bool>false</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="buttonAutoApproachClient">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string>Auto Approach Client</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
+                    <property name="format">
+                     <string>Step %v</string>
                     </property>
                    </widget>
                   </item>
-                  <item>
-                   <widget class="QPushButton" name="writeCharacter">
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
+                  <item row="3" column="0" colspan="3">
+                   <widget class="QPushButton" name="btn_autoappr_go">
                     <property name="text">
-                     <string>Write Character</string>
+                     <string>Qt AutoApproach Go</string>
                     </property>
-                    <property name="checkable">
-                     <bool>true</bool>
+                   </widget>
+                  </item>
+                  <item row="3" column="3" colspan="3">
+                   <widget class="QPushButton" name="btn_autoappr_stop">
+                    <property name="text">
+                     <string>Qt AutoApproach STOP</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="6">
+                   <widget class="QLabel" name="label_appr_phase_2">
+                    <property name="text">
+                     <string>ACD Z FINE</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="7">
+                   <widget class="QLabel" name="label_adczfine">
+                    <property name="text">
+                     <string>NO SIGNAL</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="7">
+                   <widget class="QLabel" name="label_autoappr_meas">
+                    <property name="text">
+                     <string>NO SIGNAL</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="6">
+                   <widget class="QLabel" name="label_29">
+                    <property name="text">
+                     <string>ADC Z COARSE</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="7">
+                   <widget class="QLabel" name="label_appr_phase">
+                    <property name="text">
+                     <string>NO SIGNAL</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="6">
+                   <widget class="QLabel" name="label_41">
+                    <property name="text">
+                     <string>PHASE</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_28">
+                    <property name="text">
+                     <string>Setpoint: </string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QDoubleSpinBox" name="spnPidSetpoint_2">
+                    <property name="maximum">
+                     <double>10000.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.010000000000000</double>
                     </property>
                    </widget>
                   </item>
@@ -2138,220 +1978,103 @@ QLabel {  color : red; };</string>
                 </item>
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout">
-                  <item row="0" column="0">
+                  <item row="0" column="1">
                    <layout class="QVBoxLayout" name="verticalLayout_21">
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_6">
                       <item>
-                       <widget class="QSlider" name="sldAmplitudeVoltage_3">
-                        <property name="styleSheet">
-                         <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
-                        </property>
-                        <property name="minimum">
-                         <number>0</number>
-                        </property>
-                        <property name="maximum">
-                         <number>19</number>
-                        </property>
-                        <property name="singleStep">
-                         <number>1</number>
-                        </property>
-                        <property name="pageStep">
-                         <number>2</number>
-                        </property>
-                        <property name="value">
-                         <number>0</number>
-                        </property>
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="tickPosition">
-                         <enum>QSlider::TicksBelow</enum>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_24">
-                        <item>
-                         <widget class="QLabel" name="lblMemsAmplitudeMinVal_3">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>S</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>35</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="lblAmplitude">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>15</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>0</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_4">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeType">
-                           <enum>QSizePolicy::Expanding</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>35</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="lblMemsAmplitudeMaxVal_3">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="text">
-                           <string>F</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
+                       <layout class="QHBoxLayout" name="horizontalLayout_24"/>
                       </item>
                      </layout>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_43">
-                      <item>
-                       <widget class="QPushButton" name="stepButton">
-                        <property name="styleSheet">
-                         <string notr="true"/>
-                        </property>
-                        <property name="text">
-                         <string>Step</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="continuousButton">
-                        <property name="styleSheet">
-                         <string notr="true"/>
-                        </property>
-                        <property name="text">
-                         <string>Cont</string>
-                        </property>
-                        <property name="checkable">
-                         <bool>false</bool>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                     <widget class="QPushButton" name="btn_appr_plot_autoscale">
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>Auto Scale</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_44">
-                      <item>
-                       <widget class="QRadioButton" name="retreatButton">
-                        <property name="styleSheet">
-                         <string notr="true"/>
-                        </property>
-                        <property name="text">
-                         <string>Retr</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QRadioButton" name="approachButton">
-                        <property name="text">
-                         <string>Appr</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                     <widget class="QPushButton" name="buttonCurrValuePidSetpoint">
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>Current Value as PID Setpoint</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_43"/>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_44"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="0">
+                   <layout class="QGridLayout" name="gridLayout_13">
+                    <item row="2" column="1" colspan="2">
+                     <widget class="QPushButton" name="btn_stepmot_user_up">
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>Retract</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0" colspan="2">
+                     <widget class="QLabel" name="label_31">
+                      <property name="text">
+                       <string>Speed</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0" colspan="3">
+                     <widget class="QSlider" name="sld_stepmot_user_spd">
+                      <property name="minimum">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <number>4</number>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="2">
+                     <widget class="QLabel" name="lbl_stepmot_user_spd">
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QPushButton" name="btn_stepmot_user_down">
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>Approach</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>

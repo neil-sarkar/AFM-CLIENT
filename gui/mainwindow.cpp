@@ -284,16 +284,25 @@ void MainWindow::CreateGraphs()
     phasePlot.show();
 
     // add approach plot
-    fields = MyPlot::PlotFields("Bridge Signal", true, "Time", "Bridge Voltage (V)", \
+    fields = MyPlot::PlotFields("Z COARSE Signal", true, "Time", "Voltage (V)", \
                                 QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
                                 false);
     approachPlot.SetPlot(fields, ui->approachWidget);
     ui->gridLayout_24->setSpacing(0);
     ui->gridLayout_24->addWidget(&approachPlot, 1, 0);
-    approachPlot.resize(500, 300);
+    approachPlot.resize(500, 100);
+    approachPlot.setAutoScale(true);
     approachPlot.show();
 
-
+    // add approach plot 2
+    fields = MyPlot::PlotFields("PHASE SIGNAL", true, "Time", "something", \
+                                QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Green"),
+                                false);
+    approachPlot2.SetPlot(fields, ui->approachWidget);
+    ui->gridLayout_24->addWidget(&approachPlot2, 2, 0);
+    approachPlot2.resize(500, 100);
+    approachPlot2.setAutoScale(true);
+    approachPlot2.show();
 
     // add signal plot 1
     fields = MyPlot::PlotFields("Z Offset", false, "Time", "Z Offset (V)", \
@@ -310,7 +319,6 @@ void MainWindow::CreateGraphs()
                                 QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
                                 false);
     signalPlot2.SetPlot(fields, ui->signalWidget);
-
     ui->gridLayout_10->addWidget(&signalPlot2, 2, 0);
     signalPlot2.resize(500, 100);
     signalPlot2.show();
@@ -445,6 +453,7 @@ void MainWindow::dequeueReturnBuffer()
         case ADCZOFFSET:
             adcZ = _buffer->getFData();
             ui->adcValue->setText(QString::number(_buffer->getFData()));
+            ui->label_autoappr_meas->setText(QString::number(_buffer->getFData()));
             if (useBridgeSignalAsSetpoint) {
                 //ui->spnPidSetpoint->setValue(double(bfrd3));
                 //ui->currPIDSetpoint->setValue(double(bfrd3));
@@ -464,6 +473,9 @@ void MainWindow::dequeueReturnBuffer()
             offset = _buffer->getdoffset();
             phase = _buffer->getdphase();
             signal = _buffer->getdsignal();
+            ui->label_adczfine->setText(QString::number(offset));
+            ui->label_appr_phase->setText(QString::number(phase));
+            ui->currOffsetValue->setValue(signal);
             break;
         case AFMADCAMPLITUDEID:
             zAmp = _buffer->getFData();
@@ -584,10 +596,14 @@ void MainWindow::dequeueReturnBuffer()
             break;
         } //end Switch
 
-        if (currTab == 3) {
-//            approachPlot.update(time, signal, currTab == Approach ? true: false);
-//            ui->currOffsetValue->setValue(signal);
-//            time++;
+        if (currTab == Approach) {
+            approachPlot.update(time, adcZ, true);
+            approachPlot2.update(time, phase, true);
+            approachPlot.replot();
+            approachPlot2.replot();
+        //    ui->currOffsetValue->setValue(signal);
+         //   ui->label_autoappr_meas->setText(QString::number(offset));
+            time++;
         }
         if (currTab == 4) {
             signalPlot1.update(time, zOffsetFine, currTab == Signal ? true : false);
@@ -705,14 +721,6 @@ void MainWindow::on_approachButton_clicked()
     mutex.unlock();
 }
 
-void MainWindow::on_sldAmplitudeVoltage_3_valueChanged(int value)
-{
-    ui->lblAmplitude->setText(QString::number(value));
-    mutex.lock();
-    commandQueue.push(new commandNode(stageSetPulseWidth, (qint8)value));//afm.stageSetPulseWidth(value);
-    mutex.unlock();
-}
-
 void MainWindow::on_sld_stepmot_speed_valueChanged(int value){
     ui->lbl_stepmot_speed->setText(QString::number(value));
     mutex.lock();
@@ -771,9 +779,6 @@ void MainWindow::on_btn_stepmot_wake_clicked()
 void MainWindow::on_btn_autoappr_go_clicked()
 {
     autoapproach_state = 1; //Initial state
-    //Grab current setpoint value
-    autoappr_setpoint = ui->spnPidSetpoint->value();
-    ui->spnPidSetpoint->setEnabled(false);
     //Prepare the task1_timer
     task1_timer = new QTimer(this);
     connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
@@ -807,11 +812,14 @@ void MainWindow::autoApproach_state_machine(){
     case 0: //Disabled state
         task1_timer->stop();
         ui->progbar_autoappr->setValue(0);
-        ui->spnPidSetpoint->setEnabled(true);
+        ui->spnPidSetpoint_2->setEnabled(true);
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
         break;
     case 1: //Wake up and intialization.
+        //Grab current setpoint value
+        autoappr_setpoint = ui->spnPidSetpoint_2->value();
+        ui->spnPidSetpoint_2->setEnabled(false);
         ui->progbar_autoappr->setValue(1);
         mutex.lock();
         //Turn OFF PID
@@ -978,50 +986,6 @@ void MainWindow::autoApproach_state_machine(){
         autoapproach_state = 0;
         QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         break;
-    }
-}
-
-void MainWindow::on_buttonCurrValuePidSetpoint_clicked(bool checked)
-{
-    useBridgeSignalAsSetpoint = checked;
-}
-
-// Button for autoapproach
-// TODO: verify autoapproach
-void MainWindow::on_buttonAutoApproachClient_clicked(bool checked)
-{
-    if (checked) {
-        mutex.lock();
-        autoApproachComparison = adc5; // comparison value before starting motor
-        ui->comparisonValue->setValue(adc5);
-        mutex.unlock();
-
-
-        mutex.lock();
-        commandQueue.push(new commandNode(stageSetPulseWidth, (qint8)19));
-        commandQueue.push(new commandNode(stageSetDirBackward));
-        mutex.unlock();
-
-//        afm.stageSetPulseWidth(19);
-//        afm.stageSetDirBackward();
-        isAutoApproach = true;
-        //*future = QtConcurrent::run(this, &MainWindow::autoApproach, &afm);
-        //watcher->setFuture(*future);
-    }
-    // TODO: does unchecking autoapproach do anything in original software?
-    // Set the values of motor back to what they were before
-    else {
-        isAutoApproach = false;
-        mutex.lock();
-        commandQueue.push(new commandNode(stageSetPulseWidth, (qint8)ui->sldAmplitudeVoltage_3->value()));
-
-        //afm.stageSetPulseWidth(ui->sldAmplitudeVoltage_3->value());
-/*        ui->retreatButton->isChecked() == true ? afm.stageSetDirBackward() : \
- *                                               afm.stageSetDirForward();*/
-        ui->retreatButton->isChecked() == true ? commandQueue.push(new commandNode(stageSetDirBackward)) : \
-        commandQueue.push(new commandNode(stageSetDirForward));
-
-        mutex.unlock();
     }
 }
 
@@ -1474,11 +1438,10 @@ void MainWindow::on_spnFrequencyVoltage_valueChanged(double arg1)
 
 void MainWindow::updatePlot(double _signal, int _plot)
 {
-    if (_plot == 1) {
-        approachPlot.update(time, _signal, currTab == Approach ? true : false);
-        ui->currOffsetValue->setValue(_signal);
-        time++;
-    }
+//    if (_plot == 1) {
+//        approachPlot.update(time, _signal, currTab == Approach ? true : false);
+//        time++;
+//    }
 }
 
 void MainWindow::on_btnForceCurve_clicked()
@@ -1802,4 +1765,9 @@ void MainWindow::on_btn_set_pga_clicked()
     commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
     commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
     commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
+}
+
+void MainWindow::on_spnPidSetpoint_2_valueChanged(double arg1)
+{
+    ui->spnPidSetpoint->setValue(arg1);
 }
