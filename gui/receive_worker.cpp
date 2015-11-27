@@ -87,6 +87,11 @@ void receive_worker::handle_error(short error_id){
         break;
     case ERR_MSG_UNSOLICITED:
         qDebug() << "ERR_MSG_UNSOLICITED 0x" << uart_resp.toHex();
+        //Check if this is a reboot
+        if(uart_resp.contains(0x61666d21)){
+qDebug() << "PCB Restart Detected" << uart_resp.toHex();
+return_queue.push(new returnBuffer(AFMREBOOT, AFM_SUCCESS));
+        }
         break;
     default:
         /*
@@ -170,9 +175,9 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     // The checking of message legitimacy should be done before the switch statement.
     // It is redundant to check it in every case.
 
-    // 3. The message ID shall match.
+    // 3. The message ID shall match
     // If not, start the investigation sequence, throw error, pop, and continue
-    if(uart_resp.at(0) != _node.message_tag) {
+    if(uart_resp.at(0) != (char)_node.message_tag) {
         handle_error(ERR_MSG_TAG_MISMATCH);
         return;
     }
@@ -209,8 +214,10 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         }
         if (uart_resp.at(3) == 'o') {
             return_queue.push(new returnBuffer(ADCZOFFSET, AFM_SUCCESS));
-        }else{handle_error(ERR_COMMAND_FAILED);
-              return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL)); }
+        }else{
+            handle_error(ERR_COMMAND_FAILED);
+            return_queue.push(new returnBuffer(ADCZOFFSET, AFM_FAIL));
+        }
         break;
     case AFM_DAC_READ_SELECT:
         if (uart_resp.at(1) != AFM_DAC_READ_SELECT) {
@@ -369,12 +376,12 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             return_queue.push(new returnBuffer(SCANDATA, AFM_FAIL, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         }
         break;
-    case AFM_ADC_READ_SPO:
-        if (uart_resp.at(1) != AFM_ADC_READ_SPO) {
+    case AFM_READ_SPO:
+        if (uart_resp.at(1) != AFM_READ_SPO) {
             handle_error(ERR_MSG_ID_MISMATCH);
             break;
         }
-        if(uart_resp.size() < AFM_ADC_READ_SPO_RSPLEN) {
+        if(uart_resp.size() < AFM_READ_SPO_RSPLEN) {
             handle_error(ERR_MSG_SIZE_MISMATCH);
             break;
         }
@@ -386,6 +393,24 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal / AFM_DAC_SCALING, offset / AFM_DAC_SCALING, phase / AFM_DAC_SCALING));
         return_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal / AFM_DAC_SCALING, offset / AFM_DAC_SCALING, phase / AFM_DAC_SCALING));
         }
+        break;
+    case AFM_AUTOAPPR_STATUS:
+        if ((unsigned char)uart_resp.at(1) != AFM_AUTOAPPR_STATUS) {
+            handle_error(ERR_MSG_ID_MISMATCH);
+            break;
+        }
+        if(uart_resp.size() <AFM_AUTOAPPR_STATUS_RSPLEN) {
+            handle_error(ERR_MSG_SIZE_MISMATCH);
+            break;
+        }
+    {
+        val = (((unsigned char)uart_resp.at(4) << 8) | (unsigned char)uart_resp.at(3));
+        return_queue.push(new returnBuffer(AAPPR_STA,
+                                           (quint8)uart_resp[2],
+                                           float(((float)val) * AFM_ADC_SCALING),
+                                            0.0,
+                                            0.0));
+    }
         break;
                 //ANCIENT CODE BELOW:
 //    case SCANDATA:
@@ -757,6 +782,28 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_FAIL));
        break;}
        return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_SUCCESS));
+       break;
+       case AFM_AUTOAPPR_BEGIN:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_AUTOAPPR_BEGIN) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_BEGIN, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_AUTOAPPR_BEGIN_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_BEGIN, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(AAPPR_BEGIN, AFM_SUCCESS));
+       break;
+       case AFM_AUTOAPPR_STOP:   //CodeValet autogen
+       if (uart_resp.at(1) != AFM_AUTOAPPR_STOP) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_STOP, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_AUTOAPPR_STOP_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_STOP, AFM_FAIL));
+       break;}
+       return_queue.push(new returnBuffer(AAPPR_STOP, AFM_SUCCESS));
        break;
         //[[[end]]]
     } // End switch

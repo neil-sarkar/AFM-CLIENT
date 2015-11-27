@@ -28,6 +28,7 @@
 #include <send_worker.h>
 #include <QThread>
 #include <QObject>
+#include <QVector>
 //#include <armadillo>
 #include <globals.h>
 #include <QSignalMapper>
@@ -71,7 +72,7 @@ public:
     //public functions
     void abort();
     void refreshPortsList();
-    void SetMaxDACValues();
+    void init_DAC_PGA();
     void Initialize();
     void CreateFreqSweepGraph(QVector<double> amplitudeData,
                               QVector<double> phaseData,
@@ -191,7 +192,12 @@ private:
     UserStepMotOp stepmot_callback_operation;
 
     int auto_freqsweep_state=0;
-    void auto_freqsweep(double max_amp, double max_amp_freq);
+    bool auto_freqsweep_maxamp_valid = false;
+    double auto_freqsweep_freq_at_maxamp = 0;
+    double auto_freqsweep_maxamp = 0;
+    int auto_freqsweep_decr_count = 0;
+    QVector<double> auto_freqsweep_amp_buffer = {0,0,0,0,0}; //auto_freqsweep_amp_buffer must not be empty.
+    void auto_freqsweep(double amp, double freq);
 
     int dac_table_current_block=0;
     void set_DAC_table_state_machine(int type);
@@ -281,6 +287,12 @@ private slots:
     void on_btn_print_offset_clicked();
     void on_btn_set_pga_clicked();
     void on_spnPidSetpoint_2_valueChanged(double arg1);
+    void on_btn_appr_plot_autoscale_clicked();
+    void on_btn_appr_plot_clear_clicked();
+    void on_btn_autoappr_mcu_start_clicked();
+    void on_btn_autoappr_mcu_stop_clicked();
+    void on_btn_autoappr_mcu_start_2_clicked();
+    void on_pushButton_3_clicked();
 };
 
 #endif // MAINWINDOW_H

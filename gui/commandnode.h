@@ -55,7 +55,10 @@ enum Command{
     setDACTable,
     SigGen,
     startScan_4act,
-    scanStep_4act
+    scanStep_4act,
+    aappr_begin,
+    aappr_stop,
+    aappr_sta
 };
 
 

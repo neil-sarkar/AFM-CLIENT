@@ -269,17 +269,24 @@ void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
     //Not too sure about this function
 }
 
-void icspiAFM::autoApproach(double setpoint)
+void icspiAFM::autoApproach_mcu(double setpoint)
 {
     qint16 _setpoint = AFM_DAC_SCALING * setpoint;
 
     emit addPayloadByte((_setpoint & 0xFF));
     emit addPayloadByte((_setpoint & 0x0F00) >> 8);
 
-    emit addPayloadByte((150));
-    emit addPayloadByte(0);
+    emit writeMsg(AFM_AUTOAPPR_BEGIN);
+}
 
-    emit writeMsg(AFM_AUTOAPPROACH_SELECT);
+void icspiAFM::autoApproach_mcu_status(){
+    clearPayloadBuffer();
+    emit writeMsg(AFM_AUTOAPPR_STATUS);
+}
+
+void icspiAFM::autoApproach_mcu_stop(){
+    clearPayloadBuffer();
+    emit writeMsg(AFM_AUTOAPPR_STOP);
 }
 
 void icspiAFM::setDACMaxValues(char dacID, double _val)
@@ -431,7 +438,7 @@ void icspiAFM::setPGA_pcb3(int channel, double val)
 
 void icspiAFM::readSignalPhaseOffset()
 {
-    emit writeMsg(AFM_ADC_READ_SPO);
+    emit writeMsg(AFM_READ_SPO);
 }
 
 void icspiAFM::forceCurve()

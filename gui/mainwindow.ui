@@ -745,11 +745,17 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
               </item>
               <item row="4" column="1" colspan="2">
                <widget class="QDoubleSpinBox" name="spnPidSetpoint">
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
                 <property name="maximum">
                  <double>10000.000000000000000</double>
                 </property>
                 <property name="singleStep">
                  <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
@@ -1234,6 +1240,19 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
              <property name="title">
               <string>Platform Controls</string>
              </property>
+             <widget class="QPushButton" name="btn_re_init">
+              <property name="geometry">
+               <rect>
+                <x>40</x>
+                <y>40</y>
+                <width>167</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Re-Initialize AFM: DAC and PGA</string>
+              </property>
+             </widget>
             </widget>
            </widget>
           </item>
@@ -1966,11 +1985,45 @@ QLabel {  color : red; };</string>
                   </item>
                   <item row="1" column="1">
                    <widget class="QDoubleSpinBox" name="spnPidSetpoint_2">
+                    <property name="minimum">
+                     <double>0.010000000000000</double>
+                    </property>
                     <property name="maximum">
                      <double>10000.000000000000000</double>
                     </property>
                     <property name="singleStep">
                      <double>0.010000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>1.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="4">
+                   <widget class="QLabel" name="label_32">
+                    <property name="text">
+                     <string>MCU State</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="5">
+                   <widget class="QLabel" name="lbl_autoappr_mcu_state">
+                    <property name="text">
+                     <string>NO SIGNAL</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QPushButton" name="btn_autoappr_mcu_start">
+                    <property name="text">
+                     <string>MCU GO</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QPushButton" name="btn_autoappr_mcu_stop">
+                    <property name="text">
+                     <string>MCU STOP</string>
                     </property>
                    </widget>
                   </item>
@@ -1997,6 +2050,13 @@ QLabel {  color : red; };</string>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_appr_plot_clear">
+                      <property name="text">
+                       <string>Clear Data</string>
                       </property>
                      </widget>
                     </item>
@@ -2173,8 +2233,8 @@ QLabel {  color : red; };</string>
        <rect>
         <x>30</x>
         <y>10</y>
-        <width>557</width>
-        <height>210</height>
+        <width>561</width>
+        <height>239</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -2208,10 +2268,6 @@ QLabel {  color : red; };</string>
            </item>
           </layout>
          </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
@@ -2254,6 +2310,10 @@ QLabel {  color : red; };</string>
            </item>
           </layout>
          </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_22">
            <item>
@@ -2296,13 +2356,6 @@ QLabel {  color : red; };</string>
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
-         <item>
-          <widget class="QPushButton" name="btn_re_init">
-           <property name="text">
-            <string>Re-Initialize DAC</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QLabel" name="label_15">
            <property name="text">
@@ -2759,6 +2812,45 @@ QLabel {  color : red; };</string>
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>290</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MCU STA</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_autoappr_mcu_start_2">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>290</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MCU GO</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_33">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>290</y>
+        <width>47</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tabLog">

@@ -7,6 +7,9 @@
 
 //TODO: make constructor template
 //TODO Automate this
+/*
+ * There are a lot of 'legacy' command nodes here... need a more streamlined approach to this...
+ */
 enum returnType{
     ERR_MSG_MISSED,
     NONE,
@@ -63,7 +66,11 @@ enum returnType{
     SETDACTABLE,
     SIGGEN,
     STARTSCAN_4ACT,
-    SCANSTEP_4ACT
+    SCANSTEP_4ACT,
+    AFMREBOOT,
+    AAPPR_BEGIN,
+    AAPPR_STOP,
+    AAPPR_STA
 };
 
 Q_DECLARE_METATYPE(returnType)

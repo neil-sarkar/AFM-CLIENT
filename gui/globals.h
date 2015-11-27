@@ -15,8 +15,8 @@ extern QMutex mutex; //to be used when two threads are trying to access the afm 
 //node struct for receiveQueue
 struct receivetype{
     returnType name;
-    char message_id;
-    char message_tag;
+    unsigned char message_id;
+    unsigned char message_tag;
     int writeByte_result;
 };
 

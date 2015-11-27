@@ -114,8 +114,8 @@ c.afm_h_define()
 #define AFM_DAC_READ_SELECT_RSPLEN    5
 #define AFM_ADC_READ_SELECT  0x63
 #define AFM_ADC_READ_SELECT_RSPLEN    4
-#define AFM_ADC_READ_SPO  0x65
-#define AFM_ADC_READ_SPO_RSPLEN    8
+#define AFM_READ_SPO  0x65
+#define AFM_READ_SPO_RSPLEN    8
 #define AFM_RASTER_STEP_SELECT  0x66
 #define AFM_RASTER_STEP_SELECT_RSPLEN    2
 #define AFM_PID_ENABLE_SELECT  0x67
@@ -190,6 +190,12 @@ c.afm_h_define()
 #define AFM_STEPMOT_MICROSTEP_RSPLEN    2
 #define AFM_STEPMOT_SINGLESTEP  0x31
 #define AFM_STEPMOT_SINGLESTEP_RSPLEN    2
+#define AFM_AUTOAPPR_BEGIN  0x9a
+#define AFM_AUTOAPPR_BEGIN_RSPLEN    2
+#define AFM_AUTOAPPR_STOP  0x9b
+#define AFM_AUTOAPPR_STOP_RSPLEN    2
+#define AFM_AUTOAPPR_STATUS  0x9c
+#define AFM_AUTOAPPR_STATUS_RSPLEN    5
 #define SERIAL_MSG_NEWLINE  0x0A
 #define SERIAL_MSG_ESCAPE  0x10
 #define SERIAL_MSG_MASK  0x80
@@ -210,7 +216,7 @@ c.afm_h_define()
 #define AFM_DAC_MAX_VOLTAGE  3.3
 #define AFM_DAC_DATA_RANGE  4095
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE  0.4
-//[[[end]]] (checksum: 92f09d782dd7a94b383664c29a603280)
+//[[[end]]] (checksum: c637350f4140ee0b65b9418b323a207f)
 
 // Misc Program-Specific Enums
 #define MOT_FWD 1
@@ -293,7 +299,9 @@ public:
     void rasterStep(float val1,
                     float val2);
 
-    void autoApproach(double setpoint);
+    void autoApproach_mcu(double setpoint);
+    void autoApproach_mcu_status();
+    void autoApproach_mcu_stop();
     void setDACMaxValues(char dacID,
                      double _val);
     void deviceCalibration(double val,

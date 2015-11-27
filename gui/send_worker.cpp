@@ -169,9 +169,17 @@ void send_worker::queue_check(){
             s_afm.stageSetPulseWidth(_node->getqval());
             return_name = SETPULSEWIDTH;
             break;
-        case afmAutoApproach:
-            s_afm.autoApproach(_node->getdval());
-            return_name = AUTOAPPROACH;
+        case aappr_begin:
+            s_afm.autoApproach_mcu(_node->getdval());
+            return_name = AAPPR_BEGIN;
+            break;
+        case aappr_sta:
+            s_afm.autoApproach_mcu_status();
+            return_name = AAPPR_STA;
+            break;
+        case aappr_stop:
+            s_afm.autoApproach_mcu_stop();
+            return_name = AAPPR_STOP;
             break;
         case stepMotSetSpeed:
             s_afm.stepMotSetSpeed(int(_node->getdval()));

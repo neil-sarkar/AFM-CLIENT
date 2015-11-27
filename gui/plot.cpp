@@ -33,7 +33,7 @@ void Plot::SetPlot(PlotFields& fieldsIn, QWidget *parent)
     // sometimes, title takes up too much space
     if (fields.displayTitle) {
         QwtText title(fields.title);
-        title.setFont(QFont("Times", 12, QFont::Bold));
+        title.setFont(QFont("Times", 11, QFont::Bold));
         this->setTitle(title);
     }
 

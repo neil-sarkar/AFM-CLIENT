@@ -118,16 +118,8 @@ void MainWindow::Initialize()
     refreshPortsList();
 
     /*Initialize DAC limits*/
-    SetMaxDACValues();
-    /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
-    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
+    init_DAC_PGA();
+
     //on_spnFrequencyVoltage_2_valueChanged(ui->spnFrequencyVoltage_2->value());      // set amplitude
     //on_spnBridgeVoltage_valueChanged(ui->spnBridgeVoltage->value());                // set bridge voltage
     //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
@@ -353,10 +345,10 @@ void MainWindow::refreshPortsList()
 }
 
 /*
- * Need to initialize the DAC limits
+ * Need to initialize the DAC limits and PGA values
  *
  */
-void MainWindow::SetMaxDACValues()
+void MainWindow::init_DAC_PGA()
 {
     commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD2, AFM_DAC_MAX_VOLTAGE));
@@ -370,6 +362,15 @@ void MainWindow::SetMaxDACValues()
     commandQueue.push(new commandNode(setDacMaxValues, DAC_Y2, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_X1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_X2, AFM_DAC_MAX_VOLTAGE));
+    /* Initialize offset, amplitude, and bridge voltage with the value we have set in UI*/
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
+    commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
 }
 
 void MainWindow::approachTimerUp()
@@ -594,15 +595,28 @@ void MainWindow::dequeueReturnBuffer()
                 msgBox.exec();
             }
             break;
+        case AAPPR_STA:
+            ui->lbl_autoappr_mcu_state->setText(QString::number(_buffer->getData()));
+            ui->label_autoappr_meas->setText(QString::number(_buffer->getdsignal()));
+            ui->label_33->setText(QString::number(_buffer->getData()));
+            break;
+        case AFMREBOOT:
+            // Send the init stuff again
+            msgBox.setText("AFM has rebooted. Re-initializing device. ");
+            msgBox.exec();
+            init_DAC_PGA();
+            break;
         } //end Switch
 
         if (currTab == Approach) {
             approachPlot.update(time, adcZ, true);
+            approachPlot.setAxisAutoScale(QwtPlot::yLeft);
             approachPlot2.update(time, phase, true);
+            approachPlot2.setAxisAutoScale(QwtPlot::yLeft);
             approachPlot.replot();
             approachPlot2.replot();
-        //    ui->currOffsetValue->setValue(signal);
-         //   ui->label_autoappr_meas->setText(QString::number(offset));
+            //    ui->currOffsetValue->setValue(signal);
+            //   ui->label_autoappr_meas->setText(QString::number(offset));
             time++;
         }
         if (currTab == 4) {
@@ -1028,11 +1042,8 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
                 ampVal = amplitudeData.at(i);
                 freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
                 phasePlot.update(freqVal, phaseVal, false);
-                // Keep track of our maximum so far
-                if(ampVal > maxAmp) {
-                    maxAmp = ampVal;
-                    maxAmpFreq = freqVal;
-                }
+                //Submit the current points to state machine for processing
+                auto_freqsweep(ampVal, freqVal);
             } else {
                 qDebug() << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
                 break;
@@ -1053,30 +1064,47 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     ui->freqProgressLabel->setStyleSheet("QLabel { color : red; }");
 
     QApplication::restoreOverrideCursor();
-
-    //call some function with the max values
-    auto_freqsweep(maxAmp, maxAmpFreq);
+    auto_freqsweep(-1, -1);
 }
 
 /**
  * @brief MainWindow::auto_freqsweep automatically scans the frequency range and selects the peak amplitude.
  *        Notifies user if it cannot find it.
  *        The frequency sweep graphing function should callback to auto_freqsweep.
+ *        The complexity of this code is the need to recognize a cut-off (flat top) graph and bad graph.
+ *        IMPORTANT!!! auto_freqsweep_amp_buffer must not be empty
  *
- * @param max_amp The maximum amplitude from frequency sweep callback
- * @param max_amp_freq The frequency at maximum amplitude from frequency sweep callback
+ * @param amp The amplitude from frequency sweep callback
+ * @param freq The frequency at an amplitude from frequency sweep callback
  */
 
-void MainWindow::auto_freqsweep(double max_amp, double max_amp_freq){
-//Also a state machine paradigm??
+void MainWindow::auto_freqsweep(double amp, double freq){
     quint16 step_size;
+    //Negative 1 is a special value which indicates that a particular sweep incoming data is now complete
+    //If we are at the rough sweep stage, increment mode, or decrement mode, this code
+    //will make sure the state machine ends up at where it needs to be
+    if (amp == -1 && freq == -1) {
+        if(auto_freqsweep_state == 2) {
+            auto_freqsweep_state = 3;
+        }
+        else if (auto_freqsweep_state == 5 || auto_freqsweep_state == 4) {
+            auto_freqsweep_state = 6;
+        }
+    }
     qDebug() << "auto_freqsweep state=" <<auto_freqsweep_state;
     switch(auto_freqsweep_state) {
     //State 0 does nothing
     case 0:
+        //This part is self-explanatory
         break;
     case 1:
-        // Begin max sweep
+        //Reset everything
+        auto_freqsweep_maxamp_valid = false;
+        auto_freqsweep_freq_at_maxamp = 0;
+        auto_freqsweep_maxamp = 0;
+        auto_freqsweep_decr_count = 0;
+        auto_freqsweep_amp_buffer = {0,0,0,0,0};
+        // Begin rough max sweep
         ui->endFrequency->setValue(15000); //TODO The 15kHz and 1Khz range can be changed
         ui->startFrequency->setValue(1000);
         ui->numFreqPoints->setValue(250);
@@ -1085,19 +1113,85 @@ void MainWindow::auto_freqsweep(double max_amp, double max_amp_freq){
         auto_freqsweep_state++;
         break;
     case 2:
-        // Second sweep
-        ui->endFrequency->setValue(max_amp_freq + 500);
-        ui->startFrequency->setValue(max_amp_freq - 500);
+        // Simple checking algorithm to obtain a range for the second, fine sweep
+        if(amp > auto_freqsweep_maxamp) {
+            auto_freqsweep_maxamp = amp;
+            auto_freqsweep_freq_at_maxamp = freq;
+        }
+        break;
+    case 3:
+        // Start the fine second sweep
+        ui->endFrequency->setValue(auto_freqsweep_freq_at_maxamp + 500);
+        ui->startFrequency->setValue(auto_freqsweep_freq_at_maxamp - 500);
         ui->numFreqPoints->setValue(100);
         step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
         commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
         auto_freqsweep_state++;
+        auto_freqsweep_maxamp = 0; //Clear the var for fine sweep
         break;
-    case 3:
+    case 4:
+        // Collect and analyse data from the fine sweep
+        // INCREMENT MODE
+        // Put data into buffer
+        if(auto_freqsweep_amp_buffer.size() > 4) { //limit size of buffer to 5
+            auto_freqsweep_amp_buffer.pop_front();
+        }
+        auto_freqsweep_amp_buffer.push_back(amp);
+        // Check if this is a new max and is at least 1.5v of amplitiude
+        if(amp > auto_freqsweep_maxamp && amp > 1.5) {
+            auto_freqsweep_maxamp = amp;
+            auto_freqsweep_freq_at_maxamp = freq;
+            // Set validity flag to false, pending validations
+            auto_freqsweep_maxamp_valid = false;
+        } else if(amp < auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
+            // The new value decrements, so we possibily have reached the peak
+            // Ensure that all points in auto_freqsweep_amp_buffer thus far have positive derivaties
+            // If it does, then we can move on to DECREMENT MODE, where we ensure that the values following the peak are indeed decresing
+            bool has_negative_derivaties = false;
+            for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
+                //Are the values decreasing? They shouldn't be.
+                if(auto_freqsweep_amp_buffer.at(i) < auto_freqsweep_amp_buffer.at(i-1)) {
+                    has_negative_derivaties = true;
+                }
+            }
+            if(!has_negative_derivaties) {
+                auto_freqsweep_state++;
+            }
+        }
+        break;
+    case 5:
+        // DECREMENT MODE
+        // Process the current data
+        auto_freqsweep_decr_count++;
+        auto_freqsweep_amp_buffer.pop_front();
+        auto_freqsweep_amp_buffer.push_back(amp);
+
+        if(amp > auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
+            // Nope it's bigger
+            // Erase, Put data into buffer, then Go back to INCREMENT mode
+            auto_freqsweep_decr_count = 0;
+            auto_freqsweep_state--;
+        }
+        // Check on all the data received
+        // At the fifth data point, check if all values have negative slopes
+        if(auto_freqsweep_decr_count == auto_freqsweep_amp_buffer.size()) {
+            bool has_positive_derivaties = false;
+            for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
+                //Are the values increasing? They shouldn't be.
+                if(auto_freqsweep_amp_buffer.at(i) > auto_freqsweep_amp_buffer.at(i-1)) {
+                    has_positive_derivaties = true;
+                }
+            }
+            if(!has_positive_derivaties) {
+                auto_freqsweep_maxamp_valid = true;
+            }
+        }
+        break;
+    case 6:
         // Check if max_amp is greater than 1.5. This is it.
-        if(max_amp >= 1.5) {
-            ui->currFreqVal->setValue(max_amp_freq);
-            commandQueue.push(new commandNode(setDDSSettings, max_amp_freq));
+        if(auto_freqsweep_maxamp_valid) {
+            ui->currFreqVal->setValue(auto_freqsweep_freq_at_maxamp);
+            commandQueue.push(new commandNode(setDDSSettings, auto_freqsweep_freq_at_maxamp));
         } else {
             qDebug() << "No max found";
             msgBox.setText("Could not automatically locate the resonant frequency =(");
@@ -1559,7 +1653,7 @@ void MainWindow::on_btn_stepmot_user_down_released()
 void MainWindow::on_btn_auto_freqsweep_clicked()
 {
     auto_freqsweep_state = 1;
-    auto_freqsweep(0,0);
+    auto_freqsweep(-5,-5);
 }
 
 void MainWindow::on_btn_setDACTable_clicked()
@@ -1588,7 +1682,7 @@ void MainWindow::on_btn_scan_next_clicked()
 
 void MainWindow::on_btn_re_init_clicked()
 {
-    SetMaxDACValues();
+    init_DAC_PGA();
 }
 
 /**
@@ -1770,4 +1864,40 @@ void MainWindow::on_btn_set_pga_clicked()
 void MainWindow::on_spnPidSetpoint_2_valueChanged(double arg1)
 {
     ui->spnPidSetpoint->setValue(arg1);
+}
+
+void MainWindow::on_btn_appr_plot_autoscale_clicked()
+{
+    approachPlot.setAutoScale(true);
+    approachPlot2.setAutoScale(true);
+    approachPlot.replot();
+    approachPlot.replot();
+}
+
+void MainWindow::on_btn_appr_plot_clear_clicked()
+{
+    approachPlot.clearData();
+    approachPlot2.clearData();
+    approachPlot.replot();
+    approachPlot.replot();
+}
+
+void MainWindow::on_btn_autoappr_mcu_start_clicked()
+{
+    commandQueue.push(new commandNode(aappr_begin, (double)ui->spnPidSetpoint_2->value()));
+}
+
+void MainWindow::on_btn_autoappr_mcu_stop_clicked()
+{
+    commandQueue.push(new commandNode(aappr_stop));
+}
+
+void MainWindow::on_btn_autoappr_mcu_start_2_clicked()
+{
+    commandQueue.push(new commandNode(aappr_begin, (double)ui->spnPidSetpoint_2->value()));
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+     commandQueue.push(new commandNode(aappr_sta));
 }
