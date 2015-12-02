@@ -191,7 +191,7 @@ c.afm_h_define()
 #define AFM_STEPMOT_SINGLESTEP  0x31
 #define AFM_STEPMOT_SINGLESTEP_RSPLEN    2
 #define AFM_AUTOAPPR_BEGIN  0x9a
-#define AFM_AUTOAPPR_BEGIN_RSPLEN    2
+#define AFM_AUTOAPPR_BEGIN_RSPLEN    0
 #define AFM_AUTOAPPR_STOP  0x9b
 #define AFM_AUTOAPPR_STOP_RSPLEN    2
 #define AFM_AUTOAPPR_STATUS  0x9c
@@ -216,7 +216,7 @@ c.afm_h_define()
 #define AFM_DAC_MAX_VOLTAGE  3.3
 #define AFM_DAC_DATA_RANGE  4095
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE  0.4
-//[[[end]]] (checksum: c637350f4140ee0b65b9418b323a207f)
+//[[[end]]] (checksum: d539d850dafc3d6430004aed166922c2)
 
 // Misc Program-Specific Enums
 #define MOT_FWD 1
@@ -249,8 +249,8 @@ signals:
    // Used for afm_worker
    void clearPayloadBuffer();
    int addPayloadByte(char byte);
-   int writeByte(char byte);
-   int writeMsg(char msg_id);
+   int writeByte(unsigned char byte);
+   int writeMsg(unsigned char msg_id);
    QByteArray waitForMsg();
    bool isOpen();
 
@@ -260,7 +260,7 @@ signals:
 public:
 //    icspiAFM(QThread** afm_thread_temp_var):
 //        afmThread(afm_thread_temp_var) {}
-    int writeMsg(char msg_id, QByteArray payload);
+    int writeMsg(unsigned char msg_id, QByteArray payload);
     void writeDAC(qint8 dacID,
                  double val);
 

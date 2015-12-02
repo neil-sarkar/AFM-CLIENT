@@ -100,13 +100,13 @@ void afm_worker::clearPayloadBuffer()
 /*
  * Send a message with msg_id using payload that is currently stored.
  */
-void afm_worker::writeMsg(char message_id)
+void afm_worker::writeMsg(unsigned char message_id)
 {
 #if AFM_DEBUG
 //    QString hex_equivalent_print = QString("%1").arg(message_id, 0, 16);
 //    qDebug() << "afm_worker::writeMsg 0x" << hex_equivalent_print;
 #endif
-    writeMsg(message_id, payload_out_buffer);
+    writeMsg((unsigned char)message_id, payload_out_buffer);
 
     payload_out_buffer.clear();
 }
@@ -117,7 +117,7 @@ void afm_worker::writeMsg(char message_id)
  *
  * Emits the push_recv_queue() signal once finished
  */
-void afm_worker::writeMsg(char message_id, QByteArray payload)
+void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
 {
     /* the outcome of sending. 0 if all successful, and negative number
      * indicates the number of bytes that failed to send.

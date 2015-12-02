@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     MainWindow *mainWorker = new MainWindow(0, commandQueue, returnQueue);
     send_worker *sendWorker = new send_worker(0, commandQueue, receiveQueue, *afm);
     eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
-    receive_worker *receiveWorker = new receive_worker(0, receiveQueue, returnQueue, graphQueue, *afm);
+    receive_worker *receiveWorker = new receive_worker(0, returnQueue, graphQueue, *afm);
 
     // Define the basic signals and slots and start the threads
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
@@ -82,13 +82,13 @@ int main(int argc, char *argv[])
     //QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
-    QObject::connect(afm, SIGNAL(writeMsg(char)), afmWorker, SLOT(writeMsg(char)));
+    QObject::connect(afm, SIGNAL(writeMsg(unsigned char)), afmWorker, SLOT(writeMsg(unsigned char)));
     QObject::connect(afmWorker, SIGNAL(process_uart_resp(QByteArray)), receiveWorker, SLOT(process_uart_resp(QByteArray)));
     QObject::connect(afmWorker, SIGNAL(finished()), mainWorker, SLOT(afmWorkerError()));
     //receive queue callbacks
     qRegisterMetaType<returnType>("returnType");
     //QObject::connect(sendWorker, SIGNAL(push_recv_queue(returnType)), receiveWorker, SLOT(push_recv_queue(returnType)));
-    QObject::connect(afmWorker, SIGNAL(push_recv_queue(char, char, int)), receiveWorker, SLOT(push_recv_queue(char, char, int)));
+    QObject::connect(afmWorker, SIGNAL(push_recv_queue(unsigned char, unsigned char, int)), receiveWorker, SLOT(push_recv_queue(unsigned char, unsigned char, int)));
     QObject::connect(receiveWorker, SIGNAL(afm_worker_onReadyRead()), afmWorker, SLOT(onReadyRead()));
 
     //MainWindow close - thread termination

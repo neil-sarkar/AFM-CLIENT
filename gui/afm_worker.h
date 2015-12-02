@@ -44,7 +44,7 @@ private:
     QSerialPort *serial;
     bool escape_char_received = false;
     bool serial_open = false;
-    void writeMsg(char message_id, QByteArray payload);
+    void writeMsg(unsigned char message_id, QByteArray payload);
     void getNextMsg(char incoming_byte);
     void processIncomingBuffer();
 
@@ -54,7 +54,7 @@ public:
 
 signals:
     void process_uart_resp(QByteArray new_uart_resp);
-    void push_recv_queue(char message_id, char message_tag, int writeByte_result);
+    void push_recv_queue(unsigned char message_id, unsigned char message_tag, int writeByte_result);
     void finished();
 
 public slots:
@@ -73,7 +73,7 @@ public slots:
     // Used by afm.cpp
     void clearPayloadBuffer();
     void addPayloadByte(char byte);
-    void writeMsg(char msg_id);
+    void writeMsg(unsigned char msg_id);
 
     // Used by receive worker
     void onReadyRead();

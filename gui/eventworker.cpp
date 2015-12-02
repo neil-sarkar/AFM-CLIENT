@@ -37,10 +37,10 @@ void eventworker::updateGraph()
 
     if(_mainwindow){
         if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
-            //cmd_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
-            //cmd_queue.push(new commandNode(readSignalPhaseOffset));
-            //cmd_queue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
-            cmd_queue.push(new commandNode(aappr_sta));
+            cmd_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
+            cmd_queue.push(new commandNode(readSignalPhaseOffset));
+            cmd_queue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+            //cmd_queue.push(new commandNode(aappr_sta));
             if(!graph_queue.empty()){
                 _node = graph_queue.front();
                 if(_node->getReturnType() == READSIGNALPHASEOFFSET)

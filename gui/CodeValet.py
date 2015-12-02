@@ -56,7 +56,7 @@ class CodeValet:
 			if len(row['Serial Port Message']) > 0 and len(row['CodeValet_receive_worker_Type']) > 0:
 				if int(row['CodeValet_receive_worker_Type']) < 3:
 					cog.outl("case " + row['Serial Port Message'] + ":   //CodeValet autogen")
-					cog.outl("if (uart_resp.at(1) != %s) {" % row['Serial Port Message'])
+					cog.outl("if ((unsigned char)uart_resp.at(1) != %s) {" % row['Serial Port Message'])
 					cog.outl("handle_error(ERR_MSG_ID_MISMATCH);")
 					cog.outl("return_queue.push(new returnBuffer(%s, AFM_FAIL));" % row['CodeValet_receive_worker_returnType'])
 					cog.outl("break;}")

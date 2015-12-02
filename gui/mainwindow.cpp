@@ -125,6 +125,9 @@ void MainWindow::Initialize()
     //on_spnOffsetVoltage_valueChanged(ui->spnOffsetVoltage->value()); // set offset
 
     /*Timers*/
+    //QT-based auto approach
+    task1_timer = new QTimer(this);
+
     generalTimer = new QTimer(this);
     connect(generalTimer, SIGNAL(timeout()), this, SLOT(generalTimerUpdate()));
     generalTimer->start(20); // every 20 ms, we update UI elements/other tasks, like continuous coarse step
@@ -599,11 +602,13 @@ void MainWindow::dequeueReturnBuffer()
             ui->lbl_autoappr_mcu_state->setText(QString::number(_buffer->getData()));
             ui->label_autoappr_meas->setText(QString::number(_buffer->getdsignal()));
             ui->label_33->setText(QString::number(_buffer->getData()));
+            if(_buffer->getData() == 0){
+                isAutoApproach = false;
+            }
             break;
         case AFMREBOOT:
             // Send the init stuff again
-            msgBox.setText("AFM has rebooted. Re-initializing device. ");
-            msgBox.exec();
+            updateStatusBar("AFM has rebooted. Re-initializing device. ");
             init_DAC_PGA();
             break;
         } //end Switch
@@ -793,8 +798,6 @@ void MainWindow::on_btn_stepmot_wake_clicked()
 void MainWindow::on_btn_autoappr_go_clicked()
 {
     autoapproach_state = 1; //Initial state
-    //Prepare the task1_timer
-    task1_timer = new QTimer(this);
     connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
     //Launch the autoApproach_state_machine
     QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
@@ -824,6 +827,7 @@ void MainWindow::autoApproach_state_machine(){
     qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
     switch(autoapproach_state) {
     case 0: //Disabled state
+        isAutoApproach = false;
         task1_timer->stop();
         ui->progbar_autoappr->setValue(0);
         ui->spnPidSetpoint_2->setEnabled(true);
@@ -831,6 +835,8 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
         break;
     case 1: //Wake up and intialization.
+        //Update UI
+        isAutoApproach = true;
         //Grab current setpoint value
         autoappr_setpoint = ui->spnPidSetpoint_2->value();
         ui->spnPidSetpoint_2->setEnabled(false);
@@ -892,7 +898,7 @@ void MainWindow::autoApproach_state_machine(){
                 autoappr_measurement_init = autoappr_measurement;
                 // VERY IMPORTANT We also double check that the target is less than 95% of the init to begin with.
                 // If it is more than 95%, then we should skip straight to state 6.
-                if(autoappr_setpoint <= (0.95*autoappr_measurement_init)) {
+                if(autoappr_setpoint <= (0.80*autoappr_measurement_init)) { //debug for now use 80%
                     mutex.lock();
                     commandQueue.push(new commandNode(stepMotContGo));
                     mutex.unlock();
@@ -1331,7 +1337,7 @@ void MainWindow::updateStatusBar(QString _string)
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
-{
+{   
     if (index == 1)
         ui->toolBar->setEnabled(true);
     else
@@ -1885,11 +1891,13 @@ void MainWindow::on_btn_appr_plot_clear_clicked()
 void MainWindow::on_btn_autoappr_mcu_start_clicked()
 {
     commandQueue.push(new commandNode(aappr_begin, (double)ui->spnPidSetpoint_2->value()));
+    isAutoApproach = true;
 }
 
 void MainWindow::on_btn_autoappr_mcu_stop_clicked()
 {
     commandQueue.push(new commandNode(aappr_stop));
+    isAutoApproach = false;
 }
 
 void MainWindow::on_btn_autoappr_mcu_start_2_clicked()

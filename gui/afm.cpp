@@ -271,7 +271,7 @@ void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
 
 void icspiAFM::autoApproach_mcu(double setpoint)
 {
-    qint16 _setpoint = AFM_DAC_SCALING * setpoint;
+    quint16 _setpoint = (double)setpoint / (double)AFM_ADC_SCALING;
 
     emit addPayloadByte((_setpoint & 0xFF));
     emit addPayloadByte((_setpoint & 0x0F00) >> 8);

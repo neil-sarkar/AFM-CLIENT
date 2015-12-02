@@ -145,12 +145,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     // will be handled here
     if(uart_resp.at(0) == SERIAL_MSG_NEWLINE) {
         return;
-    } else if((unsigned char)uart_resp.at(0) == 0xf2 &&
-              (unsigned char)uart_resp.at(1) == 0x61 &&
-              (unsigned char)uart_resp.at(2) == 0x66 &&
-              (unsigned char)uart_resp.at(3) == 0x6d &&
-              (unsigned char)uart_resp.at(4) == 0x21
-              ) {
+    } else if(uart_resp.contains(0xf261666d21)) {
         qDebug() << "PCB Restart Detected, receive_queue cleared" << uart_resp.toHex();
         return_queue.push(new returnBuffer(AFMREBOOT, AFM_SUCCESS));
         receive_queue.clear(); //Also reset the pending messages
