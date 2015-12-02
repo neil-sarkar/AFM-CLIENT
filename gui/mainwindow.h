@@ -127,6 +127,19 @@ private:
         Signal,
         NumTabs
     };
+    enum auto_approach_states
+    {
+        DISABLED=0,
+        WAKEUP,
+        FAST_RETR_GO,
+        FAST_RETR_STOP,
+        INIT_MEAS,
+        PRE_FAST_APPR,
+        FAST_APPR,
+        PRE_SLOW_APPR,
+        SLOW_APPR,
+        SETPOINT_REACHED
+    };
     Ui::MainWindow *ui;
 
     void CreateGraphs();
@@ -152,13 +165,20 @@ private:
     bool useBridgeSignalAsSetpoint;
     bool continuousStep;
     bool isAutoApproach;
+        /* Used to stop the auto-update of value while in approach tab when an auto-approach is in progress
+         * Should be set to false when the auto approach has exited.
+         * Conditions for turning this varaible to false are:
+         * - Clicking "stop" button on for any auto apporach type (Qt/MCU)
+         * - Reaching the FINISHED or DISABLED state for any auto approach type
+         * - On reboot of AFM
+         */
     float autoApproachComparison;
     QFuture<void> *future;
     QFutureWatcher<void> *watcher;
 
     /* Auto Approach Feature */
     QTimer *task1_timer;   //For auto approach
-    int autoapproach_state = 0;
+    enum auto_approach_states autoapproach_state = DISABLED;
     bool autoapproach_abort = false;
     double autoapproach_setpoint = 0;
     double autoappr_setpoint = 1; //A made-up value so we dont crash and burnnnn

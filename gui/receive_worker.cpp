@@ -811,7 +811,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
 
     /* IMPORTANT! */
     // Cool, the message was processed without errors.
-    //If this was NOT a special message, then pop the fron element from receive queue
+    //If this was NOT a special message, then pop the front element from receive queue
     if((unsigned char)uart_resp.at(0) != 0xf2){
         receive_queue.pop_front();
     }

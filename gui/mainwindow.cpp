@@ -599,6 +599,7 @@ void MainWindow::dequeueReturnBuffer()
             }
             break;
         case AAPPR_STA:
+            adcZ = _buffer->getdsignal();
             ui->lbl_autoappr_mcu_state->setText(QString::number(_buffer->getData()));
             ui->label_autoappr_meas->setText(QString::number(_buffer->getdsignal()));
             ui->label_33->setText(QString::number(_buffer->getData()));
@@ -609,6 +610,7 @@ void MainWindow::dequeueReturnBuffer()
         case AFMREBOOT:
             // Send the init stuff again
             updateStatusBar("AFM has rebooted. Re-initializing device. ");
+            isAutoApproach = false;
             init_DAC_PGA();
             break;
         } //end Switch
@@ -797,7 +799,7 @@ void MainWindow::on_btn_stepmot_wake_clicked()
 
 void MainWindow::on_btn_autoappr_go_clicked()
 {
-    autoapproach_state = 1; //Initial state
+    autoapproach_state = WAKEUP; //Initial state
     connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
     //Launch the autoApproach_state_machine
     QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
@@ -806,7 +808,7 @@ void MainWindow::on_btn_autoappr_go_clicked()
 
 void MainWindow::on_btn_autoappr_stop_clicked(){
     qDebug() << "ABORT Inside AutoAppr State Machine i=" << autoapproach_state;
-    autoapproach_state = 0;
+    autoapproach_state = DISABLED;
     mutex.lock();
     commandQueue.push(new commandNode(stepMotContStop));
     commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
@@ -826,7 +828,7 @@ void MainWindow::autoApproach_state_machine(){
 
     qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
     switch(autoapproach_state) {
-    case 0: //Disabled state
+    case DISABLED: //Disabled state
         isAutoApproach = false;
         task1_timer->stop();
         ui->progbar_autoappr->setValue(0);
@@ -834,7 +836,7 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
         break;
-    case 1: //Wake up and intialization.
+    case WAKEUP: //Wake up and intialization.
         //Update UI
         isAutoApproach = true;
         //Grab current setpoint value
@@ -853,32 +855,36 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotSetSpeed, (double)26300));
         commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)1));
         mutex.unlock();
-        autoapproach_state++;
+        autoapproach_state=FAST_RETR_GO;
         QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         break;
-    case 2: //Back-up a bit
+    case FAST_RETR_GO: //Back-up a bit
         ui->progbar_autoappr->setValue(2);
         mutex.lock();
         commandQueue.push(new commandNode(stepMotContGo)); //int8 is not large enough, so use double.
         mutex.unlock();
-        autoapproach_state++;
+        autoapproach_state=FAST_RETR_STOP;
         QTimer::singleShot(200, this, SLOT(autoApproach_state_machine()));
         break;
-    case 3: //Get initial measurement
+    case FAST_RETR_STOP: //Stop the retract
         ui->progbar_autoappr->setValue(3);
         mutex.lock();
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));
         mutex.unlock();
+        autoapproach_state=INIT_MEAS;
+        QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
+        break;
+  case INIT_MEAS: //Get initial measurement
         //Measure Signal... ADC_ZOFFSET
         //Clear existing first
         autoappr_measurement = -1;
         //Note that handler for ADCZOFFSET updates autoappr_measurement!
         commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
-        autoapproach_state++;
+        autoapproach_state= PRE_FAST_APPR;
         QTimer::singleShot(600, this, SLOT(autoApproach_state_machine()));
         break;
-    case 4: //Continuous ON
+    case PRE_FAST_APPR: //Continuous ON
         //Update UI
         ui->progbar_autoappr->setValue(4);
         if(autoappr_measurement > 0) {
@@ -890,7 +896,7 @@ void MainWindow::autoApproach_state_machine(){
         if(autoappr_measurement > 0) {
             if(autoappr_measurement <= autoappr_setpoint) {
                 //Make sure that setpoint is OK.
-                autoapproach_state = 8;
+                autoapproach_state = SETPOINT_REACHED;
                 QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
                 break;
             } else {
@@ -902,22 +908,23 @@ void MainWindow::autoApproach_state_machine(){
                     mutex.lock();
                     commandQueue.push(new commandNode(stepMotContGo));
                     mutex.unlock();
-                    autoapproach_state++;
+                    autoapproach_state=FAST_APPR;
                     task1_timer->start(20);
                 } else {
-                    autoapproach_state = 6;
+                    autoapproach_state = PRE_SLOW_APPR;
                     QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
                 }
             }
         } else {
             //if signal not measured, then stop and throw err!
-            autoapproach_state = 0;
+            autoapproach_state = DISABLED;
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
             qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            updateStatusBar("Auto Approach aborted. Bad communication. ");
         }
         break;
-    case 5: //Abort available here.
+    case FAST_APPR: //Abort available here.
         ui->progbar_autoappr->setValue(5);
         // Get measured signal. If measured signal expected has not been received, then uhhh
         // If measured signal is less than whatever, do whatever
@@ -935,8 +942,9 @@ void MainWindow::autoApproach_state_machine(){
             qDebug() << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
-            autoapproach_state = 0;
+            autoapproach_state = DISABLED;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
         } else {
             autoapproach_fault_count = 0;
@@ -944,7 +952,7 @@ void MainWindow::autoApproach_state_machine(){
         // Now check measurement against target value.
         if((autoappr_measurement <= (0.95*autoappr_measurement_init)) && autoappr_measurement > 0) {
             task1_timer->stop();
-            autoapproach_state++;
+            autoapproach_state=PRE_SLOW_APPR;
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         } else if (autoappr_measurement != -1) {
             //Continue running the motor
@@ -955,15 +963,15 @@ void MainWindow::autoApproach_state_machine(){
         // Reset measurement var
         autoappr_measurement = -1;
         break;
-    case 6: //Reduce speed
+    case PRE_SLOW_APPR: //Reduce speed
         ui->progbar_autoappr->setValue(6);
         commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)3));
         commandQueue.push(new commandNode(stepMotSetSpeed, (double)20000));
         commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
         commandQueue.push(new commandNode(stepMotContGo));
-        autoapproach_state++;
+        autoapproach_state=SLOW_APPR;
         task1_timer->start(20);
-    case 7://Abort available here.
+    case SLOW_APPR://Abort available here.
         ui->progbar_autoappr->setValue(7);
         // Update display
         if(autoappr_measurement > 0) {
@@ -976,8 +984,9 @@ void MainWindow::autoApproach_state_machine(){
             qDebug() << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
-            autoapproach_state = 0;
+            autoapproach_state = DISABLED;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
         } else {
             autoapproach_fault_count = 0;
@@ -985,7 +994,7 @@ void MainWindow::autoApproach_state_machine(){
         // Check if measurement is at setpoint autoappr_setpoint
         if((autoappr_measurement <= autoappr_setpoint) && autoappr_measurement > 0) {
             task1_timer->stop();
-            autoapproach_state++;
+            autoapproach_state=SETPOINT_REACHED;
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         } else if (autoappr_measurement != -1) {
             //Continue running the motor
@@ -995,7 +1004,7 @@ void MainWindow::autoApproach_state_machine(){
         }
         autoappr_measurement = -1;
         break;
-    case 8:
+    case SETPOINT_REACHED:
         ui->progbar_autoappr->setValue(8);
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
@@ -1003,7 +1012,8 @@ void MainWindow::autoApproach_state_machine(){
         //Turn on PID
         commandQueue.push(new commandNode(pidEnable));
         //Clean Up
-        autoapproach_state = 0;
+        autoapproach_state = DISABLED;
+        updateStatusBar("Auto Approach completed ");
         QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         break;
     }
@@ -1591,7 +1601,7 @@ void MainWindow::stepmot_user_control_callback(){
 void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
 {
     // Stop autoapproach always
-    autoapproach_state = 0;
+    autoapproach_state = DISABLED;
 
     if(operation==STOP) {
         //Stop and sleep motor at once
