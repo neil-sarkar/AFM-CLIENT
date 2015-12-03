@@ -458,28 +458,27 @@ void MainWindow::dequeueReturnBuffer()
             adcZ = _buffer->getFData();
             ui->adcValue->setText(QString::number(_buffer->getFData()));
             ui->label_autoappr_meas->setText(QString::number(_buffer->getFData()));
-            if (useBridgeSignalAsSetpoint) {
-                //ui->spnPidSetpoint->setValue(double(bfrd3));
-                //ui->currPIDSetpoint->setValue(double(bfrd3));
-            }
             if (autoapproach_state > 0) {
                 autoappr_measurement = adcZ;
             }
             break;
         case ADCPHASE:
             bfrd3 = _buffer->getFData();
-            if (useBridgeSignalAsSetpoint) {
-                //ui->spnPidSetpoint->setValue(double(bfrd3));
-                //ui->currPIDSetpoint->setValue(double(bfrd3));
-            }
             break;
         case READSIGNALPHASEOFFSET:
             offset = _buffer->getdoffset();
             phase = _buffer->getdphase();
-            signal = _buffer->getdsignal();
+            signal = _buffer->getdsignal(); //signal == ADC Z PZR FORCE AMPLITUDE
             ui->label_adczfine->setText(QString::number(offset));
             ui->label_appr_phase->setText(QString::number(phase));
             ui->currOffsetValue->setValue(signal);
+
+            adcZ = _buffer->getdsignal();
+            ui->adcValue->setText(QString::number(_buffer->getFData()));
+            ui->label_autoappr_meas->setText(QString::number(_buffer->getFData()));
+            if (autoapproach_state > 0) {
+                autoappr_measurement = adcZ;
+            }
             break;
         case AFMADCAMPLITUDEID:
             zAmp = _buffer->getFData();
@@ -545,7 +544,7 @@ void MainWindow::dequeueReturnBuffer()
         {
             if (_buffer->getData() == AFM_FAIL) {
                 qDebug() << "afm bad scan data received";
-                scan_state = 0;
+                scan_state = SCAN_DISABLED;
                 QTimer::singleShot(1, this, SLOT(scan_state_machine()));
                 break;
             }
@@ -561,7 +560,7 @@ void MainWindow::dequeueReturnBuffer()
             } else {
                 //We have a fault
                 qDebug() << "afm_data append_scan_data failed";
-                scan_state = 0;
+                scan_state = SCAN_DISABLED;
             }
             //scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
             //scanPlot.updateGL();
@@ -612,6 +611,20 @@ void MainWindow::dequeueReturnBuffer()
             updateStatusBar("AFM has rebooted. Re-initializing device. ");
             isAutoApproach = false;
             init_DAC_PGA();
+            commandQueue.push(new commandNode(setDDSSettings, ui->currFreqVal->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_LEVELING, ui->spn_leveling->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZCOARSE, ui->spn_zcoarse->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_ZFINE, ui->spn_zfine->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_X1, ui->spn_freq_x1->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y1, ui->spn_freq_y1->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_X2, ui->spn_freq_x2->value()));
+            commandQueue.push(new commandNode(setPGA, (qint8)PGA_Y2, ui->spn_freq_y2->value()));
+            commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+            commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+            commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+            commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
+               //commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
             break;
         } //end Switch
 
@@ -1683,12 +1696,16 @@ void MainWindow::on_btn_siggen_clicked()
     double numlines = ui->cmbScanNumLines->currentText().toDouble();
     double numpts = ui->cmbScanNumPoints->currentText().toDouble();
 
+    delete scan_result;
+    scan_result = new afm_data(numpts, numlines, ratioEnum);
+
     commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
 }
 
 void MainWindow::on_btn_scan_start_clicked()
 {
     commandQueue.push(new commandNode(startScan_4act));
+    ui->label_scan_status->setText("Scanning...");
 }
 
 void MainWindow::on_btn_scan_next_clicked()
@@ -1759,7 +1776,7 @@ void MainWindow::scan_state_machine(){
         //enable UI elements
         //No need to inf
         break;
-    case 1:
+    case INIT:
         /* ENTRY: User button click
          * EXIT: Command enable PID to uC
          * Initialize
@@ -1781,9 +1798,9 @@ void MainWindow::scan_state_machine(){
         commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
         commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
         commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
-        scan_state++;
+        scan_state=SET_DACTABLE;
         break;
-    case 2:
+    case SET_DACTABLE:
         /* ENTRY: PIDENABLE callback in dequeueReturnBuffer
          * EXIT: Begin command sequence for DAC Table
          * Send DAC Table
@@ -1791,9 +1808,9 @@ void MainWindow::scan_state_machine(){
         ui->progbar_scan->setValue(7);
         ui->label_scan_status->setText("Preparing AFM chip");
         set_DAC_table_state_machine(0);
-        scan_state++;
+        scan_state=SET_SIGGEN;
         break;
-    case 3:
+    case SET_SIGGEN:
     {
         /* ENTRY: DAC Table loading complete, via afm_callback
          * EXIT: Send command "Q" to enter scan mode in uC
@@ -1807,10 +1824,10 @@ void MainWindow::scan_state_machine(){
         delete scan_result;
         scan_result = new afm_data(numpts, numlines, ratioEnum);
         ui->label_scan_status->setText("Scanning...");
-        scan_state++;
+        scan_state=SCAN_DATA_RECV;
     }
     break;
-    case 4:
+    case SCAN_DATA_RECV:
     {
         /* ENTRY: Callback from AFM_START_SCAN_4ACT acknowledge (STARTSCAN_4ACT), and recursive call from SCANDATA in dequeueReturnBuffer
          * EXIT: When all data points are received, single-shot
@@ -1819,23 +1836,23 @@ void MainWindow::scan_state_machine(){
         if(scan_result->is_data_full() == false && scan_result->has_error() == false) {
             commandQueue.push(new commandNode(scanStep_4act));
         } else if ( scan_result->has_error() == true) {
-            scan_state = 0;
+            scan_state = SCAN_DISABLED;
             ui->label_scan_status->setText("Error while scanning");
             QTimer::singleShot(5000, this, SLOT(scan_state_machine()));
         } else {
-            scan_state++;
+            scan_state=SCAN_DONE;
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         }
     }
     break;
-    case 5:
+    case SCAN_DONE:
         /* ENTRY: When all data points are received
          * EXIT: Reset to disabled state
          * Clean-up activitie, if any.
          */
         //UPDATE UI
         //Clean Up
-        scan_state = 0;
+        scan_state = SCAN_DISABLED;
         QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         break;
     }
@@ -1843,7 +1860,7 @@ void MainWindow::scan_state_machine(){
 
 void MainWindow::on_btn_scan_begin_clicked()
 {
-    scan_state = 1; //Initial state
+    scan_state = INIT; //Initial state
     //Launch the scan_state_machine
     QTimer::singleShot(1, this, SLOT(scan_state_machine()));
 }
@@ -1851,7 +1868,7 @@ void MainWindow::on_btn_scan_begin_clicked()
 void MainWindow::on_btn_scan_stop_clicked()
 {
     qDebug() << "ABORT Inside Scan State Machine i=" << scan_state;
-    scan_state = 0;
+    scan_state = SCAN_DISABLED;
     QTimer::singleShot(1, this, SLOT(scan_state_machine()));
 }
 

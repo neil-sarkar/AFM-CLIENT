@@ -131,9 +131,11 @@ void icspiAFM::pidSetValues(qint8 P, qint8 I, qint8 D)
 
 void icspiAFM::pidSetPoint(float val)
 {
-    emit addPayloadByte(((char *)&val)[0]);
-    emit addPayloadByte(((char *)&val)[1]);
-    //return AFM_SUCCESS; //Should be checked against a value range
+    quint16 _setpoint = (float)val / (float)AFM_ADC_SCALING;
+
+    emit addPayloadByte((_setpoint & 0xFF));
+    emit addPayloadByte((_setpoint & 0xFF00) >> 8);
+
     emit writeMsg(AFM_PID_SETPOINT_SELECT);
 }
 

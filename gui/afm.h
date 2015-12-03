@@ -38,7 +38,7 @@
 #define ADC_X2              2
 #define ADC_Y1              1
 #define ADC_Y2              0
-#define ADC_ZOFFSET         5
+#define ADC_ZOFFSET         5 //todo change me to ADC_PZR_FORCE
 #define ADC_PHASE           6
 //#if AFM_USE_DUNCAN_BOARD
 //// DAC IDs for Duncan's Board

@@ -140,6 +140,16 @@ private:
         SLOW_APPR,
         SETPOINT_REACHED
     };
+    enum scan_states
+    {
+        SCAN_DISABLED=0,
+        INIT,
+        SET_DACTABLE,
+        SET_SIGGEN,
+        SCAN_DATA_RECV,
+        SCAN_DONE
+    };
+
     Ui::MainWindow *ui;
 
     void CreateGraphs();
@@ -222,7 +232,7 @@ private:
     int dac_table_current_block=0;
     void set_DAC_table_state_machine(int type);
 
-    int scan_state = 0;
+    enum scan_states scan_state = SCAN_DISABLED;
 
 private slots:
     void MainWindowLoop();

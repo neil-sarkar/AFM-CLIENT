@@ -154,7 +154,7 @@ void send_worker::queue_check(){
             return_name = SETD;
             break;
         case pidSetPoint:
-            s_afm.pidSetPoint((float)_node->getdval() * AFM_ADC_SCALING);
+            s_afm.pidSetPoint((float)_node->getdval());
             return_name = SETPOINT;
             break;
         case stageSetDirBackward:

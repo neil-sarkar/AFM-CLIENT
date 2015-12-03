@@ -57,9 +57,9 @@ int afm_data::append_data(QVector<double> z_offset_adc,
         return 1;
     }
 
-        //3. Compute and Load the x and y coordinates.
-        //Some special magic might be required here for non-grid schemes
-        //Error if computed size is larger than specified during object creation
+    //3. Compute and Load the x and y coordinates.
+    //Some special magic might be required here for non-grid schemes
+    //Error if computed size is larger than specified during object creation
     for(int i=0; i<z_offset_adc.size(); i++) {
         if(x.size() == 0){
             //Corner case: First element, we start at (0,0)
@@ -126,8 +126,9 @@ void afm_data::ratio_enum_to_deltaxy(int ratio_enum){
  * @brief afm_data::print_all debug fcn only
  */
 void afm_data::print_all(){
-    qDebug() << "afm_data PRINT BEGIN";
-    qDebug() << "x,y,zamp,zoffset,zphase";
+    qDebug() << "Gwyddion XYZ Field 1.0";
+    qDebug() << "NChannels = 1";
+    qDebug() << "NPoints = "<<x.size();
     for(int i=0; i<x.size(); i++) {
         qDebug() << x.at(i) << "," << y.at(i) << "," << zamp.at(i)<< "," << zoffset.at(i)<< "," << zphase.at(i);
     }
