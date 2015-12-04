@@ -103,7 +103,7 @@ void send_worker::queue_check(){
         case readADC:
             _ID = _node->getqval();
             s_afm.readADC((qint8)_ID);
-            if (_ID == ADC_ZOFFSET) {
+            if (_ID == ADC_Z_PZR_AMP) {
                 return_name = ADCZOFFSET;
             } else if (_ID = ADC_PHASE) {
                 return_name = ADCPHASE;

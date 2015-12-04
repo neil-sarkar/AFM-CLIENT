@@ -38,7 +38,7 @@
 #define ADC_X2              2
 #define ADC_Y1              1
 #define ADC_Y2              0
-#define ADC_ZOFFSET         5 //todo change me to ADC_PZR_FORCE
+#define ADC_Z_PZR_AMP       5
 #define ADC_PHASE           6
 //#if AFM_USE_DUNCAN_BOARD
 //// DAC IDs for Duncan's Board
@@ -199,6 +199,7 @@ c.afm_h_define()
 #define SERIAL_MSG_NEWLINE  0x0A
 #define SERIAL_MSG_ESCAPE  0x10
 #define SERIAL_MSG_MASK  0x80
+#define SERIAL_MSG_SPECIAL_TAG  0xF2
 #define PGA_X1  1
 #define PGA_X2  2
 #define PGA_Y1  3
@@ -216,7 +217,7 @@ c.afm_h_define()
 #define AFM_DAC_MAX_VOLTAGE  3.3
 #define AFM_DAC_DATA_RANGE  4095
 #define AFM_DAC_AMPLITUDE_MAX_VOLTAGE  0.4
-//[[[end]]] (checksum: d539d850dafc3d6430004aed166922c2)
+//[[[end]]] (checksum: b0925dc37a9403545e88ddcb47cb0adf)
 
 // Misc Program-Specific Enums
 #define MOT_FWD 1

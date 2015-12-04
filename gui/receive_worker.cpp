@@ -6,8 +6,8 @@ void receive_worker::mainLoop()
     //Initial setup
 
     //Start a timer, which calls the cleaner once in a while to manually call the afm_worker's serial receive.
-    cleaner_timer = new QTimer(this);
-    connect(cleaner_timer, SIGNAL(timeout()), this, SLOT(queue_cleaner()));
+//    cleaner_timer = new QTimer(this);
+//    connect(cleaner_timer, SIGNAL(timeout()), this, SLOT(queue_cleaner()));
     // cleaner_timer->start(2500);
 }
 
@@ -68,7 +68,7 @@ void receive_worker::handle_error(short error_id){
         }
 
         if(match_found) {
-            for(int j=0; j<=i; j++) {
+            for(int j=0; j<i; j++) {
                 return_queue.push(new returnBuffer(ERR_MSG_MISSED, receive_queue.at(0).message_tag,receive_queue.at(0).message_id));
                 receive_queue.pop_front();
             }
@@ -145,7 +145,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     // will be handled here
     if(uart_resp.at(0) == SERIAL_MSG_NEWLINE) {
         return;
-    } else if((unsigned char)uart_resp.at(0) == 0xf2 &&
+    } else if((unsigned char)uart_resp.at(0) == SERIAL_MSG_SPECIAL_TAG &&
               (unsigned char)uart_resp.at(1) == 0x61 &&
               (unsigned char)uart_resp.at(2) == 0x66 &&
               (unsigned char)uart_resp.at(3) == 0x6d &&
@@ -158,9 +158,9 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     }
 
     // 1. Are we expecting to receive something? Or is it a special message?
-    if ((unsigned char)uart_resp.at(0) == 0xf2){
+    if ((unsigned char)uart_resp.at(0) == SERIAL_MSG_SPECIAL_TAG){
         qDebug() << "Special TAG received. _node.message_id is now the special Tag message";
-        _node.message_tag = 0xf2;
+        _node.message_tag = SERIAL_MSG_SPECIAL_TAG;
         _node.message_id = (unsigned char)uart_resp.at(1);
     } else if (!receive_queue.empty()) {
         _node = receive_queue.front();
@@ -187,9 +187,9 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     // The checking of message legitimacy should be done before the switch statement.
     // It is redundant to check it in every case.
 
-    // 3. The message TAG shall match, unless it is 0xF2 (A special message)
+    // 3. The message TAG shall match, unless it is SERIAL_MSG_SPECIAL_TAG (A special message)
     // If not, start the investigation sequence, throw error, pop, and continue
-    if((unsigned char)uart_resp.at(0) != _node.message_tag && (unsigned char)uart_resp.at(0) != 0xF2) {
+    if((unsigned char)uart_resp.at(0) != _node.message_tag && (unsigned char)uart_resp.at(0) != SERIAL_MSG_SPECIAL_TAG) {
         handle_error(ERR_MSG_TAG_MISMATCH);
         return;
     }
@@ -295,7 +295,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         }
         val = (((unsigned char)uart_resp.at(4) << 8) | (unsigned char)uart_resp.at(3));
         switch(uart_resp.at(2)) {
-        case ADC_ZOFFSET:
+        case ADC_Z_PZR_AMP:
             type=ADCZOFFSET;
             break;
         case ADC_PHASE:
@@ -795,6 +795,16 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
        break;}
        return_queue.push(new returnBuffer(STEPMOTSINGLESTEP, AFM_SUCCESS));
        break;
+       case AFM_AUTOAPPR_BEGIN:   //CodeValet autogen
+       if ((unsigned char)uart_resp.at(1) != AFM_AUTOAPPR_BEGIN) {
+       handle_error(ERR_MSG_ID_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_BEGIN, AFM_FAIL));
+       break;}
+       if (uart_resp.size() < AFM_AUTOAPPR_BEGIN_RSPLEN) {
+       handle_error(ERR_MSG_SIZE_MISMATCH);
+       return_queue.push(new returnBuffer(AAPPR_BEGIN, AFM_FAIL));
+       break;}
+       break;
        case AFM_AUTOAPPR_STOP:   //CodeValet autogen
        if ((unsigned char)uart_resp.at(1) != AFM_AUTOAPPR_STOP) {
        handle_error(ERR_MSG_ID_MISMATCH);
@@ -812,12 +822,9 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     /* IMPORTANT! */
     // Cool, the message was processed without errors.
     //If this was NOT a special message, then pop the front element from receive queue
-    if((unsigned char)uart_resp.at(0) != 0xf2){
+    if((unsigned char)uart_resp.at(0) != SERIAL_MSG_SPECIAL_TAG && receive_queue.size()>0){
         receive_queue.pop_front();
     }
-    // clear the current msg, so that the next one may be read
-    uart_resp.clear();
-
 } // end process_uart_resp
 
 

@@ -29,6 +29,7 @@
 #include <QThread>
 #include <QObject>
 #include <QVector>
+#include <QFileDialog>
 //#include <armadillo>
 #include <globals.h>
 #include <QSignalMapper>
@@ -129,11 +130,11 @@ private:
     };
     enum auto_approach_states
     {
-        DISABLED=0,
-        WAKEUP,
+        APPR_DISABLED=0,
+        APPR_WAKEUP,
         FAST_RETR_GO,
         FAST_RETR_STOP,
-        INIT_MEAS,
+        APPR_INIT_MEAS,
         PRE_FAST_APPR,
         FAST_APPR,
         PRE_SLOW_APPR,
@@ -143,7 +144,7 @@ private:
     enum scan_states
     {
         SCAN_DISABLED=0,
-        INIT,
+        SCAN_INIT,
         SET_DACTABLE,
         SET_SIGGEN,
         SCAN_DATA_RECV,
@@ -188,7 +189,7 @@ private:
 
     /* Auto Approach Feature */
     QTimer *task1_timer;   //For auto approach
-    enum auto_approach_states autoapproach_state = DISABLED;
+    enum auto_approach_states autoapproach_state = APPR_DISABLED;
     bool autoapproach_abort = false;
     double autoapproach_setpoint = 0;
     double autoappr_setpoint = 1; //A made-up value so we dont crash and burnnnn
@@ -211,7 +212,6 @@ private:
     float y2;
     float x1;
     float x2;
-    double signal;
     double offset;
     double phase;
     double *scandata[256];
@@ -323,6 +323,8 @@ private slots:
     void on_btn_autoappr_mcu_stop_clicked();
     void on_btn_autoappr_mcu_start_2_clicked();
     void on_pushButton_3_clicked();
+    void on_btn_save_gxyzf_clicked();
+    void on_btn_save_txt_1_clicked();
 };
 
 #endif // MAINWINDOW_H

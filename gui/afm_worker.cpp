@@ -1,3 +1,4 @@
+#include "afm.h"
 #include "afm_worker.h"
 
 /* Serial Configuration */
@@ -131,7 +132,7 @@ void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
     message_tag++;
     if (message_tag >= 255) {
         message_tag = 1;
-    } else if (message_tag == SERIAL_MSG_NEWLINE || message_tag == SERIAL_MSG_ESCAPE) {
+    } else if (message_tag == SERIAL_MSG_NEWLINE || message_tag == SERIAL_MSG_ESCAPE || message_tag == SERIAL_MSG_SPECIAL_TAG) {
         message_tag++; // Assumes the special characters are not consecutive...
     }
     writeByte_result += writeByte(message_tag);

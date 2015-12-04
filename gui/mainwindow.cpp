@@ -468,14 +468,11 @@ void MainWindow::dequeueReturnBuffer()
         case READSIGNALPHASEOFFSET:
             offset = _buffer->getdoffset();
             phase = _buffer->getdphase();
-            signal = _buffer->getdsignal(); //signal == ADC Z PZR FORCE AMPLITUDE
+            adcZ = _buffer->getdsignal(); //ADC Z PZR FORCE AMPLITUDE
             ui->label_adczfine->setText(QString::number(offset));
             ui->label_appr_phase->setText(QString::number(phase));
-            ui->currOffsetValue->setValue(signal);
-
-            adcZ = _buffer->getdsignal();
-            ui->adcValue->setText(QString::number(_buffer->getFData()));
-            ui->label_autoappr_meas->setText(QString::number(_buffer->getFData()));
+            ui->adcValue->setText(QString::number(adcZ));
+            ui->label_autoappr_meas->setText(QString::number(adcZ));
             if (autoapproach_state > 0) {
                 autoappr_measurement = adcZ;
             }
@@ -529,19 +526,7 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case SCANDATA:
             //Take the data out from _buffer and make it into something useful for state machine
-            /*
-               if (_buffer->getData() == AFM_SUCCESS) {
-                QVector<double> zamp = _buffer->getzamp();
-                int _size = zamp.size();
-                for (int i = 0; i < _size; i++) {
-                    scandata[row] = new double[_size];
-
-                    for (int j = 0; j < _size; j++)
-                        scandata[row][j] = zamp.at(row);
-                    row++;
-                }
-             */
-        {
+           {
             if (_buffer->getData() == AFM_FAIL) {
                 qDebug() << "afm bad scan data received";
                 scan_state = SCAN_DISABLED;
@@ -554,7 +539,6 @@ void MainWindow::dequeueReturnBuffer()
                                                          _buffer->getzphase());
             if(append_result == 0) {
                 qDebug() << "Scan Data is in success!";
-                // commandQueue.push(new commandNode(scanStep_4act));
             } else if (append_result == 1) {
                 qDebug() << "afm_data append_scan_data is full";
             } else {
@@ -562,12 +546,24 @@ void MainWindow::dequeueReturnBuffer()
                 qDebug() << "afm_data append_scan_data failed";
                 scan_state = SCAN_DISABLED;
             }
-            //scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
-            //scanPlot.updateGL();
+/*
+            if (_buffer->getData() == AFM_SUCCESS) {
+                QVector<double> zamp = _buffer->getzamp();
+                int _size = zamp.size();
+                for (int i = 0; i < _size; i++) {
+                    scandata[row] = new double[_size];
+                    for (int j = 0; j < _size; j++)
+                        scandata[row][j] = zamp.at(row);
+                    row++;
+                }
+                scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
+                scanPlot.updateGL();
+            }
+            */
             //  qDebug() << "Scan Data is in!";
             //Callback to the state machine
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
-        }
+           }
         break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
@@ -812,7 +808,7 @@ void MainWindow::on_btn_stepmot_wake_clicked()
 
 void MainWindow::on_btn_autoappr_go_clicked()
 {
-    autoapproach_state = WAKEUP; //Initial state
+    autoapproach_state = APPR_WAKEUP; //Initial state
     connect(task1_timer, SIGNAL(timeout()), this, SLOT(autoApproach_state_machine()));
     //Launch the autoApproach_state_machine
     QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
@@ -821,7 +817,7 @@ void MainWindow::on_btn_autoappr_go_clicked()
 
 void MainWindow::on_btn_autoappr_stop_clicked(){
     qDebug() << "ABORT Inside AutoAppr State Machine i=" << autoapproach_state;
-    autoapproach_state = DISABLED;
+    autoapproach_state = APPR_DISABLED;
     mutex.lock();
     commandQueue.push(new commandNode(stepMotContStop));
     commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
@@ -841,7 +837,7 @@ void MainWindow::autoApproach_state_machine(){
 
     qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
     switch(autoapproach_state) {
-    case DISABLED: //Disabled state
+    case APPR_DISABLED: //Disabled state
         isAutoApproach = false;
         task1_timer->stop();
         ui->progbar_autoappr->setValue(0);
@@ -849,7 +845,7 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetState, qint8(MOT_SLEEP)));
         break;
-    case WAKEUP: //Wake up and intialization.
+    case APPR_WAKEUP: //Wake up and intialization.
         //Update UI
         isAutoApproach = true;
         //Grab current setpoint value
@@ -885,15 +881,15 @@ void MainWindow::autoApproach_state_machine(){
         commandQueue.push(new commandNode(stepMotContStop));
         commandQueue.push(new commandNode(stepMotSetDir, qint8(MOT_BACK)));
         mutex.unlock();
-        autoapproach_state=INIT_MEAS;
+        autoapproach_state=APPR_INIT_MEAS;
         QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         break;
-  case INIT_MEAS: //Get initial measurement
-        //Measure Signal... ADC_ZOFFSET
+  case APPR_INIT_MEAS: //Get initial measurement
+        //Measure Signal... ADC_Z_PZR_AMP
         //Clear existing first
         autoappr_measurement = -1;
         //Note that handler for ADCZOFFSET updates autoappr_measurement!
-        commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        commandQueue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));
         autoapproach_state= PRE_FAST_APPR;
         QTimer::singleShot(600, this, SLOT(autoApproach_state_machine()));
         break;
@@ -930,7 +926,7 @@ void MainWindow::autoApproach_state_machine(){
             }
         } else {
             //if signal not measured, then stop and throw err!
-            autoapproach_state = DISABLED;
+            autoapproach_state = APPR_DISABLED;
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
             qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
@@ -955,7 +951,7 @@ void MainWindow::autoApproach_state_machine(){
             qDebug() << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
-            autoapproach_state = DISABLED;
+            autoapproach_state = APPR_DISABLED;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
             updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
@@ -969,9 +965,9 @@ void MainWindow::autoApproach_state_machine(){
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         } else if (autoappr_measurement != -1) {
             //Continue running the motor
-            //Measure Signal... from ADC_ZOFFSET
+            //Measure Signal... from ADC_Z_PZR_AMP
             //task1_timer will keep calling the state machine
-            commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+            commandQueue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));
         }
         // Reset measurement var
         autoappr_measurement = -1;
@@ -980,7 +976,7 @@ void MainWindow::autoApproach_state_machine(){
         ui->progbar_autoappr->setValue(6);
         commandQueue.push(new commandNode(stepMotSetMicrostep, (qint8)3));
         commandQueue.push(new commandNode(stepMotSetSpeed, (double)20000));
-        commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+        commandQueue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));
         commandQueue.push(new commandNode(stepMotContGo));
         autoapproach_state=SLOW_APPR;
         task1_timer->start(20);
@@ -997,7 +993,7 @@ void MainWindow::autoApproach_state_machine(){
             qDebug() << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
-            autoapproach_state = DISABLED;
+            autoapproach_state = APPR_DISABLED;
             qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
             updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
@@ -1011,9 +1007,9 @@ void MainWindow::autoApproach_state_machine(){
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         } else if (autoappr_measurement != -1) {
             //Continue running the motor
-            //Measure Signal... from ADC_ZOFFSET
+            //Measure Signal... from ADC_Z_PZR_AMP
             //task1_timer will keep calling the state machine
-            commandQueue.push(new commandNode(readADC, (qint8)ADC_ZOFFSET));
+            commandQueue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));
         }
         autoappr_measurement = -1;
         break;
@@ -1025,7 +1021,7 @@ void MainWindow::autoApproach_state_machine(){
         //Turn on PID
         commandQueue.push(new commandNode(pidEnable));
         //Clean Up
-        autoapproach_state = DISABLED;
+        autoapproach_state = APPR_DISABLED;
         updateStatusBar("Auto Approach completed ");
         QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
         break;
@@ -1122,7 +1118,7 @@ void MainWindow::auto_freqsweep(double amp, double freq){
     }
     qDebug() << "auto_freqsweep state=" <<auto_freqsweep_state;
     switch(auto_freqsweep_state) {
-    //State 0 does nothing
+    //State 0. disabled state. does nothing
     case 0:
         //This part is self-explanatory
         break;
@@ -1614,7 +1610,7 @@ void MainWindow::stepmot_user_control_callback(){
 void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
 {
     // Stop autoapproach always
-    autoapproach_state = DISABLED;
+    autoapproach_state = APPR_DISABLED;
 
     if(operation==STOP) {
         //Stop and sleep motor at once
@@ -1776,7 +1772,7 @@ void MainWindow::scan_state_machine(){
         //enable UI elements
         //No need to inf
         break;
-    case INIT:
+    case SCAN_INIT:
         /* ENTRY: User button click
          * EXIT: Command enable PID to uC
          * Initialize
@@ -1805,7 +1801,7 @@ void MainWindow::scan_state_machine(){
          * EXIT: Begin command sequence for DAC Table
          * Send DAC Table
          */
-        ui->progbar_scan->setValue(7);
+        ui->progbar_scan->setValue(5);
         ui->label_scan_status->setText("Preparing AFM chip");
         set_DAC_table_state_machine(0);
         scan_state=SET_SIGGEN;
@@ -1835,7 +1831,7 @@ void MainWindow::scan_state_machine(){
          */
         if(scan_result->is_data_full() == false && scan_result->has_error() == false) {
             commandQueue.push(new commandNode(scanStep_4act));
-        } else if ( scan_result->has_error() == true) {
+        } else if (scan_result->has_error() == true) {
             scan_state = SCAN_DISABLED;
             ui->label_scan_status->setText("Error while scanning");
             QTimer::singleShot(5000, this, SLOT(scan_state_machine()));
@@ -1843,6 +1839,9 @@ void MainWindow::scan_state_machine(){
             scan_state=SCAN_DONE;
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         }
+        //Update the UI
+        // proof-of-concept only. will need to be tweaked.
+        ui->progbar_scan->setValue(scan_result->get_scan_progress());
     }
     break;
     case SCAN_DONE:
@@ -1860,7 +1859,7 @@ void MainWindow::scan_state_machine(){
 
 void MainWindow::on_btn_scan_begin_clicked()
 {
-    scan_state = INIT; //Initial state
+    scan_state = SCAN_INIT; //Initial state
     //Launch the scan_state_machine
     QTimer::singleShot(1, this, SLOT(scan_state_machine()));
 }
@@ -1935,4 +1934,42 @@ void MainWindow::on_btn_autoappr_mcu_start_2_clicked()
 void MainWindow::on_pushButton_3_clicked()
 {
      commandQueue.push(new commandNode(aappr_sta));
+}
+
+void MainWindow::on_btn_save_gxyzf_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
+            tr("Gwyddion Simple XYZ (*.gxyzf);;Text Files (*.txt)"));
+
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            // error message
+        } else {
+//            QTextStream stream(&file);
+//            stream << ui->textEdit->toPlainText();
+//            stream.flush();
+            file.write(scan_result->save_gxyzf());
+            file.close();
+        }
+    }
+}
+
+void MainWindow::on_btn_save_txt_1_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
+            tr("Text Files (*.txt)"));
+
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            // error message
+        } else {
+//            QTextStream stream(&file);
+//            stream << ui->textEdit->toPlainText();
+//            stream.flush();
+            file.write(scan_result->save_txt(1));
+            file.close();
+        }
+    }
 }

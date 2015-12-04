@@ -25,9 +25,6 @@
 
 //Maximum size allowed for a message before it is discarded. For protection against bad serial connection.
 #define SERIAL_MSG_MAX_SIZE 50000
-#define SERIAL_MSG_NEWLINE 0x0A
-#define SERIAL_MSG_ESCAPE 0x10
-#define SERIAL_MSG_MASK 0x80
 #define AFM_WORKER_SERIAL_MSG_INCOMPLETE -1
 #define AFM_WORKER_SERIAL_MSG_TOO_LONG -2
 

@@ -5,6 +5,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QVector>
+#include <QDataStream>
 
 /**
  * @brief   The afm_data class manages scan data returned by the
@@ -34,6 +35,8 @@ int numpts, numlines, ratio;
 double delta_x;
 double delta_y;
 bool append_error;
+bool rev_mode = false;
+int x_index_pos = 0;
 
 /*
  * Note - the data doesn't have to be in grid form.
@@ -44,9 +47,15 @@ bool append_error;
 // Master data vectors for this scan
 QVector<double> x;
 QVector<double> y;
-QVector<double> zoffset;
-QVector<double> zamp;
-QVector<double> zphase;
+QVector<double> zoffset_fwd;
+QVector<double> zamp_fwd;
+QVector<double> zphase_fwd;
+QVector<double> zoffset_rev;
+QVector<double> zamp_rev;
+QVector<double> zphase_rev;
+QVector<double> zoffset_rev_temp;
+QVector<double> zamp_rev_temp;
+QVector<double> zphase_rev_temp;
 
 public:
 afm_data(int n_pts, int n_lines, int _ratio); //Constructor
@@ -61,7 +70,11 @@ int get_numlines();
 int get_ratio();
 bool has_error();
 void print_amp();
-
+int get_datapoint_count();
+int get_scan_progress();
+bool get_rev_mode();
+QByteArray save_gxyzf();
+QByteArray save_txt(int type);
 };
 
 #endif // AFM_DATA_H

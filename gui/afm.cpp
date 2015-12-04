@@ -23,26 +23,18 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
     emit addPayloadByte((digitalValue >> 8));
 
     emit writeMsg(AFM_DAC_WRITE_SELECT);
-
-    //qDebug() << "afmThread.isRunning: " << *afmThread->isRunning();
 }
 
 void icspiAFM::readDAC(qint8 dacID)
 {
     emit addPayloadByte(dacID);
     emit writeMsg(AFM_DAC_READ_SELECT);
-//#if AFM_DEBUG
-//    qDebug() << "Bytes Read from DAC: " << res.size();
-//#endif
 }
 
 void icspiAFM::readADC(qint8 adcID)
 {
     emit addPayloadByte(adcID);
     emit writeMsg(AFM_ADC_READ_SELECT);
-//#if AFM_DEBUG
-//   qDebug() << "ADC Digital Value read" << val;
-//#endif
 }
 
 void icspiAFM::setRasterStep()
@@ -404,7 +396,7 @@ void icspiAFM::scanParameters(double vmin_line,
     emit addPayloadByte(_numLines & 0xFF);
     emit addPayloadByte((_numLines & 0x0F00) >> 8);
 
-    emit writeMsg(AFM_SCAN_PARAMETERS); //TODO FIX ME
+    emit writeMsg(AFM_SCAN_PARAMETERS);
 }
 
 void icspiAFM::startScan()
