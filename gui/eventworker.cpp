@@ -36,7 +36,7 @@ void eventworker::updateGraph()
     _mainwindow = (MainWindow *) QApplication::activeWindow();
 
     if(_mainwindow){
-        if(_mainwindow->getCurrTab() == 3 && !_mainwindow->getAutoApproach()){
+        if(_mainwindow->getCurrTab() == 3 && !_mainwindow->auto_approach_in_progress() && !_mainwindow->scan_in_progress()){
          //   cmd_queue.push(new commandNode(readADC,(qint8)ADC_PHASE));
             cmd_queue.push(new commandNode(readSignalPhaseOffset));
           //  cmd_queue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));

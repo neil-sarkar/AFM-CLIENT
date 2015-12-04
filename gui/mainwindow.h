@@ -81,7 +81,8 @@ public:
     void setADC5(float val){adc5 = val;}
     void setDAC8(float val){dac8 = val;}
     bool getContinuousStep(){return continuousStep;}
-    bool getAutoApproach(){return isAutoApproach;}
+    bool auto_approach_in_progress(){return isAutoApproach;}
+    bool scan_in_progress(){if(scan_state > 0){return true;}else{return false;}}
     float getAutoApproachComparison(){return autoApproachComparison;}
     float getADC5(){return adc5;}
     int getCurrTab(){return currTab;}
@@ -325,6 +326,9 @@ private slots:
     void on_pushButton_3_clicked();
     void on_btn_save_gxyzf_clicked();
     void on_btn_save_txt_1_clicked();
+    void on_btn_save_txt_2_clicked();
+    void on_spn_test_dac_coarse_z_valueChanged(double arg1);
+    void on_spn_test_dac_fine_z_valueChanged(double arg1);
 };
 
 #endif // MAINWINDOW_H

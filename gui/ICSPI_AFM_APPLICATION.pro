@@ -43,7 +43,8 @@ HEADERS  += mainwindow.h \
     icspi_products.h \
     afm_data.h \
     XYgenerator.cpp.disabled \
-    XYgenerator.h.disabled
+    XYgenerator.h.disabled \
+    afm_state.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD

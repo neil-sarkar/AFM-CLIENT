@@ -282,7 +282,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             handle_error(ERR_COMMAND_FAILED);
             break;
         }
-        return_queue.push(new returnBuffer(type, float(((float)val) / AFM_DAC_SCALING)));
+        return_queue.push(new returnBuffer(type, float(((float)val) * AFM_DAC_SCALING)));
         break;
     case AFM_ADC_READ_SELECT:
         if (uart_resp.at(1) != AFM_ADC_READ_SELECT) {
@@ -402,8 +402,8 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             signal = (double)BYTES_TO_WORD((quint8)uart_resp[i], (quint8)uart_resp[i+1]);
             offset = (double)BYTES_TO_WORD((quint8)uart_resp[i+2], (quint8)uart_resp[i+3]);
             phase = (double)BYTES_TO_WORD((quint8)uart_resp[i+4], (quint8)uart_resp[i+5]);
-            graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal * AFM_ADC_SCALING, offset * AFM_ADC_SCALING, phase * AFM_ADC_SCALING));
-            return_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal * AFM_ADC_SCALING, offset * AFM_ADC_SCALING, phase * AFM_ADC_SCALING));
+            graph_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal * AFM_ADC_SCALING, offset * AFM_DAC_SCALING, phase * AFM_ADC_SCALING));
+            return_queue.push(new returnBuffer(READSIGNALPHASEOFFSET, AFM_SUCCESS, signal * AFM_ADC_SCALING, offset * AFM_DAC_SCALING, phase * AFM_ADC_SCALING));
         }
         break;
     case AFM_AUTOAPPR_STATUS:

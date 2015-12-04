@@ -12,7 +12,7 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
 //    if(val>AFM_DAC_MAX_VOLTAGE){
 //        return AFM_FAIL;
 //    }
-    qint16 digitalValue = AFM_DAC_SCALING * val;
+    qint16 digitalValue = val / AFM_DAC_SCALING;
 
 #if AFM_DEBUG
     qDebug() << "DAC Digital Value to be written:" << (digitalValue);
@@ -287,7 +287,7 @@ void icspiAFM::setDACMaxValues(char dacID, double _val)
 {
     clearPayloadBuffer();
 
-    quint16 _max = (double)AFM_DAC_SCALING * (double)_val;
+    quint16 _max = (double)_val / (double)AFM_DAC_SCALING;
 
     emit addPayloadByte((char)dacID);
     emit addPayloadByte((_max & 0xFF));
@@ -298,7 +298,7 @@ void icspiAFM::setDACMaxValues(char dacID, double _val)
 
 void icspiAFM::deviceCalibration(double val, char side)
 {
-    qint16 _max = AFM_DAC_SCALING * val;
+    qint16 _max = val / AFM_DAC_SCALING;
     float a = 0.0000000003438;
     float b = 0.0000001379;
     float c = -0.0000545;
@@ -375,9 +375,9 @@ void icspiAFM::scanParameters(double vmin_line,
      *
      * */
     //qDebug() << AFM_DAC_SCALING << endl;
-    qint16 _vminLine = AFM_DAC_SCALING * vmin_line;
-    qint16 _vminScan = AFM_DAC_SCALING * vmin_scan;
-    qint16 _vmax = AFM_DAC_SCALING * vmax;
+    qint16 _vminLine =  vmin_line / AFM_DAC_SCALING;
+    qint16 _vminScan =  vmin_scan / AFM_DAC_SCALING;
+    qint16 _vmax = vmax / AFM_DAC_SCALING;
     qint16 _numpts = numpts;
     qint16 _numLines = numlines;
 

@@ -42,7 +42,10 @@ int afm_data::get_datapoint_count(){
  * @return A percentage of how much data is left. For UI use only.
  */
 int afm_data::get_scan_progress(){
-    return get_datapoint_count() / (numlines * numpts * 2);
+   // qDebug() << "get_datapoint_count " << get_datapoint_count();
+    float pct = (double)(get_datapoint_count() / (numlines * numpts * 2.0));
+   // qDebug() << "get_scan_progress " << pct;
+    return pct * 100;
 }
 
 bool afm_data::get_rev_mode(){
@@ -222,33 +225,62 @@ QByteArray afm_data::save_txt(int type){
         case 1:
             stream << QString(" %1\n").arg(zoffset_fwd.at(i)).toUtf8();
             break;
+        case 2:
+            stream << QString(" %1\n").arg(zoffset_rev.at(i)).toUtf8();
+            break;
         }
     }
     return file_bytes;
 }
 
+/**
+ * @brief afm_data::save_gxyzf
+ * @return Raw bytes for writing to gxyzf file.
+ */
+
+//NOTE!!! It seems gwiddion cannot read these files when you drag it in. MUST use File -> Open
+//Seems gwyddion doesn't quite like the file format....
 QByteArray afm_data::save_gxyzf(){
     QByteArray file_bytes;
     file_bytes.clear();
-    QDataStream stream(&file_bytes, QIODevice::WriteOnly);
-    stream.setByteOrder(QDataStream::LittleEndian);
 
-    QString header = QString("Gwyddion XYZ Field 1.0\nNChannels = 6\nNPoints = %1\nTitle1 = zamp_fwd\nTitle2 = zoffset_fwd\nTitle3 = zphase_fwd\nTitle4 = zamp_rev\nTitle5 = zoffset_rev\nTitle6 = zphase_rev").arg(x.size());
+    QString header =
+            QString("Gwyddion XYZ Field 1.0\nNChannels = 6\nNPoints = %1\nXRes = %2\nYRes = %3\nTitle1 = zamp_fwd\nTitle2 = zoffset_fwd\nTitle3 = zphase_fwd\nTitle4 = zamp_rev\nTitle5 = zoffset_rev\nTitle6 = zphase_rev\n")
+            .arg(x.size()*y.size())
+            .arg(x.size())
+            .arg(y.size());
 
 //    "Gwyddion XYZ Field 1.0\nNChannels = 6\n"
 //              << "NPoints = " << QString::number(x.size()) << "\n"
 //              << "Title1 = zamp_fwd\nTitle2 = zoffset_fwd\nTitle3 = zphase_fwd\n"
 //              << "Title4 = zamp_rev\nTitle5 = zoffset_rev\nTitle6 = zphase_rev"
 
-    stream << header.toUtf8();
-    file_bytes.remove(0, 4);
-    for(int i=0; i<(file_bytes.size() % 8); i++){
-       // file_bytes.append("\0");
-        stream << (quint8)0;
+   // stream << header.toUtf8();
+    //Remove the first four padding from string
+    file_bytes.append(header.toUtf8());
+    int temp1 = (8 - (file_bytes.size() % 8));
+    qDebug() << "NUL " << temp1;
+    //Padding
+    for(int i=0; i<temp1; i++){
+       file_bytes.append("\0"); //debugging only -- to change to "\0" later
+       // stream << (quint8)0;
     }
 
+   // return file_bytes;
+
+  //  QDataStream stream(&file_bytes, QIODevice::WriteOnly);
+ //   stream.setByteOrder(QDataStream::LittleEndian);
+
     for(int i=0; i<x.size(); i++){
-        stream <<x.at(i)<<y.at(i)<<zamp_fwd.at(i)<<zoffset_fwd.at(i)<<zphase_fwd.at(i)<<zamp_rev.at(i)<<zoffset_rev.at(i)<<zphase_rev.at(i);
+      //  stream <<x.at(i)<<y.at(i)<<zamp_fwd.at(i)<<zoffset_fwd.at(i)<<zphase_fwd.at(i)<<zamp_rev.at(i)<<zoffset_rev.at(i)<<zphase_rev.at(i);
+        file_bytes.append(reinterpret_cast<const char*>(&x.at(i)), sizeof(x.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&y.at(i)), sizeof(y.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zamp_fwd.at(i)), sizeof(zamp_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zoffset_fwd.at(i)), sizeof(zoffset_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zphase_fwd.at(i)), sizeof(zphase_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zamp_rev.at(i)), sizeof(zamp_rev.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zoffset_rev.at(i)), sizeof(zoffset_rev.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zphase_rev.at(i)), sizeof(zphase_rev.at(i)));
 //        file_stream.append(x.at(i));
 //        file_stream.append(y.at(i));
 //        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));

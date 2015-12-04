@@ -581,7 +581,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -1286,13 +1286,10 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QSpinBox" name="cmb_scanRatio">
-           <property name="maximum">
-            <number>8</number>
-           </property>
-           <property name="value">
-            <number>2</number>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="btn_setDACTable">
+           <property name="text">
+            <string>DAC Table because Keil</string>
            </property>
           </widget>
          </item>
@@ -1303,17 +1300,13 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="btn_setDACTable">
-           <property name="text">
-            <string>DAC Table because Keil</string>
+         <item row="2" column="0">
+          <widget class="QSpinBox" name="cmb_scanRatio">
+           <property name="maximum">
+            <number>8</number>
            </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="btn_siggen">
-           <property name="text">
-            <string>SigGen</string>
+           <property name="value">
+            <number>2</number>
            </property>
           </widget>
          </item>
@@ -1331,6 +1324,13 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
            </property>
           </widget>
          </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="btn_siggen">
+           <property name="text">
+            <string>SigGen</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="4">
           <widget class="QPushButton" name="btn_print_offset">
            <property name="text">
@@ -1338,17 +1338,24 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
            </property>
           </widget>
          </item>
-         <item row="1" column="5">
+         <item row="3" column="5">
           <widget class="QPushButton" name="btn_save_gxyzf">
            <property name="text">
             <string>Save gwyddion xyzf</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="4">
+         <item row="3" column="3">
           <widget class="QPushButton" name="btn_save_txt_1">
            <property name="text">
-            <string>Save to text</string>
+            <string>Save fwd offset text</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="4">
+          <widget class="QPushButton" name="btn_save_txt_2">
+           <property name="text">
+            <string>Save rev offset text</string>
            </property>
           </widget>
          </item>
@@ -1359,7 +1366,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
          <item row="0" column="0">
           <widget class="QTabWidget" name="tabScan">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="tabScanForward">
             <attribute name="title">
@@ -1423,6 +1430,22 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
             <attribute name="title">
              <string>Reverse</string>
             </attribute>
+            <widget class="QWidget" name="graph_2d_scan" native="true">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>10</y>
+               <width>659</width>
+               <height>391</height>
+              </rect>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
            </widget>
           </widget>
          </item>
@@ -1851,19 +1874,12 @@ QLabel {  color : red; };</string>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_32">
                     <item>
-                     <widget class="QLabel" name="label_21">
-                      <property name="text">
-                       <string>Curr PID Setpoint:</string>
-                      </property>
-                     </widget>
+                     <widget class="QDoubleSpinBox" name="spn_test_dac_coarse_z"/>
                     </item>
                     <item>
-                     <widget class="QDoubleSpinBox" name="currPIDSetpoint">
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
+                     <widget class="QLabel" name="label_21">
+                      <property name="text">
+                       <string>Set DAC Coarse Z</string>
                       </property>
                      </widget>
                     </item>
@@ -1872,22 +1888,12 @@ QLabel {  color : red; };</string>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_35">
                     <item>
-                     <widget class="QLabel" name="label_24">
-                      <property name="text">
-                       <string>Comparison Value:</string>
-                      </property>
-                     </widget>
+                     <widget class="QDoubleSpinBox" name="spn_test_dac_fine_z"/>
                     </item>
                     <item>
-                     <widget class="QDoubleSpinBox" name="comparisonValue">
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
+                     <widget class="QLabel" name="label_24">
+                      <property name="text">
+                       <string>Set DAC Fine Z</string>
                       </property>
                      </widget>
                     </item>
@@ -2588,6 +2594,9 @@ QLabel {  color : red; };</string>
             <layout class="QHBoxLayout" name="horizontalLayout_39">
              <item>
               <widget class="QPushButton" name="setMaxDACValuesButton">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>

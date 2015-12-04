@@ -561,6 +561,13 @@ void MainWindow::dequeueReturnBuffer()
             }
             */
             //  qDebug() << "Scan Data is in!";
+            //Update the line graphs
+             if (currTab == Approach) {
+                adcZ =  _buffer->getzamp().at(0) * AFM_ADC_SCALING;
+                //phase = _buffer->getzphase().at(0) * AFM_ADC_SCALING;
+                phase = _buffer->getzoffset().at(0) * AFM_ADC_SCALING; //temp to show zoffset on phase graph
+             }
+
             //Callback to the state machine
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
            }
@@ -598,8 +605,14 @@ void MainWindow::dequeueReturnBuffer()
             ui->lbl_autoappr_mcu_state->setText(QString::number(_buffer->getData()));
             ui->label_autoappr_meas->setText(QString::number(_buffer->getdsignal()));
             ui->label_33->setText(QString::number(_buffer->getData()));
-            if(_buffer->getData() == 0){
+            if((enum auto_approach_states_mcu)_buffer->getData() == APPR_MCU_DISABLED){
                 isAutoApproach = false;
+            } else if ((enum auto_approach_states_mcu)_buffer->getData() == SETPOINT_REACHED){
+                commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
+                commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
+                commandQueue.push(new commandNode(pidSetD,ui->spnPidValueD->value()));
+                commandQueue.push(new commandNode(pidSetPoint,ui->spnPidSetpoint->value()));
+                commandQueue.push(new commandNode(pidEnable));//afm.pidEnable();
             }
             break;
         case AFMREBOOT:
@@ -1314,16 +1327,16 @@ void MainWindow::on_buttonAutoApproachMCU_clicked(bool checked)
 
 
 
-
+//todo fix me
 void MainWindow::on_setMaxDACValuesButton_clicked()
 {
     updateStatusBar("Setting DAC Values...");
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_Y1, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_Y2, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_X1, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_X2, ui->latSpinBox->value()));
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_ZOFFSET_COARSE, ui->ZfineSpinBox->value()));
-    commandQueue.push(new commandNode(setDacMaxValues, (double)DAC_ZOFFSET_FINE, ui->ZcoarseSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y1, (double)ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y2, (double)ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_X1, (double)ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_X2, (double)ui->latSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_COARSE, (double)ui->ZfineSpinBox->value()));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_FINE, (double)ui->ZcoarseSpinBox->value()));
 
     ui->label_10->setVisible(true);
     ui->label_11->setVisible(true);
@@ -1754,7 +1767,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
 }
 
 /**
- * @brief MainWindow::scan_state_machine
+ * @brief MainWindow::scan_state_machine This is the main controls for scanning. Note that callbacks for some of the states might reside in dequeuereturnbuffer
  */
 
 void MainWindow::scan_state_machine(){
@@ -1778,6 +1791,7 @@ void MainWindow::scan_state_machine(){
          * Initialize
          * Set PID params and turn on PID
          */
+
         ui->progbar_scan->setValue(3);
         ui->label_scan_status->setText("Setting PGA");
         commandQueue.push(new commandNode(setPGA, (qint8)PGA_DDS_AMPLITUDE, ui->spn_dds_amplitude->value()));
@@ -1821,6 +1835,11 @@ void MainWindow::scan_state_machine(){
         scan_result = new afm_data(numpts, numlines, ratioEnum);
         ui->label_scan_status->setText("Scanning...");
         scan_state=SCAN_DATA_RECV;
+        //DEBUG TEMP ONLY!!!!!!
+        approachPlot.clearData();
+        approachPlot2.clearData();
+        approachPlot.replot();
+        approachPlot.replot();
     }
     break;
     case SCAN_DATA_RECV:
@@ -1841,7 +1860,8 @@ void MainWindow::scan_state_machine(){
         }
         //Update the UI
         // proof-of-concept only. will need to be tweaked.
-        ui->progbar_scan->setValue(scan_result->get_scan_progress());
+        int scan_progress_pct = scan_result->get_scan_progress();
+        ui->progbar_scan->setValue(scan_progress_pct);
     }
     break;
     case SCAN_DONE:
@@ -1972,4 +1992,32 @@ void MainWindow::on_btn_save_txt_1_clicked()
             file.close();
         }
     }
+}
+
+void MainWindow::on_btn_save_txt_2_clicked()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
+            tr("Text Files (*.txt)"));
+
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (!file.open(QIODevice::WriteOnly)) {
+            // error message
+        } else {
+            file.write(scan_result->save_txt(2));
+            file.close();
+        }
+    }
+}
+
+void MainWindow::on_spn_test_dac_coarse_z_valueChanged(double arg1)
+{
+    commandNode *_node = new commandNode(writeDAC, DAC_ZOFFSET_COARSE, arg1);
+    commandQueue.push(_node);
+}
+
+void MainWindow::on_spn_test_dac_fine_z_valueChanged(double arg1)
+{
+    commandNode *_node = new commandNode(writeDAC, DAC_ZOFFSET_FINE, arg1);
+    commandQueue.push(_node);
 }

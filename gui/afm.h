@@ -227,7 +227,7 @@ c.afm_h_define()
 #define AFM_AUTOAPPR_ADC 5
 #define AFM_DACTABLE_BLK_SIZE 256
 #define AFM_ADC_SCALING (double)(AFM_ADC_MAX_VOLTAGE/AFM_ADC_DATA_RANGE)
-#define AFM_DAC_SCALING (double)(AFM_DAC_DATA_RANGE/AFM_DAC_MAX_VOLTAGE)
+#define AFM_DAC_SCALING (double)(AFM_DAC_MAX_VOLTAGE/AFM_DAC_DATA_RANGE)
 
 /*
  *  Serial Communication Specifics
