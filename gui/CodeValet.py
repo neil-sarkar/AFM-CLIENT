@@ -12,7 +12,7 @@ class CodeValet:
 		# Assuming that download one file and cog writing will not take more than 6 seconds to complete
 		# If the file is modified more than 6 seconds ago, download again
 		
-		if int(time.time()) - os.path.getmtime('enum_spec.ignore.csv') > 6:
+		if int(time.time()) - os.path.getmtime('message_spec.ignore.csv') > 6:
 			url = "https://docs.google.com/spreadsheets/d/12pyWhpnUc2WIkpixExfhn6BQ4HnPdwTVp-OGuGELdZY/pub?gid=1325505480&single=true&output=csv"
 			urllib.request.urlretrieve(url, "message_spec.ignore.csv")
 			print("\nmessage_spec downloaded")
