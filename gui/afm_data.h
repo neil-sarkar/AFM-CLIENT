@@ -9,7 +9,7 @@
 
 /**
  * @brief   The afm_data class manages scan data returned by the
- *          AFM and generation of gwyddion files. Each afm_data
+ *          AFM and generation of text/gwyddion files. Each afm_data
  *          object is essentially a scan.
  *
  */
@@ -42,6 +42,7 @@ int x_index_pos = 0;
  * Note - the data doesn't have to be in grid form.
  * Gwyddion Simple XYZ format supports non-grid data.
  * This class can be easily modified to save non-grid data.
+ * But non-grid data would still be harder to process later on too... so idk.
  */
 
 // Master data vectors for this scan

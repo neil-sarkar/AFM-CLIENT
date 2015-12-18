@@ -581,7 +581,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -1301,7 +1301,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QSpinBox" name="cmb_scanRatio">
+          <widget class="QSpinBox" name="cmb_scanRatio_old">
            <property name="maximum">
             <number>8</number>
            </property>
@@ -1357,6 +1357,33 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
            <property name="text">
             <string>Save rev offset text</string>
            </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QComboBox" name="cmb_scanRatio">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>0:1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1:1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>3:1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>7:1</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -1874,7 +1901,11 @@ QLabel {  color : red; };</string>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_32">
                     <item>
-                     <widget class="QDoubleSpinBox" name="spn_test_dac_coarse_z"/>
+                     <widget class="QDoubleSpinBox" name="spn_test_dac_coarse_z">
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_21">
@@ -1888,7 +1919,11 @@ QLabel {  color : red; };</string>
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_35">
                     <item>
-                     <widget class="QDoubleSpinBox" name="spn_test_dac_fine_z"/>
+                     <widget class="QDoubleSpinBox" name="spn_test_dac_fine_z">
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLabel" name="label_24">
@@ -1942,6 +1977,9 @@ QLabel {  color : red; };</string>
                   </item>
                   <item row="3" column="0" colspan="3">
                    <widget class="QPushButton" name="btn_autoappr_go">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="text">
                      <string>Qt AutoApproach Go</string>
                     </property>
@@ -1949,6 +1987,9 @@ QLabel {  color : red; };</string>
                   </item>
                   <item row="3" column="3" colspan="3">
                    <widget class="QPushButton" name="btn_autoappr_stop">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="text">
                      <string>Qt AutoApproach STOP</string>
                     </property>

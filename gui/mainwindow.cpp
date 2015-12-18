@@ -279,7 +279,7 @@ void MainWindow::CreateGraphs()
     phasePlot.show();
 
     // add approach plot
-    fields = MyPlot::PlotFields("Z COARSE Signal", true, "Time", "Voltage (V)", \
+    fields = MyPlot::PlotFields("Z Amplitude Piezo Signal", true, "Time", "Voltage (V)", \
                                 QPair<double, double>(0, 300), QPair<double, double>(0, 1), QColor("Red"),
                                 false);
     approachPlot.SetPlot(fields, ui->approachWidget);
@@ -360,8 +360,8 @@ void MainWindow::init_DAC_PGA()
     commandQueue.push(new commandNode(setDacMaxValues, DAC_BR1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_BFRD3, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_FINE, AFM_DAC_MAX_VOLTAGE));
-    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_ZOFFSET_COARSE, AFM_DAC_MAX_VOLTAGE));
+    commandQueue.push(new commandNode(setDacMaxValues, DAC_Y1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_Y2, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_X1, AFM_DAC_MAX_VOLTAGE));
     commandQueue.push(new commandNode(setDacMaxValues, DAC_X2, AFM_DAC_MAX_VOLTAGE));
@@ -1701,7 +1701,7 @@ void MainWindow::on_btn_setDACTable_clicked()
 
 void MainWindow::on_btn_siggen_clicked()
 {
-    quint8 ratioEnum = ui->cmb_scanRatio->value();
+    quint8 ratioEnum = ui->cmb_scanRatio_old->value();
     double numlines = ui->cmbScanNumLines->currentText().toDouble();
     double numpts = ui->cmbScanNumPoints->currentText().toDouble();
 
@@ -1826,7 +1826,7 @@ void MainWindow::scan_state_machine(){
          * EXIT: Send command "Q" to enter scan mode in uC
          * SIGGEN and BEGIN_SCAN,  create new afm_data object
          */
-        quint8 ratioEnum = ui->cmb_scanRatio->value();
+        quint8 ratioEnum = ui->cmb_scanRatio_old->value();
         double numlines = ui->cmbScanNumLines->currentText().toDouble();
         double numpts = ui->cmbScanNumPoints->currentText().toDouble();
         commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));

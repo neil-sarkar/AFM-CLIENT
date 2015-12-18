@@ -14,7 +14,6 @@
 
 /*AFM Configuration*/
 #define AFM_DEBUG                            1  // 1: display debug messages
-//#define AFM_USE_DUNCAN_BOARD                 0  // 1: Duncan's Board, 0: Mahdi's Board
 #define AFM_MICRO_CONNECTED                  1  // 1: microcontroller, 0: uC not plugged in
 #define AFM_SUCCESS 0
 #define AFM_FAIL -1
@@ -30,6 +29,11 @@
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
+/**
+ * @brief The afm_worker class owns the serial object. It implements the serial protocol, including
+ *          masking/unmasking/Message Tag Assignment for both sending and receiving.
+ *          Call into relevant slots to send a message. It will emit signals when messages are received as well.
+ */
 
 class afm_worker: public QObject{
     Q_OBJECT

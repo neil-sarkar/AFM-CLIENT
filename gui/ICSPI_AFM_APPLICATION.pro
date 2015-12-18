@@ -102,3 +102,6 @@ win32{
 
 RESOURCES += \
     resources.qrc
+
+#DISTFILES += \
+#    mainwindow_gen2.qml

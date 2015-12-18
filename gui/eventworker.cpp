@@ -41,6 +41,7 @@ void eventworker::updateGraph()
             cmd_queue.push(new commandNode(readSignalPhaseOffset));
           //  cmd_queue.push(new commandNode(readADC, (qint8)ADC_Z_PZR_AMP));
             //cmd_queue.push(new commandNode(aappr_sta));
+            //NOTE! Plotting of these data is done at the end of MainWindow::dequeueReturnBuffer()
             if(!graph_queue.empty()){
                 _node = graph_queue.front();
                 if(_node->getReturnType() == READSIGNALPHASEOFFSET)

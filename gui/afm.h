@@ -40,57 +40,6 @@
 #define ADC_Y2              0
 #define ADC_Z_PZR_AMP       5
 #define ADC_PHASE           6
-//#if AFM_USE_DUNCAN_BOARD
-//// DAC IDs for Duncan's Board
-//#define AFM_DAC_BRIDGE1_ID                   0
-//#define AFM_DAC_BRIDGE2_ID                   1
-//#define AFM_DAC_X1_ID                        2
-//#define AFM_DAC_X2_ID                        3
-//#define AFM_DAC_Y1_ID                        4
-//#define AFM_DAC_Y2_ID                        5
-//#define AFM_DAC_VCO_ID                       6
-//#define AFM_DAC_AMPLITUDE_ID                 7
-//#define AFM_DAC_OFFSET_ID                    8
-
-//// ADC IDs for Duncan's Board
-//#define AFM_ADC_X1_ID                        0
-//#define AFM_ADC_X2_ID                        1
-//#define AFM_ADC_Y1_ID                        2
-//#define AFM_ADC_Y2_ID                        3
-//#define AFM_ADC_OFFSET_ID                    4
-//#define AFM_ADC_AMPLTIDE_ID                  5
-//#endif
-//#if AFM_USE_MAHDI_BOARD
-//// DAC IDs for Mahdi's Board
-//#define AFM_DAC_BRIDGE1_ID                    3
-//#define AFM_DAC_BRIDGE2_ID                    2
-//#define AFM_DAC_X1_ID                         10
-//#define AFM_DAC_X2_ID                         9
-//#define AFM_DAC_Y1_ID                         8
-//#define AFM_DAC_Y2_ID                         7
-//#define AFM_DAC_VCO_ID                        4
-//#define AFM_DAC_AMPLITUDE_ID                  5
-//#define AFM_DAC_OFFSET_ID                     6
-
-//// ADC IDs for Mahdi's Board
-//#define AFM_ADC_X1_ID                         4
-//#define AFM_ADC_X2_ID                         2
-//#define AFM_ADC_Y1_ID                         1
-//#define AFM_ADC_Y2_ID                         0
-//#define AFM_ADC_OFFSET_ID                     5
-//#define AFM_ADC_AMPLITUDE_ID                  3
-//#define AFM_ADC_PHASE_ID                      6
-//#endif
-
-
-//#define AFM_DAC_OFFSET_ID 8
-//#define AFM_DAC_FREQUENCY_ID 6
-//#define AFM_DAC_AMPLITUDE_ID 7
-//#define AFM_DAC_BRIDGE_VOLTAGE_ID 1
-
-//#define AFM_ADC_BRIDGE_SIGNAL_ID 5
-
-
 
 /*
  * === COMMON ENUM BLOCK ===
@@ -239,6 +188,13 @@ c.afm_h_define()
 
 
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
+
+/**
+ * @brief The icspiAFM class abstracts operations that the AFM may perform into API calls.
+ *        The class then uses afm_worker, who owns the actual serial object, to send the messages out.
+ *        Keep in mind that this class is ONLY responsible for sending of commands.
+ *          It DOES NOT PROCESS messages returned by the afm.
+ */
 
 class icspiAFM: public QObject{
     Q_OBJECT

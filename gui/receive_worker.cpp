@@ -5,18 +5,7 @@ void receive_worker::mainLoop()
 {
     //Initial setup
 
-    //Start a timer, which calls the cleaner once in a while to manually call the afm_worker's serial receive.
-//    cleaner_timer = new QTimer(this);
-//    connect(cleaner_timer, SIGNAL(timeout()), this, SLOT(queue_cleaner()));
-    // cleaner_timer->start(2500);
-}
-
-void receive_worker::queue_cleaner(){
-    //If we still have unprocessed things in the receive_queue, get afm_worker to check serial
-    if(receive_queue.size() > 0 && receive_queue.size() < 3) {
-        qDebug() << "queue_cleaner";
-        emit afm_worker_onReadyRead();
-    }
+    //Doesn't seem to need anything...
 }
 
 /*

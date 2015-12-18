@@ -21,17 +21,14 @@ class receive_worker : public QObject
 Q_OBJECT
 queue<returnBuffer*>& return_queue;
 queue<returnBuffer*>& graph_queue;
-icspiAFM& r_afm;     //TODO remove me?
 
 public:
 receive_worker(QObject *parent,
                queue<returnBuffer*>& returnqueue,
-               queue<returnBuffer*>& graphqueue,
-               icspiAFM& afm) :
+               queue<returnBuffer*>& graphqueue) :
     QObject(parent),
     return_queue(returnqueue),
-    graph_queue(graphqueue),
-    r_afm(afm) {
+    graph_queue(graphqueue) {
 }
 void abort();
 ~receive_worker();
@@ -56,7 +53,6 @@ void mainLoop();
 void process_uart_resp(QByteArray new_uart_resp);
 //Q_SLOT void push_recv_queue(returnType name);
 void push_recv_queue(unsigned char message_id, unsigned char message_tag, int writeByte_result);
-void queue_cleaner();
 };
 
 #endif // receive_worker_H

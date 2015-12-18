@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     MainWindow *mainWorker = new MainWindow(0, commandQueue, returnQueue);
     send_worker *sendWorker = new send_worker(0, commandQueue, receiveQueue, *afm);
     eventworker *eventWorker = new eventworker(0, commandQueue, graphQueue);
-    receive_worker *receiveWorker = new receive_worker(0, returnQueue, graphQueue, *afm);
+    receive_worker *receiveWorker = new receive_worker(0, returnQueue, graphQueue);
 
     // Define the basic signals and slots and start the threads
     QObject::connect(mainThread, SIGNAL(started()), mainWorker, SLOT(MainWindowLoop()));
