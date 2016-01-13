@@ -93,7 +93,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::Initialize()
 {
     qDebug() << 'S' << "AFM-CLIENT Debug Started: " << QDateTime::currentDateTime().toString() << endl;
-
     /*State Variables*/
     continuousStep = false;
     isAutoApproach = false;
@@ -341,10 +340,14 @@ void MainWindow::refreshPortsList()
         }
         ui->cboComPortSelection->addItem("Refresh");
     }
-
-//    if(ui->cboComPortSelection->itemText(0) != "Refresh")
-//        commandQueue.push(new commandNode(setPort,(double)0));
-    //mutex.unlock();
+    // Automatically prefer to connect to the one named "FTDI"
+    for (int i = 0; i < detectedSerialPortsList.size(); i++) {
+        if (detectedSerialPortsList[i].manufacturer() == "FTDI") {
+            commandQueue.push(new commandNode(setPort, (double)i));
+            ui->cboComPortSelection->setCurrentIndex(i);
+            break;
+        }
+    }
 }
 
 /*
@@ -708,8 +711,10 @@ void MainWindow::on_cboComPortSelection_currentIndexChanged(int index)
     if (index != -1) {
         if (ui->cboComPortSelection->itemText(index) == "Refresh" && index != 0)
             refreshPortsList();
-        else
+        else {
             commandQueue.push(new commandNode(setPort, (double)index));
+            qDebug() << "Selection changed to:" << index;
+        }
     }
 }
 

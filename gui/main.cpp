@@ -12,13 +12,15 @@ void customDebugger(QtMsgType type, const QMessageLogContext& context, const QSt
     // if there is a status code, then the message will look like this "[STATUS_CODE] [MESSAGE]" Note the space.
     char customMessageType = str[0].toLatin1(); // convert the Qchar that is str[0] to a char
     // so you can actually make a switch case out of it
+
+    // If there's no customMessageType associated, then we treat it as a "status" message
     QString messageTypePrintValue = "--";
     QString message = str;
     if (str.length() > 1 && str[1] == ' ') { // Check for the space
         switch (customMessageType) {
             case 'I': // I for input (messages being receieved by the GUI from the microcontroller)
                 messageTypePrintValue = "<-";
-                message = str.mid(2);
+                message = str.mid(2); // remove the first two characters as those contained our customMessageType and a blank space
                 break;
             case 'O': // O for output (messages being sent to the microcontroller)
                 messageTypePrintValue = "->";

@@ -46,6 +46,7 @@ void send_worker::queue_check(){
     while (!cmd_queue.empty()) {
         commandNode *_node = cmd_queue.front();
         _command = _node->getcommandName();
+        int selected_index = -1;
 
         //mutex.lock();
         switch (_command) {
@@ -210,19 +211,9 @@ void send_worker::queue_check(){
             return_name=STEPMOTSINGLESTEP;
             break;
         case setPort:
-            qDebug() << 'S' << "s_afm opening" << endl;
             emit close_serial_port();
             *detectedSerialPorts = QSerialPortInfo::availablePorts();
-            _node->getdval() == 0 ? _index = 0 : _index = _node->getdval();
-            qDebug() << 'S' << "Gonna open this one: " << detectedSerialPorts->at(_index).portName() << endl;
-
-            if (detectedSerialPorts->size() == 0) {
-                qDebug() << 'S' << "Unable to find any serial ports." << endl;
-            } else {
-                emit open_serial_port(detectedSerialPorts->at(_index).portName(), AFM_BAUD_RATE);
-                qDebug() << 'S' << "s_afm opened" << endl;
-            }
-            break;
+            emit open_serial_port(detectedSerialPorts->at(_node->getdval()).portName(), AFM_BAUD_RATE);
         case setDDSSettings:
             s_afm.setDDSSettings(0, _node->getdval(), 0);
             return_name = SETDDS;
