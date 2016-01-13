@@ -13,11 +13,7 @@ void icspiAFM::writeDAC(qint8 dacID, double val)
 //        return AFM_FAIL;
 //    }
     qint16 digitalValue = val / AFM_DAC_SCALING;
-
-#if AFM_DEBUG
-    qDebug() << "DAC Digital Value to be written:" << (digitalValue);
-#endif
-
+    qDebug() << "O" << "DAC Digital Value to be written:" << (digitalValue);
     emit addPayloadByte(dacID);
     emit addPayloadByte((digitalValue & 0xFF));
     emit addPayloadByte((digitalValue >> 8));
@@ -166,14 +162,14 @@ void icspiAFM::stageStepBackward()
 }
 
 void icspiAFM::stepMotSetSpeed(int speed){
-    qDebug() << "Set Motor Speed" << speed;
+    qDebug() << "O" << "Set Motor Speed" << speed;
     emit addPayloadByte((qint8)speed); //low byte
     emit addPayloadByte(qint8(speed >> 8)); //high byte
     emit writeMsg(AFM_STEPMOT_SPEED);
 }
 
 void icspiAFM::stepMotSetState(int state){
-    qDebug() << "Set Motor State" << state;
+    qDebug() << "O" << "Set Motor State" << state;
     if(state == MOT_SLEEP) { //Sleep
         emit clearPayloadBuffer();
         emit writeMsg(AFM_STEPMOT_SLEEP);
@@ -217,10 +213,10 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
                               quint32 startFrequency,
                               quint16 stepSize)
 {
-    qDebug() << "Writing to DDS settings";
+    qDebug() << "O" << "Writing to DDS settings";
     // Set DDS settings
 
-    qDebug() << "Start Freq -> " << (quint32)startFrequency;
+    qDebug() << "O" << "Start Freq: " << (quint32)startFrequency;
     // start freq
     // Scale according to the device
     //TODO config device
@@ -231,13 +227,13 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
     emit addPayloadByte((qint8)(startFrequency >> 16)); // MSB low byte
     emit addPayloadByte((qint8)(startFrequency >> 24)); // MSB high byte
 
-    qDebug() << "Step Size -> High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
+    qDebug() << "O" <<  "Step Size - High Byte: " << (quint16)(stepSize >> 8) << " Low Byte: " << (quint8)stepSize;
     // step size
     stepSize = double(stepSize) * scale;
     emit addPayloadByte((qint8)stepSize); // low byte
     emit addPayloadByte((qint8)(stepSize >> 8)); // high bye
 
-    qDebug() << "Num Points -> High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
+    qDebug() << "O" << "Num Points - High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
     // num points
     emit addPayloadByte((qint8)numPoints); // low byte
     emit addPayloadByte((qint8)(numPoints >> 8)); // high bye

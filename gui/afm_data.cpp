@@ -185,10 +185,10 @@ void afm_data::ratio_enum_to_deltaxy(int ratio_enum){
  * @brief afm_data::print_all debug fcn only
  */
 void afm_data::print_all(){
-    qDebug() << "afm_data PRINT BEGIN";
-    qDebug() << "x,y,zamp_fwd,zoffset_fwd,zphase_fwd,zoffset_rev";
+    qDebug() << 'S' << "afm_data PRINT BEGIN";
+    qDebug() << 'S' << "x,y,zamp_fwd,zoffset_fwd,zphase_fwd,zoffset_rev";
     for(int i=0; i<x.size(); i++) {
-        qDebug() << x.at(i) << "," << y.at(i) << "," << zamp_fwd.at(i)<< "," << zoffset_fwd.at(i)<< "," << zphase_fwd.at(i) << "," << zphase_rev.at(i);
+        qDebug() << 'S' << x.at(i) << "," << y.at(i) << "," << zamp_fwd.at(i)<< "," << zoffset_fwd.at(i)<< "," << zphase_fwd.at(i) << "," << zphase_rev.at(i);
     }
 }
 
@@ -196,7 +196,7 @@ void afm_data::print_amp(){
   //  qDebug() << "afm_data PRINT BEGIN";
    // qDebug() << "x  y  zoffset";
     for(int i=0; i<x.size(); i++) {
-        qDebug() << QString::number(y.at(i), 'f', 3) << " " << QString::number(x.at(i), 'f', 3)  << " " << QString::number(zoffset_fwd.at(i), 'f', 5) ;
+        qDebug() << 'S' << QString::number(y.at(i), 'f', 3) << " " << QString::number(x.at(i), 'f', 3)  << " " << QString::number(zoffset_fwd.at(i), 'f', 5) ;
     }
 }
 
@@ -259,7 +259,7 @@ QByteArray afm_data::save_gxyzf(){
     //Remove the first four padding from string
     file_bytes.append(header.toUtf8());
     int temp1 = (8 - (file_bytes.size() % 8));
-    qDebug() << "NUL " << temp1;
+    qDebug() << 'S' << "NULL " << temp1;
     //Padding
     for(int i=0; i<temp1; i++){
        file_bytes.append("\0"); //debugging only -- to change to "\0" later

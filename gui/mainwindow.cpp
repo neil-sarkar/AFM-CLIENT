@@ -60,7 +60,7 @@ void MainWindow::MainWindowLoop()
 
 void MainWindow::finishedThread()
 {
-    qDebug() << "Finished mainwindow Thread";
+    qDebug() << 'S' << "Finished mainwindow Thread";
 }
 
 MainWindow::~MainWindow()
@@ -70,13 +70,13 @@ MainWindow::~MainWindow()
 }
 void MainWindow::abort()
 {
-    qDebug() << "MainWindow::abort()";
+    qDebug() << 'S' << "MainWindow::abort()";
     emit finished();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "MainWindow::closeEvent()";
+    qDebug() << 'S' << "MainWindow::closeEvent()";
     emit finished();
     QMainWindow::closeEvent(event);
 }
@@ -92,7 +92,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
  */
 void MainWindow::Initialize()
 {
-    qDebug() << "AFM-CLIENT Debug Started: " << QDateTime::currentDateTime().toString() << endl;
+    qDebug() << 'S' << "AFM-CLIENT Debug Started: " << QDateTime::currentDateTime().toString() << endl;
 
     /*State Variables*/
     continuousStep = false;
@@ -528,7 +528,7 @@ void MainWindow::dequeueReturnBuffer()
             //Take the data out from _buffer and make it into something useful for state machine
            {
             if (_buffer->getData() == AFM_FAIL) {
-                qDebug() << "afm bad scan data received";
+                qDebug() << 'S' << "afm bad scan data received";
                 scan_state = SCAN_DISABLED;
                 QTimer::singleShot(1, this, SLOT(scan_state_machine()));
                 break;
@@ -538,12 +538,12 @@ void MainWindow::dequeueReturnBuffer()
                                                          _buffer->getzamp(),
                                                          _buffer->getzphase());
             if(append_result == 0) {
-                qDebug() << "Scan Data is in success!";
+                qDebug() << 'S' << "Scan Data is in success!";
             } else if (append_result == 1) {
-                qDebug() << "afm_data append_scan_data is full";
+                qDebug() << 'S' << "afm_data append_scan_data is full";
             } else {
                 //We have a fault
-                qDebug() << "afm_data append_scan_data failed";
+                qDebug() << 'S' << "afm_data append_scan_data failed";
                 scan_state = SCAN_DISABLED;
             }
 /*
@@ -583,10 +583,10 @@ void MainWindow::dequeueReturnBuffer()
             break;
         case SETDACTABLE:
             if (_buffer->getData() == AFM_SUCCESS) {
-                qDebug() << "SETDACTABLE success. Call again.";
+                qDebug() << 'S' << "SETDACTABLE success. Call again.";
                 set_DAC_table_state_machine(1);
             } else {
-                qDebug() << "SETDACTABLE fail. gg.";
+                qDebug() << 'S' << "SETDACTABLE fail. gg.";
             }
             break;
         case SIGGEN:
@@ -829,7 +829,7 @@ void MainWindow::on_btn_autoappr_go_clicked()
 
 
 void MainWindow::on_btn_autoappr_stop_clicked(){
-    qDebug() << "ABORT Inside AutoAppr State Machine i=" << autoapproach_state;
+    qDebug() << 'S' << "ABORT Inside AutoAppr State Machine i=" << autoapproach_state;
     autoapproach_state = APPR_DISABLED;
     mutex.lock();
     commandQueue.push(new commandNode(stepMotContStop));
@@ -848,7 +848,7 @@ void MainWindow::autoApproach_state_machine(){
     //DEBUG ONLY!
     //autoappr_measurement = ui->spinbox_autoappr_meas_test->value();
 
-    qDebug() << "AutoAppr State Machine i=" << autoapproach_state;
+    qDebug() << 'S' << "AutoAppr State Machine i=" << autoapproach_state;
     switch(autoapproach_state) {
     case APPR_DISABLED: //Disabled state
         isAutoApproach = false;
@@ -941,8 +941,8 @@ void MainWindow::autoApproach_state_machine(){
             //if signal not measured, then stop and throw err!
             autoapproach_state = APPR_DISABLED;
             QTimer::singleShot(1, this, SLOT(autoApproach_state_machine()));
-            qDebug() << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
-            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            qDebug() << 'S' << "AutoAppr No Init Measurement Received autoappr_measurement=" << autoappr_measurement;
+            qDebug() << 'S' << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
             updateStatusBar("Auto Approach aborted. Bad communication. ");
         }
         break;
@@ -961,11 +961,11 @@ void MainWindow::autoApproach_state_machine(){
         // Actual logic
         // First check measurement validity
         if (autoappr_measurement == -1 && autoapproach_fault_count < MAX_AUTOAPPR_FAULT_COUNT) {
-            qDebug() << "autoappr_measurement has not been updated yet!";
+            qDebug() << 'S' << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
             autoapproach_state = APPR_DISABLED;
-            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            qDebug() << 'S' << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
             updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
         } else {
@@ -1003,11 +1003,11 @@ void MainWindow::autoApproach_state_machine(){
         //Loop like state #5
         // First check measurement validity
         if (autoappr_measurement == -1 && autoapproach_fault_count < MAX_AUTOAPPR_FAULT_COUNT) {
-            qDebug() << "autoappr_measurement has not been updated yet!";
+            qDebug() << 'S' << "autoappr_measurement has not been updated yet!";
             autoapproach_fault_count++;
         } else if (autoapproach_fault_count >= MAX_AUTOAPPR_FAULT_COUNT) {
             autoapproach_state = APPR_DISABLED;
-            qDebug() << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
+            qDebug() << 'S' << "AutoAppr automatic abort. autoappr_measurement=" << autoappr_measurement << " autoapproach_fault_count="<<autoapproach_fault_count;
             updateStatusBar("Auto Approach aborted. Bad communication. ");
             break;
         } else {
@@ -1083,7 +1083,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
                 //Submit the current points to state machine for processing
                 auto_freqsweep(ampVal, freqVal);
             } else {
-                qDebug() << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
+                qDebug() << 'S' << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
                 break;
             }
         }
@@ -1583,7 +1583,7 @@ void MainWindow::on_btnForceCurve_clicked()
 
 void MainWindow::on_btn_pid_on_clicked()
 {
-    qDebug() << "pid on clicked";
+    qDebug() << 'S' << "pid on clicked";
     //mutex.lock();
 //    commandQueue.push(new commandNode(pidSetP,ui->spnPidValueP->value()));
 //    commandQueue.push(new commandNode(pidSetI,ui->spnPidValueI->value()));
@@ -1595,7 +1595,7 @@ void MainWindow::on_btn_pid_on_clicked()
 
 void MainWindow::on_btn_pid_off_clicked()
 {
-    qDebug() << "pid off clicked";
+    qDebug() << 'S' << "pid off clicked";
     //mutex.lock();
     commandQueue.push(new commandNode(pidDisable));//afm.pidDisable();
     //mutex.unlock();
@@ -1603,12 +1603,12 @@ void MainWindow::on_btn_pid_off_clicked()
 
 void MainWindow::on_btn_stepmot_user_up_2_pressed()
 {
-    qDebug() << "on_btn_stepmot_user_up_2_pressed";
+    qDebug() << 'S' << "on_btn_stepmot_user_up_2_pressed";
 }
 
 void MainWindow::on_btn_stepmot_user_up_2_released()
 {
-    qDebug() << "on_btn_stepmot_user_up_2_released";
+    qDebug() << 'S' << "on_btn_stepmot_user_up_2_released";
 }
 
 void MainWindow::on_sld_stepmot_user_spd_valueChanged(int value)
@@ -1747,7 +1747,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
 
     if(dac_table_current_block == num_msg) {
         //Stop and reset
-        qDebug() << "dac_table_current_block at max value, msg #" << dac_table_current_block;
+        qDebug() << 'S' << "dac_table_current_block at max value, msg #" << dac_table_current_block;
         //If we are in the appropriate scanning state, callback to the scan_state_machine
         if(scan_state == 3) {
             ui->progbar_scan->setValue((ui->progbar_scan->value())+1);
@@ -1755,7 +1755,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
         }
     } else {
         commandQueue.push(new commandNode(setDACTable, qint8(dac_table_current_block)));
-        qDebug() << "ROLL DAC Table msg #" << dac_table_current_block;
+        qDebug() << 'S' << "ROLL DAC Table msg #" << dac_table_current_block;
         dac_table_current_block++;
         //The dequeue receiver should call this function again
         //UI stuff
@@ -1771,7 +1771,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
  */
 
 void MainWindow::scan_state_machine(){
-    qDebug() << "Scan State Machine i=" << scan_state;
+    qDebug() << 'S' << "Scan State Machine i=" << scan_state;
     switch(scan_state) {
     case 0: //
         /* ENTRY: User button click or any other interrupt for scan
@@ -1886,7 +1886,7 @@ void MainWindow::on_btn_scan_begin_clicked()
 
 void MainWindow::on_btn_scan_stop_clicked()
 {
-    qDebug() << "ABORT Inside Scan State Machine i=" << scan_state;
+    qDebug() << 'S' << "ABORT Inside Scan State Machine i=" << scan_state;
     scan_state = SCAN_DISABLED;
     QTimer::singleShot(1, this, SLOT(scan_state_machine()));
 }

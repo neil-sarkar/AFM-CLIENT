@@ -3,11 +3,41 @@
 #include <QSignalMapper>
 #include <receive_worker.h>
 #include <eventworker.h>
+#include <debugger.h>
+#include <QDebug>
 
 QMutex mutex;
+
+void customDebugger(QtMsgType type, const QMessageLogContext& context, const QString& str) {
+    // if there is a status code, then the message will look like this "[STATUS_CODE] [MESSAGE]" Note the space.
+    char customMessageType = str[0].toLatin1(); // convert the Qchar that is str[0] to a char
+    // so you can actually make a switch case out of it
+    QString messageTypePrintValue = "--";
+    QString message = str;
+    if (str.length() > 1 && str[1] == ' ') { // Check for the space
+        switch (customMessageType) {
+            case 'I': // I for input (messages being receieved by the GUI from the microcontroller)
+                messageTypePrintValue = "<-";
+                message = str.mid(2);
+                break;
+            case 'O': // O for output (messages being sent to the microcontroller)
+                messageTypePrintValue = "->";
+                message = str.mid(2);
+                break;
+            case 'S': // S for status (messages that are neither I/O, but just status messages)
+                messageTypePrintValue = "--";
+                message = str.mid(2);
+                break;
+        }
+    }
+    // use qPrintable or else you'll get " " around every string sent to qDebug()
+    qDebug() << qPrintable(QTime::currentTime().toString()) << qPrintable(messageTypePrintValue) << qPrintable(message);
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    qInstallMessageHandler(customDebugger);
 
     queue<commandNode *> commandQueue = queue<commandNode *>();
     queue<receivetype> receiveQueue = queue<receivetype>();

@@ -210,17 +210,17 @@ void send_worker::queue_check(){
             return_name=STEPMOTSINGLESTEP;
             break;
         case setPort:
-            qDebug() << "s_afm openING" << endl;
+            qDebug() << 'S' << "s_afm opening" << endl;
             emit close_serial_port();
             *detectedSerialPorts = QSerialPortInfo::availablePorts();
             _node->getdval() == 0 ? _index = 0 : _index = _node->getdval();
-            qDebug() << "Gonna open this one: " << detectedSerialPorts->at(_index).portName() << endl;
+            qDebug() << 'S' << "Gonna open this one: " << detectedSerialPorts->at(_index).portName() << endl;
 
             if (detectedSerialPorts->size() == 0) {
-                qDebug() << "Unable to find any serial ports." << endl;
+                qDebug() << 'S' << "Unable to find any serial ports." << endl;
             } else {
                 emit open_serial_port(detectedSerialPorts->at(_index).portName(), AFM_BAUD_RATE);
-                qDebug() << "s_afm opened" << endl;
+                qDebug() << 'S' << "s_afm opened" << endl;
             }
             break;
         case setDDSSettings:

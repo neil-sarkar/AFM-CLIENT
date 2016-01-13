@@ -31,7 +31,7 @@ void receive_worker::handle_error(short error_id){
          * in receive_queue. This should never happen. Check MCU code.
          */
         //emit serialError();
-        qDebug() << "ERR_MSG_ID_MISMATCH for 0x" << uart_resp.toHex();
+        qDebug() << 'S' << "ERR_MSG_ID_MISMATCH for 0x" << uart_resp.toHex();
         break;
     case ERR_MSG_TAG_MISMATCH:
         /* The message tag received differs from what is expected.
@@ -64,7 +64,7 @@ void receive_worker::handle_error(short error_id){
             process_uart_resp(uart_resp);
         }
 
-        qDebug() << "ERR_MSG_TAG_MISMATCH for 0x" << uart_resp.toHex() << "Match found? " << match_found;
+        qDebug() << 'S' << "ERR_MSG_TAG_MISMATCH for 0x" << uart_resp.toHex() << "Match found? " << match_found;
         break;
     case ERR_MSG_SIZE_MISMATCH:
         /*
@@ -72,17 +72,17 @@ void receive_worker::handle_error(short error_id){
          * Check MCU code.
          */
         receive_queue.pop_front();
-        qDebug() << "ERR_MSG_SIZE_MISMATCH - Check MCU Code?";
+        qDebug() << 'S'<< "ERR_MSG_SIZE_MISMATCH - Check MCU Code?";
         break;
     case ERR_MSG_UNSOLICITED:
-        qDebug() << "ERR_MSG_UNSOLICITED 0x" << uart_resp.toHex();
+        qDebug() << 'S' << "ERR_MSG_UNSOLICITED 0x" << uart_resp.toHex();
         break;
     default:
         /*
          * All other cases... do nothing and move on.
          * ERR_MSG_UNSOLICITED We received a message but we aren't expecting anything.
          */
-        qDebug() << "Error for incoming serial message 0x" << uart_resp.toHex() << " Error ID " << error_id;
+        qDebug() << 'S' << "Error for incoming serial message 0x" << uart_resp.toHex() << " Error ID " << error_id;
         break;
     }
 }
@@ -140,7 +140,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
               (unsigned char)uart_resp.at(3) == 0x6d &&
               (unsigned char)uart_resp.at(4) == 0x21
               ) {
-        qDebug() << "PCB Restart Detected, receive_queue cleared" << uart_resp.toHex();
+        qDebug() << 'S' << "PCB Restart Detected, receive_queue cleared" << uart_resp.toHex();
         return_queue.push(new returnBuffer(AFMREBOOT, AFM_SUCCESS));
         receive_queue.clear(); //Also reset the pending messages
         return;
@@ -184,12 +184,10 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
     }
 
 
-#if AFM_DEBUG
     if (uart_resp.size() > 0) {
         //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
         qDebug() << "receive_worker now processing 0x" << uart_resp.toHex();
     }
-#endif
 
     // 4. All looks good. Let's start actually processing!
     /*
@@ -373,7 +371,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
             }
             return_queue.push(new returnBuffer(SCANDATA, AFM_SUCCESS, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         } else {
-            qDebug() << "!!! Bad scan data.";
+            qDebug() << 'S' << "!!! Bad scan data.";
             return_queue.push(new returnBuffer(SCANDATA, AFM_FAIL, *z_offset_adc, *z_amp_adc, *z_phase_adc));
         }
         break;

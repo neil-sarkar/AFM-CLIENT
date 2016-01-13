@@ -186,7 +186,6 @@ c.afm_h_define()
 #define SERIAL_MSG_MAX_SIZE 50000
 
 
-
 #define BYTES_TO_WORD(low, high) (((high) << 8) | (low))
 
 /**

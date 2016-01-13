@@ -1,5 +1,6 @@
 #include "afm.h"
 #include "afm_worker.h"
+#include <QTime>
 
 /* Serial Configuration */
 #define AFM_MANUFACTURER "FTDI" //Should change this later on to ICSPI
@@ -73,10 +74,8 @@ int afm_worker::writeByte(char byte)
     if (serial->write(&byte, 1) == 1) {
         return AFM_SUCCESS;
     } else {
-#if AFM_DEBUG
         QString hex_equivalent_print = QString("%1").arg(byte, 0, 16);
-        qDebug() << "afm_worker::writeByte failed to write 0x" << hex_equivalent_print;
-#endif
+        qDebug()  << 'S' << "afm_worker::writeByte failed to write 0x" << hex_equivalent_print;
         return AFM_FAIL;
     }
 }
@@ -103,10 +102,8 @@ void afm_worker::clearPayloadBuffer()
  */
 void afm_worker::writeMsg(unsigned char message_id)
 {
-#if AFM_DEBUG
 //    QString hex_equivalent_print = QString("%1").arg(message_id, 0, 16);
 //    qDebug() << "afm_worker::writeMsg 0x" << hex_equivalent_print;
-#endif
     writeMsg((unsigned char)message_id, payload_out_buffer);
 
     payload_out_buffer.clear();
@@ -155,16 +152,13 @@ void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
     writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
     emit push_recv_queue(message_id, message_tag, writeByte_result);
-
-#if AFM_DEBUG
-    qDebug() << "Sent TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success?" << writeByte_result;
-#endif
+    qDebug() << "O" << "TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success?" << writeByte_result;
     return;
 }
 
 void afm_worker::onReadyRead(){
     serial_incoming_buffer += serial->readAll();
-    qDebug() << "afm_worker received readAll. serial_incoming_buffer = 0x" << serial_incoming_buffer.toHex();
+    qDebug() << "I" << "afm_worker received readAll. serial_incoming_buffer = 0x" << serial_incoming_buffer.toHex();
     processIncomingBuffer();
 }
 
@@ -230,13 +224,11 @@ void afm_worker::getNextMsg(char incoming_byte){
     }
 
     if (message_complete) {
-    #if AFM_DEBUG
         if (incoming_message.size() > 0) {
             //QString hex_equivalent_print = QString("%1").arg(raw_response.toHex(), 0, 16);
-            qDebug() << "  0x" << incoming_message.toHex()
+            qDebug() << 'I' << "  0x" << incoming_message.toHex()
                      << " Size:" << incoming_message.size();
         }
-    #endif
 
         if (incoming_message.size() > 0) {
             emit process_uart_resp(incoming_message);
