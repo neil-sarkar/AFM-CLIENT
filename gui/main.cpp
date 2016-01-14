@@ -39,7 +39,7 @@ void customDebugger(QtMsgType type, const QMessageLogContext& context, const QSt
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    qInstallMessageHandler(customDebugger);
+//    qInstallMessageHandler(customDebugger);
 
     queue<commandNode *> commandQueue = queue<commandNode *>();
     queue<receivetype> receiveQueue = queue<receivetype>();

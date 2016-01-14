@@ -162,14 +162,14 @@ void icspiAFM::stageStepBackward()
 }
 
 void icspiAFM::stepMotSetSpeed(int speed){
-    qDebug() << "O" << "Set Motor Speed" << speed;
+    qDebug() << "S" << "Set Motor Speed" << speed;
     emit addPayloadByte((qint8)speed); //low byte
     emit addPayloadByte(qint8(speed >> 8)); //high byte
     emit writeMsg(AFM_STEPMOT_SPEED);
 }
 
 void icspiAFM::stepMotSetState(int state){
-    qDebug() << "O" << "Set Motor State" << state;
+    qDebug() << "S" << "Set Motor State" << state;
     if(state == MOT_SLEEP) { //Sleep
         emit clearPayloadBuffer();
         emit writeMsg(AFM_STEPMOT_SLEEP);

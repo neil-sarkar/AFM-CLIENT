@@ -46,7 +46,6 @@ void send_worker::queue_check(){
     while (!cmd_queue.empty()) {
         commandNode *_node = cmd_queue.front();
         _command = _node->getcommandName();
-        int selected_index = -1;
 
         //mutex.lock();
         switch (_command) {
@@ -55,7 +54,6 @@ void send_worker::queue_check(){
             _val = _node->getdval();
             s_afm.writeDAC((qint8)_ID, (double)_val);
             return_name = (WRITE);
-            //
             break;
         case readDAC:
             _ID = (qint8)_node->getqval();
@@ -284,7 +282,6 @@ void send_worker::queue_check(){
     }
     //emit updateStatusBar("Done");
     //mutex.unlock();
-
 }
 
 void send_worker::abort()

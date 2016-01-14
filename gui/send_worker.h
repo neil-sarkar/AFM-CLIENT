@@ -25,6 +25,7 @@ class send_worker : public QObject
     queue<receivetype>& receive_queue;
     icspiAFM& s_afm;
 public:
+    // constructor
     send_worker(QObject *parent,
                  queue<commandNode*>& _queue,
                  queue<receivetype>& _receivequeue, 
@@ -32,14 +33,15 @@ public:
         QObject(parent),
         cmd_queue(_queue),
         receive_queue(_receivequeue), 
-		s_afm(afm)  {}
+        s_afm(afm)  {} // note that this is the initialization list pattern
+    // destructor
     ~send_worker();
     void abort();
 
 
 private:
     //icspiAFM m_afm;
-    QTimer *queue_check_timer;
+    QTimer *queue_check_timer; // every 2ms,
     bool serial_ready = false;
     Command _command;
     double _val;
@@ -54,11 +56,9 @@ private:
 
 signals:
     bool open_serial_port(QString serialPortName, qint32 baud_rate);
-    bool serial_port_is_open();
     void close_serial_port();
     void finished();
     void updateStatusBar(QString _string);
-    Q_SIGNAL void push_recv_queue(returnType name);
 
 public slots:
     void mainLoop();

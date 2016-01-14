@@ -152,7 +152,7 @@ void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
     writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
 
     emit push_recv_queue(message_id, message_tag, writeByte_result);
-    qDebug() << "O" << "TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload.toHex() << " success?" << writeByte_result;
+    qDebug() << "O" << "TAG:" << QString().sprintf("%2p", message_tag) << " ID:" << message_id << QString().sprintf("%2p", message_id) << " payload 0x" << payload << " success?" << writeByte_result;
     return;
 }
 
