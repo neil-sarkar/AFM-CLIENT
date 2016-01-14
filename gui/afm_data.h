@@ -31,12 +31,12 @@ class afm_data : public QObject {
 Q_OBJECT
 
 private:
-int numpts, numlines, ratio;
-double delta_x;
-double delta_y;
-bool append_error;
-bool rev_mode = false;
-int x_index_pos = 0;
+    int numpts, numlines, ratio;
+    double delta_x;
+    double delta_y;
+    bool append_error;
+    bool rev_mode = false;
+    int x_index_pos = 0;
 
 /*
  * Note - the data doesn't have to be in grid form.
@@ -46,36 +46,36 @@ int x_index_pos = 0;
  */
 
 // Master data vectors for this scan
-QVector<double> x;
-QVector<double> y;
-QVector<double> zoffset_fwd;
-QVector<double> zamp_fwd;
-QVector<double> zphase_fwd;
-QVector<double> zoffset_rev;
-QVector<double> zamp_rev;
-QVector<double> zphase_rev;
-QVector<double> zoffset_rev_temp;
-QVector<double> zamp_rev_temp;
-QVector<double> zphase_rev_temp;
+    QVector<double> x;
+    QVector<double> y;
+    QVector<double> zoffset_fwd;
+    QVector<double> zamp_fwd;
+    QVector<double> zphase_fwd;
+    QVector<double> zoffset_rev;
+    QVector<double> zamp_rev;
+    QVector<double> zphase_rev;
+    QVector<double> zoffset_rev_temp;
+    QVector<double> zamp_rev_temp;
+    QVector<double> zphase_rev_temp;
 
 public:
-afm_data(int n_pts, int n_lines, int _ratio); //Constructor
-int append_data(QVector<double> z_offset_adc,
-                QVector<double> z_amp_adc,
-                QVector<double> z_phase_adc);
-void ratio_enum_to_deltaxy(int ratio_enum);
-bool is_data_full();
-void print_all();
-int get_numpts();
-int get_numlines();
-int get_ratio();
-bool has_error();
-void print_amp();
-int get_datapoint_count();
-int get_scan_progress();
-bool get_rev_mode();
-QByteArray save_gxyzf();
-QByteArray save_txt(int type);
+    afm_data(int n_pts, int n_lines, int _ratio); //Constructor
+    int append_data(QVector<double> z_offset_adc,
+                    QVector<double> z_amp_adc,
+                    QVector<double> z_phase_adc);
+    void ratio_enum_to_deltaxy(int ratio_enum);
+    bool is_data_full();
+    void print_all();
+    int get_numpts();
+    int get_numlines();
+    int get_ratio();
+    bool has_error();
+    void print_amp();
+    int get_datapoint_count();
+    int get_scan_progress();
+    bool get_rev_mode();
+    QByteArray save_gxyzf();
+    QByteArray save_txt(int type);
 };
 
 #endif // AFM_DATA_H

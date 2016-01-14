@@ -110,13 +110,6 @@ void icspiAFM::pidSetD(float D)
     emit writeMsg(AFM_PID_D_SELECT);
 }
 
-void icspiAFM::pidSetValues(qint8 P, qint8 I, qint8 D)
-{
-    pidSetP(P);
-    pidSetI(I);
-    pidSetD(D);
-}
-
 void icspiAFM::pidSetPoint(float val)
 {
     quint16 _setpoint = (float)val / (float)AFM_ADC_SCALING;
@@ -147,18 +140,6 @@ void icspiAFM::stageSetDirBackward()
 void icspiAFM::stageSetStep()
 {
     emit writeMsg(AFM_STAGE_PULSE_STEP);
-}
-
-void icspiAFM::stageStepForward()
-{
-    stageSetDirForward();
-    stageSetStep();
-}
-
-void icspiAFM::stageStepBackward()
-{
-    stageSetDirBackward();
-    stageSetStep();
 }
 
 void icspiAFM::stepMotSetSpeed(int speed){
@@ -252,11 +233,6 @@ void icspiAFM::frequencySweep(quint16 numPoints,
     // start frequency sweep ASSUMING REV 3 BOARD!!!
     emit clearPayloadBuffer();
     emit writeMsg(AFM_FREQ_SWEEP_AD9837); //TODO make this configurable
-}
-
-void icspiAFM::rasterStep(float /*val1*/, float /*val2*/)
-{
-    //Not too sure about this function
 }
 
 void icspiAFM::autoApproach_mcu(double setpoint)

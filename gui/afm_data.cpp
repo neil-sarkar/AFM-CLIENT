@@ -193,8 +193,6 @@ void afm_data::print_all(){
 }
 
 void afm_data::print_amp(){
-  //  qDebug() << "afm_data PRINT BEGIN";
-   // qDebug() << "x  y  zoffset";
     for(int i=0; i<x.size(); i++) {
         qDebug() << 'S' << QString::number(y.at(i), 'f', 3) << " " << QString::number(x.at(i), 'f', 3)  << " " << QString::number(zoffset_fwd.at(i), 'f', 5) ;
     }

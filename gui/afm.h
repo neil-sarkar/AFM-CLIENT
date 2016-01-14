@@ -17,9 +17,6 @@
 #include <icspi_products.h>
 
 /*AFM Configuration*/
-#define AFM_DEBUG                            1  // 1: display debug messages
-//#define AFM_USE_DUNCAN_BOARD                 0  // 1: Duncan's Board, 0: Mahdi's Board
-#define AFM_MICRO_CONNECTED                  1  // 1: microcontroller, 0: uC not plugged in
 
 #define DAC_BFRD1           0
 #define DAC_BFRD2           1
@@ -27,17 +24,16 @@
 #define DAC_ZAMP            3
 #define DAC_BR1             4
 #define DAC_BFRD3           5
-#define DAC_ZOFFSET_FINE	6/**/
-#define DAC_Y1              7/**/
-#define DAC_ZOFFSET_COARSE	8/**/
-#define DAC_Y2              9/**/
-#define DAC_X1              10/**/
-#define DAC_X2              11/**/
-
-#define ADC_X1              4
-#define ADC_X2              2
-#define ADC_Y1              1
-#define ADC_Y2              0
+#define DAC_ZOFFSET_FINE    6
+#define DAC_Y1              7
+#define DAC_ZOFFSET_COARSE  8
+#define DAC_Y2              9
+#define DAC_X1              10
+#define DAC_X2              11
+//#define ADC_X1              4
+//#define ADC_X2              2
+//#define ADC_Y1              1
+//#define ADC_Y2              0
 #define ADC_Z_PZR_AMP       5
 #define ADC_PHASE           6
 
@@ -199,23 +195,12 @@ class icspiAFM: public QObject{
     Q_OBJECT
 
 signals:
-   bool open(char *serialPortName, qint32 baud_rate);
-   void close();
-
    // Used for afm_worker
    void clearPayloadBuffer();
    int addPayloadByte(char byte);
-   int writeByte(unsigned char byte);
    int writeMsg(unsigned char msg_id);
-   QByteArray waitForMsg();
-   bool isOpen();
-
-   // For callback to mainwindow
-   void afm_callback(int callback);
 
 public:
-//    icspiAFM(QThread** afm_thread_temp_var):
-//        afmThread(afm_thread_temp_var) {}
     int writeMsg(unsigned char msg_id, QByteArray payload);
     void writeDAC(qint8 dacID,
                  double val);
@@ -233,40 +218,24 @@ public:
     void pidSetP(float P);
     void pidSetI(float I);
     void pidSetD(float D);
-    void pidSetValues(qint8 P,
-                     qint8 I,
-                     qint8 D);
     void pidSetPoint(float val);
 
     void stageSetPulseWidth(qint8 val);
     void stageSetDirForward();
     void stageSetDirBackward();
     void stageSetStep();
-    void stageSetContinuous();
-    void stageAbortContinuous();
-    void stageStepForward();
-    void stageStepBackward();
-    void setDDSSettings(quint16 numPoints,
-                       quint32 startFrequency,
-                       quint16 stepSize);
-    void frequencySweep(quint16 numPoints,
-                       quint16 startFrequency,
-                       quint16 stepSize);
-    void rasterStep(float val1,
-                    float val2);
+    void setDDSSettings(quint16 numPoints, quint32 startFrequency, quint16 stepSize);
+    void frequencySweep(quint16 numPoints, quint16 startFrequency, quint16 stepSize);
 
+    // Approach functions
     void autoApproach_mcu(double setpoint);
     void autoApproach_mcu_status();
     void autoApproach_mcu_stop();
-    void setDACMaxValues(char dacID,
-                     double _val);
-    void deviceCalibration(double val,
-                          char side);
-    void scanParameters(double vmin_line,
-                       double vmin_scan,
-                       double vmax,
-                       double numpts,
-                       double numlines);
+
+
+    void setDACMaxValues(char dacID, double _val);
+    void deviceCalibration(double val, char side);
+    void scanParameters(double vmin_line, double vmin_scan, double vmax, double numpts, double numlines);
 
     void startScan();
     void scanStep();
@@ -274,6 +243,8 @@ public:
     void scanStep_4act();
     void readSignalPhaseOffset();
     void forceCurve();
+
+    // Motor Controls
     void stepMotSetSpeed(int speed);
     void stepMotSetState(int state);
     void stepMotSetDir(int dir);
@@ -281,6 +252,7 @@ public:
     void stepMotContGo();
     void stepMotContStop();
     void stepMotSingleStep();
+
     void setDACTable(int block);
     void sigGen(quint8 ratio,
                  double numpts,
@@ -288,5 +260,5 @@ public:
 
 };
 
-#endif // AFM_H
+#endif
 
