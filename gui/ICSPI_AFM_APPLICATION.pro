@@ -50,19 +50,35 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD
 
-QWT_ROOT = C:/Qwt-6.1.2
-INCLUDEPATH += $${QWT_ROOT}/include
-DEPENDPATH += $${QWT_ROOT}/include
-CONFIG( debug, debug|release ) {
-        LIBS += -L$${QWT_ROOT}/lib -lqwtd
-} else {
-        LIBS += -L$${QWT_ROOT}/lib -lqwt
+macx {
+    QWT_ROOT = /Users/abali/Downloads/qwt-6.1.2
+    INCLUDEPATH += $${QWT_ROOT}/include
+    DEPENDPATH += $${QWT_ROOT}/include
+    CONFIG( debug, debug|release ) {
+            LIBS += -L$${QWT_ROOT}/lib -lqwtd
+    } else {
+            LIBS += -L$${QWT_ROOT}/lib -lqwt
+    }
+    include ( $${QWT_ROOT}/qwt.prf )
+#    INCLUDEPATH += $$PWD/../lib/qwtplot3d/include
+#    DEPENDPATH += $$PWD/../lib/qwtplot3d/include
 }
-include ( $${QWT_ROOT}/features/qwt.prf )
+win32 {
+    QWT_ROOT = C:/Qwt-6.1.2
+    INCLUDEPATH += $${QWT_ROOT}/include
+    DEPENDPATH += $${QWT_ROOT}/include
+    CONFIG( debug, debug|release ) {
+            LIBS += -L$${QWT_ROOT}/lib -lqwtd
+    } else {
+            LIBS += -L$${QWT_ROOT}/lib -lqwt
+    }
+    include ( $${QWT_ROOT}/features/qwt.prf )
+    INCLUDEPATH += $$PWD/../lib/qwtplot3d/include
+    DEPENDPATH += $$PWD/../lib/qwtplot3d/include
+}
 
 
-INCLUDEPATH += $$PWD/../lib/qwtplot3d/include
-DEPENDPATH += $$PWD/../lib/qwtplot3d/include
+
 win32{
   !build_pass {
     win32-msvc | win32-msvc2002 {
