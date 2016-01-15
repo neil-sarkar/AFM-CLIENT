@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     QObject::connect(receiveWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
     QObject::connect(sendWorker, SIGNAL(serial_port_is_open()), afmWorker, SLOT(serial_port_is_open()));
     // afm interfacing
-    //QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
+//    QObject::connect(receiveWorker, SIGNAL(getNextMsg()), afmWorker, SLOT(getNextMsg()));
     QObject::connect(afm, SIGNAL(clearPayloadBuffer()), afmWorker, SLOT(clearPayloadBuffer()));
     QObject::connect(afm, SIGNAL(addPayloadByte(char)), afmWorker, SLOT(addPayloadByte(char)));
     QObject::connect(afm, SIGNAL(writeMsg(unsigned char)), afmWorker, SLOT(writeMsg(unsigned char)));

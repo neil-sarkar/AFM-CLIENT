@@ -77,8 +77,6 @@ Q_DECLARE_METATYPE(returnType)
 
 class returnBuffer
 {
-
-
     returnType m_returnType;
     int i_data;
     char cdata_1;

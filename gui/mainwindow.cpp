@@ -1,5 +1,7 @@
 #include <mainwindow.h>
 #include <QDateTime>
+#include <QDebug>
+#include <QTest>
 
 
 //#include <gwyddion.h>
@@ -1063,11 +1065,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
     freqPlot.clearData();
     phasePlot.clearData();
 
-    double freqVal;
-    double ampVal;
-    double phaseVal;
-    double maxAmp=0;
-    double maxAmpFreq=0;
+    double freqVal, ampVal, phaseVal, maxAmp = 0, maxAmpFreq = 0;
     if (freqRetVal != AFM_SUCCESS) {
         QApplication::restoreOverrideCursor();
         QMessageBox msg;
@@ -1086,6 +1084,7 @@ void MainWindow::CreateFreqSweepGraph(QVector<double>   amplitudeData,
                 freqPlot.update(freqVal, ampVal, false); // add points to graph but don't replot
                 phasePlot.update(freqVal, phaseVal, false);
                 //Submit the current points to state machine for processing
+                qDebug() << "INPUTS TO AUTO FREQUENCY SWEEP FROM GRAPH" << ampVal << freqVal;
                 auto_freqsweep(ampVal, freqVal);
             } else {
                 qDebug() << 'S' << "MainWindow::CreateFreqSweepGraph Bad input array! Index out of bounds!";
@@ -1134,114 +1133,116 @@ void MainWindow::auto_freqsweep(double amp, double freq){
             auto_freqsweep_state = 6;
         }
     }
-    qDebug() << "auto_freqsweep state=" <<auto_freqsweep_state;
+    qDebug() << "CALLED auto_freqsweep state=" <<auto_freqsweep_state;
     switch(auto_freqsweep_state) {
-    //State 0. disabled state. does nothing
-    case 0:
-        //This part is self-explanatory
-        break;
-    case 1:
-        //Reset everything
-        auto_freqsweep_maxamp_valid = false;
-        auto_freqsweep_freq_at_maxamp = 0;
-        auto_freqsweep_maxamp = 0;
-        auto_freqsweep_decr_count = 0;
-        auto_freqsweep_amp_buffer = {0,0,0,0,0};
-        // Begin rough max sweep
-        ui->endFrequency->setValue(15000); //TODO The 15kHz and 1Khz range can be changed
-        ui->startFrequency->setValue(1000);
-        ui->numFreqPoints->setValue(250);
-        step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
-        commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
-        auto_freqsweep_state++;
-        break;
-    case 2:
-        // Simple checking algorithm to obtain a range for the second, fine sweep
-        if(amp > auto_freqsweep_maxamp) {
-            auto_freqsweep_maxamp = amp;
-            auto_freqsweep_freq_at_maxamp = freq;
-        }
-        break;
-    case 3:
-        // Start the fine second sweep
-        ui->endFrequency->setValue(auto_freqsweep_freq_at_maxamp + 500);
-        ui->startFrequency->setValue(auto_freqsweep_freq_at_maxamp - 500);
-        ui->numFreqPoints->setValue(100);
-        step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
-        commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
-        auto_freqsweep_state++;
-        auto_freqsweep_maxamp = 0; //Clear the var for fine sweep
-        break;
-    case 4:
-        // Collect and analyse data from the fine sweep
-        // INCREMENT MODE
-        // Put data into buffer
-        if(auto_freqsweep_amp_buffer.size() > 4) { //limit size of buffer to 5
-            auto_freqsweep_amp_buffer.pop_front();
-        }
-        auto_freqsweep_amp_buffer.push_back(amp);
-        // Check if this is a new max and is at least 1.5v of amplitiude
-        if(amp > auto_freqsweep_maxamp && amp > 1.5) {
-            auto_freqsweep_maxamp = amp;
-            auto_freqsweep_freq_at_maxamp = freq;
-            // Set validity flag to false, pending validations
+        //State 0. disabled state. does nothing
+        case 0:
+            //This part is self-explanatory
+            break;
+        case 1:
+            //Reset everything
+            amp = 0;
             auto_freqsweep_maxamp_valid = false;
-        } else if(amp < auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
-            // The new value decrements, so we possibily have reached the peak
-            // Ensure that all points in auto_freqsweep_amp_buffer thus far have positive derivaties
-            // If it does, then we can move on to DECREMENT MODE, where we ensure that the values following the peak are indeed decresing
-            bool has_negative_derivaties = false;
-            for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
-                //Are the values decreasing? They shouldn't be.
-                if(auto_freqsweep_amp_buffer.at(i) < auto_freqsweep_amp_buffer.at(i-1)) {
-                    has_negative_derivaties = true;
-                }
-            }
-            if(!has_negative_derivaties) {
-                auto_freqsweep_state++;
-            }
-        }
-        break;
-    case 5:
-        // DECREMENT MODE
-        // Process the current data
-        auto_freqsweep_decr_count++;
-        auto_freqsweep_amp_buffer.pop_front();
-        auto_freqsweep_amp_buffer.push_back(amp);
-
-        if(amp > auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
-            // Nope it's bigger
-            // Erase, Put data into buffer, then Go back to INCREMENT mode
+            auto_freqsweep_freq_at_maxamp = 0;
+            auto_freqsweep_maxamp = 0;
             auto_freqsweep_decr_count = 0;
-            auto_freqsweep_state--;
-        }
-        // Check on all the data received
-        // At the fifth data point, check if all values have negative slopes
-        if(auto_freqsweep_decr_count == auto_freqsweep_amp_buffer.size()) {
-            bool has_positive_derivaties = false;
-            for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
-                //Are the values increasing? They shouldn't be.
-                if(auto_freqsweep_amp_buffer.at(i) > auto_freqsweep_amp_buffer.at(i-1)) {
-                    has_positive_derivaties = true;
+            auto_freqsweep_amp_buffer = {0,0,0,0,0};
+            // Begin rough max sweep
+            ui->endFrequency->setValue(15000); //TODO The 15kHz and 1Khz range can be changed
+            ui->startFrequency->setValue(1000);
+            ui->numFreqPoints->setValue(250);
+            step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
+            commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
+            auto_freqsweep_state++;
+            break;
+        case 2:
+            // Simple checking algorithm to obtain a range for the second, fine sweep
+            if(amp > auto_freqsweep_maxamp) {
+                auto_freqsweep_maxamp = amp;
+                auto_freqsweep_freq_at_maxamp = freq;
+            }
+            break;
+        case 3:
+            // Start the fine second sweep
+            ui->startFrequency->setValue(auto_freqsweep_freq_at_maxamp - 500);
+            ui->endFrequency->setValue(auto_freqsweep_freq_at_maxamp + 500);
+            ui->numFreqPoints->setValue(100);
+            step_size = ((quint16)ui->endFrequency->value()-(quint16)ui->startFrequency->value()) / (quint16)ui->numFreqPoints->value();
+            commandQueue.push(new commandNode(frequencySweep, (quint16)ui->numFreqPoints->value(), (quint16)ui->startFrequency->value(), (quint16)step_size));
+            auto_freqsweep_state++;
+            auto_freqsweep_maxamp = 0; //Clear the var for fine sweep
+            break;
+        case 4:
+            // Collect and analyse data from the fine sweep
+            // INCREMENT MODE
+            // Put data into buffer
+            if(auto_freqsweep_amp_buffer.size() > 4) { //limit size of buffer to 5
+                auto_freqsweep_amp_buffer.pop_front();
+            }
+            auto_freqsweep_amp_buffer.push_back(amp);
+            // Check if this is a new max and is at least 1.5v of amplitiude
+            if(amp > auto_freqsweep_maxamp && amp > 1.5) {
+                auto_freqsweep_maxamp = amp;
+                auto_freqsweep_freq_at_maxamp = freq;
+                // Set validity flag to false, pending validations
+                auto_freqsweep_maxamp_valid = false;
+            } else if(amp < auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
+                // The new value decrements, so we possibily have reached the peak
+                // Ensure that all points in auto_freqsweep_amp_buffer thus far have positive derivaties
+                // If it does, then we can move on to DECREMENT MODE, where we ensure that the values following the peak are indeed decresing
+                bool has_negative_derivaties = false;
+                for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
+                    //Are the values decreasing? They shouldn't be.
+                    if(auto_freqsweep_amp_buffer.at(i) < auto_freqsweep_amp_buffer.at(i-1)) {
+                        has_negative_derivaties = true;
+                    }
+                }
+                if(!has_negative_derivaties) {
+                    auto_freqsweep_state++;
                 }
             }
-            if(!has_positive_derivaties) {
-                auto_freqsweep_maxamp_valid = true;
+            break;
+        case 5:
+            // DECREMENT MODE
+            // Process the current data
+            auto_freqsweep_decr_count++;
+            auto_freqsweep_amp_buffer.pop_front();
+            auto_freqsweep_amp_buffer.push_back(amp);
+
+            if(amp > auto_freqsweep_amp_buffer.at(auto_freqsweep_amp_buffer.size()-2)) {
+                // Nope it's bigger
+                // Erase, Put data into buffer, then Go back to INCREMENT mode
+                auto_freqsweep_decr_count = 0;
+                auto_freqsweep_state--;
             }
-        }
-        break;
-    case 6:
-        // Check if max_amp is greater than 1.5. This is it.
-        if(auto_freqsweep_maxamp_valid) {
-            ui->currFreqVal->setValue(auto_freqsweep_freq_at_maxamp);
-            commandQueue.push(new commandNode(setDDSSettings, auto_freqsweep_freq_at_maxamp));
-        } else {
-            qDebug() << "No max found";
-            msgBox.setText("Could not automatically locate the resonant frequency =(");
-            msgBox.exec();
-        }
-        auto_freqsweep_state = 0;
-        break;
+            // Check on all the data received
+            // At the fifth data point, check if all values have negative slopes
+            if(auto_freqsweep_decr_count == auto_freqsweep_amp_buffer.size()) {
+                bool has_positive_derivaties = false;
+                for(int i=1; i<(auto_freqsweep_amp_buffer.size() - 1); i++) { //start at 1 to avoid assertion
+                    //Are the values increasing? They shouldn't be.
+                    if(auto_freqsweep_amp_buffer.at(i) > auto_freqsweep_amp_buffer.at(i-1)) {
+                        has_positive_derivaties = true;
+                    }
+                }
+                if(!has_positive_derivaties) {
+                    auto_freqsweep_maxamp_valid = true;
+                }
+            }
+            break;
+        case 6:
+            // Check if max_amp is greater than 1.5. This is it.
+            if(auto_freqsweep_maxamp_valid) {
+                ui->currFreqVal->setValue(auto_freqsweep_freq_at_maxamp);
+                commandQueue.push(new commandNode(setDDSSettings, auto_freqsweep_freq_at_maxamp));
+            } else {
+                qDebug() << "No max found";
+                msgBox.setText("Could not automatically locate the resonant frequency =(");
+                msgBox.exec();
+            }
+            auto_freqsweep_state = 0;
+            ui->btn_auto_freqsweep->setEnabled(true); // re-enable the button so that we can press it again
+            break;
     }
 }
 
@@ -1675,6 +1676,7 @@ void MainWindow::stepmot_user_control(UserStepMotOp operation, bool isStep)
 
 void MainWindow::on_btn_stepmot_user_up_pressed()
 {
+    qDebug() << "Pressed Retract";
     stepmot_user_control(APPR, true);
 }
 
@@ -1696,6 +1698,7 @@ void MainWindow::on_btn_stepmot_user_down_released()
 void MainWindow::on_btn_auto_freqsweep_clicked()
 {
     auto_freqsweep_state = 1;
+    ui->btn_auto_freqsweep->setEnabled(false);
     auto_freqsweep(-5,-5);
 }
 

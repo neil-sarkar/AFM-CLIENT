@@ -35,15 +35,14 @@ public:
 private:
 
     //nanoiAFM m_afm;
-    QTimer *graphTimer;     // graph timer which can change intervals
     QTimer *generalTimer;   // general purpose timer for some components. Ie. continuously stepping motor every 20ms etc
-    int ioTimer;
     bool _abort;
     MainWindow* _mainwindow; //used to check current tab
     returnBuffer* _node;     //current node
 signals:
     void finished();
     void updatePlot(double _signal, int _plot); //signal to the mainwindow to update the plot
+    // Where is updatePlot actually used?
 
 public slots:
     void updateGraph(); //timer event to send a read request to the MCU and then sends a signal to the mainwindow to update graph

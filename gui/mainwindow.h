@@ -329,8 +329,6 @@ private slots:
     void on_btn_save_txt_2_clicked();
     void on_spn_test_dac_coarse_z_valueChanged(double arg1);
     void on_spn_test_dac_fine_z_valueChanged(double arg1);
-    void on_lbl_autoappr_mcu_state_linkActivated(const QString &link);
-    void on_btn_stepmot_user_down_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -72,6 +72,7 @@ bool afm_worker::serial_port_is_open(){
 int afm_worker::writeByte(char byte)
 {
     if (serial->write(&byte, 1) == 1) {
+        qDebug() << byte;
         return AFM_SUCCESS;
     } else {
         QString hex_equivalent_print = QString("%1").arg(byte, 0, 16);
@@ -123,7 +124,7 @@ void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
     int writeByte_result = 0;
 
     //Close the last message, in case the last message was bad
-    writeByte_result += writeByte(SERIAL_MSG_NEWLINE);
+    writeByte_result += writeByte(SERIAL_MSG_NEWLINE); // writeByte actually uses the serial port
 
     //Increment and Write the message tag
     message_tag++;
@@ -158,7 +159,7 @@ void afm_worker::writeMsg(unsigned char message_id, QByteArray payload)
 
 void afm_worker::onReadyRead(){
     serial_incoming_buffer += serial->readAll();
-    qDebug() << "I" << "afm_worker received readAll. serial_incoming_buffer = 0x" << serial_incoming_buffer.toHex();
+    qDebug() << "I" << "afm_worker received readAll. serial_incoming_buffer = 0x" << serial_incoming_buffer;
     processIncomingBuffer();
 }
 

@@ -61,10 +61,7 @@ void eventworker::updateGraph()
 
 void eventworker::abort()
 {
-    //QMutexLocker locker(&mutex);
-    //mutex.unlock();
     _abort = true;
-    //condition.wakeOne();
 }
 eventworker::~eventworker()
 {

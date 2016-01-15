@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += serialport #QT 5 uses QT rather than CONFIG
+QT       += testlib
 CONFIG   += qwt
 
 CONFIG   += c++11

@@ -212,7 +212,7 @@ void icspiAFM::setDDSSettings(quint16 numPoints,
     // step size
     stepSize = double(stepSize) * scale;
     emit addPayloadByte((qint8)stepSize); // low byte
-    emit addPayloadByte((qint8)(stepSize >> 8)); // high bye
+    emit addPayloadByte((qint8)(stepSize >> 8)); // high byte
 
     qDebug() << "O" << "Num Points - High Byte: " << (quint16)(numPoints >> 8) << " Low Byte: " << (quint8)numPoints;
     // num points

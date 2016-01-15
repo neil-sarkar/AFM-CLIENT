@@ -1,5 +1,5 @@
 #include "receive_worker.h"
-
+#include <QTest>
 
 void receive_worker::mainLoop()
 {
@@ -294,7 +294,8 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         return_queue.push(new returnBuffer(type, float(((float)val) * AFM_ADC_SCALING)));
         break;
     case AFM_FREQ_SWEEP_AD9837:
-    case AFM_FREQ_SWEEP_AD5932:
+    case AFM_FREQ_SWEEP_AD5932: // Size of UART_RESP should be 2 bytes + 4 * number of points in the frequency sweep (aka the resolution)
+                                                                        // The value 4 comes from 2 bytes necesary to express the amplitude, and 2 to represent the phase.
         if ((uart_resp.at(1) == AFM_FREQ_SWEEP_AD5932 || uart_resp.at(1) == AFM_FREQ_SWEEP_AD9837) && uart_resp.size() >= 6) {
             int bytesRead;
             int success;
