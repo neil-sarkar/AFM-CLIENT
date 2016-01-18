@@ -529,60 +529,47 @@ void MainWindow::dequeueReturnBuffer()
             //Callback to the state machine
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
             break;
-        case SCANDATA:
+        case SCANDATA: // This is what the MCU sends when it's got some scan data - right now it returns 8 points scanned at a time
             //Take the data out from _buffer and make it into something useful for state machine
-           {
-            if (_buffer->getData() == AFM_FAIL) {
-                qDebug() << 'S' << "afm bad scan data received";
-                scan_state = SCAN_DISABLED;
-                QTimer::singleShot(1, this, SLOT(scan_state_machine()));
-                break;
-            }
-
-            int append_result = scan_result->append_data(_buffer->getzoffset(),
-                                                         _buffer->getzamp(),
-                                                         _buffer->getzphase());
-            if(append_result == 0) {
-                qDebug() << 'S' << "Scan Data is in success!";
-            } else if (append_result == 1) {
-                qDebug() << 'S' << "afm_data append_scan_data is full";
-            } else {
-                //We have a fault
-                qDebug() << 'S' << "afm_data append_scan_data failed";
-                scan_state = SCAN_DISABLED;
-            }
-/*
-            if (_buffer->getData() == AFM_SUCCESS) {
-                QVector<double> zamp = _buffer->getzamp();
-                int _size = zamp.size();
-                for (int i = 0; i < _size; i++) {
-                    scandata[row] = new double[_size];
-                    for (int j = 0; j < _size; j++)
-                        scandata[row][j] = zamp.at(row);
-                    row++;
+            {
+                if (_buffer->getData() == AFM_FAIL) {
+                    qDebug() << 'S' << "afm bad scan data received";
+                    scan_state = SCAN_DISABLED;
+                    QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+                    break;
                 }
-                scanPlot.createDataset(scandata, _size, _size, 0, _size, 0, _size);
-                scanPlot.updateGL();
-            }
-            */
-            //  qDebug() << "Scan Data is in!";
-            //Update the line graphs
-             if (currTab == Approach) {
-                adcZ =  _buffer->getzamp().at(0) * AFM_ADC_SCALING;
-                //phase = _buffer->getzphase().at(0) * AFM_ADC_SCALING;
-                phase = _buffer->getzoffset().at(0) * AFM_ADC_SCALING; //temp to show zoffset on phase graph
-             }
 
-            //Callback to the state machine
-            QTimer::singleShot(1, this, SLOT(scan_state_machine()));
-           }
-        break;
+                int append_result = scan_result->append_data(_buffer->getzoffset(),
+                                                             _buffer->getzamp(),
+                                                             _buffer->getzphase());
+                if(append_result == 0) {
+                    qDebug() << 'S' << "Scan Data is in success!";
+                } else if (append_result == 1) {
+                    qDebug() << 'S' << "afm_data append_scan_data is full";
+                } else {
+                    //We have a fault
+                    qDebug() << 'S' << "afm_data append_scan_data failed";
+                    scan_state = SCAN_DISABLED;
+                }
+
+                //  qDebug() << "Scan Data is in!";
+                //Update the line graphs
+                 if (currTab == Approach) {
+                    adcZ =  _buffer->getzamp().at(0) * AFM_ADC_SCALING;
+                    //phase = _buffer->getzphase().at(0) * AFM_ADC_SCALING;
+                    phase = _buffer->getzoffset().at(0) * AFM_ADC_SCALING; //temp to show zoffset on phase graph
+                 }
+
+                //Callback to the state machine
+                QTimer::singleShot(1, this, SLOT(scan_state_machine()));
+            }
+            break;
         case PIDDISABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858973_ballred-24.png");
             break;
         case PIDENABLE:
             ui->label_pid_indicator->setPixmap((QString)":/icons/icons/1413858979_ballgreen-24.png");
-            if(scan_state==2) {
+            if(scan_state==SET_DACTABLE) {
                 QTimer::singleShot(1, this, SLOT(scan_state_machine()));
             }
             break;
@@ -1739,10 +1726,11 @@ void MainWindow::on_btn_re_init_clicked()
  * @fn MainWindow::send_DAC_table_state_machine
  * @brief Send the DAC table in blocks
  * @param type If type is 1, then this function is called from a callback, and it will continue next block of DAC table
- *             If type is 0, then this function is invoked by user or some other thing, and it will start over
+ *             If type is 0, then this function is invoked by user or some other function, and it will start setting the DACTable from beginning
  */
 
-void MainWindow::set_DAC_table_state_machine(int type)
+void MainWindow::set_DAC_table_state_machine(int type) // THIS process is constant for each scan - should be part of the mcu code but code limits :(
+// only needs to be sent once after the mcu boots, but right now, we send it every time we want to scan
 {
     if(type==0) {
         dac_table_current_block=0;
@@ -1757,7 +1745,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
         //Stop and reset
         qDebug() << 'S' << "dac_table_current_block at max value, msg #" << dac_table_current_block;
         //If we are in the appropriate scanning state, callback to the scan_state_machine
-        if(scan_state == 3) {
+        if(scan_state == SET_SIGGEN) {
             ui->progbar_scan->setValue((ui->progbar_scan->value())+1);
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
         }
@@ -1781,7 +1769,7 @@ void MainWindow::set_DAC_table_state_machine(int type)
 void MainWindow::scan_state_machine(){
     qDebug() << 'S' << "Scan State Machine i=" << scan_state;
     switch(scan_state) {
-    case 0: //
+    case SCAN_DISABLED: //
         /* ENTRY: User button click or any other interrupt for scan
          * EXIT: N/A
          * Disabled state, safe to call at any time.
@@ -1829,27 +1817,27 @@ void MainWindow::scan_state_machine(){
         scan_state=SET_SIGGEN;
         break;
     case SET_SIGGEN:
-    {
-        /* ENTRY: DAC Table loading complete, via afm_callback
-         * EXIT: Send command "Q" to enter scan mode in uC
-         * SIGGEN and BEGIN_SCAN,  create new afm_data object
-         */
-        quint8 ratioEnum = ui->cmb_scanRatio_old->value();
-        double numlines = ui->cmbScanNumLines->currentText().toDouble();
-        double numpts = ui->cmbScanNumPoints->currentText().toDouble();
-        commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
-        commandQueue.push(new commandNode(startScan_4act));
-        delete scan_result;
-        scan_result = new afm_data(numpts, numlines, ratioEnum);
-        ui->label_scan_status->setText("Scanning...");
-        scan_state=SCAN_DATA_RECV;
-        //DEBUG TEMP ONLY!!!!!!
-        approachPlot.clearData();
-        approachPlot2.clearData();
-        approachPlot.replot();
-        approachPlot.replot();
-    }
-    break;
+        {
+            /* ENTRY: DAC Table loading complete, via afm_callback
+             * EXIT: Send command "Q" to enter scan mode in uC
+             * SIGGEN and BEGIN_SCAN,  create new afm_data object
+             */
+            quint8 ratioEnum = ui->cmb_scanRatio_old->value();
+            double numlines = ui->cmbScanNumLines->currentText().toDouble();
+            double numpts = ui->cmbScanNumPoints->currentText().toDouble();
+            commandQueue.push(new commandNode(SigGen, ratioEnum, numpts, numlines));
+            commandQueue.push(new commandNode(startScan_4act));
+            delete scan_result;
+            scan_result = new afm_data(numpts, numlines, ratioEnum); // create a new afm_data which will contain the data for this specific scan config
+            ui->label_scan_status->setText("Scanning...");
+            scan_state=SCAN_DATA_RECV;
+            //DEBUG TEMP ONLY!!!!!!
+            approachPlot.clearData();
+            approachPlot2.clearData();
+            approachPlot.replot();
+            approachPlot.replot();
+        }
+        break;
     case SCAN_DATA_RECV:
     {
         /* ENTRY: Callback from AFM_START_SCAN_4ACT acknowledge (STARTSCAN_4ACT), and recursive call from SCANDATA in dequeueReturnBuffer
@@ -1861,7 +1849,7 @@ void MainWindow::scan_state_machine(){
         } else if (scan_result->has_error() == true) {
             scan_state = SCAN_DISABLED;
             ui->label_scan_status->setText("Error while scanning");
-            QTimer::singleShot(5000, this, SLOT(scan_state_machine()));
+            QTimer::singleShot(5000, this, SLOT(scan_state_machine())); // delay length not important for operation
         } else {
             scan_state=SCAN_DONE;
             QTimer::singleShot(1, this, SLOT(scan_state_machine()));
