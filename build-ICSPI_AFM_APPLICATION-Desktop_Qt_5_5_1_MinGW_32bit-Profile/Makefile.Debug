@@ -2938,7 +2938,80 @@ debug/receive_worker.o: ../gui/receive_worker.cpp ../gui/receive_worker.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/qdatastream.h \
 		../gui/returnbuffer.h \
 		C:/Qt/5.5/mingw492_32/include/QtCore/QEventLoop \
-		C:/Qt/5.5/mingw492_32/include/QtCore/QMetaType
+		C:/Qt/5.5/mingw492_32/include/QtCore/QMetaType \
+		C:/Qt/5.5/mingw492_32/include/QtTest/QTest \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtest.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtest_global.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestcase.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsharedpointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qtemporarydir.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qdir.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfileinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfile.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qfiledevice.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QScopedPointer \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestdata.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qbenchmark.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qbenchmarkmetric.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qurl.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qurlquery.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qsize.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qrect.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmargins.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestsystem.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qelapsedtimer.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/QWindow \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qwindow.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QEvent \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QMargins \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QRect \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qsurface.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qsurfaceformat.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qwindowdefs.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qwindowdefs_win.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qicon.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpixmap.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qcolor.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qrgb.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qimage.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qtransform.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qmatrix.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpolygon.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qregion.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qline.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpainterpath.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpixelformat.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qcursor.h \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/QWidget \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qwidget.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qpalette.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qbrush.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qfont.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qfontmetrics.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qfontinfo.h \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qsizepolicy.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qkeysequence.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qevent.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qvector2d.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qtouchdevice.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtest_widgets.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtest_gui.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestassert.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestevent.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestkeyboard.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestspontaneevent.h \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qpointer.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qguiapplication.h \
+		C:/Qt/5.5/mingw492_32/include/QtGui/qinputmethod.h \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qapplication.h \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/qdesktopwidget.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtestmouse.h \
+		C:/Qt/5.5/mingw492_32/include/QtTest/qtesttouch.h \
+		C:/Qt/5.5/mingw492_32/include/QtWidgets/QSizePolicy \
+		C:/Qt/5.5/mingw492_32/include/QtCore/QMetaEnum \
+		C:/Qt/5.5/mingw492_32/include/QtCore/qmetaobject.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\receive_worker.o ..\gui\receive_worker.cpp
 
 debug/afm_data.o: ../gui/afm_data.cpp ../gui/afm_data.h \

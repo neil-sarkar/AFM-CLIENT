@@ -2545,7 +2545,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
         cmb_scanRatio->setCurrentIndex(0);
         tabScan->setCurrentIndex(1);
         cbo_microstep->setCurrentIndex(-1);

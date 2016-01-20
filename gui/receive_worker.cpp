@@ -361,8 +361,7 @@ void receive_worker::process_uart_resp(QByteArray new_uart_resp){
         z_offset_adc->clear();
         z_amp_adc->clear();
         z_phase_adc->clear();
-        if(uart_resp.size() > AFM_SCAN_STEP_4ACT_RSPLEN &&
-           ((uart_resp.size()-2) % 6 == 0)) {
+        if(uart_resp.size() > AFM_SCAN_STEP_4ACT_RSPLEN && ((uart_resp.size()-2) % 6 == 0)) {
             for (int i = 2; i < uart_resp.size(); i+=6) {
                 // ampVal = ;
                 // phaseVal = BYTES_TO_WORD((quint8)uart_resp[i + 2], (quint8)uart_resp[i + 3]);

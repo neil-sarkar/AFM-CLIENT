@@ -261,31 +261,22 @@ QByteArray afm_data::save_gxyzf(){
     //Padding
     for(int i=0; i<temp1; i++){
        file_bytes.append("\0"); //debugging only -- to change to "\0" later
-       // stream << (quint8)0;
     }
 
    // return file_bytes;
 
   //  QDataStream stream(&file_bytes, QIODevice::WriteOnly);
  //   stream.setByteOrder(QDataStream::LittleEndian);
-
     for(int i=0; i<x.size(); i++){
       //  stream <<x.at(i)<<y.at(i)<<zamp_fwd.at(i)<<zoffset_fwd.at(i)<<zphase_fwd.at(i)<<zamp_rev.at(i)<<zoffset_rev.at(i)<<zphase_rev.at(i);
-        file_bytes.append(reinterpret_cast<const char*>(&x.at(i)), sizeof(x.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&y.at(i)), sizeof(y.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zamp_fwd.at(i)), sizeof(zamp_fwd.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zoffset_fwd.at(i)), sizeof(zoffset_fwd.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zphase_fwd.at(i)), sizeof(zphase_fwd.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zamp_rev.at(i)), sizeof(zamp_rev.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zoffset_rev.at(i)), sizeof(zoffset_rev.at(i)));
-        file_bytes.append(reinterpret_cast<const char*>(&zphase_rev.at(i)), sizeof(zphase_rev.at(i)));
-//        file_stream.append(x.at(i));
-//        file_stream.append(y.at(i));
-//        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));
-//        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));
-//        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));
-//        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));
-//        file_stream.append(x.at(i)+y.at(i)+zamp_fwd.at(i)+zoffset_fwd.at(i)+zphase_fwd.at(i)+zamp_rev.at(i)+zoffset_rev.at(i)+zphase_rev.at(i));
+        file_bytes.append(x.at(i));
+        file_bytes.append(y.at(i));
+        file_bytes.append(zamp_fwd.at(i));
+        file_bytes.append(zoffset_fwd.at(i));
+        file_bytes.append(zphase_fwd.at(i));
+        file_bytes.append(zamp_rev.at(i));
+        file_bytes.append(zoffset_rev.at(i));
+        file_bytes.append(zphase_rev.at(i));
     }
     return file_bytes;
 }
