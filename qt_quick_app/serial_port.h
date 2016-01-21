@@ -1,7 +1,8 @@
 #ifndef SERIAL_PORT_H
 #define SERIAL_PORT_H
 #include <QObject>
-#include <QtSerialPort>
+#include <QSerialPort>
+
 class SerialPort: public QObject
 {
   Q_OBJECT

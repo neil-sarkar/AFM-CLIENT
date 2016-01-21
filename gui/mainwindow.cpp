@@ -1962,10 +1962,8 @@ void MainWindow::on_btn_save_gxyzf_clicked()
         if (!file.open(QIODevice::WriteOnly)) {
             // error message
         } else {
-//            QTextStream stream(&file);
-//            stream << ui->textEdit->toPlainText();
-//            stream.flush();
-            file.write(scan_result->save_gxyzf());
+            const char* myChar = scan_result->save_gxyzf().toStdString().c_str();
+            file.write(myChar);
             file.close();
         }
     }
@@ -1981,9 +1979,6 @@ void MainWindow::on_btn_save_txt_1_clicked()
         if (!file.open(QIODevice::WriteOnly)) {
             // error message
         } else {
-//            QTextStream stream(&file);
-//            stream << ui->textEdit->toPlainText();
-//            stream.flush();
             file.write(scan_result->save_txt(1));
             file.close();
         }

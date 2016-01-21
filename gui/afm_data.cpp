@@ -238,6 +238,7 @@ QByteArray afm_data::save_txt(int type){
 
 //NOTE!!! It seems gwiddion cannot read these files when you drag it in. MUST use File -> Open
 //Seems gwyddion doesn't quite like the file format....
+
 QByteArray afm_data::save_gxyzf(){
     QByteArray file_bytes;
     file_bytes.clear();
@@ -255,7 +256,7 @@ QByteArray afm_data::save_gxyzf(){
 
    // stream << header.toUtf8();
     //Remove the first four padding from string
-    file_bytes.append(header.toUtf8());
+    file_bytes.append(header);
     int temp1 = (8 - (file_bytes.size() % 8));
     qDebug() << 'S' << "NULL " << temp1;
     //Padding
@@ -269,14 +270,15 @@ QByteArray afm_data::save_gxyzf(){
  //   stream.setByteOrder(QDataStream::LittleEndian);
     for(int i=0; i<x.size(); i++){
       //  stream <<x.at(i)<<y.at(i)<<zamp_fwd.at(i)<<zoffset_fwd.at(i)<<zphase_fwd.at(i)<<zamp_rev.at(i)<<zoffset_rev.at(i)<<zphase_rev.at(i);
-        file_bytes.append(x.at(i));
-        file_bytes.append(y.at(i));
-        file_bytes.append(zamp_fwd.at(i));
-        file_bytes.append(zoffset_fwd.at(i));
-        file_bytes.append(zphase_fwd.at(i));
-        file_bytes.append(zamp_rev.at(i));
-        file_bytes.append(zoffset_rev.at(i));
-        file_bytes.append(zphase_rev.at(i));
+        file_bytes.append(reinterpret_cast<const char*>(&x.at(i)), sizeof(x.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&y.at(i)), sizeof(y.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zamp_fwd.at(i)), sizeof(zamp_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zoffset_fwd.at(i)), sizeof(zoffset_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zphase_fwd.at(i)), sizeof(zphase_fwd.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zamp_rev.at(i)), sizeof(zamp_rev.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zoffset_rev.at(i)), sizeof(zoffset_rev.at(i)));
+        file_bytes.append(reinterpret_cast<const char*>(&zphase_rev.at(i)), sizeof(zphase_rev.at(i)));
+        file_bytes.append('\n');
     }
     return file_bytes;
 }
