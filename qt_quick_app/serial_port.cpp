@@ -4,6 +4,7 @@
 #include <QIODevice>
 #include <serial_port_constants.h>
 #include <QDebug>
+#include <QTimer>
 
 SerialPort::SerialPort() {
     port = new QSerialPort(this);
@@ -20,20 +21,19 @@ bool SerialPort::auto_connect() {
     QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
     if (!connected_ports.size()) // if there are no ports available
         return false;
+    for (int i = 0; i < connected_ports.size(); i++)
+        qDebug() << connected_ports[i].manufacturer();
 
-    for (int i = 0; i < connected_ports.size(); i++) { // iterate through the ports
-        if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) { // check if the port is the AFM
-            return open(SerialPortConstants.AFM_PORT_NAME, SerialPortConstants.AFM_BAUD_RATE);
-            break;
-        }
-    }
+    for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports
+        if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) // check if the port is the AFM
+            return open(connected_ports[i].portName(), SerialPortConstants.AFM_BAUD_RATE);
     return false;
 }
 
 bool SerialPort::open(QString port_name, qint32 baud_rate) {
     close(); // close the current port, if any
-    port->setBaudRate(baud_rate);
     port->setPortName(port_name);
+    port->setBaudRate(baud_rate);
     if (port->open(QIODevice::ReadWrite)) {
         emit connected();
         is_connected = true;
@@ -53,4 +53,8 @@ int SerialPort::writeByte(char byte) {
 
     qDebug() << "Failed to write byte " << QString("%1").arg(byte, 0, 16);
     return SerialPortConstants.AFM_FAIL;
+}
+
+void SerialPort::onReadyRead() {
+    qDebug() << port->readAll();
 }
