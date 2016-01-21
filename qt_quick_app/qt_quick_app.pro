@@ -18,4 +18,5 @@ include(deployment.pri)
 
 HEADERS += \
     receiver.h \
-    serial_port.h
+    serial_port.h \
+    serial_port_constants.h

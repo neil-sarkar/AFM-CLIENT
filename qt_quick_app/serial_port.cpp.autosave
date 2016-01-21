@@ -1,5 +1,0 @@
-#include <serial.h>
-
-SerialPort::SerialPort() {
-    port = 
-}
