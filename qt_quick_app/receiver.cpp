@@ -1,10 +1,10 @@
 #include "receiver.h"
+#include "serial.h"
 #include <QDebug>
 
-Receiver::Receiver(QObject *parent) : QObject(parent)
-{}
+Receiver::Receiver(QObject *parent) : QObject(parent) {}
 
-void Receiver::receiveFromQml(int value) {
+void Receiver::receiveFromQml(char value) {
     qDebug() << "Received in C++ from QML:" << value;
 }
 

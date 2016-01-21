@@ -9,9 +9,8 @@ class SerialPort: public QObject
 {
 Q_OBJECT
     public:
-        explicit SerialPort(); // constructor
+        explicit SerialPort(QObject *parent = 0); // constructor
         ~SerialPort(); // destructor
-        int writeByte(char byte);
         bool auto_connect();
         bool open(QString port_name, qint32 baud_rate); // opens the given serial port at the given baud rate, and handles any setup processes
         void close(); // closes the serial port, and handles any tear-down processes
@@ -22,6 +21,7 @@ Q_OBJECT
         void on_ready_read();
         void scan_for_ports();
         void check_connected(); // this method runs periodically as dictated by the port_scan_timer
+        int write_byte(char byte);
     private:
         QTimer* port_scan_timer;
         bool is_connected;

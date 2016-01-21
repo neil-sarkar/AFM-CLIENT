@@ -8,9 +8,6 @@
 #include "receiver.h"
 #include "serial_port.h"
 
-void init_serial_thread() {
-}
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -22,7 +19,8 @@ int main(int argc, char *argv[])
     QThread* serial_thread = new QThread();
     SerialPort* serial_port = new SerialPort();
     serial_port->moveToThread(serial_thread);
-    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
     serial_thread->start();
+    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
+
     return app.exec();
 }

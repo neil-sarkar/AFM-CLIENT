@@ -6,8 +6,9 @@
 #include <QDebug>
 #include <QTimer>
 
-SerialPort::SerialPort() {
+SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
+    QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
 SerialPort::~SerialPort() {
@@ -46,7 +47,7 @@ void SerialPort::close() {
     emit disconnected();
 }
 
-int SerialPort::writeByte(char byte) {
+int SerialPort::write_byte(char byte) {
     if (port->write(&byte, 1) == 1)
         return SerialPortConstants.AFM_SUCCESS;
 
