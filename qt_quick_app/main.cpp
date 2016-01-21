@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
+
+
     Receiver receiver;
     QQmlContext* ctx = engine.rootContext();
     ctx->setContextProperty("receiver", &receiver); // creates a name receiver and ties it to the receiver we instantiated
@@ -21,6 +23,7 @@ int main(int argc, char *argv[])
     serial_port->moveToThread(serial_thread);
     serial_thread->start();
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
+    QObject::connect(&receiver, SIGNAL(send_byte(char)), serial_port, SLOT(write_byte(char)));
 
     return app.exec();
 }

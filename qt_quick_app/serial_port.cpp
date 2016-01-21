@@ -49,6 +49,7 @@ void SerialPort::close() {
 
 int SerialPort::write_byte(char byte) {
     if (port->write(&byte, 1) == 1)
+        qDebug() << "Writing" << byte;
         return SerialPortConstants.AFM_SUCCESS;
 
     qDebug() << "Failed to write byte " << QString("%1").arg(byte, 0, 16);
