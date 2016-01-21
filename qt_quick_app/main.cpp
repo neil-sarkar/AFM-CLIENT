@@ -4,9 +4,12 @@
 #include <QQuickItem>
 #include <QQmlContext>
 #include <QObject>
+#include <QThread>
 #include "receiver.h"
 #include "serial_port.h"
 
+void init_serial_thread() {
+}
 
 int main(int argc, char *argv[])
 {
@@ -16,8 +19,10 @@ int main(int argc, char *argv[])
     QQmlContext* ctx = engine.rootContext();
     ctx->setContextProperty("receiver", &receiver); // creates a name receiver and ties it to the receiver we instantiated
     engine.load(QUrl(QStringLiteral("qrc:///main.qml")));
-
-    SerialPort serial_port;
-    serial_port.auto_connect();
+    QThread* serial_thread = new QThread();
+    SerialPort* serial_port = new SerialPort();
+    serial_port->moveToThread(serial_thread);
+    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
+    serial_thread->start();
     return app.exec();
 }

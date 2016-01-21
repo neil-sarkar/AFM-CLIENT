@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QSerialPort>
 #include <QList>
+#include <QTimer>
 
 class SerialPort: public QObject
 {
@@ -18,8 +19,11 @@ Q_OBJECT
         void connected(); // emitted when afm is first connected to
         void disconnected(); // emitted when afm is first disconnected
     public slots:
-        void onReadyRead();
+        void on_ready_read();
+        void scan_for_ports();
+        void check_connected(); // this method runs periodically as dictated by the port_scan_timer
     private:
+        QTimer* port_scan_timer;
         bool is_connected;
         QSerialPort* port;
 

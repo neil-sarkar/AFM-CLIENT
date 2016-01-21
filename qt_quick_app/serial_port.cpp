@@ -13,6 +13,7 @@ SerialPort::SerialPort() {
 SerialPort::~SerialPort() {
     close();
     emit disconnected();
+    delete port_scan_timer;
 }
 
 bool SerialPort::auto_connect() {
@@ -21,9 +22,6 @@ bool SerialPort::auto_connect() {
     QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
     if (!connected_ports.size()) // if there are no ports available
         return false;
-    for (int i = 0; i < connected_ports.size(); i++)
-        qDebug() << connected_ports[i].manufacturer();
-
     for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports
         if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) // check if the port is the AFM
             return open(connected_ports[i].portName(), SerialPortConstants.AFM_BAUD_RATE);
@@ -37,6 +35,7 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     if (port->open(QIODevice::ReadWrite)) {
         emit connected();
         is_connected = true;
+        port_scan_timer->stop();
     }
     return is_connected;
 }
@@ -55,6 +54,19 @@ int SerialPort::writeByte(char byte) {
     return SerialPortConstants.AFM_FAIL;
 }
 
-void SerialPort::onReadyRead() {
+void SerialPort::on_ready_read() {
     qDebug() << port->readAll();
+}
+
+void SerialPort::check_connected() {
+    qDebug() << "Checking connection";
+    char temp_buffer[1];
+    if (port->peek(temp_buffer, sizeof(temp_buffer)) == -1)
+        auto_connect();
+}
+
+void SerialPort::scan_for_ports() {
+    port_scan_timer = new QTimer(this);
+    connect(port_scan_timer, SIGNAL(timeout()), this, SLOT(check_connected()));
+    port_scan_timer->start(1000);
 }
