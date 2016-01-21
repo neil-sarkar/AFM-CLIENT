@@ -8,8 +8,9 @@ class Receiver : public QObject
     explicit Receiver(QObject *parent = 0);
   signals:
     void sendToQml(int count);
+    void send_byte(char c);
   public slots:
-    void receiveFromQml(int value);
+    void receiveFromQml(char value);
     void receiveFromQml(double value);
     void receiveFromQml(QString message);
 };

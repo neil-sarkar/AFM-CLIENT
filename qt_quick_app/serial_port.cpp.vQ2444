@@ -1,0 +1,46 @@
+#include <serial_port.h>
+#include <QSerialPort>
+#include <QSerialPortInfo>
+#include <QIODevice>
+
+SerialPort::SerialPort() {
+    port = new QSerialPort(this);
+}
+
+SerialPort::~SerialPort() {
+    close();
+    emit disconnected();
+}
+
+bool SerialPort::auto_connect() {
+    // this method attempts to find all the ports connected and connect to (open) the one
+    // that it thinks is the AFM
+    QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
+    if (!connected_ports.size()) // if there are no ports available
+        return false;
+
+    for (int i = 0; i < connected_ports.size(); i++) { // iterate through the ports
+        if (connected_ports[i].manufacturer() == AFM_PORT_NAME) { // check if the port is the AFM
+            return open(AFM_PORT_NAME, AFM_BAUD_RATE);
+            break;
+        }
+    }
+    return false;
+}
+
+bool SerialPort::open(QString port_name, qint32 baud_rate) {
+    close(); // close the current port, if any
+    port->setBaudRate(baud_rate);
+    port->setPortName(port_name);
+    if (port->open(QIODevice::ReadWrite)) {
+        emit connected();
+        is_connected = true;
+    }
+    return is_connected;
+}
+
+void SerialPort::close() {
+    port->close();
+    is_connected = false;
+    emit disconnected();
+}
