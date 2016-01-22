@@ -52,7 +52,7 @@ int SerialPort::write_byte(char byte) {
         qDebug() << "Writing" << byte;
         return SerialPortConstants.AFM_SUCCESS;
 
-    qDebug() << "Failed to write byte " << QString("%1").arg(byte, 0, 16);
+    qDebug() << "Failed to write byte " << byte;
     return SerialPortConstants.AFM_FAIL;
 }
 
