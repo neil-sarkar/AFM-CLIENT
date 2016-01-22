@@ -50,15 +50,27 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
-		../qt_quick_app/serial_port.cpp qrc_qml.cpp \
+		../qt_quick_app/serial_port.cpp \
+		../qt_quick_app/adc.cpp \
+		../qt_quick_app/dac.cpp \
+		../qt_quick_app/pid.cpp qrc_qml.cpp \
 		moc_receiver.cpp \
-		moc_serial_port.cpp
+		moc_serial_port.cpp \
+		moc_adc.cpp \
+		moc_dac.cpp \
+		moc_pid.cpp
 OBJECTS       = main.o \
 		receiver.o \
 		serial_port.o \
+		adc.o \
+		dac.o \
+		pid.o \
 		qrc_qml.o \
 		moc_receiver.o \
-		moc_serial_port.o
+		moc_serial_port.o \
+		moc_adc.o \
+		moc_dac.o \
+		moc_pid.o
 DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/qdevice.pri \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/device_config.prf \
@@ -205,9 +217,15 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/lex.prf \
 		../qt_quick_app/qt_quick_app.pro ../qt_quick_app/receiver.h \
 		../qt_quick_app/serial_port.h \
-		../qt_quick_app/serial_port_constants.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/serial_port_constants.h \
+		../qt_quick_app/adc.h \
+		../qt_quick_app/dac.h \
+		../qt_quick_app/pid.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
-		../qt_quick_app/serial_port.cpp
+		../qt_quick_app/serial_port.cpp \
+		../qt_quick_app/adc.cpp \
+		../qt_quick_app/dac.cpp \
+		../qt_quick_app/pid.cpp
 QMAKE_TARGET  = qt_quick_app
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = qt_quick_app.app/Contents/MacOS/qt_quick_app
@@ -586,8 +604,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/dac.h ../qt_quick_app/pid.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/pid.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -620,9 +638,9 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/MyItem.qml
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
-compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp
+compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_dac.cpp moc_pid.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp
+	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_dac.cpp moc_pid.cpp
 moc_receiver.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		../qt_quick_app/receiver.h
@@ -638,6 +656,21 @@ moc_serial_port.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/Q
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		../qt_quick_app/serial_port.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/serial_port.h -o moc_serial_port.cpp
+
+moc_adc.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/adc.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/adc.h -o moc_adc.cpp
+
+moc_dac.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/dac.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/dac.h -o moc_dac.cpp
+
+moc_pid.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/pid.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/pid.h -o moc_pid.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -703,6 +736,21 @@ serial_port.o: ../qt_quick_app/serial_port.cpp ../qt_quick_app/serial_port.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serial_port.o ../qt_quick_app/serial_port.cpp
 
+adc.o: ../qt_quick_app/adc.cpp ../qt_quick_app/adc.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o adc.o ../qt_quick_app/adc.cpp
+
+dac.o: ../qt_quick_app/dac.cpp ../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dac.o ../qt_quick_app/dac.cpp
+
+pid.o: ../qt_quick_app/pid.cpp ../qt_quick_app/pid.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pid.o ../qt_quick_app/pid.cpp
+
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
 
@@ -711,6 +759,15 @@ moc_receiver.o: moc_receiver.cpp
 
 moc_serial_port.o: moc_serial_port.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_serial_port.o moc_serial_port.cpp
+
+moc_adc.o: moc_adc.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_adc.o moc_adc.cpp
+
+moc_dac.o: moc_dac.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dac.o moc_dac.cpp
+
+moc_pid.o: moc_pid.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_pid.o moc_pid.cpp
 
 ####### Install
 

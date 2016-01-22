@@ -11,7 +11,7 @@ SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
-SerialPort::~SerialPort() {
+SerialPort::~SerialPort() { // Destructor - handle all cleanup
     close();
     emit disconnected();
     delete port_scan_timer;
@@ -47,10 +47,11 @@ void SerialPort::close() {
     emit disconnected();
 }
 
-int SerialPort::write_byte(char byte) {
-    if (port->write(&byte, 1) == 1)
+int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
+    if (port->write(&byte, 1) == 1) {
         qDebug() << "Writing" << byte;
         return SerialPortConstants.AFM_SUCCESS;
+    }
 
     qDebug() << "Failed to write byte " << byte;
     return SerialPortConstants.AFM_FAIL;
@@ -60,14 +61,15 @@ void SerialPort::on_ready_read() {
     qDebug() << port->readAll();
 }
 
-void SerialPort::check_connected() {
+void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
     qDebug() << "Checking connection";
-    char temp_buffer[1];
-    if (port->peek(temp_buffer, sizeof(temp_buffer)) == -1)
-        auto_connect();
+    char temp_buffer[1]; // Create a buffer that will store the first char of data that the serial port has waiting for us
+    if (port->peek(temp_buffer, sizeof(temp_buffer)) == -1) // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
+        auto_connect(); // call auto_connect() since we're not connected
 }
 
-void SerialPort::scan_for_ports() {
+void SerialPort::scan_for_ports() { // this method starts a timer that will call check_connected() every one second
+    // every time one second goes by, the timeout() signal is called, and hence the check_connected() slot is invoked
     port_scan_timer = new QTimer(this);
     connect(port_scan_timer, SIGNAL(timeout()), this, SLOT(check_connected()));
     port_scan_timer->start(1000);
