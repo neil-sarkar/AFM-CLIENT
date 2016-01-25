@@ -1,17 +1,11 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include <QObject>
 
-class motor : public QObject
+class Motor
 {
-    Q_OBJECT
 public:
-    explicit motor(QObject *parent = 0);
-
-signals:
-
-public slots:
+    Motor();
 };
 
 #endif // MOTOR_H

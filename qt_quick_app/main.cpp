@@ -7,12 +7,14 @@
 #include <QThread>
 #include "receiver.h"
 #include "serial_port.h"
+#include "adc.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
+    ADC hi;
 
     Receiver receiver;
     QQmlContext* ctx = engine.rootContext();

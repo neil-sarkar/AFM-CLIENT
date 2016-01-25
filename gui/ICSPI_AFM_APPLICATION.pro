@@ -122,3 +122,5 @@ RESOURCES += \
 
 #DISTFILES += \
 #    mainwindow_gen2.qml
+
+DISTFILES +=

@@ -3,15 +3,17 @@
 
 #include <QObject>
 
-class afm : public QObject
+class AFM : public QObject
 {
     Q_OBJECT
-public:
-    explicit afm(QObject *parent = 0);
+    public:
+        explicit AFM(QObject *parent = 0);
 
-signals:
+    signals:
 
-public slots:
+    public slots:
+    private:
+
 };
 
 #endif // AFM_H

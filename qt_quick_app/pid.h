@@ -1,17 +1,11 @@
 #ifndef PID_H
 #define PID_H
 
-#include <QObject>
 
-class pid : public QObject
+class PID
 {
-    Q_OBJECT
 public:
-    explicit pid(QObject *parent = 0);
-
-signals:
-
-public slots:
+    PID();
 };
 
 #endif // PID_H

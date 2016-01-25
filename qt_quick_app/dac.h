@@ -1,17 +1,11 @@
 #ifndef DAC_H
 #define DAC_H
 
-#include <QObject>
 
-class dac : public QObject
+class DAC
 {
-    Q_OBJECT
 public:
-    explicit dac(QObject *parent = 0);
-
-signals:
-
-public slots:
+    DAC();
 };
 
 #endif // DAC_H

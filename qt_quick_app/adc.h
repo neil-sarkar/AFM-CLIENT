@@ -2,12 +2,16 @@
 #define ADC_H
 
 #include <QObject>
+#include "afm_object_interface.h"
 
-class adc : public QObject
+class ADC : public AfmObject
 {
     Q_OBJECT
+    Q_INTERFACES(AfmObject)
 public:
-    explicit adc(QObject *parent = 0);
+    explicit ADC(QObject *parent = 0);
+    void doSomethingElse();
+    void doSomething();
 
 signals:
 

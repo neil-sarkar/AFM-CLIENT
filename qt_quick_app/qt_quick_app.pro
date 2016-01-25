@@ -8,10 +8,11 @@ SOURCES += main.cpp \
     receiver.cpp \
     serial_port.cpp \
     adc.cpp \
-    dac.cpp \
     pid.cpp \
     motor.cpp \
-    afm.cpp
+    afm.cpp \
+    pga.cpp \
+    dac.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,9 +27,12 @@ HEADERS += \
     serial_port.h \
     serial_port_constants.h \
     adc.h \
-    dac.h \
     pid.h \
     motor.h \
-    afm.h
+    afm.h \
+    pga.h \
+    dac.h \
+    afm_object_interface.h
 
-DISTFILES +=
+DISTFILES += \
+    test.py

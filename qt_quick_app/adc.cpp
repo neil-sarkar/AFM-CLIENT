@@ -1,6 +1,15 @@
 #include "adc.h"
 
-adc::adc(QObject *parent) : QObject(parent)
+ADC::ADC(QObject *parent)
 {
 
+}
+
+
+void ADC::doSomethingElse() {
+    return;
+}
+
+void ADC::doSomething() {
+    return;
 }
