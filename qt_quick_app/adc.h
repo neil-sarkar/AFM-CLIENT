@@ -10,8 +10,7 @@ class ADC : public AfmObject
     Q_INTERFACES(AfmObject)
 public:
     explicit ADC(QObject *parent = 0);
-    void doSomethingElse();
-    void doSomething();
+    void read();
 
 signals:
 

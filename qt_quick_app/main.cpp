@@ -8,13 +8,26 @@
 #include "receiver.h"
 #include "serial_port.h"
 #include "adc.h"
+#include <functional>
+
+class Test {
+private:
+    char id = 'l';
+public:
+    void sayhi(int y) {
+        qDebug() << id << y;
+    };
+};
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
-    ADC hi;
+    Test t;
+    auto bound = std::bind(&Test::sayhi, t, 2);
+    bound();
+
 
     Receiver receiver;
     QQmlContext* ctx = engine.rootContext();
