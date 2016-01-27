@@ -4,19 +4,16 @@ import QtQuick.Controls 1.4
 Item {
     id: motor_controls
 
-    signal approach_clicked()
-    signal retract_clicked()
-
-    Button {
+    MotorButton {
         id: approach_button
         text: "Approach"
-        onClicked: approach_clicked()
+        direction: 1
     }
-    Button {
+    MotorButton{
         id: retract_button
         text: "Retract"
+        direction: 0
         anchors.top: approach_button.bottom
-        onClicked: retract_clicked()
     }
     SpinBox {
         id: motor_speed
@@ -25,5 +22,6 @@ Item {
         maximumValue: 4
         stepSize: 1
         anchors.top: retract_button.bottom
+        onValueChanged: motor.speed = value;
     }
 }

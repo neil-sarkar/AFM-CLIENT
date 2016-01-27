@@ -7,8 +7,9 @@
 
 class Motor : public QObject
 {
-    Q_PROPERTY(double speed READ speed WRITE set_speed NOTIFY speed_changed)
     Q_OBJECT
+    Q_PROPERTY(double speed READ speed WRITE set_speed NOTIFY speed_changed)
+    Q_PROPERTY(double direction READ direction WRITE set_direction NOTIFY direction_changed)
 
 
 public:
@@ -16,14 +17,15 @@ public:
     void set_direction(int direction);
     void set_speed(double speed);
     void set_state(int state);
-    void setRootObject(QQuickItem* root);
     double speed();
+    int direction();
 
 signals:
     void speed_changed();
+    void direction_changed();
 
 public slots:
-    void run_motor();
+    void run();
 
 private:
     int m_direction;

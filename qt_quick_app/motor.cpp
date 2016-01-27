@@ -3,29 +3,22 @@
 
 Motor::Motor(QObject *parent) : QObject(parent)
 {
-    m_speed = 3;
+    m_speed = 0;
+    m_direction = 0;
+    m_state = 0;
+
 }
 
-void Motor::setRootObject(QQuickItem* root) {
-    // disconnect from any previous root
-//    if (root_ui_object != 0)
-//        root_ui_object->disconnect(this);
-
-    root_ui_object = root;
-
-    if (root_ui_object) {
-        // make connections
-        connect(root_ui_object, SIGNAL(approach_clicked()), this, SLOT(run_motor()));
-        connect(root_ui_object, SIGNAL(retract_clicked()), this, SLOT(run_motor()));
-    }
-}
-
-void Motor::run_motor() {
-    qDebug() << "lol\n";
+void Motor::run() {
+    qDebug() << "Running motor at speed " << m_speed << "and direction " << m_direction;
 }
 
 double Motor::speed() {
     return m_speed;
+}
+
+int Motor::direction() {
+    return m_direction;
 }
 
 void Motor::set_speed(double speed) {
@@ -34,5 +27,13 @@ void Motor::set_speed(double speed) {
         qDebug() << "Changing speed to" << m_speed;
         emit speed_changed();
     }
-
 }
+
+void Motor::set_direction(int direction) {
+    if (direction != m_direction) {
+        m_direction = direction;
+        qDebug() << "Changing direction to" << m_direction;
+        emit direction_changed();
+    }
+}
+

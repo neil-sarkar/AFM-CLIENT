@@ -656,6 +656,7 @@ compiler_rcc_clean:
 qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/MainForm.ui.qml \
 		../qt_quick_app/Motor.qml \
+		../qt_quick_app/MotorButton.qml \
 		../qt_quick_app/main.qml \
 		../qt_quick_app/MyItem.qml
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
@@ -691,6 +692,8 @@ moc_motor.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QTimer \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
 		../qt_quick_app/motor.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/motor.h -o moc_motor.cpp
 
@@ -750,7 +753,8 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		../qt_quick_app/adc.h \
 		../qt_quick_app/afm_object_interface.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QByteArray \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qbytearray.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qbytearray.h \
+		../qt_quick_app/motor.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../qt_quick_app/main.cpp
 
 receiver.o: ../qt_quick_app/receiver.cpp ../qt_quick_app/receiver.h \
@@ -794,7 +798,11 @@ motor.o: ../qt_quick_app/motor.cpp ../qt_quick_app/motor.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QTimer \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o motor.o ../qt_quick_app/motor.cpp
 
 afm.o: ../qt_quick_app/afm.cpp ../qt_quick_app/afm.h \

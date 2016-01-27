@@ -4,5 +4,6 @@
         <file>MainForm.ui.qml</file>
         <file>MyItem.qml</file>
         <file>Motor.qml</file>
+        <file>MotorButton.qml</file>
     </qresource>
 </RCC>
