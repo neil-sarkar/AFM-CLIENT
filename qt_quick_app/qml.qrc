@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>MainForm.ui.qml</file>
         <file>MyItem.qml</file>
+        <file>Motor.qml</file>
     </qresource>
 </RCC>

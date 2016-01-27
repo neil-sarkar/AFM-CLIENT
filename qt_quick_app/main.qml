@@ -20,4 +20,6 @@ Window {
           send(text)
       }
   }
+  Motor {
+  }
 }

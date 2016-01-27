@@ -432,7 +432,7 @@ void MainWindow::dequeueReturnBuffer()
             fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACBFRD3:
-            bfrd3 = _buffer->getFData();
+            = = _buffer->getFData();
             fdata = QString::number(_buffer->getFData()); ui->dacValue->setText(fdata);
             break;
         case DACZOFFSETFINE:

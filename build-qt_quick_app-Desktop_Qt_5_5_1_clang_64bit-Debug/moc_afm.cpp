@@ -1,16 +1,16 @@
 /****************************************************************************
-** Meta object code from reading C++ file 'adc.h'
+** Meta object code from reading C++ file 'afm.h'
 **
 ** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../qt_quick_app/adc.h"
+#include "../qt_quick_app/afm.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
-#error "The header file 'adc.h' doesn't include <QObject>."
+#error "The header file 'afm.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
 #error "This file was generated using the moc from 5.5.1. It"
 #error "cannot be used with the include files from this version of Qt."
@@ -18,25 +18,25 @@
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
-struct qt_meta_stringdata_ADC_t {
+struct qt_meta_stringdata_AFM_t {
     QByteArrayData data[1];
     char stringdata0[4];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_ADC_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_AFM_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_ADC_t qt_meta_stringdata_ADC = {
+static const qt_meta_stringdata_AFM_t qt_meta_stringdata_AFM = {
     {
-QT_MOC_LITERAL(0, 0, 3) // "ADC"
+QT_MOC_LITERAL(0, 0, 3) // "AFM"
 
     },
-    "ADC"
+    "AFM"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_ADC[] = {
+static const uint qt_meta_data_AFM[] = {
 
  // content:
        7,       // revision
@@ -52,7 +52,7 @@ static const uint qt_meta_data_ADC[] = {
        0        // eod
 };
 
-void ADC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void AFM::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     Q_UNUSED(_o);
     Q_UNUSED(_id);
@@ -60,30 +60,28 @@ void ADC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
     Q_UNUSED(_a);
 }
 
-const QMetaObject ADC::staticMetaObject = {
-    { &AfmObject::staticMetaObject, qt_meta_stringdata_ADC.data,
-      qt_meta_data_ADC,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
+const QMetaObject AFM::staticMetaObject = {
+    { &QObject::staticMetaObject, qt_meta_stringdata_AFM.data,
+      qt_meta_data_AFM,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
-const QMetaObject *ADC::metaObject() const
+const QMetaObject *AFM::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *ADC::qt_metacast(const char *_clname)
+void *AFM::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_ADC.stringdata0))
-        return static_cast<void*>(const_cast< ADC*>(this));
-    if (!strcmp(_clname, "test"))
-        return static_cast< AfmObject*>(const_cast< ADC*>(this));
-    return AfmObject::qt_metacast(_clname);
+    if (!strcmp(_clname, qt_meta_stringdata_AFM.stringdata0))
+        return static_cast<void*>(const_cast< AFM*>(this));
+    return QObject::qt_metacast(_clname);
 }
 
-int ADC::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int AFM::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = AfmObject::qt_metacall(_c, _id, _a);
+    _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     return _id;
