@@ -21,6 +21,10 @@ int Motor::direction() {
     return m_direction;
 }
 
+int Motor::state() {
+    return m_state;
+}
+
 void Motor::set_speed(double speed) {
     if (speed != m_speed) {
         m_speed = speed;
@@ -37,3 +41,10 @@ void Motor::set_direction(int direction) {
     }
 }
 
+void Motor::set_state(int state) {
+    if (state != m_state) {
+        m_state = state;
+        qDebug() << "Changing state to" << m_state;
+        emit state_changed();
+    }
+}

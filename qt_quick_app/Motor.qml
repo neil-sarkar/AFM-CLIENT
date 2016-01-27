@@ -9,7 +9,7 @@ Item {
         text: "Approach"
         direction: 1
     }
-    MotorButton{
+    MotorButton {
         id: retract_button
         text: "Retract"
         direction: 0

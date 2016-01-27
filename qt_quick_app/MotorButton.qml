@@ -14,8 +14,10 @@ Button {
     onPressedChanged: {
         if (pressed) {
             motor.direction = direction;
+            motor.state = 1;
             longPressTimer.running = true;
         } else {
+            motor.state = 0;
             longPressTimer.running = false;
         }
     }

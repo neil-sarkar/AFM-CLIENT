@@ -581,7 +581,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
  }</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="controlTab">
      <attribute name="title">
@@ -955,7 +955,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                 <x>20</x>
                 <y>20</y>
                 <width>241</width>
-                <height>298</height>
+                <height>413</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_19">
@@ -1272,7 +1272,7 @@ background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
        <rect>
         <x>9</x>
         <y>18</y>
-        <width>681</width>
+        <width>786</width>
         <height>521</height>
        </rect>
       </property>
@@ -2294,8 +2294,8 @@ QLabel {  color : red; };</string>
        <rect>
         <x>30</x>
         <y>10</y>
-        <width>561</width>
-        <height>239</height>
+        <width>761</width>
+        <height>264</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_26">
@@ -2930,7 +2930,7 @@ QLabel {  color : red; };</string>
      <x>0</x>
      <y>0</y>
      <width>910</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Motor_t {
-    QByteArrayData data[7];
-    char stringdata0[59];
+    QByteArrayData data[9];
+    char stringdata0[79];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,13 +33,16 @@ QT_MOC_LITERAL(0, 0, 5), // "Motor"
 QT_MOC_LITERAL(1, 6, 13), // "speed_changed"
 QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 17), // "direction_changed"
-QT_MOC_LITERAL(4, 39, 3), // "run"
-QT_MOC_LITERAL(5, 43, 5), // "speed"
-QT_MOC_LITERAL(6, 49, 9) // "direction"
+QT_MOC_LITERAL(4, 39, 13), // "state_changed"
+QT_MOC_LITERAL(5, 53, 3), // "run"
+QT_MOC_LITERAL(6, 57, 5), // "speed"
+QT_MOC_LITERAL(7, 63, 9), // "direction"
+QT_MOC_LITERAL(8, 73, 5) // "state"
 
     },
     "Motor\0speed_changed\0\0direction_changed\0"
-    "run\0speed\0direction"
+    "state_changed\0run\0speed\0direction\0"
+    "state"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,34 +52,38 @@ static const uint qt_meta_data_Motor[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
-       2,   32, // properties
+       4,   14, // methods
+       3,   38, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x06 /* Public */,
-       3,    0,   30,    2, 0x06 /* Public */,
+       1,    0,   34,    2, 0x06 /* Public */,
+       3,    0,   35,    2, 0x06 /* Public */,
+       4,    0,   36,    2, 0x06 /* Public */,
 
- // slots: name, argc, parameters, tag, flags
-       4,    0,   31,    2, 0x0a /* Public */,
+ // methods: name, argc, parameters, tag, flags
+       5,    0,   37,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
- // slots: parameters
+ // methods: parameters
     QMetaType::Void,
 
  // properties: name, type, flags
-       5, QMetaType::Double, 0x00495003,
        6, QMetaType::Double, 0x00495003,
+       7, QMetaType::Double, 0x00495003,
+       8, QMetaType::Double, 0x00495003,
 
  // properties: notify_signal_id
        0,
        1,
+       2,
 
        0        // eod
 };
@@ -89,7 +96,8 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         switch (_id) {
         case 0: _t->speed_changed(); break;
         case 1: _t->direction_changed(); break;
-        case 2: _t->run(); break;
+        case 2: _t->state_changed(); break;
+        case 3: _t->run(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -107,6 +115,12 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
                 *result = 1;
             }
         }
+        {
+            typedef void (Motor::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Motor::state_changed)) {
+                *result = 2;
+            }
+        }
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
@@ -116,6 +130,7 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         switch (_id) {
         case 0: *reinterpret_cast< double*>(_v) = _t->speed(); break;
         case 1: *reinterpret_cast< double*>(_v) = _t->direction(); break;
+        case 2: *reinterpret_cast< double*>(_v) = _t->state(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -125,6 +140,7 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         switch (_id) {
         case 0: _t->set_speed(*reinterpret_cast< double*>(_v)); break;
         case 1: _t->set_direction(*reinterpret_cast< double*>(_v)); break;
+        case 2: _t->set_state(*reinterpret_cast< double*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -158,29 +174,29 @@ int Motor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        _id -= 4;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 2;
+        _id -= 3;
     }
 #endif // QT_NO_PROPERTIES
     return _id;
@@ -196,5 +212,11 @@ void Motor::speed_changed()
 void Motor::direction_changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
+}
+
+// SIGNAL 2
+void Motor::state_changed()
+{
+    QMetaObject::activate(this, &staticMetaObject, 2, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE
