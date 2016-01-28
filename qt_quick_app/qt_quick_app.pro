@@ -34,6 +34,7 @@ HEADERS += \
     pga.h \
     dac.h \
     afm_object_interface.h \
-    command_node.h
+    command_node.h \
+    motor_constants.h
 
 DISTFILES +=

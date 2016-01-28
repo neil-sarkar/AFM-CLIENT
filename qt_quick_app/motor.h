@@ -27,16 +27,23 @@ signals:
     void direction_changed();
     void state_changed();
 
+
+private slots:
+    void generate_set_speed_command();
+    void generate_set_direction_command();
+    void generate_set_state_command();
+
 public slots:
+
 
 private:
     int m_direction;
     int m_state;
     double m_speed;
-    QTimer* sleep_timer;
+    QByteArray generate_set_speed_bytes();
+    QByteArray generate_set_direction_bytes();
+    QByteArray generate_set_state_bytes();
 
-    // UI
-    QObject* root_ui_object;
 
 };
 

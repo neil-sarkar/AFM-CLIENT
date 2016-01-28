@@ -1117,7 +1117,7 @@ public:
 ""));
         layoutWidget = new QWidget(groupBox_3);
         layoutWidget->setObjectName(QStringLiteral("layoutWidget"));
-        layoutWidget->setGeometry(QRect(20, 20, 241, 298));
+        layoutWidget->setGeometry(QRect(20, 20, 241, 413));
         gridLayout_19 = new QGridLayout(layoutWidget);
         gridLayout_19->setSpacing(6);
         gridLayout_19->setContentsMargins(11, 11, 11, 11);
@@ -1321,7 +1321,7 @@ public:
         scanTab->setObjectName(QStringLiteral("scanTab"));
         layoutWidget1 = new QWidget(scanTab);
         layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(9, 18, 681, 521));
+        layoutWidget1->setGeometry(QRect(9, 18, 786, 521));
         verticalLayout_15 = new QVBoxLayout(layoutWidget1);
         verticalLayout_15->setSpacing(6);
         verticalLayout_15->setContentsMargins(11, 11, 11, 11);
@@ -2040,7 +2040,7 @@ public:
         testTab->setObjectName(QStringLiteral("testTab"));
         layoutWidget2 = new QWidget(testTab);
         layoutWidget2->setObjectName(QStringLiteral("layoutWidget2"));
-        layoutWidget2->setGeometry(QRect(30, 10, 561, 239));
+        layoutWidget2->setGeometry(QRect(30, 10, 761, 264));
         horizontalLayout_26 = new QHBoxLayout(layoutWidget2);
         horizontalLayout_26->setSpacing(6);
         horizontalLayout_26->setContentsMargins(11, 11, 11, 11);
@@ -2489,7 +2489,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 910, 21));
+        menuBar->setGeometry(QRect(0, 0, 910, 22));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuEdit = new QMenu(menuBar);
@@ -2545,7 +2545,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(3);
         cmb_scanRatio->setCurrentIndex(0);
         tabScan->setCurrentIndex(1);
         cbo_microstep->setCurrentIndex(-1);

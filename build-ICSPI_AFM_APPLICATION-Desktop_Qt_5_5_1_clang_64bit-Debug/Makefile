@@ -633,7 +633,7 @@ icspi.app/Contents/Resources/empty.lproj:
 icspi.app/Contents/Info.plist: 
 	@test -d icspi.app/Contents || mkdir -p icspi.app/Contents
 	@$(DEL_FILE) icspi.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,com.yourcompany.icspi,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,icspi,g" -e "s,@TYPEINFO@,????,g" /Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang/Info.plist.app >icspi.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,arjun.icspi,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,icspi,g" -e "s,@TYPEINFO@,????,g" /Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang/Info.plist.app >icspi.app/Contents/Info.plist
 
 all: Makefile \
 		icspi.app/Contents/PkgInfo \

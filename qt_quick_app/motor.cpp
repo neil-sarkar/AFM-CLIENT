@@ -1,4 +1,5 @@
 #include "motor.h"
+#include "command_node.h"
 #include <QDebug>
 
 Motor::Motor(QObject *parent) : QObject(parent)
@@ -30,6 +31,7 @@ void Motor::set_speed(double speed) {
         m_speed = speed;
         qDebug() << "Changing speed to" << m_speed;
         emit speed_changed();
+        generate_set_speed_command();
     }
 }
 
@@ -47,4 +49,23 @@ void Motor::set_state(int state) {
         qDebug() << "Changing state to" << m_state;
         emit state_changed();
     }
+}
+
+void Motor::generate_set_speed_command() {
+    auto command = std::bind(&Motor::generate_set_speed_bytes, this);
+    CommandNode* node = new CommandNode(command, NULL, NULL);
+}
+
+void Motor::generate_set_direction_command() {
+
+}
+
+void Motor::generate_set_state_command() {
+
+}
+
+QByteArray Motor::generate_set_speed_bytes() {
+//    QByteArray q;
+//    q.push_back(1);
+//    return q;
 }

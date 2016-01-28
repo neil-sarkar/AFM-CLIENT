@@ -3,22 +3,25 @@
 
 #include <QObject>
 #include <functional>
+#include <QDebug>
 
-
-class CommandNode : public QObject
-{
+class CommandNode : public QObject {
     Q_OBJECT
 public:
-    explicit CommandNode(QObject *parent = 0);
-signals:
-public slots:
-private:
-    // void functions that's are already bound to an instance of a class and has parameters set
-    std::function<void()> execute_command;
-    std::function<void()> execute_postamble; // the postamble action
-    std::function<void()> update_UI; // the postamble action
+    unsigned char message_id;
+    std::function<QByteArray()> execute_command;
+    std::function<void()> execute_postamble;
+    std::function<void()> update_UI;
     QByteArray afm_return_value;
     int tag_number;
+
+    CommandNode(std::function<QByteArray()> x, std::function<void()> y, std::function<void()> z) {
+        execute_command = x;
+        execute_postamble = y;
+        update_UI = z;
+        qDebug() << execute_command();
+    }
 };
 
 #endif // COMMANDNODE_H
+

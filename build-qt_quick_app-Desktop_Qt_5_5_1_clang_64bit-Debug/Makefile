@@ -237,7 +237,8 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/pga.h \
 		../qt_quick_app/dac.h \
 		../qt_quick_app/afm_object_interface.h \
-		../qt_quick_app/command_node.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/command_node.h \
+		../qt_quick_app/motor_constants.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -625,7 +626,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/command_node.cpp $(DISTDIR)/
 
 
@@ -801,6 +802,7 @@ motor.o: ../qt_quick_app/motor.cpp ../qt_quick_app/motor.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		../qt_quick_app/command_node.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o motor.o ../qt_quick_app/motor.cpp

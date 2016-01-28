@@ -26,25 +26,24 @@ int main(int argc, char *argv[])
 
 
     QQuickView view;
-    Motor motor;
-    view.rootContext()->setContextProperty("motor", &motor);
+    Motor* motor = new Motor();
+    view.rootContext()->setContextProperty("motor", motor);
     view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
     view.show();
+
+//    QThread* motor_thread = new QThread();
+//    motor->moveToThread(motor_thread);
+//    motor_thread->start();
 
 //    Motor motor;
 //    engine.rootContext()->setContextProperty("motor", &motor);
 //    QQmlComponent component(&engine, QUrl::fromLocalFile("Motor.qml"));
 //    component.create();
 
-//    Receiver receiver;
-//    QQmlContext* ctx = engine.rootContext();
-//    ctx->setContextProperty("receiver", &receiver); // creates a name receiver and ties it to the receiver we instantiated
-//    engine.load(QUrl(QStringLiteral("qrc:///main.qml")));
-
-//    QThread* serial_thread = new QThread();
-//    SerialPort* serial_port = new SerialPort();
-//    serial_port->moveToThread(serial_thread);
-//    serial_thread->start();
+    QThread* serial_thread = new QThread();
+    SerialPort* serial_port = new SerialPort();
+    serial_port->moveToThread(serial_thread);
+    serial_thread->start();
 
 //    QQuickView *view = new QQuickView;
 //    view->setSource(QUrl("qrc:/Motor.qml"));
