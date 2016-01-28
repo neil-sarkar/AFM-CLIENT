@@ -59,7 +59,6 @@ void Motor::generate_set_speed_command() {
 }
 
 void Motor::generate_set_direction_command() {
-
 }
 
 void Motor::generate_set_state_command() {

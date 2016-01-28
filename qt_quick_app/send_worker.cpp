@@ -11,7 +11,7 @@ void SendWorker::enqueue_command(CommandNode* command_node) {
     command_node->tag_number = tag++; // assign tag then increment
     command_queue.enqueue(command_node);
     qDebug() << "Enqueued" << command_node->tag_number;
-    emit command_received(); // could also just call dequeue_command right away
+    emit command_received(); // emit this signal so that we're processing dequeue's in the send_workers event loop, not in the caller thread's event loop which would be blocking
 }
 
 void SendWorker::dequeue_command() {
