@@ -14,8 +14,8 @@ void SendWorker::enqueue_command(CommandNode* command_node) {
     emit command_received(); // could also just call dequeue_command right away
 }
 
-CommandNode* SendWorker::dequeue_command() {
+void SendWorker::dequeue_command() {
     CommandNode* command_node = command_queue.dequeue();
     qDebug() << "Dequeued" << command_node->tag_number;
-    return command_node;
+    delete command_node;
 }

@@ -33,14 +33,14 @@ QT_MOC_LITERAL(0, 0, 10), // "SendWorker"
 QT_MOC_LITERAL(1, 11, 16), // "command_received"
 QT_MOC_LITERAL(2, 28, 0), // ""
 QT_MOC_LITERAL(3, 29, 15), // "dequeue_command"
-QT_MOC_LITERAL(4, 45, 12), // "CommandNode*"
-QT_MOC_LITERAL(5, 58, 15), // "enqueue_command"
+QT_MOC_LITERAL(4, 45, 15), // "enqueue_command"
+QT_MOC_LITERAL(5, 61, 12), // "CommandNode*"
 QT_MOC_LITERAL(6, 74, 12) // "command_node"
 
     },
     "SendWorker\0command_received\0\0"
-    "dequeue_command\0CommandNode*\0"
-    "enqueue_command\0command_node"
+    "dequeue_command\0enqueue_command\0"
+    "CommandNode*\0command_node"
 };
 #undef QT_MOC_LITERAL
 
@@ -62,14 +62,14 @@ static const uint qt_meta_data_SendWorker[] = {
 
  // slots: name, argc, parameters, tag, flags
        3,    0,   30,    2, 0x08 /* Private */,
-       5,    1,   31,    2, 0x0a /* Public */,
+       4,    1,   31,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
 
  // slots: parameters
-    0x80000000 | 4,
-    QMetaType::Void, 0x80000000 | 4,    6,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 5,    6,
 
        0        // eod
 };
@@ -81,8 +81,7 @@ void SendWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->command_received(); break;
-        case 1: { CommandNode* _r = _t->dequeue_command();
-            if (_a[0]) *reinterpret_cast< CommandNode**>(_a[0]) = _r; }  break;
+        case 1: _t->dequeue_command(); break;
         case 2: _t->enqueue_command((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
         default: ;
         }

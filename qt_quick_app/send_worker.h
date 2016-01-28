@@ -16,7 +16,7 @@ signals:
     void command_received();
 
 private slots:
-    CommandNode* dequeue_command();
+    void dequeue_command();
 
 public slots:
     void enqueue_command(CommandNode* command_node);
@@ -25,8 +25,6 @@ private:
     QMutex mutex;
     int tag;
     ThreadSafeQueue<CommandNode*> command_queue;
-
-
 };
 
 #endif // SENDWORKER_H
