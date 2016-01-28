@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     send_worker->moveToThread(sender_thread);
     sender_thread->start();
 
-    QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)));
+    QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
 
 
     //    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));

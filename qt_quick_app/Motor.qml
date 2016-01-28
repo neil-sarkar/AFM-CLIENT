@@ -19,7 +19,7 @@ Item {
         id: motor_speed
         value: motor.speed
         minimumValue: 0
-        maximumValue: 4
+        maximumValue: 10000
         stepSize: 1
         anchors.top: retract_button.bottom
         onValueChanged: motor.speed = value;

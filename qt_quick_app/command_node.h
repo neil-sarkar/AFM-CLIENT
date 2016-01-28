@@ -19,7 +19,6 @@ public:
         execute_command = x;
         execute_postamble = y;
         update_UI = z;
-        qDebug() << execute_command();
     }
 };
 

@@ -1,6 +1,7 @@
 #include "motor.h"
 #include "command_node.h"
 #include <QDebug>
+#include <QtGlobal>
 
 Motor::Motor(QObject *parent) : QObject(parent)
 {
@@ -29,7 +30,7 @@ int Motor::state() {
 void Motor::set_speed(double speed) {
     if (speed != m_speed) {
         m_speed = speed;
-        qDebug() << "Changing speed to" << m_speed;
+//        qDebug() << "Changing speed to" << m_speed;
         emit speed_changed();
         generate_set_speed_command();
     }
@@ -67,6 +68,6 @@ void Motor::generate_set_state_command() {
 
 QByteArray Motor::generate_set_speed_bytes() {
     QByteArray q;
-    q.push_back(1);
+    q.push_back(qrand());
     return q;
 }

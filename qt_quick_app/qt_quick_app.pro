@@ -37,6 +37,7 @@ HEADERS += \
     afm_object_interface.h \
     command_node.h \
     motor_constants.h \
-    send_worker.h
+    send_worker.h \
+    thread_safe_queue.h
 
 DISTFILES +=

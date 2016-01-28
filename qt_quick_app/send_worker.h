@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQueue>
 #include "command_node.h"
+#include "thread_safe_queue.h"
 
 class SendWorker : public QObject
 {
@@ -17,7 +18,9 @@ public slots:
     void enqueue_command(CommandNode* command_node);
 
 private:
-    QQueue<CommandNode*> command_queue;
+    QMutex mutex;
+    int tag;
+    ThreadSafeQueue<CommandNode*> command_queue;
     CommandNode* dequeue_command();
 
 };
