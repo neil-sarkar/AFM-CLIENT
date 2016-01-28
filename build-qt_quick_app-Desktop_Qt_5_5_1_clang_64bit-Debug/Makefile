@@ -57,14 +57,16 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		../qt_quick_app/afm.cpp \
 		../qt_quick_app/pga.cpp \
 		../qt_quick_app/dac.cpp \
-		../qt_quick_app/command_node.cpp qrc_qml.cpp \
+		../qt_quick_app/command_node.cpp \
+		../qt_quick_app/send_worker.cpp qrc_qml.cpp \
 		moc_receiver.cpp \
 		moc_serial_port.cpp \
 		moc_adc.cpp \
 		moc_motor.cpp \
 		moc_afm.cpp \
 		moc_afm_object_interface.cpp \
-		moc_command_node.cpp
+		moc_command_node.cpp \
+		moc_send_worker.cpp
 OBJECTS       = main.o \
 		receiver.o \
 		serial_port.o \
@@ -75,6 +77,7 @@ OBJECTS       = main.o \
 		pga.o \
 		dac.o \
 		command_node.o \
+		send_worker.o \
 		qrc_qml.o \
 		moc_receiver.o \
 		moc_serial_port.o \
@@ -82,7 +85,8 @@ OBJECTS       = main.o \
 		moc_motor.o \
 		moc_afm.o \
 		moc_afm_object_interface.o \
-		moc_command_node.o
+		moc_command_node.o \
+		moc_send_worker.o
 DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/qdevice.pri \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/device_config.prf \
@@ -238,7 +242,8 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/dac.h \
 		../qt_quick_app/afm_object_interface.h \
 		../qt_quick_app/command_node.h \
-		../qt_quick_app/motor_constants.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/motor_constants.h \
+		../qt_quick_app/send_worker.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -247,7 +252,8 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/afm.cpp \
 		../qt_quick_app/pga.cpp \
 		../qt_quick_app/dac.cpp \
-		../qt_quick_app/command_node.cpp
+		../qt_quick_app/command_node.cpp \
+		../qt_quick_app/send_worker.cpp
 QMAKE_TARGET  = qt_quick_app
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = qt_quick_app.app/Contents/MacOS/qt_quick_app
@@ -626,8 +632,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/command_node.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/command_node.cpp ../qt_quick_app/send_worker.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -662,9 +668,9 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/MyItem.qml
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
-compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_afm_object_interface.cpp moc_command_node.cpp
+compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_afm_object_interface.cpp moc_command_node.cpp moc_send_worker.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_afm_object_interface.cpp moc_command_node.cpp
+	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_afm_object_interface.cpp moc_command_node.cpp moc_send_worker.cpp
 moc_receiver.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		../qt_quick_app/receiver.h
@@ -712,8 +718,20 @@ moc_afm_object_interface.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/
 
 moc_command_node.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/command_node.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/command_node.h -o moc_command_node.cpp
+
+moc_send_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QQueue \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qqueue.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/send_worker.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/send_worker.h -o moc_send_worker.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -818,10 +836,18 @@ pga.o: ../qt_quick_app/pga.cpp ../qt_quick_app/pga.h
 dac.o: ../qt_quick_app/dac.cpp ../qt_quick_app/dac.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dac.o ../qt_quick_app/dac.cpp
 
-command_node.o: ../qt_quick_app/command_node.cpp ../qt_quick_app/command_node.h \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h
+command_node.o: ../qt_quick_app/command_node.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o command_node.o ../qt_quick_app/command_node.cpp
+
+send_worker.o: ../qt_quick_app/send_worker.cpp ../qt_quick_app/send_worker.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QQueue \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qqueue.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o send_worker.o ../qt_quick_app/send_worker.cpp
 
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
@@ -846,6 +872,9 @@ moc_afm_object_interface.o: moc_afm_object_interface.cpp
 
 moc_command_node.o: moc_command_node.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_command_node.o moc_command_node.cpp
+
+moc_send_worker.o: moc_send_worker.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_send_worker.o moc_send_worker.cpp
 
 ####### Install
 

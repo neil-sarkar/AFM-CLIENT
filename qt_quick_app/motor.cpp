@@ -54,6 +54,7 @@ void Motor::set_state(int state) {
 void Motor::generate_set_speed_command() {
     auto command = std::bind(&Motor::generate_set_speed_bytes, this);
     CommandNode* node = new CommandNode(command, NULL, NULL);
+    emit command_generated(node);
 }
 
 void Motor::generate_set_direction_command() {
@@ -65,7 +66,7 @@ void Motor::generate_set_state_command() {
 }
 
 QByteArray Motor::generate_set_speed_bytes() {
-//    QByteArray q;
-//    q.push_back(1);
-//    return q;
+    QByteArray q;
+    q.push_back(1);
+    return q;
 }

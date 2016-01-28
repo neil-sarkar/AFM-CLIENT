@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     afm.cpp \
     pga.cpp \
     dac.cpp \
-    command_node.cpp
+    command_node.cpp \
+    send_worker.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,6 +36,7 @@ HEADERS += \
     dac.h \
     afm_object_interface.h \
     command_node.h \
-    motor_constants.h
+    motor_constants.h \
+    send_worker.h
 
 DISTFILES +=

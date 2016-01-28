@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QQuickItem>
+#include "command_node.h"
 
 class Motor : public QObject
 {
@@ -23,10 +24,13 @@ public:
     Q_INVOKABLE void run();
 
 signals:
+    // MODIFY signals for Q_PROPERTY macros
     void speed_changed();
     void direction_changed();
     void state_changed();
 
+    // Cross-Thread
+    void command_generated(CommandNode*);
 
 private slots:
     void generate_set_speed_command();
