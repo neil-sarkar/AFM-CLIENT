@@ -96,9 +96,9 @@ static const uint qt_meta_data_Motor[] = {
     QMetaType::Void,
 
  // properties: name, type, flags
-      11, QMetaType::Double, 0x00495003,
-      12, QMetaType::Double, 0x00495003,
-      13, QMetaType::Double, 0x00495003,
+      11, QMetaType::Int, 0x00495003,
+      12, QMetaType::Int, 0x00495003,
+      13, QMetaType::Int, 0x00495003,
 
  // properties: notify_signal_id
        0,
@@ -169,9 +169,9 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: *reinterpret_cast< double*>(_v) = _t->speed(); break;
-        case 1: *reinterpret_cast< double*>(_v) = _t->direction(); break;
-        case 2: *reinterpret_cast< double*>(_v) = _t->state(); break;
+        case 0: *reinterpret_cast< int*>(_v) = _t->speed(); break;
+        case 1: *reinterpret_cast< int*>(_v) = _t->direction(); break;
+        case 2: *reinterpret_cast< int*>(_v) = _t->state(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -179,9 +179,9 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: _t->set_speed(*reinterpret_cast< double*>(_v)); break;
-        case 1: _t->set_direction(*reinterpret_cast< double*>(_v)); break;
-        case 2: _t->set_state(*reinterpret_cast< double*>(_v)); break;
+        case 0: _t->set_speed(*reinterpret_cast< int*>(_v)); break;
+        case 1: _t->set_direction(*reinterpret_cast< int*>(_v)); break;
+        case 2: _t->set_state(*reinterpret_cast< int*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {

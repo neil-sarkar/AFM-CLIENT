@@ -43,22 +43,24 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
 
 void SerialPort::close() {
     port->close();
+    qDebug() << "Closing port";
     is_connected = false;
     emit disconnected();
 }
 
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
     if (port->write(&byte, 1) == 1) {
-        qDebug() << "Writing" << byte;
+        qDebug() << byte;
         return SerialPortConstants.AFM_SUCCESS;
     }
+
 
     qDebug() << "Failed to write byte " << byte;
     return SerialPortConstants.AFM_FAIL;
 }
 
 void SerialPort::on_ready_read() {
-    qDebug() << port->readAll();
+    qDebug() << "Incoming" << port->readAll();
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -76,12 +78,14 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 }
 
 void SerialPort::execute_command(CommandNode* command_node) {
+    qDebug() << "Tag: " << command_node->tag << "Id: " << command_node->id << "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
     result += write_byte(0x0A); // delimit the message
     result += write_byte(command_node->tag); // send the tag (the message number as dictated by chronology)
     result += write_byte(command_node->id); // send the message id (tells microcontroller what kind of command this is)
-    for (auto payload_byte : command_node->payload)
-        result += write_byte(payload_byte); // send all the associated data with the command
+
+    for (char payload_byte : command_node->payload)
+        qDebug() << "Writing " << QString().sprintf("%2p",payload_byte);
+//        result += write_byte(payload_byte); // send all the associated data with the command
     result += write_byte(0x0A); // delimit the message
-    qDebug() << "Executing command" << command_node->payload;
 }

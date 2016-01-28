@@ -5,5 +5,6 @@
         <file>MyItem.qml</file>
         <file>Motor.qml</file>
         <file>MotorButton.qml</file>
+        <file>DAC.qml</file>
     </qresource>
 </RCC>

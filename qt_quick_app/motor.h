@@ -9,9 +9,9 @@
 class Motor : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(double speed READ speed WRITE set_speed NOTIFY speed_changed)
-    Q_PROPERTY(double direction READ direction WRITE set_direction NOTIFY direction_changed)
-    Q_PROPERTY(double state READ state WRITE set_state NOTIFY state_changed)
+    Q_PROPERTY(int speed READ speed WRITE set_speed NOTIFY speed_changed)
+    Q_PROPERTY(int direction READ direction WRITE set_direction NOTIFY direction_changed)
+    Q_PROPERTY(int state READ state WRITE set_state NOTIFY state_changed)
 
 public:
     explicit Motor(QObject *parent = 0);
