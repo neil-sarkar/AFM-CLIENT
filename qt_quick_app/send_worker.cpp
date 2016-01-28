@@ -4,18 +4,18 @@
 SendWorker::SendWorker(QObject *parent) : QObject(parent)
 {
     tag = 0;
+    QObject::connect(this, SIGNAL(command_received()), this, SLOT(dequeue_command()));
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {
-    tag++;
-    command_node->tag_number = tag;
-    qDebug() << "Enqueueing " << command_node->tag_number;
+    command_node->tag_number = tag++; // assign tag then increment
     command_queue.enqueue(command_node);
-    dequeue_command();
+    qDebug() << "Enqueued" << command_node->tag_number;
+    emit command_received(); // could also just call dequeue_command right away
 }
 
 CommandNode* SendWorker::dequeue_command() {
-    CommandNode* node = command_queue.dequeue();
-    qDebug() << "Dequeued" << node->tag_number;
-    return node;
+    CommandNode* command_node = command_queue.dequeue();
+    qDebug() << "Dequeued" << command_node->tag_number;
+    return command_node;
 }
