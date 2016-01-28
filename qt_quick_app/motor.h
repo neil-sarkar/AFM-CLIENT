@@ -18,7 +18,7 @@ public:
     void set_direction(int direction);
     void set_speed(double speed);
     void set_state(int state);
-    double speed();
+    int speed();
     int direction();
     int state();
     Q_INVOKABLE void run();
@@ -43,8 +43,8 @@ public slots:
 private:
     int m_direction;
     int m_state;
-    double m_speed;
-    QByteArray generate_set_speed_bytes();
+    int m_speed;
+    QByteArray generate_set_speed_payload();
     QByteArray generate_set_direction_bytes();
     QByteArray generate_set_state_bytes();
 

@@ -35,10 +35,8 @@ int main(int argc, char *argv[])
     sender_thread->start();
 
     QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-
-
-    //    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
-//    QObject::connect(&receiver, SIGNAL(send_byte(char)), serial_port, SLOT(write_byte(char)));
+    QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
+    QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
 
     return app.exec();
 }

@@ -8,17 +8,17 @@
 class CommandNode : public QObject {
     Q_OBJECT
 public:
-    unsigned char message_id;
-    std::function<QByteArray()> execute_command;
-    std::function<void()> execute_postamble;
+    unsigned char id;
+    QObject* instance;
+    QByteArray payload;
+    std::function<void()> postamble;
     std::function<void()> update_UI;
-    QByteArray afm_return_value;
-    int tag_number;
+    int tag;
 
-    CommandNode(std::function<QByteArray()> x, std::function<void()> y, std::function<void()> z) {
-        execute_command = x;
-        execute_postamble = y;
-        update_UI = z;
+    CommandNode(unsigned char _id, QObject* _instance, QByteArray _payload) {
+        id = _id;
+        instance = _instance;
+        payload = _payload;
     }
 };
 

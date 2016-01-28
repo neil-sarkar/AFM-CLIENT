@@ -14,6 +14,7 @@ public:
 
 signals:
     void command_received();
+    void command_dequeued(CommandNode*);
 
 private slots:
     void dequeue_command();

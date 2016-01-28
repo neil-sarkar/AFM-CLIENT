@@ -15,7 +15,7 @@ void Motor::run() {
     qDebug() << "Running motor at speed " << m_speed << "and direction " << m_direction;
 }
 
-double Motor::speed() {
+int Motor::speed() {
     return m_speed;
 }
 
@@ -53,20 +53,22 @@ void Motor::set_state(int state) {
 }
 
 void Motor::generate_set_speed_command() {
-    auto command = std::bind(&Motor::generate_set_speed_bytes, this);
-    CommandNode* node = new CommandNode(command, NULL, NULL);
+    QByteArray payload = generate_set_speed_payload();
+    CommandNode* node = new CommandNode(0x32, this, payload);
     emit command_generated(node);
 }
 
 void Motor::generate_set_direction_command() {
+
 }
 
 void Motor::generate_set_state_command() {
 
 }
 
-QByteArray Motor::generate_set_speed_bytes() {
+QByteArray Motor::generate_set_speed_payload() {
     QByteArray q;
-    q.push_back(qrand());
+    q.push_back(qint8(m_speed)); // low byte
+    q.push_back(qint8(m_speed >> 8)); // high byte
     return q;
 }

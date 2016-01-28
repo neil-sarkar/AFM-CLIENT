@@ -13,7 +13,6 @@ SOURCES += main.cpp \
     afm.cpp \
     pga.cpp \
     dac.cpp \
-    command_node.cpp \
     send_worker.cpp
 
 RESOURCES += qml.qrc

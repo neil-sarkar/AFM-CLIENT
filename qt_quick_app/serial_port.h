@@ -4,6 +4,7 @@
 #include <QSerialPort>
 #include <QList>
 #include <QTimer>
+#include "command_node.h"
 
 class SerialPort: public QObject
 {
@@ -22,6 +23,8 @@ Q_OBJECT
         void scan_for_ports();
         void check_connected(); // this method runs periodically as dictated by the port_scan_timer
         int write_byte(char byte);
+        void execute_command(CommandNode*);
+
     private:
         QTimer* port_scan_timer;
         bool is_connected;

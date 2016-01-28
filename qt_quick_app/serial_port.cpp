@@ -74,3 +74,14 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
     connect(port_scan_timer, SIGNAL(timeout()), this, SLOT(check_connected()));
     port_scan_timer->start(1000);
 }
+
+void SerialPort::execute_command(CommandNode* command_node) {
+    int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
+    result += write_byte(0x0A); // delimit the message
+    result += write_byte(command_node->tag); // send the tag (the message number as dictated by chronology)
+    result += write_byte(command_node->id); // send the message id (tells microcontroller what kind of command this is)
+    for (auto payload_byte : command_node->payload)
+        result += write_byte(payload_byte); // send all the associated data with the command
+    result += write_byte(0x0A); // delimit the message
+    qDebug() << "Executing command" << command_node->payload;
+}
