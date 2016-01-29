@@ -80,6 +80,10 @@ void Motor::cmd_set_direction() {
 
 void Motor::cmd_set_state() {
     QByteArray q;
-    CommandNode* node = m_state ? new CommandNode(Commands.SetStateAwake, this, q) : new CommandNode(Commands.SetStateAsleep, this, q);
+    CommandNode* node;
+    if (m_state == StatusConstants.Awake)
+            node = new CommandNode(Commands.SetStateAwake, this, q);
+    else
+        new CommandNode(Commands.SetStateAsleep, this, q);
     emit command_generated(node);
 }

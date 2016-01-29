@@ -39,6 +39,8 @@ HEADERS += \
     motor_constants.h \
     send_worker.h \
     thread_safe_queue.h \
-    receive_worker.h
+    receive_worker.h \
+    constants.h \
+    command_names.h
 
 DISTFILES +=

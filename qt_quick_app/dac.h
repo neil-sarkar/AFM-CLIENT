@@ -33,6 +33,9 @@ public slots:
 private:
     qint8 m_id;
     double m_value;
+    static constexpr int RESOLUTION = 4095;
+    static constexpr double MAX_VOLTAGE = 3.3;
+
 };
 
 #endif // DAC_H

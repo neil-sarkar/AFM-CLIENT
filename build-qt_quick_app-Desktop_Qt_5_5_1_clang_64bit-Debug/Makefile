@@ -249,7 +249,9 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/motor_constants.h \
 		../qt_quick_app/send_worker.h \
 		../qt_quick_app/thread_safe_queue.h \
-		../qt_quick_app/receive_worker.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/receive_worker.h \
+		../qt_quick_app/constants.h \
+		../qt_quick_app/command_names.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -638,7 +640,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/pid.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/pga.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/constants.h ../qt_quick_app/command_names.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp $(DISTDIR)/
 
 
@@ -718,6 +720,8 @@ moc_motor.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QString \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstring.h \
 		../qt_quick_app/command_node.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
@@ -834,6 +838,8 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QByteArray \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qbytearray.h \
 		../qt_quick_app/motor.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QString \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstring.h \
 		../qt_quick_app/send_worker.h \
 		../qt_quick_app/receive_worker.h \
 		../qt_quick_app/dac.h \
@@ -895,6 +901,8 @@ motor.o: ../qt_quick_app/motor.cpp ../qt_quick_app/motor.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QString \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstring.h \
 		../qt_quick_app/command_node.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \

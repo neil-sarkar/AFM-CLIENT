@@ -15,6 +15,12 @@ public:
 signals:
 
 public slots:
+
+private:
+    qint8 id;
+    static constexpr double MAX_VOLTAGE = 2.5;
+    static constexpr int RESOLUTION = 4095;
+    static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 };
 
 #endif // ADC_H

@@ -12,7 +12,7 @@ Item {
     Button {
         id: init_dac
         text: "Init DAC"
-        onClicked: motor.single_step()
+        onClicked: dac.init();
         anchors.top: serial_close.bottom
     }
     SpinBox {

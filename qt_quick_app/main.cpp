@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
     DAC* dac = new DAC(1);
     dac->init();
     view2.rootContext()->setContextProperty("dac", dac);
-    view2.rootContext()->setContextProperty("motor", motor);
     view2.setSource(QUrl(QStringLiteral("qrc:///DAC.qml")));
 
 

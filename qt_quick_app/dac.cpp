@@ -14,8 +14,8 @@ void DAC::set_value(double value) {
 void DAC::init() {
     QByteArray q;
     q.push_back(m_id);
-    q.push_back(4095 & 0xFF);
-    q.push_back((4095 & 0x0F00) >> 8);
+    q.push_back(RESOLUTION & 0xFF);
+    q.push_back((RESOLUTION & 0x0F00) >> 8);
     CommandNode* node = new CommandNode(0x26, this, q);
     emit command_generated(node);
 }
@@ -33,7 +33,7 @@ void DAC::read() {
 
 void DAC::write() {
     QByteArray q;
-    qint16 value = m_value / double(3.3/4095);
+    qint16 value = m_value / double(MAX_VOLTAGE/RESOLUTION);
     q.push_back(m_id);
     q.push_back((value & 0xFF));
     q.push_back((value >> 8));
