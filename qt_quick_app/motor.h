@@ -22,8 +22,9 @@ public:
     int speed();
     int direction();
     int state();
-    Q_INVOKABLE void single_step();
-    Q_INVOKABLE void run_continuous();
+    Q_INVOKABLE void cmd_single_step();
+    Q_INVOKABLE void cmd_run_continuous();
+    Q_INVOKABLE void cmd_stop_continuous();
 
 signals:
     // MODIFY signals for Q_PROPERTY macros
@@ -34,11 +35,6 @@ signals:
     // Cross-Thread
     void command_generated(CommandNode*);
 
-private slots:
-    void cmd_set_speed();
-    void cmd_set_direction();
-    void cmd_set_state();
-
 public slots:
 
 
@@ -46,19 +42,26 @@ private:
     int m_direction;
     int m_state;
     int m_speed;
+    int m_microstep;
+    void cmd_set_speed();
+    void cmd_set_direction();
+    void cmd_set_state();
+    void cmd_set_micro_step();
 
     struct Commands {
         const unsigned char SetDirection = 0x36;
-        const unsigned char SetStateAwake = 0x35;
+        const unsigned char SetStateAwake = 0x35; // might want to have one function for each sleep and awake
         const unsigned char SetStateAsleep = 0x34;
         const unsigned char SetSpeed = 0x32;
-        const unsigned char SingleStep = 0x31;
         const unsigned char RunContinuous = 0x33;
+        const unsigned char StopContinuous = 0x37;
+        const unsigned char SetSingleStep = 0x31;
+        const unsigned char SetMicroStep = 0x30;
     } Commands;
 
     struct PayloadConstants {
-        const unsigned char MotorApproach = 0x66;
-        const unsigned char MotorRetract = 0x62;
+        const unsigned char MotorApproach = 0x62;
+        const unsigned char MotorRetract = 0x66;
     } PayloadConstants;
 
     struct StatusConstants {
@@ -66,6 +69,15 @@ private:
         const int Retract = 0;
         const int Awake = 1;
         const int Asleep = 0;
+
+        // put these in an enum to match embedded code
+        const int StepFull = 0;
+        const int Step2Micro = 1;
+        const int Step4 = 2;
+        const int Step8 = 3;
+        const int Step16 = 4;
+        const int Step32 = 5;
+
     } StatusConstants;
 
 };

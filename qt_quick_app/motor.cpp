@@ -49,14 +49,19 @@ void Motor::set_state(int state) {
     }
 }
 
-void Motor::run_continuous() {
+void Motor::cmd_run_continuous() {
     QByteArray q;
     emit command_generated(new CommandNode(Commands.RunContinuous, this, q));
 }
 
-void Motor::single_step() {
+void Motor::cmd_stop_continuous() {
     QByteArray q;
-    emit command_generated(new CommandNode(Commands.SingleStep, this, q));
+    emit command_generated(new CommandNode(Commands.StopContinuous, this, q));
+}
+
+void Motor::cmd_single_step() {
+    QByteArray q;
+    emit command_generated(new CommandNode(Commands.SetSingleStep, this, q));
 }
 
 void Motor::cmd_set_speed() {
@@ -86,4 +91,10 @@ void Motor::cmd_set_state() {
     else
         node = new CommandNode(Commands.SetStateAsleep, this, q);
     emit command_generated(node);
+}
+
+void Motor::cmd_set_micro_step() {
+    QByteArray q;
+    q += m_microstep;
+    emit command_generated(new CommandNode(Commands.SetMicroStep, this, q));
 }
