@@ -5,6 +5,7 @@
 #include <serial_port_constants.h>
 #include <QDebug>
 #include <QTimer>
+#include <QTextCodec>
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
@@ -24,7 +25,7 @@ bool SerialPort::auto_connect() {
     if (!connected_ports.size()) // if there are no ports available
         return false;
     for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports
-        if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) // check if the port is the AFM
+            if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) // check if the port is the AFM
             return open(connected_ports[i].portName(), SerialPortConstants.AFM_BAUD_RATE);
     return false;
 }
@@ -50,17 +51,16 @@ void SerialPort::close() {
 
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
     if (port->write(&byte, 1) == 1) {
-        qDebug() << byte;
+        qDebug() << QString().sprintf("%2p",byte);
         return SerialPortConstants.AFM_SUCCESS;
     }
-
 
     qDebug() << "Failed to write byte " << byte;
     return SerialPortConstants.AFM_FAIL;
 }
 
 void SerialPort::on_ready_read() {
-    qDebug() << "Incoming" << port->readAll();
+    incoming_buffer += port->readAll();
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -78,14 +78,20 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 }
 
 void SerialPort::execute_command(CommandNode* command_node) {
-    qDebug() << "Tag: " << command_node->tag << "Id: " << command_node->id << "Payload:" << command_node->payload;
+    qDebug() << "Tag: " << QString().sprintf("%2p", command_node->tag) << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
     result += write_byte(0x0A); // delimit the message
     result += write_byte(command_node->tag); // send the tag (the message number as dictated by chronology)
     result += write_byte(command_node->id); // send the message id (tells microcontroller what kind of command this is)
 
-    for (char payload_byte : command_node->payload)
-        qDebug() << "Writing " << QString().sprintf("%2p",payload_byte);
-//        result += write_byte(payload_byte); // send all the associated data with the command
+    for (char payload_byte : command_node->payload) {
+        if (payload_byte == 0x0A || payload_byte == 0x10) {
+            result += write_byte(0x10);
+            result += write_byte(payload_byte | 0x80);
+        } else {
+            result += write_byte(payload_byte);
+        }
+    }
+       // send all the associated data with the command
     result += write_byte(0x0A); // delimit the message
 }

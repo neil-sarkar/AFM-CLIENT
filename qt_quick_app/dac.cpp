@@ -25,9 +25,9 @@ void DAC::read() {
 void DAC::write() {
     QByteArray q;
     qint16 value = m_value / double(3.3/4095);
-    qDebug() << value;
-    q.push_back(value & 0xFF);
-    q.push_back(value >> 8);
+    q.push_back(m_id);
+    q.push_back((value & 0xFF));
+    q.push_back((value >> 8));
     CommandNode* node = new CommandNode(0x61, this, q);
     emit command_generated(node);
 }

@@ -14,7 +14,7 @@ Q_OBJECT
         ~SerialPort(); // destructor
         bool auto_connect();
         bool open(QString port_name, qint32 baud_rate); // opens the given serial port at the given baud rate, and handles any setup processes
-        void close(); // closes the serial port, and handles any tear-down processes
+        Q_INVOKABLE void close(); // closes the serial port, and handles any tear-down processes
     signals:
         void connected(); // emitted when afm is first connected to
         void disconnected(); // emitted when afm is first disconnected
@@ -26,6 +26,7 @@ Q_OBJECT
         void execute_command(CommandNode*);
 
     private:
+        QByteArray incoming_buffer;
         QTimer* port_scan_timer;
         bool is_connected;
         QSerialPort* port;

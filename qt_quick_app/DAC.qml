@@ -2,6 +2,13 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 
 Item {
+    Button {
+        id: serial_close
+        text: "Close port"
+        onClicked: serial_port.close()
+        anchors.top: read_dac_button.bottom
+    }
+
     SpinBox {
         id: dac_value
         value: dac.value
@@ -21,6 +28,7 @@ Item {
         anchors.left: dac_value.right
     }
     Button {
+        id: read_dac_button
         text: "Read DAC value"
         anchors.top: dac_value.bottom
         onClicked: dac.read()
