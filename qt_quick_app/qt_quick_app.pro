@@ -11,7 +11,6 @@ SOURCES += main.cpp \
     pid.cpp \
     motor.cpp \
     afm.cpp \
-    pga.cpp \
     dac.cpp \
     send_worker.cpp \
     receive_worker.cpp
@@ -32,7 +31,6 @@ HEADERS += \
     pid.h \
     motor.h \
     afm.h \
-    pga.h \
     dac.h \
     afm_object_interface.h \
     command_node.h \

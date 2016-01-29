@@ -82,8 +82,8 @@ void Motor::cmd_set_state() {
     QByteArray q;
     CommandNode* node;
     if (m_state == StatusConstants.Awake)
-            node = new CommandNode(Commands.SetStateAwake, this, q);
+        node = new CommandNode(Commands.SetStateAwake, this, q);
     else
-        new CommandNode(Commands.SetStateAsleep, this, q);
+        node = new CommandNode(Commands.SetStateAsleep, this, q);
     emit command_generated(node);
 }

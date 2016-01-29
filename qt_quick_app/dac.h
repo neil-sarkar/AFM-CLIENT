@@ -16,16 +16,15 @@ public:
     void set_value(double value);
     void set_id(qint8 id);
     double value();
-    Q_INVOKABLE void init();
     qint8 id();
+    Q_INVOKABLE void init();
     Q_INVOKABLE void read();
     Q_INVOKABLE void write();
 
 signals:
     void value_changed();
     void id_changed();
-
-    void command_generated(CommandNode* c);
+    void command_generated(CommandNode* node);
 
 public slots:
 

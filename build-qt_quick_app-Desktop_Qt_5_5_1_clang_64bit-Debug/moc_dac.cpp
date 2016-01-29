@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DAC_t {
     QByteArrayData data[12];
-    char stringdata0[88];
+    char stringdata0[91];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,17 +35,17 @@ QT_MOC_LITERAL(2, 18, 0), // ""
 QT_MOC_LITERAL(3, 19, 10), // "id_changed"
 QT_MOC_LITERAL(4, 30, 17), // "command_generated"
 QT_MOC_LITERAL(5, 48, 12), // "CommandNode*"
-QT_MOC_LITERAL(6, 61, 1), // "c"
-QT_MOC_LITERAL(7, 63, 4), // "init"
-QT_MOC_LITERAL(8, 68, 4), // "read"
-QT_MOC_LITERAL(9, 73, 5), // "write"
-QT_MOC_LITERAL(10, 79, 5), // "value"
-QT_MOC_LITERAL(11, 85, 2) // "id"
+QT_MOC_LITERAL(6, 61, 4), // "node"
+QT_MOC_LITERAL(7, 66, 4), // "init"
+QT_MOC_LITERAL(8, 71, 4), // "read"
+QT_MOC_LITERAL(9, 76, 5), // "write"
+QT_MOC_LITERAL(10, 82, 5), // "value"
+QT_MOC_LITERAL(11, 88, 2) // "id"
 
     },
     "DAC\0value_changed\0\0id_changed\0"
-    "command_generated\0CommandNode*\0c\0init\0"
-    "read\0write\0value\0id"
+    "command_generated\0CommandNode*\0node\0"
+    "init\0read\0write\0value\0id"
 };
 #undef QT_MOC_LITERAL
 
