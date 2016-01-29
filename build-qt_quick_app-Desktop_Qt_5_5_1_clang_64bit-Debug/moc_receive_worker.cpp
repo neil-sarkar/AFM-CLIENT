@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ReceiveWorker_t {
     QByteArrayData data[9];
-    char stringdata0[144];
+    char stringdata0[145];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,13 +37,13 @@ QT_MOC_LITERAL(4, 55, 15), // "enqueue_command"
 QT_MOC_LITERAL(5, 71, 12), // "CommandNode*"
 QT_MOC_LITERAL(6, 84, 21), // "enqueue_response_byte"
 QT_MOC_LITERAL(7, 106, 15), // "dequeue_command"
-QT_MOC_LITERAL(8, 122, 21) // "dequeue_response_byte"
+QT_MOC_LITERAL(8, 122, 22) // "build_working_response"
 
     },
     "ReceiveWorker\0command_received\0\0"
     "response_byte_received\0enqueue_command\0"
     "CommandNode*\0enqueue_response_byte\0"
-    "dequeue_command\0dequeue_response_byte"
+    "dequeue_command\0build_working_response"
 };
 #undef QT_MOC_LITERAL
 
@@ -94,7 +94,7 @@ void ReceiveWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 2: _t->enqueue_command((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
         case 3: _t->enqueue_response_byte((*reinterpret_cast< char(*)>(_a[1]))); break;
         case 4: _t->dequeue_command(); break;
-        case 5: _t->dequeue_response_byte(); break;
+        case 5: _t->build_working_response(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {

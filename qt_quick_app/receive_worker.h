@@ -21,11 +21,14 @@ public slots:
 
 private slots:
     void dequeue_command();
-    void dequeue_response_byte();
+    void build_working_response();
 
 private:
     ThreadSafeQueue<CommandNode*> command_queue;
-    ThreadSafeQueue<qint8> response_byte_queue;
+    ThreadSafeQueue<char> response_byte_queue;
+    QByteArray working_response;
+    bool complete_message;
+    void process_working_response();
 
 };
 

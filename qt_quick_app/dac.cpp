@@ -29,6 +29,7 @@ void DAC::write() {
     q.push_back((value & 0xFF));
     q.push_back((value >> 8));
     CommandNode* node = new CommandNode(0x61, this, q);
+    node->update_UI = std::bind(&DAC::set_id, this, 10);
     emit command_generated(node);
 }
 
