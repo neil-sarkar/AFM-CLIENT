@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Motor_t {
     QByteArrayData data[14];
-    char stringdata0[195];
+    char stringdata0[164];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,20 +36,19 @@ QT_MOC_LITERAL(3, 21, 17), // "direction_changed"
 QT_MOC_LITERAL(4, 39, 13), // "state_changed"
 QT_MOC_LITERAL(5, 53, 17), // "command_generated"
 QT_MOC_LITERAL(6, 71, 12), // "CommandNode*"
-QT_MOC_LITERAL(7, 84, 26), // "generate_set_speed_command"
-QT_MOC_LITERAL(8, 111, 30), // "generate_set_direction_command"
-QT_MOC_LITERAL(9, 142, 26), // "generate_set_state_command"
-QT_MOC_LITERAL(10, 169, 3), // "run"
-QT_MOC_LITERAL(11, 173, 5), // "speed"
-QT_MOC_LITERAL(12, 179, 9), // "direction"
-QT_MOC_LITERAL(13, 189, 5) // "state"
+QT_MOC_LITERAL(7, 84, 13), // "cmd_set_speed"
+QT_MOC_LITERAL(8, 98, 17), // "cmd_set_direction"
+QT_MOC_LITERAL(9, 116, 13), // "cmd_set_state"
+QT_MOC_LITERAL(10, 130, 11), // "single_step"
+QT_MOC_LITERAL(11, 142, 5), // "speed"
+QT_MOC_LITERAL(12, 148, 9), // "direction"
+QT_MOC_LITERAL(13, 158, 5) // "state"
 
     },
     "Motor\0speed_changed\0\0direction_changed\0"
     "state_changed\0command_generated\0"
-    "CommandNode*\0generate_set_speed_command\0"
-    "generate_set_direction_command\0"
-    "generate_set_state_command\0run\0speed\0"
+    "CommandNode*\0cmd_set_speed\0cmd_set_direction\0"
+    "cmd_set_state\0single_step\0speed\0"
     "direction\0state"
 };
 #undef QT_MOC_LITERAL
@@ -118,10 +117,10 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         case 1: _t->direction_changed(); break;
         case 2: _t->state_changed(); break;
         case 3: _t->command_generated((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 4: _t->generate_set_speed_command(); break;
-        case 5: _t->generate_set_direction_command(); break;
-        case 6: _t->generate_set_state_command(); break;
-        case 7: _t->run(); break;
+        case 4: _t->cmd_set_speed(); break;
+        case 5: _t->cmd_set_direction(); break;
+        case 6: _t->cmd_set_state(); break;
+        case 7: _t->single_step(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {

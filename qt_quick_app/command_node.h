@@ -11,8 +11,8 @@ public:
     unsigned char id;
     QObject* instance;
     QByteArray payload;
-    std::function<void()> postamble = std::bind(&CommandNode::null_function, this);
-    std::function<void()> update_UI = std::bind(&CommandNode::null_function, this);
+    std::function<void()> postamble;
+    std::function<void()> update_UI;
     int tag;
     unsigned int num_failed_bytes;
 
@@ -23,7 +23,7 @@ public:
     }
 
 private:
-    void null_function() {}
+//    void null_function() {}
 };
 
 #endif // COMMANDNODE_H

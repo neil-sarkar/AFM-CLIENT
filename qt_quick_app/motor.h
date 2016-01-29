@@ -21,7 +21,8 @@ public:
     int speed();
     int direction();
     int state();
-    Q_INVOKABLE void run();
+    Q_INVOKABLE void single_step();
+    void run_continuous();
 
 signals:
     // MODIFY signals for Q_PROPERTY macros
@@ -33,9 +34,9 @@ signals:
     void command_generated(CommandNode*);
 
 private slots:
-    void generate_set_speed_command();
-    void generate_set_direction_command();
-    void generate_set_state_command();
+    void cmd_set_speed();
+    void cmd_set_direction();
+    void cmd_set_state();
 
 public slots:
 
@@ -44,10 +45,6 @@ private:
     int m_direction;
     int m_state;
     int m_speed;
-    QByteArray generate_set_speed_payload();
-    QByteArray generate_set_direction_bytes();
-    QByteArray generate_set_state_bytes();
-
 
 };
 

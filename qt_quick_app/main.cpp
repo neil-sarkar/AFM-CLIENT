@@ -22,12 +22,13 @@ int main(int argc, char *argv[])
     SerialPort* serial_port = new SerialPort();
     serial_port->moveToThread(serial_thread);
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
+    serial_thread->start();
 
     QQuickView view;
     Motor* motor = new Motor();
     view.rootContext()->setContextProperty("motor", motor);
     view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
-//    view.show();
+    view.show();
 
     QQuickView view2;
     DAC* dac = new DAC(1);
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
     view2.rootContext()->setContextProperty("dac", dac);
     view2.setSource(QUrl(QStringLiteral("qrc:///DAC.qml")));
 
-    serial_thread->start();
+
     view2.rootContext()->setContextProperty("serial_port", serial_port);
     view2.show();
 
