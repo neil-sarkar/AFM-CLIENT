@@ -45,7 +45,7 @@ void Motor::set_state(int state) {
         m_state = state;
         qDebug() << "Changing state to" << m_state;
         emit state_changed();
-        cmd_set_state();
+        m_state == StatusConstants.Asleep  ? cmd_set_state_asleep() : cmd_set_state_awake();
     }
 }
 
@@ -83,14 +83,14 @@ void Motor::cmd_set_direction() {
     emit command_generated(node);
 }
 
-void Motor::cmd_set_state() {
+void Motor::cmd_set_state_asleep() {
     QByteArray q;
-    CommandNode* node;
-    if (m_state == StatusConstants.Awake)
-        node = new CommandNode(Commands.SetStateAwake, this, q);
-    else
-        node = new CommandNode(Commands.SetStateAsleep, this, q);
-    emit command_generated(node);
+    emit command_generated(new CommandNode(Commands.SetStateAsleep, this, q));
+}
+
+void Motor::cmd_set_state_awake() {
+    QByteArray q;
+    emit command_generated(new CommandNode(Commands.SetStateAwake, this, q));
 }
 
 void Motor::cmd_set_micro_step() {

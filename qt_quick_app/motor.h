@@ -45,7 +45,8 @@ private:
     int m_microstep;
     void cmd_set_speed();
     void cmd_set_direction();
-    void cmd_set_state();
+    void cmd_set_state_asleep();
+    void cmd_set_state_awake();
     void cmd_set_micro_step();
 
     struct Commands {
