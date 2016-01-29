@@ -22,7 +22,7 @@ public:
     int direction();
     int state();
     Q_INVOKABLE void single_step();
-    void run_continuous();
+    Q_INVOKABLE void run_continuous();
 
 signals:
     // MODIFY signals for Q_PROPERTY macros

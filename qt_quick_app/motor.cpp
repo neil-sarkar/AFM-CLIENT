@@ -10,7 +10,6 @@ Motor::Motor(QObject *parent) : QObject(parent)
     m_state = 0;
 }
 
-
 int Motor::speed() {
     return m_speed;
 }

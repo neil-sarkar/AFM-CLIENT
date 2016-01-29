@@ -7,24 +7,21 @@ Button {
     onClicked: {
         motor.direction = direction;
         motor.state = 1;
-        motor.single_step();
+//        motor.single_step();
     }
-
 //    Timer {
 //        id: longPressTimer
-//        interval: 1
+//        interval: 1000
 //        repeat: true
 //        running: false
-//        onTriggered: motor.single_step()
 //    }
-//    onPressedChanged: {
-//        if (pressed) {
-//            motor.direction = direction;
-//            motor.state = 1;
-//            longPressTimer.running = true;
-//        } else {
-//            motor.state = 0;
-//            longPressTimer.running = false;
-//        }
-//    }
+    onPressedChanged: {
+        if (pressed) {
+            motor.state = 1;
+            motor.direction = direction
+//            motor.run_continuous()
+        } else {
+            motor.state = 0;
+        }
+    }
 }
