@@ -51,31 +51,35 @@ void Motor::set_state(int state) {
 
 void Motor::run_continuous() {
     QByteArray q;
-    emit command_generated(new CommandNode(0x33, this, q));
+    emit command_generated(new CommandNode(Commands.RunContinuous, this, q));
 }
 
 void Motor::single_step() {
     QByteArray q;
-    emit command_generated(new CommandNode(0x31, this, q));
+    emit command_generated(new CommandNode(Commands.SingleStep, this, q));
 }
 
 void Motor::cmd_set_speed() {
     QByteArray q;
     q.push_back(qint8(m_speed)); // low byte
     q.push_back(qint8(m_speed >> 8)); // high byte
-    CommandNode* node = new CommandNode(0x32, this, q);
+    CommandNode* node = new CommandNode(Commands.SetSpeed, this, q);
     emit command_generated(node);
 }
 
 void Motor::cmd_set_direction() {
-    QByteArray q;
-    q += m_direction ? 0x66 : 0x62;
-    CommandNode* node = new CommandNode(0x36, this, q);
+    QByteArray payload;
+    if (m_direction == StatusConstants.Approach)
+        payload += PayloadConstants.MotorApproach;
+    else
+        payload += PayloadConstants.MotorRetract;
+
+    CommandNode* node = new CommandNode(Commands.SetDirection, this, payload);
     emit command_generated(node);
 }
 
 void Motor::cmd_set_state() {
     QByteArray q;
-    CommandNode* node = m_state ? new CommandNode(0x35, this, q) : new CommandNode(0x34, this, q);
+    CommandNode* node = m_state ? new CommandNode(Commands.SetStateAwake, this, q) : new CommandNode(Commands.SetStateAsleep, this, q);
     emit command_generated(node);
 }

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QQuickItem>
+#include <QString>
 #include "command_node.h"
 
 class Motor : public QObject
@@ -45,6 +46,27 @@ private:
     int m_direction;
     int m_state;
     int m_speed;
+
+    struct Commands {
+        const unsigned char SetDirection = 0x36;
+        const unsigned char SetStateAwake = 0x35;
+        const unsigned char SetStateAsleep = 0x34;
+        const unsigned char SetSpeed = 0x32;
+        const unsigned char SingleStep = 0x31;
+        const unsigned char RunContinuous = 0x33;
+    } Commands;
+
+    struct PayloadConstants {
+        const unsigned char MotorApproach = 0x66;
+        const unsigned char MotorRetract = 0x62;
+    } PayloadConstants;
+
+    struct StatusConstants {
+        const int Approach = 1;
+        const int Retract = 0;
+        const int Awake = 1;
+        const int Asleep = 0;
+    } StatusConstants;
 
 };
 
