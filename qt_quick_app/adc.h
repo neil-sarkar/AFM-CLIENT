@@ -2,22 +2,22 @@
 #define ADC_H
 
 #include <QObject>
-#include "afm_object_interface.h"
+#include "command_node.h"
 
-class ADC : public AfmObject
+class ADC : public QObject
 {
     Q_OBJECT
-    Q_INTERFACES(AfmObject)
 public:
-    explicit ADC(QObject *parent = 0);
+    explicit ADC(qint8 id, QObject *parent = 0);
     void read();
 
 signals:
+    void command_generated(CommandNode*);
 
 public slots:
 
 private:
-    qint8 id;
+    qint8 m_id;
     static constexpr double MAX_VOLTAGE = 2.5;
     static constexpr int RESOLUTION = 4095;
     static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
