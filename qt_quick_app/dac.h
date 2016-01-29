@@ -16,6 +16,7 @@ public:
     void set_value(double value);
     void set_id(qint8 id);
     double value();
+    void init();
     qint8 id();
     Q_INVOKABLE void read();
     Q_INVOKABLE void write();

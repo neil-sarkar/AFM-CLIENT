@@ -46,7 +46,9 @@ void ReceiveWorker::process_working_response() {
     char response_id = working_response.at(1);
     CommandNode* node = command_queue.dequeue();
 
+    // also check if the # bytes is correct
     if (response_tag == node->tag && response_id == node->id)
+//        node->postamble();
         node->update_UI();
 
     delete node;

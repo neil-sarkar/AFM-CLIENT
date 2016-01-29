@@ -11,6 +11,15 @@ void DAC::set_value(double value) {
     }
 }
 
+void DAC::init() {
+    QByteArray q;
+    q.push_back(m_id);
+    q.push_back(4095 & 0xFF);
+    q.push_back((4095 & 0x0F00) >> 8);
+    CommandNode* node = new CommandNode(0x26, this, q);
+    emit command_generated(node);
+}
+
 double DAC::value() {
     return m_value;
 }
@@ -29,7 +38,6 @@ void DAC::write() {
     q.push_back((value & 0xFF));
     q.push_back((value >> 8));
     CommandNode* node = new CommandNode(0x61, this, q);
-    node->update_UI = std::bind(&DAC::set_id, this, 10);
     emit command_generated(node);
 }
 
