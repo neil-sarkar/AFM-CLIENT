@@ -770,6 +770,16 @@ moc_send_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/Q
 
 moc_receive_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/thread_safe_queue.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QQueue \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qqueue.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QSemaphore \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qsemaphore.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
 		../qt_quick_app/receive_worker.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/receive_worker.h -o moc_receive_worker.cpp
 
@@ -825,6 +835,7 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qbytearray.h \
 		../qt_quick_app/motor.h \
 		../qt_quick_app/send_worker.h \
+		../qt_quick_app/receive_worker.h \
 		../qt_quick_app/dac.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h
@@ -926,7 +937,17 @@ send_worker.o: ../qt_quick_app/send_worker.cpp ../qt_quick_app/send_worker.h \
 
 receive_worker.o: ../qt_quick_app/receive_worker.cpp ../qt_quick_app/receive_worker.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/thread_safe_queue.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QQueue \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qqueue.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QSemaphore \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qsemaphore.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o receive_worker.o ../qt_quick_app/receive_worker.cpp
 
 qrc_qml.o: qrc_qml.cpp 

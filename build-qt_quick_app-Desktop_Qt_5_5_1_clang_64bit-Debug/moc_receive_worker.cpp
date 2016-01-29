@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ReceiveWorker_t {
-    QByteArrayData data[6];
-    char stringdata0[77];
+    QByteArrayData data[9];
+    char stringdata0[144];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,14 +32,18 @@ static const qt_meta_stringdata_ReceiveWorker_t qt_meta_stringdata_ReceiveWorker
 QT_MOC_LITERAL(0, 0, 13), // "ReceiveWorker"
 QT_MOC_LITERAL(1, 14, 16), // "command_received"
 QT_MOC_LITERAL(2, 31, 0), // ""
-QT_MOC_LITERAL(3, 32, 15), // "enqueue_command"
-QT_MOC_LITERAL(4, 48, 12), // "CommandNode*"
-QT_MOC_LITERAL(5, 61, 15) // "dequeue_command"
+QT_MOC_LITERAL(3, 32, 22), // "response_byte_received"
+QT_MOC_LITERAL(4, 55, 15), // "enqueue_command"
+QT_MOC_LITERAL(5, 71, 12), // "CommandNode*"
+QT_MOC_LITERAL(6, 84, 21), // "enqueue_response_byte"
+QT_MOC_LITERAL(7, 106, 15), // "dequeue_command"
+QT_MOC_LITERAL(8, 122, 21) // "dequeue_response_byte"
 
     },
     "ReceiveWorker\0command_received\0\0"
-    "enqueue_command\0CommandNode*\0"
-    "dequeue_command"
+    "response_byte_received\0enqueue_command\0"
+    "CommandNode*\0enqueue_response_byte\0"
+    "dequeue_command\0dequeue_response_byte"
 };
 #undef QT_MOC_LITERAL
 
@@ -49,25 +53,31 @@ static const uint qt_meta_data_ReceiveWorker[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x06 /* Public */,
+       1,    0,   44,    2, 0x06 /* Public */,
+       3,    0,   45,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       3,    1,   30,    2, 0x0a /* Public */,
-       5,    0,   33,    2, 0x08 /* Private */,
+       4,    1,   46,    2, 0x0a /* Public */,
+       6,    1,   49,    2, 0x0a /* Public */,
+       7,    0,   52,    2, 0x08 /* Private */,
+       8,    0,   53,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void, 0x80000000 | 4,    2,
+    QMetaType::Void, 0x80000000 | 5,    2,
+    QMetaType::Void, QMetaType::Char,    2,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -80,14 +90,17 @@ void ReceiveWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->command_received(); break;
-        case 1: _t->enqueue_command((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 2: _t->dequeue_command(); break;
+        case 1: _t->response_byte_received(); break;
+        case 2: _t->enqueue_command((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
+        case 3: _t->enqueue_response_byte((*reinterpret_cast< char(*)>(_a[1]))); break;
+        case 4: _t->dequeue_command(); break;
+        case 5: _t->dequeue_response_byte(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 1:
+        case 2:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -102,6 +115,12 @@ void ReceiveWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
             typedef void (ReceiveWorker::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ReceiveWorker::command_received)) {
                 *result = 0;
+            }
+        }
+        {
+            typedef void (ReceiveWorker::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&ReceiveWorker::response_byte_received)) {
+                *result = 1;
             }
         }
     }
@@ -132,13 +151,13 @@ int ReceiveWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 6;
     }
     return _id;
 }
@@ -147,5 +166,11 @@ int ReceiveWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 void ReceiveWorker::command_received()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
+}
+
+// SIGNAL 1
+void ReceiveWorker::response_byte_received()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE

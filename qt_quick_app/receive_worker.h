@@ -13,15 +13,19 @@ public:
 
 signals:
     void command_received();
+    void response_byte_received();
 
 public slots:
     void enqueue_command(CommandNode*);
+    void enqueue_response_byte(char);
 
 private slots:
     void dequeue_command();
+    void dequeue_response_byte();
 
 private:
     ThreadSafeQueue<CommandNode*> command_queue;
+    ThreadSafeQueue<qint8> response_byte_queue;
 
 };
 

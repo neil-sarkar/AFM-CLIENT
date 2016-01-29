@@ -61,7 +61,7 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 
 void SerialPort::on_ready_read() {
     for (char byte : port->readAll())
-        bytes_received_queue.enqueue(byte);
+        emit byte_received(byte);
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -97,4 +97,6 @@ void SerialPort::execute_command(CommandNode* command_node) {
 
     command_node->num_failed_bytes = -result;
     emit message_sent(command_node);
+
+    // should we wait for ready read here?
 }
