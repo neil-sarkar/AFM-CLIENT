@@ -10,6 +10,7 @@
 #include "adc.h"
 #include "motor.h"
 #include "send_worker.h"
+#include "receive_worker.h"
 #include "dac.h"
 
 int main(int argc, char *argv[])
@@ -43,9 +44,15 @@ int main(int argc, char *argv[])
     send_worker->moveToThread(sender_thread);
     sender_thread->start();
 
+    QThread* receiver_thread = new QThread();
+    ReceiveWorker* receive_worker = new ReceiveWorker();
+    receive_worker->moveToThread(receiver_thread);
+    receiver_thread->start();
+
     QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(dac, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
+    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)));
 
     return app.exec();
 }

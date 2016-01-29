@@ -60,7 +60,8 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 }
 
 void SerialPort::on_ready_read() {
-    incoming_buffer += port->readAll();
+    for (char byte : port->readAll())
+        bytes_received_queue.enqueue(byte);
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -84,7 +85,7 @@ void SerialPort::execute_command(CommandNode* command_node) {
     result += write_byte(command_node->tag); // send the tag (the message number as dictated by chronology)
     result += write_byte(command_node->id); // send the message id (tells microcontroller what kind of command this is)
 
-    for (char payload_byte : command_node->payload) {
+    for (char payload_byte : command_node->payload) { // send all the associated data with the command
         if (payload_byte == 0x0A || payload_byte == 0x10) {
             result += write_byte(0x10);
             result += write_byte(payload_byte | 0x80);
@@ -92,6 +93,8 @@ void SerialPort::execute_command(CommandNode* command_node) {
             result += write_byte(payload_byte);
         }
     }
-       // send all the associated data with the command
     result += write_byte(0x0A); // delimit the message
+
+    command_node->num_failed_bytes = -result;
+    emit message_sent(command_node);
 }

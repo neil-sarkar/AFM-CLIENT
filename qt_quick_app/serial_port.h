@@ -5,6 +5,7 @@
 #include <QList>
 #include <QTimer>
 #include "command_node.h"
+#include "thread_safe_queue.h"
 
 class SerialPort: public QObject
 {
@@ -15,9 +16,12 @@ Q_OBJECT
         bool auto_connect();
         bool open(QString port_name, qint32 baud_rate); // opens the given serial port at the given baud rate, and handles any setup processes
         Q_INVOKABLE void close(); // closes the serial port, and handles any tear-down processes
+
     signals:
         void connected(); // emitted when afm is first connected to
         void disconnected(); // emitted when afm is first disconnected
+        void message_sent(CommandNode*); // emitted after a full command has been sent
+
     public slots:
         void on_ready_read();
         void scan_for_ports();
@@ -26,7 +30,7 @@ Q_OBJECT
         void execute_command(CommandNode*);
 
     private:
-        QByteArray incoming_buffer;
+        ThreadSafeQueue<char> bytes_received_queue;
         QTimer* port_scan_timer;
         bool is_connected;
         QSerialPort* port;

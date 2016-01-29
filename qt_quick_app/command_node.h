@@ -14,6 +14,7 @@ public:
     std::function<void()> postamble;
     std::function<void()> update_UI;
     int tag;
+    unsigned int num_failed_bytes;
 
     CommandNode(unsigned char _id, QObject* _instance, QByteArray _payload) {
         id = _id;
