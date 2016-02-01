@@ -14,6 +14,8 @@
 #include "dac.h"
 #include "pga.h"
 #include "pid.h"
+#include "applicationbuilder.h"
+#include "afm.h"
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +35,9 @@ int main(int argc, char *argv[])
     PID* pid = new PID();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
+
+    ApplicationBuilder* app_builder = new ApplicationBuilder();
+    AFM* afm = app_builder->build();
 
     // View config
     QQuickView motor_view, dac_view, pga_view, pid_view;

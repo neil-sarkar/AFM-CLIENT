@@ -58,7 +58,8 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		../qt_quick_app/send_worker.cpp \
 		../qt_quick_app/receive_worker.cpp \
 		../qt_quick_app/pga.cpp \
-		../qt_quick_app/pid.cpp qrc_qml.cpp \
+		../qt_quick_app/pid.cpp \
+		../qt_quick_app/applicationbuilder.cpp qrc_qml.cpp \
 		moc_receiver.cpp \
 		moc_serial_port.cpp \
 		moc_adc.cpp \
@@ -82,6 +83,7 @@ OBJECTS       = main.o \
 		receive_worker.o \
 		pga.o \
 		pid.o \
+		applicationbuilder.o \
 		qrc_qml.o \
 		moc_receiver.o \
 		moc_serial_port.o \
@@ -255,7 +257,8 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/constants.h \
 		../qt_quick_app/command_names.h \
 		../qt_quick_app/pga.h \
-		../qt_quick_app/pid.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/pid.h \
+		../qt_quick_app/applicationbuilder.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -265,7 +268,8 @@ DIST          = /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		../qt_quick_app/send_worker.cpp \
 		../qt_quick_app/receive_worker.cpp \
 		../qt_quick_app/pga.cpp \
-		../qt_quick_app/pid.cpp
+		../qt_quick_app/pid.cpp \
+		../qt_quick_app/applicationbuilder.cpp
 QMAKE_TARGET  = qt_quick_app
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = qt_quick_app.app/Contents/MacOS/qt_quick_app
@@ -644,8 +648,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/constants.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/afm_object_interface.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/constants.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h ../qt_quick_app/applicationbuilder.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/applicationbuilder.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -864,7 +868,8 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		../qt_quick_app/dac.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
-		../qt_quick_app/pga.h
+		../qt_quick_app/pga.h \
+		../qt_quick_app/pid.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../qt_quick_app/main.cpp
 
 receiver.o: ../qt_quick_app/receiver.cpp ../qt_quick_app/receiver.h \
@@ -987,6 +992,19 @@ pid.o: ../qt_quick_app/pid.cpp ../qt_quick_app/pid.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pid.o ../qt_quick_app/pid.cpp
+
+applicationbuilder.o: ../qt_quick_app/applicationbuilder.cpp ../qt_quick_app/applicationbuilder.h \
+		../qt_quick_app/afm.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/adc.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o applicationbuilder.o ../qt_quick_app/applicationbuilder.cpp
 
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp

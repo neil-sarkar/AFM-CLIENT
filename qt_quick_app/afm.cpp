@@ -1,6 +1,10 @@
 #include "afm.h"
 
-AFM::AFM(QObject *parent) : QObject(parent)
-{ // would have adcs, dacs, motor, etc.
-  //would also contain three core functions: approach, sweep, and scan
+AFM::AFM(QHash<QString, PGA*> PGA_collection, QHash<QString, DAC*> DAC_collection, QHash<QString, ADC*> ADC_collection, Motor* motor, PID* pid) {
+    m_PGA_collection = PGA_collection;
+    m_ADC_collection = ADC_collection;
+    m_DAC_collection = DAC_collection;
+    m_motor = motor;
+    m_pid = pid;
 }
+
