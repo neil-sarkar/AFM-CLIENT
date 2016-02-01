@@ -59,19 +59,30 @@ void PID::set_set_point(float set_point) {
 }
 
 void PID::cmd_set_proportional() {
-
-}
-
-void PID::cmd_set_derivative() {
-
+    QByteArray payload;
+    for (int i = 0; i < 4; i++)
+        payload += ((char *)&m_proportional)[i];
+    emit command_generated(new CommandNode(0x70, this, payload));
 }
 
 void PID::cmd_set_integral() {
+    QByteArray payload;
+    for (int i = 0; i < 4; i++)
+        payload += ((char *)&m_integral)[i];
+    emit command_generated(new CommandNode(0x70, this, payload));
+}
 
+void PID::cmd_set_derivative() {
+    QByteArray payload;
+    for (int i = 0; i < 4; i++)
+        payload += ((char *)&m_derivative)[i];
+    emit command_generated(new CommandNode(0x70, this, payload));
 }
 
 void PID::cmd_set_set_point() {
-
+    quint16 set_point = float(m_set_point) / float(SCALE_FACTOR);
+    QByteArray payload;
+    payload += (set_point & 0xFF);
+    payload += ((set_point & 0xFF00) >> 8);
+    emit command_generated(new CommandNode(0x73, this, payload));
 }
-
-
