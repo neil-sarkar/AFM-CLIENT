@@ -9,7 +9,7 @@ void DAC::set_value(double value) {
         m_value = value;
         qDebug() << "Changing DAC value to " << m_value;
         emit value_changed();
-        write();
+        cmd_set_value();
     }
 }
 
@@ -20,20 +20,21 @@ void DAC::init() {
     q.push_back((RESOLUTION & 0x0F00) >> 8);
     CommandNode* node = new CommandNode(0x26, this, q);
     emit command_generated(node);
+    cmd_set_value();
 }
 
 double DAC::value() {
     return m_value;
 }
 
-void DAC::read() {
+void DAC::cmd_read_value() {
     QByteArray q;
     q.push_back(m_id);
     CommandNode* node = new CommandNode(0x62, this, q);
     emit command_generated(node);
 }
 
-void DAC::write() {
+void DAC::cmd_set_value() {
     QByteArray q;
     qint16 value = m_value / double(MAX_VOLTAGE/RESOLUTION);
     q.push_back(m_id);

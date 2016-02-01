@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DAC_t {
     QByteArrayData data[9];
-    char stringdata0[55];
+    char stringdata0[73];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,14 +34,15 @@ QT_MOC_LITERAL(1, 4, 13), // "value_changed"
 QT_MOC_LITERAL(2, 18, 0), // ""
 QT_MOC_LITERAL(3, 19, 10), // "id_changed"
 QT_MOC_LITERAL(4, 30, 4), // "init"
-QT_MOC_LITERAL(5, 35, 4), // "read"
-QT_MOC_LITERAL(6, 40, 5), // "write"
-QT_MOC_LITERAL(7, 46, 5), // "value"
-QT_MOC_LITERAL(8, 52, 2) // "id"
+QT_MOC_LITERAL(5, 35, 14), // "cmd_read_value"
+QT_MOC_LITERAL(6, 50, 13), // "cmd_set_value"
+QT_MOC_LITERAL(7, 64, 5), // "value"
+QT_MOC_LITERAL(8, 70, 2) // "id"
 
     },
     "DAC\0value_changed\0\0id_changed\0init\0"
-    "read\0write\0value\0id"
+    "cmd_read_value\0cmd_set_value\0value\0"
+    "id"
 };
 #undef QT_MOC_LITERAL
 
@@ -96,8 +97,8 @@ void DAC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         case 0: _t->value_changed(); break;
         case 1: _t->id_changed(); break;
         case 2: _t->init(); break;
-        case 3: _t->read(); break;
-        case 4: _t->write(); break;
+        case 3: _t->cmd_read_value(); break;
+        case 4: _t->cmd_set_value(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {

@@ -23,6 +23,7 @@ public:
     int speed();
     int direction();
     int state();
+    void init();
     Q_INVOKABLE void cmd_single_step();
     Q_INVOKABLE void cmd_run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();

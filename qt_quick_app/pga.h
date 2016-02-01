@@ -13,6 +13,7 @@ public:
     explicit PGA(qint8 id);
     void set_value(double value);
     double value();
+    void init();
 
 signals:
     void value_changed();

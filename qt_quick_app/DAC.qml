@@ -29,6 +29,6 @@ Item {
         id: read_dac_button
         text: "Read DAC value"
         anchors.top: dac_value.bottom
-        onClicked: dac.read()
+        onClicked: dac.cmd_read_value()
     }
 }

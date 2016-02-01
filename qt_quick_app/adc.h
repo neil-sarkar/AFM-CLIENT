@@ -10,7 +10,8 @@ class ADC : public AFMObject
     Q_OBJECT
 public:
     explicit ADC(qint8 id);
-    void read();
+    void cmd_read();
+    void init();
 
 signals:
 

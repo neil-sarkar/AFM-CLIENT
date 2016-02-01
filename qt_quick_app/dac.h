@@ -19,8 +19,8 @@ public:
     double value();
     qint8 id();
     Q_INVOKABLE void init();
-    Q_INVOKABLE void read();
-    Q_INVOKABLE void write();
+    Q_INVOKABLE void cmd_read_value();
+    Q_INVOKABLE void cmd_set_value();
 
 signals:
     void value_changed();

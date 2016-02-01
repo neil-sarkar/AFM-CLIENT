@@ -77,6 +77,14 @@ void PID::set_set_point(float set_point) {
     }
 }
 
+void PID::init() {
+    cmd_disable();
+    cmd_set_proportional();
+    cmd_set_integral();
+    cmd_set_derivative();
+    cmd_set_set_point();
+}
+
 void PID::cmd_set_proportional() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)

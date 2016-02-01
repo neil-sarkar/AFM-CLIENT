@@ -9,3 +9,18 @@ AFM::AFM(QHash<QString, AFMObject*> PGA_collection, QHash<QString, AFMObject*> D
     this->motor = motor;
     this->pid = pid;
 }
+
+void AFM::init() {
+    // This method calls the init methods of all the members
+    QHash<QString, AFMObject*>::iterator i;
+
+    for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
+        i.value()->init();
+    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
+        i.value()->init();
+    for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
+        i.value()->init();
+
+    motor->init();
+    pid->init();
+}

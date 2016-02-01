@@ -22,8 +22,8 @@ class AFM : public QObject
     signals:
 
     public slots:
-    private:
         void init();
+    private:
 
 
 };

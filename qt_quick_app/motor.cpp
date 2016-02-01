@@ -48,6 +48,12 @@ void Motor::set_state(int state) {
     }
 }
 
+void Motor::init() {
+    cmd_set_direction();
+    cmd_set_speed();
+    cmd_set_state_asleep();
+}
+
 void Motor::cmd_run_continuous() {
     emit command_generated(new CommandNode(Commands.RunContinuous, this));
 }

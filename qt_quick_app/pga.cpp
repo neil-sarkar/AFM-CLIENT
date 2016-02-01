@@ -19,6 +19,10 @@ double PGA::value() {
     return m_value;
 }
 
+void PGA::init() {
+    cmd_set_value();
+}
+
 void PGA::cmd_set_value() {
     QByteArray payload;
     payload += m_id;

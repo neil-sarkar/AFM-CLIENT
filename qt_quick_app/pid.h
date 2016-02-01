@@ -25,6 +25,7 @@ public:
     void set_integral(float i);
     void set_derivative(float d);
     void set_set_point(float s);
+    void init();
     Q_INVOKABLE void set_enabled(bool e = true);
     Q_INVOKABLE void set_disabled();
 
