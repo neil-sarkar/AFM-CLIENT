@@ -12,11 +12,14 @@
 #include "send_worker.h"
 #include "receive_worker.h"
 #include "dac.h"
+#include "pga.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
+
+    PGA* pga = new PGA(1);
 
     QThread* serial_thread = new QThread();
     SerialPort* serial_port = new SerialPort();
