@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Motor_t {
-    QByteArrayData data[13];
-    char stringdata0[161];
+    QByteArrayData data[11];
+    char stringdata0[130];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,19 +34,16 @@ QT_MOC_LITERAL(1, 6, 13), // "speed_changed"
 QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 17), // "direction_changed"
 QT_MOC_LITERAL(4, 39, 13), // "state_changed"
-QT_MOC_LITERAL(5, 53, 17), // "command_generated"
-QT_MOC_LITERAL(6, 71, 12), // "CommandNode*"
-QT_MOC_LITERAL(7, 84, 15), // "cmd_single_step"
-QT_MOC_LITERAL(8, 100, 18), // "cmd_run_continuous"
-QT_MOC_LITERAL(9, 119, 19), // "cmd_stop_continuous"
-QT_MOC_LITERAL(10, 139, 5), // "speed"
-QT_MOC_LITERAL(11, 145, 9), // "direction"
-QT_MOC_LITERAL(12, 155, 5) // "state"
+QT_MOC_LITERAL(5, 53, 15), // "cmd_single_step"
+QT_MOC_LITERAL(6, 69, 18), // "cmd_run_continuous"
+QT_MOC_LITERAL(7, 88, 19), // "cmd_stop_continuous"
+QT_MOC_LITERAL(8, 108, 5), // "speed"
+QT_MOC_LITERAL(9, 114, 9), // "direction"
+QT_MOC_LITERAL(10, 124, 5) // "state"
 
     },
     "Motor\0speed_changed\0\0direction_changed\0"
-    "state_changed\0command_generated\0"
-    "CommandNode*\0cmd_single_step\0"
+    "state_changed\0cmd_single_step\0"
     "cmd_run_continuous\0cmd_stop_continuous\0"
     "speed\0direction\0state"
 };
@@ -58,29 +55,27 @@ static const uint qt_meta_data_Motor[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
-       3,   58, // properties
+       6,   14, // methods
+       3,   50, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x06 /* Public */,
-       3,    0,   50,    2, 0x06 /* Public */,
-       4,    0,   51,    2, 0x06 /* Public */,
-       5,    1,   52,    2, 0x06 /* Public */,
+       1,    0,   44,    2, 0x06 /* Public */,
+       3,    0,   45,    2, 0x06 /* Public */,
+       4,    0,   46,    2, 0x06 /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       7,    0,   55,    2, 0x02 /* Public */,
-       8,    0,   56,    2, 0x02 /* Public */,
-       9,    0,   57,    2, 0x02 /* Public */,
+       5,    0,   47,    2, 0x02 /* Public */,
+       6,    0,   48,    2, 0x02 /* Public */,
+       7,    0,   49,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 6,    2,
 
  // methods: parameters
     QMetaType::Void,
@@ -88,9 +83,9 @@ static const uint qt_meta_data_Motor[] = {
     QMetaType::Void,
 
  // properties: name, type, flags
+       8, QMetaType::Int, 0x00495003,
+       9, QMetaType::Int, 0x00495003,
       10, QMetaType::Int, 0x00495003,
-      11, QMetaType::Int, 0x00495003,
-      12, QMetaType::Int, 0x00495003,
 
  // properties: notify_signal_id
        0,
@@ -109,22 +104,10 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         case 0: _t->speed_changed(); break;
         case 1: _t->direction_changed(); break;
         case 2: _t->state_changed(); break;
-        case 3: _t->command_generated((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 4: _t->cmd_single_step(); break;
-        case 5: _t->cmd_run_continuous(); break;
-        case 6: _t->cmd_stop_continuous(); break;
+        case 3: _t->cmd_single_step(); break;
+        case 4: _t->cmd_run_continuous(); break;
+        case 5: _t->cmd_stop_continuous(); break;
         default: ;
-        }
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 3:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< CommandNode* >(); break;
-            }
-            break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
@@ -145,12 +128,6 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
             typedef void (Motor::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Motor::state_changed)) {
                 *result = 2;
-            }
-        }
-        {
-            typedef void (Motor::*_t)(CommandNode * );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Motor::command_generated)) {
-                *result = 3;
             }
         }
     }
@@ -178,10 +155,11 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
     } else if (_c == QMetaObject::ResetProperty) {
     }
 #endif // QT_NO_PROPERTIES
+    Q_UNUSED(_a);
 }
 
 const QMetaObject Motor::staticMetaObject = {
-    { &QObject::staticMetaObject, qt_meta_stringdata_Motor.data,
+    { &AFMObject::staticMetaObject, qt_meta_stringdata_Motor.data,
       qt_meta_data_Motor,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
@@ -196,22 +174,22 @@ void *Motor::qt_metacast(const char *_clname)
     if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_Motor.stringdata0))
         return static_cast<void*>(const_cast< Motor*>(this));
-    return QObject::qt_metacast(_clname);
+    return AFMObject::qt_metacast(_clname);
 }
 
 int Motor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QObject::qt_metacall(_c, _id, _a);
+    _id = AFMObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        if (_id < 6)
+            *reinterpret_cast<int*>(_a[0]) = -1;
+        _id -= 6;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
@@ -249,12 +227,5 @@ void Motor::direction_changed()
 void Motor::state_changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, Q_NULLPTR);
-}
-
-// SIGNAL 3
-void Motor::command_generated(CommandNode * _t1)
-{
-    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 QT_END_MOC_NAMESPACE

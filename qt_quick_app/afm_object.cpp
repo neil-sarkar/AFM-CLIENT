@@ -1,6 +1,6 @@
-#include "afm_object_interface.h"
+#include "afm_object.h"
 
-AfmObject::AfmObject(QObject *parent) : QObject(parent)
+AFMObject::AFMObject()
 {
 
 }

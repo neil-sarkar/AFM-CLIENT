@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DAC_t {
-    QByteArrayData data[12];
-    char stringdata0[91];
+    QByteArrayData data[9];
+    char stringdata0[55];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,19 +33,15 @@ QT_MOC_LITERAL(0, 0, 3), // "DAC"
 QT_MOC_LITERAL(1, 4, 13), // "value_changed"
 QT_MOC_LITERAL(2, 18, 0), // ""
 QT_MOC_LITERAL(3, 19, 10), // "id_changed"
-QT_MOC_LITERAL(4, 30, 17), // "command_generated"
-QT_MOC_LITERAL(5, 48, 12), // "CommandNode*"
-QT_MOC_LITERAL(6, 61, 4), // "node"
-QT_MOC_LITERAL(7, 66, 4), // "init"
-QT_MOC_LITERAL(8, 71, 4), // "read"
-QT_MOC_LITERAL(9, 76, 5), // "write"
-QT_MOC_LITERAL(10, 82, 5), // "value"
-QT_MOC_LITERAL(11, 88, 2) // "id"
+QT_MOC_LITERAL(4, 30, 4), // "init"
+QT_MOC_LITERAL(5, 35, 4), // "read"
+QT_MOC_LITERAL(6, 40, 5), // "write"
+QT_MOC_LITERAL(7, 46, 5), // "value"
+QT_MOC_LITERAL(8, 52, 2) // "id"
 
     },
-    "DAC\0value_changed\0\0id_changed\0"
-    "command_generated\0CommandNode*\0node\0"
-    "init\0read\0write\0value\0id"
+    "DAC\0value_changed\0\0id_changed\0init\0"
+    "read\0write\0value\0id"
 };
 #undef QT_MOC_LITERAL
 
@@ -55,27 +51,25 @@ static const uint qt_meta_data_DAC[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
-       2,   52, // properties
+       5,   14, // methods
+       2,   44, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       3,       // signalCount
+       2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x06 /* Public */,
-       3,    0,   45,    2, 0x06 /* Public */,
-       4,    1,   46,    2, 0x06 /* Public */,
+       1,    0,   39,    2, 0x06 /* Public */,
+       3,    0,   40,    2, 0x06 /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       7,    0,   49,    2, 0x02 /* Public */,
-       8,    0,   50,    2, 0x02 /* Public */,
-       9,    0,   51,    2, 0x02 /* Public */,
+       4,    0,   41,    2, 0x02 /* Public */,
+       5,    0,   42,    2, 0x02 /* Public */,
+       6,    0,   43,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 5,    6,
 
  // methods: parameters
     QMetaType::Void,
@@ -83,8 +77,8 @@ static const uint qt_meta_data_DAC[] = {
     QMetaType::Void,
 
  // properties: name, type, flags
-      10, QMetaType::Double, 0x00495003,
-      11, QMetaType::Int, 0x00495003,
+       7, QMetaType::Double, 0x00495003,
+       8, QMetaType::Int, 0x00495003,
 
  // properties: notify_signal_id
        0,
@@ -101,22 +95,10 @@ void DAC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: _t->value_changed(); break;
         case 1: _t->id_changed(); break;
-        case 2: _t->command_generated((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 3: _t->init(); break;
-        case 4: _t->read(); break;
-        case 5: _t->write(); break;
+        case 2: _t->init(); break;
+        case 3: _t->read(); break;
+        case 4: _t->write(); break;
         default: ;
-        }
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 2:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< CommandNode* >(); break;
-            }
-            break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
@@ -131,12 +113,6 @@ void DAC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
             typedef void (DAC::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DAC::id_changed)) {
                 *result = 1;
-            }
-        }
-        {
-            typedef void (DAC::*_t)(CommandNode * );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DAC::command_generated)) {
-                *result = 2;
             }
         }
     }
@@ -162,10 +138,11 @@ void DAC::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
     } else if (_c == QMetaObject::ResetProperty) {
     }
 #endif // QT_NO_PROPERTIES
+    Q_UNUSED(_a);
 }
 
 const QMetaObject DAC::staticMetaObject = {
-    { &QObject::staticMetaObject, qt_meta_stringdata_DAC.data,
+    { &AFMObject::staticMetaObject, qt_meta_stringdata_DAC.data,
       qt_meta_data_DAC,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
@@ -180,22 +157,22 @@ void *DAC::qt_metacast(const char *_clname)
     if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_DAC.stringdata0))
         return static_cast<void*>(const_cast< DAC*>(this));
-    return QObject::qt_metacast(_clname);
+    return AFMObject::qt_metacast(_clname);
 }
 
 int DAC::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QObject::qt_metacall(_c, _id, _a);
+    _id = AFMObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        if (_id < 5)
+            *reinterpret_cast<int*>(_a[0]) = -1;
+        _id -= 5;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
@@ -227,12 +204,5 @@ void DAC::value_changed()
 void DAC::id_changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
-}
-
-// SIGNAL 2
-void DAC::command_generated(CommandNode * _t1)
-{
-    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
-    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_END_MOC_NAMESPACE

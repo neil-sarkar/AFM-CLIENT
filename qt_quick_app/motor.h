@@ -6,8 +6,9 @@
 #include <QQuickItem>
 #include <QString>
 #include "command_node.h"
+#include "afm_object.h"
 
-class Motor : public QObject
+class Motor : public AFMObject
 {
     Q_OBJECT
     Q_PROPERTY(int speed READ speed WRITE set_speed NOTIFY speed_changed)
@@ -15,7 +16,7 @@ class Motor : public QObject
     Q_PROPERTY(int state READ state WRITE set_state NOTIFY state_changed)
 
 public:
-    explicit Motor(QObject *parent = 0);
+    explicit Motor();
     void set_direction(int direction);
     void set_speed(double speed);
     void set_state(int state);
@@ -33,7 +34,7 @@ signals:
     void state_changed();
 
     // Cross-Thread
-    void command_generated(CommandNode*);
+//    void command_generated(CommandNode*);
 
 public slots:
 

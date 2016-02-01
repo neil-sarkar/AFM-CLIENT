@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include "command_node.h"
+#include "afm_object.h"
 
-class PID : public QObject
+class PID : public AFMObject
 {
     Q_OBJECT
     Q_PROPERTY(float proportional READ proportional WRITE set_proportional NOTIFY proportional_changed)
@@ -33,7 +34,6 @@ signals:
     void derivative_changed();
     void set_point_changed();
     void enabled_changed();
-    void command_generated(CommandNode* node);
 
 public slots:
 

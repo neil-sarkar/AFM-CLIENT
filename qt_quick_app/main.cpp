@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
+
     // Thread declarations
     QThread* serial_thread = new QThread();
     QThread* sender_thread = new QThread();
@@ -34,11 +35,14 @@ int main(int argc, char *argv[])
     Builder* builder = new Builder();
     AFM* afm = builder->build_afm();
 
+    QQmlContext* context = engine.rootContext();
+    context->setContextProperty("motor", afm->motor);
+    context->setContextProperty("dac", afm->DAC_collection["board_1"]);
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
 
 //     View config
-//    QQuickView motor_view, dac_view, pga_view, pid_view;
-//    motor_view.rootContext()->setContextProperty("motor", afm->motor);
-//    motor_view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
+
 //    motor_view.show();
 //    dac->init();
 //    dac_view.rootContext()->setContextProperty("dac", afm->dac);
@@ -52,11 +56,8 @@ int main(int argc, char *argv[])
 //    pid_view.show();
 
     // Wire up signals and slots
-//    QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-//    QObject::connect(dac, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-//    QObject::connect(pga, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-//    QObject::connect(pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-//    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
 
 
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);

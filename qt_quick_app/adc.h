@@ -3,16 +3,16 @@
 
 #include <QObject>
 #include "command_node.h"
+#include "afm_object.h"
 
-class ADC : public QObject
+class ADC : public AFMObject
 {
     Q_OBJECT
 public:
-    explicit ADC(qint8 id, QObject *parent = 0);
+    explicit ADC(qint8 id);
     void read();
 
 signals:
-    void command_generated(CommandNode*);
 
 public slots:
 

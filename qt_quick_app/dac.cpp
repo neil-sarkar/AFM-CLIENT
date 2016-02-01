@@ -1,6 +1,8 @@
 #include "dac.h"
 
-DAC::DAC(qint8 id, QObject *parent) : m_id(id), QObject(parent) {}
+DAC::DAC(qint8 id) {
+    m_id = id;
+}
 
 void DAC::set_value(double value) {
     if (m_value != value) {

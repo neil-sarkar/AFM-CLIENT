@@ -1,7 +1,7 @@
 #include "adc.h"
 #include "command_node.h"
 
-ADC::ADC(qint8 id, QObject *parent)
+ADC::ADC(qint8 id)
 {
     m_id = id;
 }

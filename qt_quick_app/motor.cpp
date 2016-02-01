@@ -3,8 +3,7 @@
 #include <QDebug>
 #include <QtGlobal>
 
-Motor::Motor(QObject *parent) : QObject(parent)
-{
+Motor::Motor() {
     m_speed = 0;
     m_direction = 0;
     m_state = 0;
