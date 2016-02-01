@@ -69,14 +69,14 @@ void PID::cmd_set_integral() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
         payload += ((char *)&m_integral)[i];
-    emit command_generated(new CommandNode(0x70, this, payload));
+    emit command_generated(new CommandNode(0x69, this, payload));
 }
 
 void PID::cmd_set_derivative() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
         payload += ((char *)&m_derivative)[i];
-    emit command_generated(new CommandNode(0x70, this, payload));
+    emit command_generated(new CommandNode(0x64, this, payload));
 }
 
 void PID::cmd_set_set_point() {
