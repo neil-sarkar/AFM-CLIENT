@@ -22,6 +22,7 @@ bool SerialPort::auto_connect() {
     // this method attempts to find all the ports connected and connect to (open) the one
     // that it thinks is the AFM
     QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
+
     if (!connected_ports.size()) // if there are no ports available
         return false;
     for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports

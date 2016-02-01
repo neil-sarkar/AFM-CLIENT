@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
     view2.rootContext()->setContextProperty("dac", dac);
     view2.setSource(QUrl(QStringLiteral("qrc:///DAC.qml")));
 
-
     view2.rootContext()->setContextProperty("serial_port", serial_port);
     view2.show();
 
@@ -57,6 +56,10 @@ int main(int argc, char *argv[])
 
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
 
-
-    return app.exec();
+    engine.quit();
+    int r = app.exec();
+    serial_thread->quit();
+    receiver_thread->quit();
+    sender_thread->quit();
+    return r;
 }

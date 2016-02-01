@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     afm.cpp \
     dac.cpp \
     send_worker.cpp \
-    receive_worker.cpp
+    receive_worker.cpp \
+    pga.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,6 +40,7 @@ HEADERS += \
     thread_safe_queue.h \
     receive_worker.h \
     constants.h \
-    command_names.h
+    command_names.h \
+    pga.h
 
 DISTFILES +=
