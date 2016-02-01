@@ -12,10 +12,10 @@ class AFM : public QObject
 {
     Q_OBJECT
     public:
-        explicit AFM(QHash<QString, PGA*> PGA_collection, QHash<QString, DAC*> DAC_collection, QHash<QString, ADC*> ADC_collection, Motor* motor, PID* pid);
-        QHash<QString, PGA*> PGA_collection;
-        QHash<QString, DAC*> DAC_collection;
-        QHash<QString, ADC*> ADC_collection;
+        explicit AFM(QHash<QString, AFMObject*> PGA_collection, QHash<QString, AFMObject*> DAC_collection, QHash<QString, AFMObject*> ADC_collection, Motor* motor, PID* pid);
+        QHash<QString, AFMObject*> PGA_collection;
+        QHash<QString, AFMObject*> DAC_collection;
+        QHash<QString, AFMObject*> ADC_collection;
         Motor* motor;
         PID* pid;
 
@@ -23,6 +23,7 @@ class AFM : public QObject
 
     public slots:
     private:
+        void init();
 
 
 };

@@ -3,12 +3,15 @@
 #include "dac.h"
 #include "adc.h"
 #include "pga.h"
+#include "serial_port.h"
+#include "send_worker.h"
+#include "receive_worker.h"
 
 Builder::Builder() {}
 
 AFM* Builder::build_afm() {
     // Create the collection of DACs
-    QHash<QString, DAC*> dac_collection;
+    QHash<QString, AFMObject*> dac_collection;
     dac_collection["buffered_1"] = new DAC(0);
     dac_collection["buffered_2"] = new DAC(1);
     dac_collection["board_2"] = new DAC(2);
@@ -23,12 +26,12 @@ AFM* Builder::build_afm() {
     dac_collection["x_2"] = new DAC(11);
 
     // Create the collection of ADC
-    QHash<QString, ADC*> adc_collection;
+    QHash<QString, AFMObject*> adc_collection;
     adc_collection["z_piezoresistor_amplitude"] = new ADC(5);
     adc_collection["phase"] = new ADC(6);
 
     // PGA
-    QHash<QString, PGA*> pga_collection;
+    QHash<QString, AFMObject*> pga_collection;
     pga_collection["x_1"] = new PGA(1);
     pga_collection["x_2"] = new PGA(2);
     pga_collection["y_1"] = new PGA(3);
@@ -43,6 +46,7 @@ AFM* Builder::build_afm() {
 
     return new AFM(pga_collection, dac_collection, adc_collection, motor, pid);
 }
+
 //ADC_X1 3
 //ADC_X2 7
 //ADC_Y1 6
@@ -51,4 +55,25 @@ AFM* Builder::build_afm() {
 //ADC_Z_PZR_AMP 5
 //ADC_PHASE 0
 
+
+void Builder::wire_hash_command_generated(QHash<QString, AFMObject*> & collection, SendWorker* & send_worker) {
+    QHash<QString, AFMObject*>::iterator i;
+    for (i = collection.begin(); i != collection.end(); ++i)
+        QObject::connect(i.value(), SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+}
+
+void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_worker, ReceiveWorker* & receive_worker) {
+    // Wire command_generated signal
+    // There is likely a cleaner way to connect all the command_generated SIGNALS to the enqueue_command SLOT as command_generated is inherited from AFMObject
+    QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    wire_hash_command_generated(afm->ADC_collection, send_worker);
+    wire_hash_command_generated(afm->DAC_collection, send_worker);
+    wire_hash_command_generated(afm->PGA_collection, send_worker);
+
+    // Misc connections
+    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
+    QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
+}
 
