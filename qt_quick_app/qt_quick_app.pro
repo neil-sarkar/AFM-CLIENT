@@ -8,13 +8,13 @@ SOURCES += main.cpp \
     receiver.cpp \
     serial_port.cpp \
     adc.cpp \
-    pid.cpp \
     motor.cpp \
     afm.cpp \
     dac.cpp \
     send_worker.cpp \
     receive_worker.cpp \
-    pga.cpp
+    pga.cpp \
+    pid.cpp
 
 RESOURCES += qml.qrc
 
@@ -29,7 +29,6 @@ HEADERS += \
     serial_port.h \
     serial_port_constants.h \
     adc.h \
-    pid.h \
     motor.h \
     afm.h \
     dac.h \
@@ -41,6 +40,7 @@ HEADERS += \
     receive_worker.h \
     constants.h \
     command_names.h \
-    pga.h
+    pga.h \
+    pid.h
 
 DISTFILES +=
