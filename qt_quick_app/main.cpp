@@ -13,6 +13,7 @@
 #include "receive_worker.h"
 #include "dac.h"
 #include "pga.h"
+#include "pid.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,11 +30,12 @@ int main(int argc, char *argv[])
     DAC* dac = new DAC(1);
     PGA* pga = new PGA(1);
     SerialPort* serial_port = new SerialPort();
+    PID* pid = new PID();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
 
     // View config
-    QQuickView motor_view, dac_view, pga_view;
+    QQuickView motor_view, dac_view, pga_view, pid_view;
     motor_view.rootContext()->setContextProperty("motor", motor);
     motor_view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
     motor_view.show();
@@ -44,11 +46,15 @@ int main(int argc, char *argv[])
     pga_view.rootContext()->setContextProperty("pga", pga);
     pga_view.setSource(QUrl(QStringLiteral("qrc:///PGA.qml")));
     pga_view.show();
+    pid_view.rootContext()->setContextProperty("pid", pid);
+    pid_view.setSource(QUrl(QStringLiteral("qrc:///PID.qml")));
+    pid_view.show();
 
     // Wire up signals and slots
     QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(dac, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(pga, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));

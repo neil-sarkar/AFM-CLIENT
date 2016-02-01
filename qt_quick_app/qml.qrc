@@ -7,5 +7,6 @@
         <file>MotorButton.qml</file>
         <file>DAC.qml</file>
         <file>PGA.qml</file>
+        <file>PID.qml</file>
     </qresource>
 </RCC>

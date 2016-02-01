@@ -17,6 +17,7 @@ void SendWorker::enqueue_command(CommandNode* command_node) {
 
 void SendWorker::dequeue_command() {
     // there should be a lookup table where it populates all the appropriate fields of the command node
+
     CommandNode* command_node = command_queue.dequeue();
     emit command_dequeued(command_node);
 }

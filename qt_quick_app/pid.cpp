@@ -4,6 +4,7 @@ PID::PID() {
     m_proportional = 0;
     m_integral = 0;
     m_derivative = 0;
+    m_enabled = 0;
 }
 
 float PID::proportional() {
@@ -20,6 +21,11 @@ float PID::derivative() {
 
 float PID::set_point() {
     return m_set_point;
+}
+
+bool PID::enabled() {
+    qDebug() << "CALLED";
+    return m_enabled;
 }
 
 void PID::set_proportional(float proportional) {
@@ -47,6 +53,19 @@ void PID::set_derivative(float derivative) {
         emit derivative_changed();
         cmd_set_derivative();
     }
+}
+
+void PID::set_enabled(bool enabled) {
+    if (m_enabled != enabled) {
+        m_enabled = enabled;
+        qDebug() << "Setting enabled to" << m_enabled;
+        emit enabled_changed();
+        m_enabled ? cmd_enable() : cmd_disable(); // for some reason this line hangs  - maybe race condition
+    }
+}
+
+void PID::set_disabled() {
+    set_enabled(false);
 }
 
 void PID::set_set_point(float set_point) {
@@ -85,4 +104,12 @@ void PID::cmd_set_set_point() {
     payload += (set_point & 0xFF);
     payload += ((set_point & 0xFF00) >> 8);
     emit command_generated(new CommandNode(0x73, this, payload));
+}
+
+void PID::cmd_enable() {
+    emit command_generated(new CommandNode(0x67, this));
+}
+
+void PID::cmd_disable() {
+    emit command_generated(new CommandNode(0x68, this));
 }
