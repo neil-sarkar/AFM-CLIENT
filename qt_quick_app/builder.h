@@ -1,11 +1,11 @@
 #ifndef APPLICATIONBUILDER_H
 #define APPLICATIONBUILDER_H
 #include "afm.h"
-class ApplicationBuilder
+class Builder
 {
 public:
-    ApplicationBuilder();
-    AFM* build();
+    Builder();
+    AFM* build_afm();
 };
 
 #endif // APPLICATIONBUILDER_H

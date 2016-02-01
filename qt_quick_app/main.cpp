@@ -14,7 +14,7 @@
 #include "dac.h"
 #include "pga.h"
 #include "pid.h"
-#include "applicationbuilder.h"
+#include "builder.h"
 #include "afm.h"
 
 int main(int argc, char *argv[])
@@ -27,40 +27,38 @@ int main(int argc, char *argv[])
     QThread* sender_thread = new QThread();
     QThread* receiver_thread = new QThread();
 
-    // Object creation (to be moved into application builder class
-    Motor* motor = new Motor();
-    DAC* dac = new DAC(1);
-    PGA* pga = new PGA(1);
+    // Object creation
     SerialPort* serial_port = new SerialPort();
-    PID* pid = new PID();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
+    Builder* builder = new Builder();
+    AFM* afm = builder->build_afm();
 
-    ApplicationBuilder* app_builder = new ApplicationBuilder();
-    AFM* afm = app_builder->build();
 
-    // View config
-    QQuickView motor_view, dac_view, pga_view, pid_view;
-    motor_view.rootContext()->setContextProperty("motor", motor);
-    motor_view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
-    motor_view.show();
-    dac->init();
-    dac_view.rootContext()->setContextProperty("dac", dac);
-    dac_view.setSource(QUrl(QStringLiteral("qrc:///DAC.qml")));
-    dac_view.show();
-    pga_view.rootContext()->setContextProperty("pga", pga);
-    pga_view.setSource(QUrl(QStringLiteral("qrc:///PGA.qml")));
-    pga_view.show();
-    pid_view.rootContext()->setContextProperty("pid", pid);
-    pid_view.setSource(QUrl(QStringLiteral("qrc:///PID.qml")));
-    pid_view.show();
+//     View config
+//    QQuickView motor_view, dac_view, pga_view, pid_view;
+//    motor_view.rootContext()->setContextProperty("motor", afm->motor);
+//    motor_view.setSource(QUrl(QStringLiteral("qrc:///Motor.qml")));
+//    motor_view.show();
+//    dac->init();
+//    dac_view.rootContext()->setContextProperty("dac", afm->dac);
+//    dac_view.setSource(QUrl(QStringLiteral("qrc:///DAC.qml")));
+//    dac_view.show();
+//    pga_view.rootContext()->setContextProperty("pga", pga);
+//    pga_view.setSource(QUrl(QStringLiteral("qrc:///PGA.qml")));
+//    pga_view.show();
+//    pid_view.rootContext()->setContextProperty("pid", pid);
+//    pid_view.setSource(QUrl(QStringLiteral("qrc:///PID.qml")));
+//    pid_view.show();
 
     // Wire up signals and slots
-    QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(dac, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(pga, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+//    QObject::connect(motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+//    QObject::connect(dac, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+//    QObject::connect(pga, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+//    QObject::connect(pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+//    QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+
+
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));

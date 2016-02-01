@@ -1,12 +1,12 @@
-#include "applicationbuilder.h"
+#include "builder.h"
 #include "afm.h"
 #include "dac.h"
 #include "adc.h"
 #include "pga.h"
 
-ApplicationBuilder::ApplicationBuilder() {}
+Builder::Builder() {}
 
-AFM* ApplicationBuilder::build() {
+AFM* Builder::build_afm() {
     // Create the collection of DACs
     QHash<QString, DAC*> dac_collection;
     dac_collection["buffered_1"] = new DAC(0);
@@ -43,5 +43,12 @@ AFM* ApplicationBuilder::build() {
 
     return new AFM(pga_collection, dac_collection, adc_collection, motor, pid);
 }
+//ADC_X1 3
+//ADC_X2 7
+//ADC_Y1 6
+//ADC_Y2 8
+//ADC_Z 2
+//ADC_Z_PZR_AMP 5
+//ADC_PHASE 0
 
 

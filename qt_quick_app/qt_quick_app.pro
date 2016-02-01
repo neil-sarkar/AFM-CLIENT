@@ -15,7 +15,7 @@ SOURCES += main.cpp \
     receive_worker.cpp \
     pga.cpp \
     pid.cpp \
-    applicationbuilder.cpp
+    builder.cpp
 
 RESOURCES += qml.qrc
 
@@ -43,6 +43,6 @@ HEADERS += \
     command_names.h \
     pga.h \
     pid.h \
-    applicationbuilder.h
+    builder.h
 
 DISTFILES +=
