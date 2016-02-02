@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
     // Set up the view
     QQmlContext* context = engine.rootContext();
     context->setContextProperty("motor", afm->motor);
-    context->setContextProperty("dac", afm->DAC_collection[DAC::Board_1]);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Thread connections (to abstract later)

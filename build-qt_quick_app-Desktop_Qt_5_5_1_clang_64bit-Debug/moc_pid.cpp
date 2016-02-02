@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_PID_t {
     QByteArrayData data[15];
-    char stringdata0[174];
+    char stringdata0[172];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,23 +34,23 @@ QT_MOC_LITERAL(1, 4, 20), // "proportional_changed"
 QT_MOC_LITERAL(2, 25, 0), // ""
 QT_MOC_LITERAL(3, 26, 16), // "integral_changed"
 QT_MOC_LITERAL(4, 43, 18), // "derivative_changed"
-QT_MOC_LITERAL(5, 62, 17), // "set_point_changed"
-QT_MOC_LITERAL(6, 80, 15), // "enabled_changed"
-QT_MOC_LITERAL(7, 96, 11), // "set_enabled"
-QT_MOC_LITERAL(8, 108, 1), // "e"
-QT_MOC_LITERAL(9, 110, 12), // "set_disabled"
-QT_MOC_LITERAL(10, 123, 12), // "proportional"
-QT_MOC_LITERAL(11, 136, 8), // "integral"
-QT_MOC_LITERAL(12, 145, 10), // "derivative"
-QT_MOC_LITERAL(13, 156, 9), // "set_point"
-QT_MOC_LITERAL(14, 166, 7) // "enabled"
+QT_MOC_LITERAL(5, 62, 16), // "setpoint_changed"
+QT_MOC_LITERAL(6, 79, 15), // "enabled_changed"
+QT_MOC_LITERAL(7, 95, 11), // "set_enabled"
+QT_MOC_LITERAL(8, 107, 1), // "e"
+QT_MOC_LITERAL(9, 109, 12), // "set_disabled"
+QT_MOC_LITERAL(10, 122, 12), // "proportional"
+QT_MOC_LITERAL(11, 135, 8), // "integral"
+QT_MOC_LITERAL(12, 144, 10), // "derivative"
+QT_MOC_LITERAL(13, 155, 8), // "setpoint"
+QT_MOC_LITERAL(14, 164, 7) // "enabled"
 
     },
     "PID\0proportional_changed\0\0integral_changed\0"
-    "derivative_changed\0set_point_changed\0"
+    "derivative_changed\0setpoint_changed\0"
     "enabled_changed\0set_enabled\0e\0"
     "set_disabled\0proportional\0integral\0"
-    "derivative\0set_point\0enabled"
+    "derivative\0setpoint\0enabled"
 };
 #undef QT_MOC_LITERAL
 
@@ -117,7 +117,7 @@ void PID::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         case 0: _t->proportional_changed(); break;
         case 1: _t->integral_changed(); break;
         case 2: _t->derivative_changed(); break;
-        case 3: _t->set_point_changed(); break;
+        case 3: _t->setpoint_changed(); break;
         case 4: _t->enabled_changed(); break;
         case 5: _t->set_enabled((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 6: _t->set_enabled(); break;
@@ -147,7 +147,7 @@ void PID::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         }
         {
             typedef void (PID::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PID::set_point_changed)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PID::setpoint_changed)) {
                 *result = 3;
             }
         }
@@ -167,7 +167,7 @@ void PID::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         case 0: *reinterpret_cast< float*>(_v) = _t->proportional(); break;
         case 1: *reinterpret_cast< float*>(_v) = _t->integral(); break;
         case 2: *reinterpret_cast< float*>(_v) = _t->derivative(); break;
-        case 3: *reinterpret_cast< float*>(_v) = _t->set_point(); break;
+        case 3: *reinterpret_cast< float*>(_v) = _t->setpoint(); break;
         case 4: *reinterpret_cast< bool*>(_v) = _t->enabled(); break;
         default: break;
         }
@@ -179,7 +179,7 @@ void PID::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         case 0: _t->set_proportional(*reinterpret_cast< float*>(_v)); break;
         case 1: _t->set_integral(*reinterpret_cast< float*>(_v)); break;
         case 2: _t->set_derivative(*reinterpret_cast< float*>(_v)); break;
-        case 3: _t->set_set_point(*reinterpret_cast< float*>(_v)); break;
+        case 3: _t->set_setpoint(*reinterpret_cast< float*>(_v)); break;
         case 4: _t->set_enabled(*reinterpret_cast< bool*>(_v)); break;
         default: break;
         }
@@ -260,7 +260,7 @@ void PID::derivative_changed()
 }
 
 // SIGNAL 3
-void PID::set_point_changed()
+void PID::setpoint_changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 3, Q_NULLPTR);
 }

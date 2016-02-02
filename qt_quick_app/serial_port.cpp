@@ -36,9 +36,10 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     port->setPortName(port_name);
     port->setBaudRate(baud_rate);
     if (port->open(QIODevice::ReadWrite)) {
-        emit connected();
-        is_connected = true;
         port_scan_timer->stop();
+        is_connected = true;
+        QTimer::singleShot(1000, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
+        // Also note that the signal is called 1 second after we get to this point to further mitigate lost data.
     }
     return is_connected;
 }
@@ -52,7 +53,7 @@ void SerialPort::close() {
 
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
     if (port->write(&byte, 1) == 1) {
-        qDebug() << QString().sprintf("%2p",byte);
+//        qDebug() << QString().sprintf("%2p",byte);
         return SerialPortConstants.AFM_SUCCESS;
     }
 

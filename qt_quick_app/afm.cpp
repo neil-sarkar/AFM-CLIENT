@@ -1,6 +1,7 @@
 #include "afm.h"
 #include "dac.h"
 #include "afm_object.h"
+#include "serial_port.h"
 
 AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid) {
     this->PGA_collection = PGA_collection;

@@ -25,7 +25,6 @@ void ReceiveWorker::build_working_response() {
 
     if (byte == 0x0a) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= 2) { // minimum message size on return would be 2, this implies we have a complete message
-            qDebug() << "Received complete message of size " << working_response.length() << ": " << working_response.toHex();
             process_working_response(); // could technically spin up a new thread for each response process
             working_response.clear();
             return;
@@ -36,20 +35,35 @@ void ReceiveWorker::build_working_response() {
 
     if (working_response.length() && working_response.at(working_response.length() - 1) == 0x10) { // previous char was escape character
         byte &= ~0x80; // unmask byte
+        working_response = working_response.remove(working_response.length() - 1, 1); // remove the escape char from the working_response
     }
 
     working_response += byte;
 }
 
 void ReceiveWorker::process_working_response() {
-    char response_tag = working_response.at(0);
-    char response_id = working_response.at(1);
+    unsigned char response_tag = working_response.at(0);
+    unsigned char response_id = working_response.at(1);
     CommandNode* node = command_queue.dequeue();
 
-    // also check if the # bytes is correct
-//    if (response_tag == node->tag && response_id == node->id)
-//        node->postamble();
+    qDebug() << "Incoming" << response_id << working_response.toHex();
 
-//    delete node;
+    // also check if the # bytes is correct
+    if (response_tag != node->tag) {
+        qDebug() << "Tag mismatch" << response_tag << node->tag;
+        return;
+    }
+
+    if (response_id  != node->id) {
+        qDebug() << "Id mismatch" << response_id << node->id;
+        return;
+    }
+
+    if (working_response.length() != node->num_receive_bytes) {
+        qDebug() << "Length mismatch";
+        qDebug() << "Sent" << node->payload;
+        qDebug()<< "Tag" << node->tag << response_tag <<  "ID " << node->id  << "Got length" << working_response.length() << "Message: " << working_response << "Expected" << node->num_receive_bytes;
+        return;
+    }
 
 }
