@@ -80,7 +80,6 @@ private:
         const int Step8 = 3;
         const int Step16 = 4;
         const int Step32 = 5;
-
     } StatusConstants;
 
 };

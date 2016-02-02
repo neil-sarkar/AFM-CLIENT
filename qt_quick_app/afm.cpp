@@ -2,7 +2,7 @@
 #include "dac.h"
 #include "afm_object.h"
 
-AFM::AFM(QHash<QString, AFMObject*> PGA_collection, QHash<QString, AFMObject*> DAC_collection, QHash<QString, AFMObject*> ADC_collection, Motor* motor, PID* pid) {
+AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
@@ -12,7 +12,7 @@ AFM::AFM(QHash<QString, AFMObject*> PGA_collection, QHash<QString, AFMObject*> D
 
 void AFM::init() {
     // This method calls the init methods of all the members
-    QHash<QString, AFMObject*>::iterator i;
+    QHash<int, AFMObject*>::iterator i;
 
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();

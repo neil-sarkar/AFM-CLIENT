@@ -33,3 +33,12 @@ void PGA::cmd_set_value() {
 qint8 PGA::value_to_pga() {
     return round(20 * log10(m_value / 100) * 2 + 210);
 }
+
+const int PGA::X_1 = 1;
+const int PGA::X_2 = 2;
+const int PGA::Y_1 = 3;
+const int PGA::Y_2 = 4;
+const int PGA::Z_Fine = 5;
+const int PGA::DDS_Amplitude = 6;
+const int PGA::Z_Coarse = 7;
+const int PGA::Leveling = 8;

@@ -15,3 +15,11 @@ void ADC::cmd_read() {
 }
 
 void ADC::init() {} // no initialization required for ADC
+
+const int ADC::X_1 = 3;
+const int ADC::X_2 = 7;
+const int ADC::Y_1 = 6;
+const int ADC::Y_2 = 8;
+const int ADC::Z = 2;
+const int ADC::Z_Piezoresistor_Amplitude = 5;
+const int ADC::Phase = 0;

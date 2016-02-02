@@ -22,6 +22,19 @@ public:
     Q_INVOKABLE void cmd_read_value();
     Q_INVOKABLE void cmd_set_value();
 
+    static const int Buffered_1;
+    static const int Buffered_2;
+    static const int Board_2;
+    static const int Z_Amplitude;
+    static const int Board_1;
+    static const int Buffered_3;
+    static const int Z_Offset_Fine;
+    static const int Y_1;
+    static const int Z_Offset_Coarse;
+    static const int Y_2;
+    static const int X_1;
+    static const int X_2;
+
 signals:
     void value_changed();
     void id_changed();

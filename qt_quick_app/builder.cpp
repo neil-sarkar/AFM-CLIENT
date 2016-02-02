@@ -11,35 +11,40 @@ Builder::Builder() {}
 
 AFM* Builder::build_afm() {
     // Create the collection of DACs
-    QHash<QString, AFMObject*> dac_collection;
-    dac_collection["buffered_1"] = new DAC(0);
-    dac_collection["buffered_2"] = new DAC(1);
-    dac_collection["board_2"] = new DAC(2);
-    dac_collection["z_amplitude"] = new DAC(3);
-    dac_collection["board_1"] = new DAC(4);
-    dac_collection["buffered_3"] = new DAC(5);
-    dac_collection["z_offset_fine"] = new DAC(6);
-    dac_collection["y_1"] = new DAC(7);
-    dac_collection["z_offset_coarse"] = new DAC(8);
-    dac_collection["y_2"] = new DAC(9);
-    dac_collection["x_1"] = new DAC(10);
-    dac_collection["x_2"] = new DAC(11);
+    QHash<int, AFMObject*> dac_collection;
+    dac_collection[DAC::Buffered_1] = new DAC(DAC::Buffered_1);
+    dac_collection[DAC::Buffered_2] = new DAC(DAC::Buffered_2);
+    dac_collection[DAC::Board_2] = new DAC(DAC::Board_2);
+    dac_collection[DAC::Z_Amplitude] = new DAC(DAC::Z_Amplitude);
+    dac_collection[DAC::Board_1] = new DAC(DAC::Board_1);
+    dac_collection[DAC::Buffered_3] = new DAC(DAC::Buffered_3);
+    dac_collection[DAC::Z_Offset_Fine] = new DAC(DAC::Z_Offset_Fine);
+    dac_collection[DAC::Y_1] = new DAC(DAC::Y_1);
+    dac_collection[DAC::Z_Offset_Coarse] = new DAC(DAC::Z_Offset_Coarse);
+    dac_collection[DAC::Y_2] = new DAC(DAC::Y_2);
+    dac_collection[DAC::X_1] = new DAC(DAC::X_1);
+    dac_collection[DAC::X_2] = new DAC(DAC::X_2);
 
     // Create the collection of ADC
-    QHash<QString, AFMObject*> adc_collection;
-    adc_collection["z_piezoresistor_amplitude"] = new ADC(5);
-    adc_collection["phase"] = new ADC(6);
+    QHash<int, AFMObject*> adc_collection;
+    adc_collection[ADC::X_1] = new ADC(ADC::X_1);
+    adc_collection[ADC::X_2] = new ADC(ADC::X_2);
+    adc_collection[ADC::Y_1] = new ADC(ADC::Y_1);
+    adc_collection[ADC::Y_2] = new ADC(ADC::Y_2);
+    adc_collection[ADC::Z] = new ADC(ADC::Z);
+    adc_collection[ADC::Z_Piezoresistor_Amplitude] = new ADC(ADC::Z_Piezoresistor_Amplitude);
+    adc_collection[ADC::Phase] = new ADC(ADC::Phase);
 
     // PGA
-    QHash<QString, AFMObject*> pga_collection;
-    pga_collection["x_1"] = new PGA(1);
-    pga_collection["x_2"] = new PGA(2);
-    pga_collection["y_1"] = new PGA(3);
-    pga_collection["y_2"] = new PGA(4);
-    pga_collection["z_fine"] = new PGA(5);
-    pga_collection["dds_amplitude"] = new PGA(6);
-    pga_collection["z_coarse"] = new PGA(7);
-    pga_collection["leveling"] = new PGA(8);
+    QHash<int, AFMObject*> pga_collection;
+    pga_collection[PGA::X_1] = new PGA(PGA::X_1);
+    pga_collection[PGA::X_2] = new PGA(PGA::X_2);
+    pga_collection[PGA::Y_1] = new PGA(PGA::Y_1);
+    pga_collection[PGA::Y_2] = new PGA(PGA::Y_2);
+    pga_collection[PGA::Z_Fine] = new PGA(PGA::Z_Fine);
+    pga_collection[PGA::DDS_Amplitude] = new PGA(PGA::DDS_Amplitude);
+    pga_collection[PGA::Z_Coarse] = new PGA(PGA::Z_Coarse);
+    pga_collection[PGA::Leveling] = new PGA(PGA::Leveling);
 
     Motor* motor = new Motor();
     PID* pid = new PID();
@@ -47,17 +52,9 @@ AFM* Builder::build_afm() {
     return new AFM(pga_collection, dac_collection, adc_collection, motor, pid);
 }
 
-//ADC_X1 3
-//ADC_X2 7
-//ADC_Y1 6
-//ADC_Y2 8
-//ADC_Z 2
-//ADC_Z_PZR_AMP 5
-//ADC_PHASE 0
 
-
-void Builder::wire_hash_command_generated(QHash<QString, AFMObject*> & collection, SendWorker* & send_worker) {
-    QHash<QString, AFMObject*>::iterator i;
+void Builder::wire_hash_command_generated(QHash<int, AFMObject*> & collection, SendWorker* & send_worker) {
+    QHash<int, AFMObject*>::iterator i;
     for (i = collection.begin(); i != collection.end(); ++i)
         QObject::connect(i.value(), SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
 }

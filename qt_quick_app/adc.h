@@ -13,6 +13,15 @@ public:
     void cmd_read();
     void init();
 
+    // ADC channel (aka id) constants
+    static const int X_1;
+    static const int X_2;
+    static const int Y_1;
+    static const int Y_2;
+    static const int Z;
+    static const int Z_Piezoresistor_Amplitude;
+    static const int Phase;
+
 signals:
 
 public slots:

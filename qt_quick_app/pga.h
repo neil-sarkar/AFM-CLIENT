@@ -15,6 +15,16 @@ public:
     double value();
     void init();
 
+    static const int X_1;
+    static const int X_2;
+    static const int Y_1;
+    static const int Y_2;
+    static const int Z_Fine;
+    static const int DDS_Amplitude;
+    static const int Z_Coarse;
+    static const int Leveling;
+
+
 signals:
     void value_changed();
 

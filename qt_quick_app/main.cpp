@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
 
-    // Set up the views
+    // Set up the view
     QQmlContext* context = engine.rootContext();
     context->setContextProperty("motor", afm->motor);
-    context->setContextProperty("dac", afm->DAC_collection["board_1"]);
+//    context->setContextProperty("dac", afm->DAC_collection[DAC::Board_1]);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Thread connections (to abstract later)
