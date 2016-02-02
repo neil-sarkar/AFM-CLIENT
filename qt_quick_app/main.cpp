@@ -37,8 +37,6 @@ int main(int argc, char *argv[])
     ReceiveWorker* receive_worker = new ReceiveWorker();
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
-
-    // Create commands
     builder->generate_command_nodes();
 
 

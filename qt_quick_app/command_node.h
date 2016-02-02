@@ -23,15 +23,21 @@ public:
         instance = _instance;
         payload = _payload;
     }
-    CommandNode() {}
 
-     CommandNode(const CommandNode& other) {
-//         instance = new QObject();
-//         *instance = *other.instance;
+    CommandNode(const CommandNode& other, QObject* _instance, QByteArray _payload = 0) {
         id = other.id;
         num_receive_bytes = other.num_receive_bytes;
         num_send_bytes = other.num_send_bytes;
+        instance = _instance;
+        payload = _payload;
+    }
 
+    CommandNode() {}
+
+     CommandNode(const CommandNode& other) {
+        id = other.id;
+        num_receive_bytes = other.num_receive_bytes;
+        num_send_bytes = other.num_send_bytes;
      }
 
      CommandNode& operator=( const CommandNode& other) {

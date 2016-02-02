@@ -82,7 +82,7 @@ void Motor::cmd_set_direction() {
     else
         payload += PayloadConstants.MotorRetract;
 
-    CommandNode* node = new CommandNode(Commands.SetDirection, this, payload);
+    CommandNode* node = new CommandNode(command_hash["Motor_Set_Direction"], this, payload);
     emit command_generated(node);
 }
 

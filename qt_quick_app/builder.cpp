@@ -81,11 +81,11 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
 void Builder::generate_command_nodes() {
     QString path = "/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app/command_spec.tsv"; // change to relative path
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly)) {
-       qDebug() << file.errorString();
-    }
 
-    char delimiter = 0x9;
+    if (!file.open(QIODevice::ReadOnly))
+       qDebug() << file.errorString();
+
+    char delimiter = 0x9; // delimit with a tab in our tab separated values file
     int message_index, in_use_index, id_index, num_send_bytes_index, num_receive_bytes_index;
     QList<QByteArray> header_line = file.readLine().split(delimiter); // read the first line of the file to understand how the csv is laid out
 
@@ -122,8 +122,9 @@ void Builder::generate_command_nodes() {
 int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line) {
     bytes.resize(2); // force it to be two bytes long (might not be necessary)
     bytes = bytes.simplified(); // remove any newlines or carriage returns [MIGHT CAUSE ISSUES]
-    bool conversion_successful;
+    bool conversion_successful; // need this to call toInt() method below
     int result = bytes.toInt(&conversion_successful, 16);
+
     if (conversion_successful)
         return result;
 
