@@ -6,6 +6,9 @@
 #include "serial_port.h"
 #include "send_worker.h"
 #include "receive_worker.h"
+#include "constants.h"
+#include <iostream>
+#include <iomanip>
 
 Builder::Builder() {}
 
@@ -75,3 +78,54 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(connected()), afm, SLOT(init()));
 }
 
+void Builder::generate_command_nodes() {
+    QString path = "/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app/command_spec.tsv"; // change to relative path
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+       qDebug() << file.errorString();
+    }
+
+    char delimiter = 0x9;
+    int message_index, in_use_index, id_index, num_send_bytes_index, num_receive_bytes_index;
+    QList<QByteArray> header_line = file.readLine().split(delimiter); // read the first line of the file to understand how the csv is laid out
+
+    // In the worst way possible, extract the indices of the important information
+    for (int i = 0; i < header_line.length(); i++) {
+       QByteArray header = header_line[i].toLower();
+       if (header == "message") {
+           message_index = i;
+       } else if (header == "in use") {
+           in_use_index = i;
+       } else if (header == "id") {
+           id_index = i;
+       } else if (header == "send byte length") {
+           num_send_bytes_index = i;
+       } else if (header == "reply msg length") {
+           num_receive_bytes_index = i;
+       }
+    }
+
+    while (!file.atEnd()) {
+       QList<QByteArray> line = file.readLine().split(delimiter); // tab separated values
+       if (line[in_use_index] == "1") {
+           CommandNode node = CommandNode(); // create a new CommandNode
+           node.id= bytes_to_int(line[id_index], line);
+           node.num_send_bytes = bytes_to_int(line[num_send_bytes_index], line);
+           node.num_receive_bytes = bytes_to_int(line[num_receive_bytes_index], line);
+           command_hash[line[message_index]] = node;
+           qDebug() << node.id << node.num_send_bytes << node.num_receive_bytes;
+       }
+    }
+    qDebug() << "Loaded " << command_hash.size() << "command node types.";
+}
+
+int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line) {
+    bytes.resize(2); // force it to be two bytes long (might not be necessary)
+    bytes = bytes.simplified(); // remove any newlines or carriage returns [MIGHT CAUSE ISSUES]
+    bool conversion_successful;
+    int result = bytes.toInt(&conversion_successful, 16);
+    if (conversion_successful)
+        return result;
+
+    qDebug() << "Parsing failed" << line;
+}

@@ -4,6 +4,8 @@ QT += qml quick
 QT += serialport
 CONFIG += c++11
 
+DESTDIR = $$PWD
+
 SOURCES += main.cpp \
     receiver.cpp \
     serial_port.cpp \
@@ -16,7 +18,8 @@ SOURCES += main.cpp \
     pga.cpp \
     pid.cpp \
     builder.cpp \
-    afm_object.cpp
+    afm_object.cpp \
+    constants.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,11 +42,12 @@ HEADERS += \
     send_worker.h \
     thread_safe_queue.h \
     receive_worker.h \
-    constants.h \
     command_names.h \
     pga.h \
     pid.h \
     builder.h \
-    afm_object.h
+    afm_object.h \
+    constants.h
 
-DISTFILES +=
+DISTFILES += \
+    command_spec.tsv

@@ -18,9 +18,9 @@ void DAC::init() {
     q.push_back(m_id);
     q.push_back(RESOLUTION & 0xFF);
     q.push_back((RESOLUTION & 0x0F00) >> 8);
-    CommandNode* node = new CommandNode(0x26, this, q);
+    CommandNode* node = new CommandNode(0x26, this, q); // Set the maximum value of the DAC
     emit command_generated(node);
-    cmd_set_value();
+    cmd_set_value(); // set the DAC to the value m_value
 }
 
 double DAC::value() {

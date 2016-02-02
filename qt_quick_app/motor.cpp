@@ -2,6 +2,7 @@
 #include "command_node.h"
 #include <QDebug>
 #include <QtGlobal>
+#include "constants.h"
 
 Motor::Motor() {
     m_speed = 0;

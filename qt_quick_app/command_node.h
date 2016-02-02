@@ -15,15 +15,33 @@ public:
     std::function<void()> update_UI;
     int tag;
     unsigned int num_failed_bytes;
+    int num_receive_bytes;
+    int num_send_bytes;
 
     CommandNode(unsigned char _id, QObject* _instance, QByteArray _payload = 0) {
         id = _id;
         instance = _instance;
         payload = _payload;
     }
+    CommandNode() {}
+
+     CommandNode(const CommandNode& other) {
+//         instance = new QObject();
+//         *instance = *other.instance;
+        id = other.id;
+        num_receive_bytes = other.num_receive_bytes;
+        num_send_bytes = other.num_send_bytes;
+
+     }
+
+     CommandNode& operator=( const CommandNode& other) {
+         id = other.id;
+         num_receive_bytes = other.num_receive_bytes;
+         num_send_bytes = other.num_send_bytes;
+         return *this;
+     }
 
 private:
-//    void null_function() {}
 };
 
 #endif // COMMANDNODE_H

@@ -16,11 +16,14 @@
 #include "pid.h"
 #include "builder.h"
 #include "afm.h"
+#include "command_node.h"
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
+    qDebug() << "App path" << app.applicationDirPath();
 
     // Thread declarations
     QThread* serial_thread = new QThread();
@@ -35,10 +38,14 @@ int main(int argc, char *argv[])
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
 
+    // Create commands
+    builder->generate_command_nodes();
+
+
     // Set up the view
     QQmlContext* context = engine.rootContext();
     context->setContextProperty("motor", afm->motor);
-//    context->setContextProperty("dac", afm->DAC_collection[DAC::Board_1]);
+    context->setContextProperty("dac", afm->DAC_collection[DAC::Board_1]);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Thread connections (to abstract later)
