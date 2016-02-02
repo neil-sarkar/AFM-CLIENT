@@ -56,22 +56,22 @@ void Motor::init() {
 }
 
 void Motor::cmd_run_continuous() {
-    emit command_generated(new CommandNode(Commands.RunContinuous, this));
+    emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous], this));
 }
 
 void Motor::cmd_stop_continuous() {
-    emit command_generated(new CommandNode(Commands.StopContinuous, this));
+    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous], this));
 }
 
 void Motor::cmd_single_step() {
-    emit command_generated(new CommandNode(Commands.SetSingleStep, this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step], this));
 }
 
 void Motor::cmd_set_speed() {
     QByteArray q;
     q.push_back(qint8(m_speed)); // low byte
     q.push_back(qint8(m_speed >> 8)); // high byte
-    CommandNode* node = new CommandNode(Commands.SetSpeed, this, q);
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], this, q);
     emit command_generated(node);
 }
 
@@ -82,20 +82,20 @@ void Motor::cmd_set_direction() {
     else
         payload += PayloadConstants.MotorRetract;
 
-    CommandNode* node = new CommandNode(command_hash["Motor_Set_Direction"], this, payload);
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Direction], this, payload);
     emit command_generated(node);
 }
 
 void Motor::cmd_set_state_asleep() {
-    emit command_generated(new CommandNode(Commands.SetStateAsleep, this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], this));
 }
 
 void Motor::cmd_set_state_awake() {
-    emit command_generated(new CommandNode(Commands.SetStateAwake, this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Awake], this));
 }
 
 void Motor::cmd_set_micro_step() {
     QByteArray q;
     q += m_microstep;
-    emit command_generated(new CommandNode(Commands.SetMicroStep, this, q));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], this, q));
 }

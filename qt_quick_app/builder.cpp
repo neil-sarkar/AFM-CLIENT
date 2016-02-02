@@ -88,7 +88,6 @@ void Builder::generate_command_nodes() {
     char delimiter = 0x9; // delimit with a tab in our tab separated values file
     int message_index, in_use_index, id_index, num_send_bytes_index, num_receive_bytes_index;
     QList<QByteArray> header_line = file.readLine().split(delimiter); // read the first line of the file to understand how the csv is laid out
-
     // In the worst way possible, extract the indices of the important information
     for (int i = 0; i < header_line.length(); i++) {
        QByteArray header = header_line[i].toLower();
@@ -113,7 +112,6 @@ void Builder::generate_command_nodes() {
            node.num_send_bytes = bytes_to_int(line[num_send_bytes_index], line);
            node.num_receive_bytes = bytes_to_int(line[num_receive_bytes_index], line);
            command_hash[line[message_index]] = node;
-           qDebug() << node.id << node.num_send_bytes << node.num_receive_bytes;
        }
     }
     qDebug() << "Loaded " << command_hash.size() << "command node types.";

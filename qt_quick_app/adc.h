@@ -31,7 +31,6 @@ private:
     static constexpr double MAX_VOLTAGE = 2.5;
     static constexpr int RESOLUTION = 4095;
     static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
-    static constexpr unsigned char READ_COMMAND = 0x63;
 };
 
 #endif // ADC_H

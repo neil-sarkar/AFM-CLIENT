@@ -1,5 +1,6 @@
 #include "pga.h"
 #include "command_node.h"
+#include "constants.h"
 #include <math.h>
 
 PGA::PGA(qint8 id) {
@@ -27,7 +28,7 @@ void PGA::cmd_set_value() {
     QByteArray payload;
     payload += m_id;
     payload += value_to_pga();
-    emit command_generated(new CommandNode(Commands.Set, this, payload));
+    emit command_generated(new CommandNode(command_hash[PGA_Set], this, payload));
 }
 
 qint8 PGA::value_to_pga() {

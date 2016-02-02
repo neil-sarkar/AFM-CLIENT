@@ -18,12 +18,6 @@ public:
     int num_receive_bytes;
     int num_send_bytes;
 
-    CommandNode(unsigned char _id, QObject* _instance, QByteArray _payload = 0) {
-        id = _id;
-        instance = _instance;
-        payload = _payload;
-    }
-
     CommandNode(const CommandNode& other, QObject* _instance, QByteArray _payload = 0) {
         id = other.id;
         num_receive_bytes = other.num_receive_bytes;

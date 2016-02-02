@@ -1,4 +1,5 @@
 #include "pid.h"
+#include "constants.h"
 
 PID::PID() {
     m_proportional = 0;
@@ -19,12 +20,11 @@ float PID::derivative() {
     return m_derivative;
 }
 
-float PID::set_point() {
-    return m_set_point;
+float PID::setpoint() {
+    return m_setpoint;
 }
 
 bool PID::enabled() {
-    qDebug() << "CALLED";
     return m_enabled;
 }
 
@@ -68,12 +68,12 @@ void PID::set_disabled() {
     set_enabled(false);
 }
 
-void PID::set_set_point(float set_point) {
-    if (m_set_point != set_point) {
-        m_set_point = set_point;
-        qDebug() << "Setting set_point to" << m_set_point;
-        emit set_point_changed();
-        cmd_set_set_point();
+void PID::set_setpoint(float setpoint) {
+    if (m_setpoint != setpoint) {
+        m_setpoint = setpoint;
+        qDebug() << "Setting set_point to" << m_setpoint;
+        emit setpoint_changed();
+        cmd_set_setpoint();
     }
 }
 
@@ -82,42 +82,42 @@ void PID::init() {
     cmd_set_proportional();
     cmd_set_integral();
     cmd_set_derivative();
-    cmd_set_set_point();
+    cmd_set_setpoint();
 }
 
 void PID::cmd_set_proportional() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
         payload += ((char *)&m_proportional)[i];
-    emit command_generated(new CommandNode(0x70, this, payload));
+    emit command_generated(new CommandNode(command_hash[PID_Set_Proportional], this, payload));
 }
 
 void PID::cmd_set_integral() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
         payload += ((char *)&m_integral)[i];
-    emit command_generated(new CommandNode(0x69, this, payload));
+    emit command_generated(new CommandNode(command_hash[PID_Set_Integral], this, payload));
 }
 
 void PID::cmd_set_derivative() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
         payload += ((char *)&m_derivative)[i];
-    emit command_generated(new CommandNode(0x64, this, payload));
+    emit command_generated(new CommandNode(command_hash[PID_Set_Derivative], this, payload));
 }
 
-void PID::cmd_set_set_point() {
-    quint16 set_point = float(m_set_point) / float(SCALE_FACTOR);
+void PID::cmd_set_setpoint() {
+    quint16 setpoint = float(m_setpoint) / float(SCALE_FACTOR);
     QByteArray payload;
-    payload += (set_point & 0xFF);
-    payload += ((set_point & 0xFF00) >> 8);
-    emit command_generated(new CommandNode(0x73, this, payload));
+    payload += (setpoint & 0xFF);
+    payload += ((setpoint & 0xFF00) >> 8);
+    emit command_generated(new CommandNode(command_hash[PID_Set_Setpoint], this, payload));
 }
 
 void PID::cmd_enable() {
-    emit command_generated(new CommandNode(0x67, this));
+    emit command_generated(new CommandNode(command_hash[PID_Enable], this));
 }
 
 void PID::cmd_disable() {
-    emit command_generated(new CommandNode(0x68, this));
+    emit command_generated(new CommandNode(command_hash[PID_Disable], this));
 }

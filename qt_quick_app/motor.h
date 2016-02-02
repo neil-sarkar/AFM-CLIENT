@@ -51,17 +51,6 @@ private:
     void cmd_set_state_awake();
     void cmd_set_micro_step();
 
-    struct Commands {
-        const unsigned char SetDirection = 0x36;
-        const unsigned char SetStateAwake = 0x35; // might want to have one function for each sleep and awake
-        const unsigned char SetStateAsleep = 0x34;
-        const unsigned char SetSpeed = 0x32;
-        const unsigned char RunContinuous = 0x33;
-        const unsigned char StopContinuous = 0x37;
-        const unsigned char SetSingleStep = 0x31;
-        const unsigned char SetMicroStep = 0x30;
-    } Commands;
-
     struct PayloadConstants {
         const unsigned char MotorApproach = 0x62;
         const unsigned char MotorRetract = 0x66;

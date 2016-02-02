@@ -1,5 +1,6 @@
 #include "adc.h"
 #include "command_node.h"
+#include "constants.h"
 
 ADC::ADC(qint8 id)
 {
@@ -10,7 +11,7 @@ ADC::ADC(qint8 id)
 void ADC::cmd_read() {
     QByteArray q;
     q += m_id;
-    CommandNode* node = new CommandNode(READ_COMMAND, this, q);
+    CommandNode* node = new CommandNode(command_hash[ADC_Read], this, q);
     command_generated(node);
 }
 

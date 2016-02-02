@@ -36,10 +36,6 @@ private:
     void cmd_set_value();
     qint8 value_to_pga();
 
-    struct Commands {
-        const unsigned char Set = 0x54;
-    } Commands;
-
 };
 
 #endif // PGA_H

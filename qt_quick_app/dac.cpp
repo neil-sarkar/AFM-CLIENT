@@ -1,4 +1,5 @@
 #include "dac.h"
+#include "constants.h"
 
 DAC::DAC(qint8 id) {
     m_id = id;
@@ -18,7 +19,7 @@ void DAC::init() {
     q.push_back(m_id);
     q.push_back(RESOLUTION & 0xFF);
     q.push_back((RESOLUTION & 0x0F00) >> 8);
-    CommandNode* node = new CommandNode(0x26, this, q); // Set the maximum value of the DAC
+    CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], this, q); // Set the maximum value of the DAC
     emit command_generated(node);
     cmd_set_value(); // set the DAC to the value m_value
 }
@@ -30,7 +31,7 @@ double DAC::value() {
 void DAC::cmd_read_value() {
     QByteArray q;
     q.push_back(m_id);
-    CommandNode* node = new CommandNode(0x62, this, q);
+    CommandNode* node = new CommandNode(command_hash[DAC_Read], this, q);
     emit command_generated(node);
 }
 
@@ -40,7 +41,7 @@ void DAC::cmd_set_value() {
     q.push_back(m_id);
     q.push_back((value & 0xFF));
     q.push_back((value >> 8));
-    CommandNode* node = new CommandNode(0x61, this, q);
+    CommandNode* node = new CommandNode(command_hash[DAC_Write], this, q);
     emit command_generated(node);
 }
 

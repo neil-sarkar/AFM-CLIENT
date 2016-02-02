@@ -15,9 +15,7 @@ AFM_Set_Scan_Parameters	1	AFM	scan parameters	set			40	@	2ACT	1	12	11 bytes (‘
 AFM_Set_Signal_Generation	1	AFM	signal generation	set			50	P	4ACT	1	7	5 bytes (ratio enum byte, numpoints byte #1, numpoints byte #2, numlines byte#1, numlines byte#2)	2	N	Nothing
 AFM_Start_Frequency_Sweep_AD5932	1	AFM	Frequency Sweep	start	AD5932		72	r	PCB2	1	2		6	N	NumPts*4 bytes (Amp1 byte 1, Amp1 byte 2, Phase1 byte 1, Phase1 byte 2, etc…)
 AFM_Start_Frequency_Sweep_AD9837	1	AFM	Frequency Sweep	start	AD9837		71	q	PCB3	1	2		6	N	NumPts*4 bytes (val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2, etc…) amp and phase
-AFM_Start_Scan	1	AFM	scan	start			23	#	2ACT	1	2		2	N	Nothing
 AFM_Start_Scan	1	AFM	scan	start		4	51	Q	4ACT	1	2		2	N	Nothing
-AFM_Step_Scan	1	AFM	scan	step			5E	^	2ACT	1	2		2	N	8 points of 6 bytes each: (z_amp_adc byte 1, z_amp_adc byte 2, z_offset_adc byte 1, z_offset_adc byte 2,  z_phase_adc byte 1, z_phase_adc byte 2))
 AFM_Step_Scan	1	AFM	scan	step		4	52	R	4ACT	1	2		2	N	8 points of 6 bytes each: (z_amp_adc byte 1, z_amp_adc byte 2, z_offset_adc byte 1, z_offset_adc byte 2,  z_phase_adc byte 1, z_phase_adc byte 2))
 AFM_Stop_Auto_Approach	1	AFM	auto approach	stop			9b		PCB3	1	2	None	2	N
 DAC_Read	1	DAC		read			62	b		1	3	(DAC#)	5	N	3 bytes (DAC#, DAC val byte 1, DAC val byte 2)
