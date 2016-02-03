@@ -64,9 +64,8 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
 }
 
 void ReceiveWorker::handle_asynchronous_message() {
-    if (is_mcu_reset_message()) {
-        qDebug() << "reset detected";
-    }
+    if (is_mcu_reset_message())
+        emit mcu_reset_message_received();
 }
 
 bool ReceiveWorker::is_mcu_reset_message() {
