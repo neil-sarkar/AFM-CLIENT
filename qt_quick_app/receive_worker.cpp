@@ -31,7 +31,7 @@ void ReceiveWorker::build_working_response() {
         }
     }
 
-    if (working_response.length() && working_response.at(working_response.length() - 1) == 0x10) { // previous char was escape character
+    if (working_response.length() && working_response.at(working_response.length() - 1) == Escape_Character) { // previous char was escape character
         byte &= ~Mask_Character; // unmask byte
         working_response = working_response.remove(working_response.length() - 1, 1); // remove the escape char from the working_response
     }
