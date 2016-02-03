@@ -5,7 +5,11 @@
 #include <functional>
 #include <QDebug>
 
-class CommandNode : public QObject {
+struct AbstractCommandNode : public QObject {
+    virtual ~AbstractCommandNode() = 0;
+};
+
+class CommandNode : public AbstractCommandNode {
     Q_OBJECT
 public:
     unsigned char id;
@@ -24,6 +28,7 @@ public:
     CommandNode() {}
     CommandNode(const CommandNode& other); // copy constructor
     CommandNode& operator=( const CommandNode& other);
+    ~CommandNode();
 
 private:
 };

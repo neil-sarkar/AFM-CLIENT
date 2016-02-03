@@ -61,7 +61,7 @@ void CommandNode::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
 }
 
 const QMetaObject CommandNode::staticMetaObject = {
-    { &QObject::staticMetaObject, qt_meta_stringdata_CommandNode.data,
+    { &AbstractCommandNode::staticMetaObject, qt_meta_stringdata_CommandNode.data,
       qt_meta_data_CommandNode,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
@@ -76,12 +76,12 @@ void *CommandNode::qt_metacast(const char *_clname)
     if (!_clname) return Q_NULLPTR;
     if (!strcmp(_clname, qt_meta_stringdata_CommandNode.stringdata0))
         return static_cast<void*>(const_cast< CommandNode*>(this));
-    return QObject::qt_metacast(_clname);
+    return AbstractCommandNode::qt_metacast(_clname);
 }
 
 int CommandNode::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QObject::qt_metacall(_c, _id, _a);
+    _id = AbstractCommandNode::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     return _id;

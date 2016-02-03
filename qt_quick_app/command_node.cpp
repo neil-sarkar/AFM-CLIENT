@@ -28,3 +28,6 @@ CommandNode& CommandNode::operator=( const CommandNode& other) {
      num_send_bytes = other.num_send_bytes;
      return *this;
 }
+
+CommandNode::~CommandNode() {}
+AbstractCommandNode::~AbstractCommandNode() {}
