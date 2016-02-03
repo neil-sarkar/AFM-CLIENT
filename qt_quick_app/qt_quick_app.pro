@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     pid.cpp \
     builder.cpp \
     afm_object.cpp \
-    constants.cpp
+    constants.cpp \
+    command_node.cpp
 
 RESOURCES += qml.qrc
 

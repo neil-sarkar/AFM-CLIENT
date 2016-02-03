@@ -87,10 +87,11 @@ void Motor::cmd_set_direction() {
 }
 
 void Motor::cmd_set_state_asleep() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], this, std::bind(&Motor::cmd_set_state_awake, this)));
 }
 
 void Motor::cmd_set_state_awake() {
+    qDebug() << "Setting state awake";
     emit command_generated(new CommandNode(command_hash[Motor_Set_State_Awake], this));
 }
 

@@ -46,9 +46,8 @@ void ReceiveWorker::process_working_response() {
     unsigned char response_id = working_response.at(1);
     CommandNode* node = command_queue.dequeue();
 
-    qDebug() << "Incoming" << response_id << working_response.toHex();
+    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
 
-    // also check if the # bytes is correct
     if (response_tag != node->tag) {
         qDebug() << "Tag mismatch" << response_tag << node->tag;
         return;
@@ -64,6 +63,15 @@ void ReceiveWorker::process_working_response() {
         qDebug() << "Sent" << node->payload;
         qDebug()<< "Tag" << node->tag << response_tag <<  "ID " << node->id  << "Got length" << working_response.length() << "Message: " << working_response << "Expected" << node->num_receive_bytes;
         return;
+    }
+
+    // This should be back in the mainwindow thread, no?
+    if (node->process_callback) {
+        node->process_callback();
+    }
+
+    if (node->ui_callback) {
+        node->ui_callback();
     }
 
 }
