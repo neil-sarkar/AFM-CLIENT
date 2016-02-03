@@ -71,7 +71,7 @@ void Motor::cmd_set_speed() {
     QByteArray q;
     q.push_back(qint8(m_speed)); // low byte
     q.push_back(qint8(m_speed >> 8)); // high byte
-    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], this, q);
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], bind(&Motor::callback));
     emit command_generated(node);
 }
 
@@ -87,7 +87,7 @@ void Motor::cmd_set_direction() {
 }
 
 void Motor::cmd_set_state_asleep() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], this, std::bind(&Motor::cmd_set_state_awake, this)));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], bind(&Motor::callback)));
 }
 
 void Motor::cmd_set_state_awake() {
@@ -99,4 +99,12 @@ void Motor::cmd_set_micro_step() {
     QByteArray q;
     q += m_microstep;
     emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], this, q));
+}
+
+void Motor::callback(QByteArray payload) {
+    qDebug() << "Callback " << payload;
+}
+
+std::function<void(QByteArray paylaod)> Motor::bind(void (Motor::*method)(QByteArray)) {
+    return std::bind(method, this, std::placeholders::_1);
 }

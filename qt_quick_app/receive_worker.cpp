@@ -48,26 +48,26 @@ void ReceiveWorker::process_working_response() {
 
     qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
 
-    if (response_tag != node->tag) {
-        qDebug() << "Tag mismatch" << response_tag << node->tag;
-        return;
-    }
+//    if (response_tag != node->tag) {
+//        qDebug() << "Tag mismatch" << response_tag << node->tag;
+//        return;
+//    }
 
-    if (response_id  != node->id) {
-        qDebug() << "Id mismatch" << response_id << node->id;
-        return;
-    }
+//    if (response_id  != node->id) {
+//        qDebug() << "Id mismatch" << response_id << node->id;
+//        return;
+//    }
 
-    if (working_response.length() != node->num_receive_bytes) {
-        qDebug() << "Length mismatch";
-        qDebug() << "Sent" << node->payload;
-        qDebug()<< "Tag" << node->tag << response_tag <<  "ID " << node->id  << "Got length" << working_response.length() << "Message: " << working_response << "Expected" << node->num_receive_bytes;
-        return;
-    }
+//    if (working_response.length() != node->num_receive_bytes) {
+//        qDebug() << "Length mismatch";
+//        qDebug() << "Sent" << node->payload;
+//        qDebug()<< "Tag" << node->tag << response_tag <<  "ID " << node->id  << "Got length" << working_response.length() << "Message: " << working_response << "Expected" << node->num_receive_bytes;
+//        return;
+//    }
 
     // This should be back in the mainwindow thread, no?
     if (node->process_callback) {
-        node->process_callback();
+        node->process_callback(working_response);
     }
 
     if (node->ui_callback) {

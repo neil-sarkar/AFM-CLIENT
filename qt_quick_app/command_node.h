@@ -15,7 +15,7 @@ public:
     unsigned char id;
     QObject* instance;
     QByteArray payload;
-    std::function<void()> process_callback;
+    std::function<void(QByteArray)> process_callback;
     std::function<void()> ui_callback;
     int tag;
     unsigned int num_failed_bytes;
@@ -24,7 +24,7 @@ public:
     static void null_ting () {}
 
     CommandNode(const CommandNode& other, QObject* _instance, QByteArray _payload = 0);
-    CommandNode(const CommandNode& other, QObject* _instance, std::function<void()> _process_callback);
+    CommandNode(const CommandNode& other, std::function<void(QByteArray)> _process_callback);
     CommandNode() {}
     CommandNode(const CommandNode& other); // copy constructor
     CommandNode& operator=( const CommandNode& other);

@@ -24,6 +24,7 @@ public:
     int direction();
     int state();
     void init();
+    void callback(QByteArray);
     Q_INVOKABLE void cmd_single_step();
     Q_INVOKABLE void cmd_run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();
@@ -50,6 +51,7 @@ private:
     void cmd_set_state_asleep();
     void cmd_set_state_awake();
     void cmd_set_micro_step();
+    std::function<void(QByteArray paylaod)> bind(void (Motor::*method)(QByteArray));
 
     struct PayloadConstants {
         const unsigned char MotorApproach = 0x62;

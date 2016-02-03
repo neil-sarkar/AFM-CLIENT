@@ -10,8 +10,6 @@ class AFMObject : public QObject
 public:
     explicit AFMObject();
     virtual void init();
-    template <class T>
-    std::function<void(QByteArray paylaod)> bind(AFMObject* object, void (T::*method)(QByteArray));
 
 signals:
     void command_generated(CommandNode* command);
