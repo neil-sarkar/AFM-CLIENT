@@ -2,6 +2,7 @@ TEMPLATE = app
 
 QT += qml quick
 QT += serialport
+QT += concurrent
 CONFIG += c++11
 
 DESTDIR = $$PWD

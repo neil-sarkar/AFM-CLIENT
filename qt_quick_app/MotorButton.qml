@@ -11,7 +11,6 @@ Button {
         running: false
         onTriggered: {
             if (pressable_button.pressed) {
-                console.log("here");
                 motor.cmd_run_continuous()
             }
         }

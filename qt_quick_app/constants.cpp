@@ -37,3 +37,9 @@ const QString PID_Set_Proportional = "PID_Set_Proportional";
 const QString PID_Set_Setpoint = "PID_Set_Setpoint";
 const QString Stage_Set_Pulse_Step = "Stage_Set_Pulse_Step";
 const QString Stage_Set_Pulse_Width = "Stage_Set_Pulse_Width";
+
+const char Message_Delimiter = 0x0A;
+const char Newline_Character = 0x0A;
+const char Escape_Character = 0x10;
+const char Mask_Character = 0x80;
+const int Num_Meta_Data_Bytes = 2; // tag and id are the only two bytes that are 'metadata'

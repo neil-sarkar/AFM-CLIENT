@@ -25,6 +25,10 @@ public slots:
 private:
     QMutex mutex;
     int tag;
+    void populate_send_bytes(CommandNode*);
+    int iterate_tag();
+    void validate_send_length(CommandNode* command_node);
+    void mask_special_characters(CommandNode* command_node);
     ThreadSafeQueue<CommandNode*> command_queue;
 };
 

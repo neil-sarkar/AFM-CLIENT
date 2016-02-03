@@ -8,11 +8,12 @@ CommandNode::CommandNode(const CommandNode& other, QObject* _instance, QByteArra
     payload = _payload;
 }
 
-CommandNode::CommandNode(const CommandNode& other, std::function<void(QByteArray)> _process_callback) {
+CommandNode::CommandNode(const CommandNode& other, std::function<void(QByteArray)> _process_callback, QByteArray _payload) {
     id = other.id;
     num_receive_bytes = other.num_receive_bytes;
     num_send_bytes = other.num_send_bytes;
     process_callback = _process_callback;
+    payload = _payload;
 }
 
 CommandNode::CommandNode(const CommandNode& other) {

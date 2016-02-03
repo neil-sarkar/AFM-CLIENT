@@ -43,4 +43,11 @@ extern const QString PID_Set_Setpoint;
 extern const QString Stage_Set_Pulse_Step;
 extern const QString Stage_Set_Pulse_Width;
 
+extern const char Message_Delimiter;
+extern const char Newline_Character;
+extern const char Escape_Character;
+extern const char Mask_Character;
+extern const int Num_Meta_Data_Bytes;
+
+
 #endif // CONSTANTS_H

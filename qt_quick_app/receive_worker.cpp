@@ -1,18 +1,15 @@
 #include "receive_worker.h"
+#include "assert.h"
+#include <QtConcurrent>
 
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 {
-//    QObject::connect(this, SIGNAL(command_received()), this, SLOT(dequeue_command()));
     QObject::connect(this, SIGNAL(response_byte_received()), this, SLOT(build_working_response()));
 }
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
     command_queue.enqueue(command_node);
     emit command_received();
-}
-
-void ReceiveWorker::dequeue_command() {
-    qDebug() << "Receive Worker dequeueing " << command_queue.dequeue()->id;
 }
 
 void ReceiveWorker::enqueue_response_byte(char byte) {
@@ -45,33 +42,15 @@ void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
     CommandNode* node = command_queue.dequeue();
-
     qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
-
-//    if (response_tag != node->tag) {
-//        qDebug() << "Tag mismatch" << response_tag << node->tag;
-//        return;
-//    }
-
-//    if (response_id  != node->id) {
-//        qDebug() << "Id mismatch" << response_id << node->id;
-//        return;
-//    }
-
-//    if (working_response.length() != node->num_receive_bytes) {
-//        qDebug() << "Length mismatch";
-//        qDebug() << "Sent" << node->payload;
-//        qDebug()<< "Tag" << node->tag << response_tag <<  "ID " << node->id  << "Got length" << working_response.length() << "Message: " << working_response << "Expected" << node->num_receive_bytes;
-//        return;
-//    }
-
-    // This should be back in the mainwindow thread, no?
+    assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-        node->process_callback(working_response);
+        QtConcurrent::run(node->process_callback, working_response); // to avoid blocking this thread
     }
+}
 
-    if (node->ui_callback) {
-        node->ui_callback();
-    }
-
+void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
+    assert (tag == node->tag);
+    assert (id  == node->id);
+    assert (length == node->num_receive_bytes);
 }

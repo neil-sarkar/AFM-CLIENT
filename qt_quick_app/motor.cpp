@@ -71,7 +71,7 @@ void Motor::cmd_set_speed() {
     QByteArray q;
     q.push_back(qint8(m_speed)); // low byte
     q.push_back(qint8(m_speed >> 8)); // high byte
-    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], bind(&Motor::callback));
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], bind(&Motor::callback), q);
     emit command_generated(node);
 }
 
@@ -102,9 +102,11 @@ void Motor::cmd_set_micro_step() {
 }
 
 void Motor::callback(QByteArray payload) {
-    qDebug() << "Callback " << payload;
+    qDebug() << " Callback done";
 }
 
 std::function<void(QByteArray paylaod)> Motor::bind(void (Motor::*method)(QByteArray)) {
+    // If keeping the instance alive by the time the command is called becomes an issue, use the trick showed in this post:
+    // http://stackoverflow.com/questions/9281172/how-do-i-write-a-pointer-to-member-function-with-stdfunction
     return std::bind(method, this, std::placeholders::_1);
 }

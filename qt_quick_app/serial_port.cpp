@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QTextCodec>
+#include "constants.h"
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
@@ -38,7 +39,8 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     if (port->open(QIODevice::ReadWrite)) {
         port_scan_timer->stop();
         is_connected = true;
-        QTimer::singleShot(1000, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
+        port->readAll();
+        QTimer::singleShot(2000, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
         // Also note that the signal is called 1 second after we get to this point to further mitigate lost data.
     }
     return is_connected;
@@ -88,20 +90,10 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 void SerialPort::execute_command(CommandNode* command_node) {
     qDebug() << "Tag: " << QString().sprintf("%2p", command_node->tag) << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
-    result += write_byte(0x0A); // delimit the message
-    result += write_byte(command_node->tag); // send the tag (the message number as dictated by chronology)
-    result += write_byte(command_node->id); // send the message id (tells microcontroller what kind of command this is)
-
-    for (char payload_byte : command_node->payload) { // send all the associated data with the command
-        if (payload_byte == 0x0A || payload_byte == 0x10) {
-            result += write_byte(0x10);
-            result += write_byte(payload_byte | 0x80);
-        } else {
-            result += write_byte(payload_byte);
-        }
-    }
-    result += write_byte(0x0A); // delimit the message
-
+    result += write_byte(Message_Delimiter); // delimit the message
+    for (char payload_byte : command_node->payload) // send all the associated data with the command
+        result += write_byte(payload_byte);
+    result += write_byte(Message_Delimiter); // delimit the message
     command_node->num_failed_bytes = -result;
     emit message_sent(command_node);
 

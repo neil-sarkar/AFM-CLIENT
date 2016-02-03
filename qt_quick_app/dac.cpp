@@ -19,7 +19,7 @@ void DAC::init() {
     q.push_back(m_id);
     q.push_back(RESOLUTION & 0xFF);
     q.push_back((RESOLUTION & 0x0F00) >> 8);
-    CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], this); // Set the maximum value of the DAC - make its own method
+    CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], this, q); // Set the maximum value of the DAC - make its own method
     emit command_generated(node);
     cmd_set_value(); // set the DAC to the value m_value
 }
