@@ -102,7 +102,6 @@ void Motor::cmd_set_micro_step() {
 }
 
 void Motor::callback(QByteArray payload) {
-    qDebug() << " Callback done";
 }
 
 std::function<void(QByteArray paylaod)> Motor::bind(void (Motor::*method)(QByteArray)) {
