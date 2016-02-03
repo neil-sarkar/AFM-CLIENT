@@ -67,7 +67,7 @@ void SerialPort::on_ready_read() {
 //    qDebug() << "RECEIVING";
     QByteArray q = port->readAll();
     for (char byte : q) {
-//        qDebug() << QString().sprintf("%2p",byte);
+        qDebug() << QString().sprintf("%2p",byte);
         emit byte_received(byte);
     }
 

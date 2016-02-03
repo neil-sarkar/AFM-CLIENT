@@ -10,6 +10,8 @@ class ReceiveWorker : public QObject
     Q_OBJECT
 public:
     explicit ReceiveWorker(QObject *parent = 0);
+    static const unsigned char MCU_Reset_Message[5];
+    static const int MCU_Reset_Message_Length = 5;
 
 signals:
     void command_received();
@@ -28,7 +30,10 @@ private:
     QByteArray working_response;
     bool complete_message;
     void process_working_response();
+    void handle_asynchronous_message();
+    bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
+
 
 };
 

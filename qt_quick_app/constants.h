@@ -47,8 +47,8 @@ extern const char Message_Delimiter;
 extern const char Newline_Character;
 extern const char Escape_Character;
 extern const char Mask_Character;
+extern const int Special_Message_Character;
 extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
-
 
 #endif // CONSTANTS_H

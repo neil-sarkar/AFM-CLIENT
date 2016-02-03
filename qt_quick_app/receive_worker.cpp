@@ -42,12 +42,19 @@ void ReceiveWorker::build_working_response() {
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
+    if (response_tag == Special_Message_Character) {
+        handle_asynchronous_message();
+        return;
+    }
+
+
     CommandNode* node = command_queue.dequeue();
     qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-        QtConcurrent::run(node->process_callback, working_response); // to avoid blocking this thread
+        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
     }
+    delete node;
 }
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
@@ -55,3 +62,21 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
     assert (id  == node->id);
     assert (length == node->num_receive_bytes);
 }
+
+void ReceiveWorker::handle_asynchronous_message() {
+    if (is_mcu_reset_message()) {
+        qDebug() << "reset detected";
+    }
+}
+
+bool ReceiveWorker::is_mcu_reset_message() {
+    if (MCU_Reset_Message_Length == working_response.length()) {
+        for (int i = 0; i < MCU_Reset_Message_Length; i++)
+            if (MCU_Reset_Message[i] != static_cast<unsigned char>(working_response[i]))
+                return false;
+        return true;
+    }
+    return false;
+}
+
+const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};
