@@ -8,8 +8,9 @@
 #include "dds.h"
 #include "motor.h"
 #include "pid.h"
+#include "afm_object.h"
 
-class AFM : public QObject
+class AFM : public AFMObject
 {
     Q_OBJECT
     public:
@@ -21,12 +22,15 @@ class AFM : public QObject
         PID* pid;
         DDS* dds;
 
+        Q_INVOKABLE void frequency_sweep();
+
     signals:
 
     public slots:
         void init();
 
     private:
+        void cmd_frequency_sweep();
 
 
 

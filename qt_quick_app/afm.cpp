@@ -2,6 +2,7 @@
 #include "dac.h"
 #include "dds.h"
 #include "afm_object.h"
+#include "constants.h"
 #include "serial_port.h"
 
 AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, DDS* dds) {
@@ -28,4 +29,18 @@ void AFM::init() {
     motor->init();
     pid->init();
     dds->init();
+}
+
+void AFM::frequency_sweep() {
+    dds->set_num_points(20);
+    dds->set_step_size(20);
+    dds->set_start_frequency(2000);
+    dds->cmd_set();
+    cmd_frequency_sweep();
+}
+
+void AFM::cmd_frequency_sweep() {
+    CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837]);
+    node->num_receive_bytes = Num_Meta_Data_Bytes + dds->num_points() * 4; // 4 bytes per step
+    emit command_generated(node);
 }

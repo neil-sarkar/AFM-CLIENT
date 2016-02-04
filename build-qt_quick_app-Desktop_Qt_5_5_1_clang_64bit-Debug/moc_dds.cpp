@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DDS_t {
-    QByteArrayData data[8];
-    char stringdata0[103];
+    QByteArrayData data[9];
+    char stringdata0[111];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,14 +34,16 @@ QT_MOC_LITERAL(1, 4, 23), // "start_frequency_changed"
 QT_MOC_LITERAL(2, 28, 0), // ""
 QT_MOC_LITERAL(3, 29, 17), // "step_size_changed"
 QT_MOC_LITERAL(4, 47, 18), // "num_points_changed"
-QT_MOC_LITERAL(5, 66, 15), // "start_frequency"
-QT_MOC_LITERAL(6, 82, 9), // "step_size"
-QT_MOC_LITERAL(7, 92, 10) // "num_points"
+QT_MOC_LITERAL(5, 66, 7), // "cmd_set"
+QT_MOC_LITERAL(6, 74, 15), // "start_frequency"
+QT_MOC_LITERAL(7, 90, 9), // "step_size"
+QT_MOC_LITERAL(8, 100, 10) // "num_points"
 
     },
     "DDS\0start_frequency_changed\0\0"
     "step_size_changed\0num_points_changed\0"
-    "start_frequency\0step_size\0num_points"
+    "cmd_set\0start_frequency\0step_size\0"
+    "num_points"
 };
 #undef QT_MOC_LITERAL
 
@@ -51,27 +53,33 @@ static const uint qt_meta_data_DDS[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
-       3,   32, // properties
+       4,   14, // methods
+       3,   38, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x06 /* Public */,
-       3,    0,   30,    2, 0x06 /* Public */,
-       4,    0,   31,    2, 0x06 /* Public */,
+       1,    0,   34,    2, 0x06 /* Public */,
+       3,    0,   35,    2, 0x06 /* Public */,
+       4,    0,   36,    2, 0x06 /* Public */,
+
+ // methods: name, argc, parameters, tag, flags
+       5,    0,   37,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
+ // methods: parameters
+    QMetaType::Void,
+
  // properties: name, type, flags
-       5, QMetaType::UInt, 0x00495003,
-       6, QMetaType::UShort, 0x00495003,
+       6, QMetaType::UInt, 0x00495003,
        7, QMetaType::UShort, 0x00495003,
+       8, QMetaType::UShort, 0x00495003,
 
  // properties: notify_signal_id
        0,
@@ -90,6 +98,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         case 0: _t->start_frequency_changed(); break;
         case 1: _t->step_size_changed(); break;
         case 2: _t->num_points_changed(); break;
+        case 3: _t->cmd_set(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -166,13 +175,13 @@ int DDS::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        _id -= 4;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty

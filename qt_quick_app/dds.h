@@ -20,6 +20,7 @@ public:
     quint32 start_frequency();
     quint16 step_size();
     quint16 num_points();
+    Q_INVOKABLE void cmd_set();
 
 signals:
     void start_frequency_changed();
@@ -32,7 +33,6 @@ private:
     quint32 m_start_frequency;
     quint16 m_step_size;
     quint16 m_num_points;
-    void cmd_set();
     const double SCALE_FACTOR = double (qPow(2.0, 28) / (5.0*qPow(10,6)));
 };
 

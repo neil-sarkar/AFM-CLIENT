@@ -18,6 +18,8 @@ public:
     std::function<void(QByteArray)> process_callback;
     int tag;
     unsigned int num_failed_bytes;
+
+    // these are not unsigned because we can set -1 for errors
     int num_receive_bytes;
     int num_send_bytes;
 

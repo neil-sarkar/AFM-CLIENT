@@ -45,3 +45,4 @@ const char Mask_Character = 0x80;
 const int Special_Message_Character = 0xF2;
 const int Num_Meta_Data_Bytes = 2; // tag and id are the only two bytes that are 'metadata'
 const int Message_Size_Minimum = 2; // tag and id make up the minimum message
+const int Set_Receive_Bytes_Error = -1;

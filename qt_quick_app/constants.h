@@ -50,5 +50,6 @@ extern const char Mask_Character;
 extern const int Special_Message_Character;
 extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
+extern const int Set_Receive_Bytes_Error;
 
 #endif // CONSTANTS_H
