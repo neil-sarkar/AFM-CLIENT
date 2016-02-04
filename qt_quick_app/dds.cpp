@@ -3,9 +3,9 @@
 #include <QDebug>
 
 DDS::DDS() {
-    m_start_frequency = 0;
-    m_end_frequency = 0;
-    m_step_size = 0; 
+    m_start_frequency = 4000;
+    m_end_frequency = 10000;
+    m_step_size = 50;
 }
 
 void DDS::init() {
