@@ -30,7 +30,14 @@ class AFM : public AFMObject
         void init();
 
     private:
+
         void cmd_frequency_sweep();
+        void callback_cmd_frequency_sweep(QByteArray);
+
+        // typedefs
+        callback_return_type bind(void (AFM::*method)(QByteArray));
+        typedef void (AFM::*callback_type)(QByteArray);
+
 
 
 

@@ -52,7 +52,8 @@ private:
     void cmd_set_state_awake();
     void cmd_set_micro_step();
     void cmd_run_continuous();
-    std::function<void(QByteArray paylaod)> bind(void (Motor::*method)(QByteArray));
+    callback_return_type bind(void (Motor::*method)(QByteArray));
+    typedef void (Motor::*callback_type)(QByteArray);
 
     struct PayloadConstants {
         const unsigned char MotorApproach = 0x62;

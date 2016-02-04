@@ -40,7 +40,15 @@ void AFM::frequency_sweep() {
 }
 
 void AFM::cmd_frequency_sweep() {
-    CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837]);
+    CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837], bind(&AFM::callback_cmd_frequency_sweep));
     node->num_receive_bytes = Num_Meta_Data_Bytes + dds->num_points() * 4; // 4 bytes per step
     emit command_generated(node);
+}
+
+AFM::callback_return_type AFM::bind(callback_type method) {
+    return std::bind(method, this, std::placeholders::_1);
+}
+
+void AFM::callback_cmd_frequency_sweep(QByteArray return_bytes) {
+    qDebug() << "here" << return_bytes;
 }

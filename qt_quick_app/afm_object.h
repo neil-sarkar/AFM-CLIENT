@@ -10,6 +10,7 @@ class AFMObject : public QObject
 public:
     explicit AFMObject();
     virtual void init();
+    typedef std::function<void(QByteArray paylaod)> callback_return_type;
 
 signals:
     void command_generated(CommandNode* command);

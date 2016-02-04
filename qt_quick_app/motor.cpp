@@ -109,7 +109,7 @@ void Motor::cmd_set_micro_step() {
 void Motor::callback(QByteArray payload) {
 }
 
-std::function<void(QByteArray paylaod)> Motor::bind(void (Motor::*method)(QByteArray)) {
+Motor::callback_return_type Motor::bind(callback_type method) {
     // If keeping the instance alive by the time the command is called becomes an issue, use the trick showed in this post:
     // http://stackoverflow.com/questions/9281172/how-do-i-write-a-pointer-to-member-function-with-stdfunction
     return std::bind(method, this, std::placeholders::_1);

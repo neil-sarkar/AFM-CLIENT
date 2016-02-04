@@ -56,7 +56,7 @@ void ReceiveWorker::process_working_response() {
     num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-//        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
+        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
     }
     delete node;
 }
