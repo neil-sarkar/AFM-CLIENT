@@ -20,6 +20,7 @@ public:
     quint32 start_frequency();
     quint16 step_size();
     quint16 end_frequency();
+    quint16 num_steps();
     Q_INVOKABLE void cmd_set();
 
 signals:

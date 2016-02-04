@@ -73,6 +73,11 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
     if (node->num_receive_bytes == Set_Receive_Bytes_Error) {
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
     }
+
+    if (length != node->num_receive_bytes) {
+        qDebug() << length << node->num_receive_bytes;
+    }
+
     assert (length == node->num_receive_bytes);
 }
 

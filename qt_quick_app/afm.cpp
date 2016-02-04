@@ -32,16 +32,13 @@ void AFM::init() {
 }
 
 void AFM::frequency_sweep() {
-    dds->set_end_frequency(20);
-    dds->set_step_size(20);
-    dds->set_start_frequency(2000);
     dds->cmd_set();
     cmd_frequency_sweep();
 }
 
 void AFM::cmd_frequency_sweep() {
     CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837], bind(&AFM::callback_cmd_frequency_sweep));
-    node->num_receive_bytes = Num_Meta_Data_Bytes + dds->end_frequency() * 4; // 4 bytes per step
+    node->num_receive_bytes = Num_Meta_Data_Bytes + dds->num_steps() * 4; // 4 bytes per step
     emit command_generated(node);
 }
 

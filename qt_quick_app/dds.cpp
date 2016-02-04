@@ -39,6 +39,10 @@ void DDS::set_end_frequency(quint16 end_frequency) {
     }
 }
 
+quint16 DDS::num_steps() {
+    return double(m_end_frequency - m_start_frequency) / m_step_size; // cast to double to avoid divide by 0 error
+}
+
 quint32 DDS::start_frequency() {
     return m_start_frequency;
 }
@@ -55,14 +59,14 @@ void DDS::cmd_set() {
     QByteArray payload;
     quint32 scaled_start_frequency = m_start_frequency * SCALE_FACTOR;
     quint16 scaled_step_size = m_step_size * SCALE_FACTOR;
-    quint16 num_steps = double(m_end_frequency - m_start_frequency) / m_step_size; // cast to double to avoid divide by 0 error
+    quint16 _num_steps = num_steps();
     payload += qint8(scaled_start_frequency);
     payload += qint8(scaled_start_frequency >> 8);
     payload += qint8(scaled_start_frequency >> 16);
     payload += qint8(scaled_start_frequency >> 24);
     payload += qint8(scaled_step_size);
     payload += qint8(scaled_step_size >> 8);
-    payload += qint8(num_steps);
-    payload += qint8(num_steps >> 8);
+    payload += qint8(_num_steps);
+    payload += qint8(_num_steps >> 8);
     emit command_generated(new CommandNode(command_hash[DDS_Set_AD9837], payload));
 }
