@@ -11,7 +11,7 @@ Button {
         running: false
         onTriggered: {
             if (pressable_button.pressed) {
-                motor.cmd_run_continuous()
+                motor.run_continuous()
             }
         }
     }

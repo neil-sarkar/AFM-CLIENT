@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Motor_t {
     QByteArrayData data[11];
-    char stringdata0[130];
+    char stringdata0[126];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,16 +35,16 @@ QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 17), // "direction_changed"
 QT_MOC_LITERAL(4, 39, 13), // "state_changed"
 QT_MOC_LITERAL(5, 53, 15), // "cmd_single_step"
-QT_MOC_LITERAL(6, 69, 18), // "cmd_run_continuous"
-QT_MOC_LITERAL(7, 88, 19), // "cmd_stop_continuous"
-QT_MOC_LITERAL(8, 108, 5), // "speed"
-QT_MOC_LITERAL(9, 114, 9), // "direction"
-QT_MOC_LITERAL(10, 124, 5) // "state"
+QT_MOC_LITERAL(6, 69, 14), // "run_continuous"
+QT_MOC_LITERAL(7, 84, 19), // "cmd_stop_continuous"
+QT_MOC_LITERAL(8, 104, 5), // "speed"
+QT_MOC_LITERAL(9, 110, 9), // "direction"
+QT_MOC_LITERAL(10, 120, 5) // "state"
 
     },
     "Motor\0speed_changed\0\0direction_changed\0"
     "state_changed\0cmd_single_step\0"
-    "cmd_run_continuous\0cmd_stop_continuous\0"
+    "run_continuous\0cmd_stop_continuous\0"
     "speed\0direction\0state"
 };
 #undef QT_MOC_LITERAL
@@ -105,7 +105,7 @@ void Motor::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void 
         case 1: _t->direction_changed(); break;
         case 2: _t->state_changed(); break;
         case 3: _t->cmd_single_step(); break;
-        case 4: _t->cmd_run_continuous(); break;
+        case 4: _t->run_continuous(); break;
         case 5: _t->cmd_stop_continuous(); break;
         default: ;
         }

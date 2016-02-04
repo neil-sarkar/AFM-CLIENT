@@ -26,7 +26,7 @@ public:
     void init();
     void callback(QByteArray);
     Q_INVOKABLE void cmd_single_step();
-    Q_INVOKABLE void cmd_run_continuous();
+    Q_INVOKABLE void run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();
 
 signals:
@@ -51,6 +51,7 @@ private:
     void cmd_set_state_asleep();
     void cmd_set_state_awake();
     void cmd_set_micro_step();
+    void cmd_run_continuous();
     std::function<void(QByteArray paylaod)> bind(void (Motor::*method)(QByteArray));
 
     struct PayloadConstants {

@@ -55,6 +55,11 @@ void Motor::init() {
     cmd_set_state_asleep();
 }
 
+void Motor::run_continuous() {
+    cmd_run_continuous();
+    cmd_set_speed(); // for some reason this is necessary
+}
+
 void Motor::cmd_run_continuous() {
     emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous], this));
 }
