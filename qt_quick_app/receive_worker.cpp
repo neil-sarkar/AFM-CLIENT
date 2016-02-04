@@ -24,7 +24,8 @@ void ReceiveWorker::build_working_response() {
 
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
-            process_working_response(); // could technically spin up a new thread for each response process
+            if (command_queue.count())
+                process_working_response(); // could technically spin up a new thread for each response process
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
@@ -36,8 +37,8 @@ void ReceiveWorker::build_working_response() {
         byte &= ~Mask_Character; // unmask byte
         working_response = working_response.remove(working_response.length() - 1, 1); // remove the escape char from the working_response
     }
-
     working_response += byte;
+    qDebug() << working_response << command_queue.count();
 }
 
 void ReceiveWorker::process_working_response() {
@@ -57,6 +58,7 @@ void ReceiveWorker::process_working_response() {
 //        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
     }
     delete node;
+    qDebug() << "processing complete on " << node->tag;
 }
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {

@@ -29,6 +29,8 @@ Q_OBJECT
         void check_connected(); // this method runs periodically as dictated by the port_scan_timer
         int write_byte(char byte);
         void execute_command(CommandNode*);
+        void reset_mcu();
+        void initialize_reading();
 
     private:
         ThreadSafeQueue<char> bytes_received_queue;

@@ -11,8 +11,7 @@
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
-    QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
-
+    initialize_reading();
 }
 
 SerialPort::~SerialPort() { // Destructor - handle all cleanup
@@ -41,11 +40,23 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     if (port->open(QIODevice::ReadWrite)) {
         port_scan_timer->stop();
         is_connected = true;
+        reset_mcu();
         port->readAll();
-        QTimer::singleShot(2000, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
+        QTimer::singleShot(500, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
         // Also note that the signal is called 1 second after we get to this point to further mitigate lost data.
     }
     return is_connected;
+}
+
+void SerialPort::reset_mcu() {
+    // Sending a bunch of delimiters should force the mcu out of
+    // any previous state it was in and put it back in its main loop
+    for (int i = 0; i < 50; i++)
+        write_byte(Message_Delimiter);
+}
+
+void SerialPort::initialize_reading() {
+    QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
 void SerialPort::close() {
@@ -71,6 +82,7 @@ void SerialPort::on_ready_read() {
 //        qDebug() << QString().sprintf("%2p",byte);
         emit byte_received(byte);
     }
+
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it

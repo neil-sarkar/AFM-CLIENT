@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SerialPort_t {
-    QByteArrayData data[14];
-    char stringdata0[158];
+    QByteArrayData data[16];
+    char stringdata0[187];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -42,14 +42,17 @@ QT_MOC_LITERAL(9, 104, 15), // "check_connected"
 QT_MOC_LITERAL(10, 120, 10), // "write_byte"
 QT_MOC_LITERAL(11, 131, 4), // "byte"
 QT_MOC_LITERAL(12, 136, 15), // "execute_command"
-QT_MOC_LITERAL(13, 152, 5) // "close"
+QT_MOC_LITERAL(13, 152, 9), // "reset_mcu"
+QT_MOC_LITERAL(14, 162, 18), // "initialize_reading"
+QT_MOC_LITERAL(15, 181, 5) // "close"
 
     },
     "SerialPort\0connected\0\0disconnected\0"
     "message_sent\0CommandNode*\0byte_received\0"
     "on_ready_read\0scan_for_ports\0"
     "check_connected\0write_byte\0byte\0"
-    "execute_command\0close"
+    "execute_command\0reset_mcu\0initialize_reading\0"
+    "close"
 };
 #undef QT_MOC_LITERAL
 
@@ -59,7 +62,7 @@ static const uint qt_meta_data_SerialPort[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      12,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,20 +70,22 @@ static const uint qt_meta_data_SerialPort[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   64,    2, 0x06 /* Public */,
-       3,    0,   65,    2, 0x06 /* Public */,
-       4,    1,   66,    2, 0x06 /* Public */,
-       6,    1,   69,    2, 0x06 /* Public */,
+       1,    0,   74,    2, 0x06 /* Public */,
+       3,    0,   75,    2, 0x06 /* Public */,
+       4,    1,   76,    2, 0x06 /* Public */,
+       6,    1,   79,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       7,    0,   72,    2, 0x0a /* Public */,
-       8,    0,   73,    2, 0x0a /* Public */,
-       9,    0,   74,    2, 0x0a /* Public */,
-      10,    1,   75,    2, 0x0a /* Public */,
-      12,    1,   78,    2, 0x0a /* Public */,
+       7,    0,   82,    2, 0x0a /* Public */,
+       8,    0,   83,    2, 0x0a /* Public */,
+       9,    0,   84,    2, 0x0a /* Public */,
+      10,    1,   85,    2, 0x0a /* Public */,
+      12,    1,   88,    2, 0x0a /* Public */,
+      13,    0,   91,    2, 0x0a /* Public */,
+      14,    0,   92,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-      13,    0,   81,    2, 0x02 /* Public */,
+      15,    0,   93,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -94,6 +99,8 @@ static const uint qt_meta_data_SerialPort[] = {
     QMetaType::Void,
     QMetaType::Int, QMetaType::Char,   11,
     QMetaType::Void, 0x80000000 | 5,    2,
+    QMetaType::Void,
+    QMetaType::Void,
 
  // methods: parameters
     QMetaType::Void,
@@ -117,7 +124,9 @@ void SerialPort::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 7: { int _r = _t->write_byte((*reinterpret_cast< char(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         case 8: _t->execute_command((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 9: _t->close(); break;
+        case 9: _t->reset_mcu(); break;
+        case 10: _t->initialize_reading(); break;
+        case 11: _t->close(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -193,13 +202,13 @@ int SerialPort::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 12;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 12;
     }
     return _id;
 }
