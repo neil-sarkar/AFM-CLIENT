@@ -8,5 +8,6 @@
         <file>DAC.qml</file>
         <file>PGA.qml</file>
         <file>PID.qml</file>
+        <file>Sweep.qml</file>
     </qresource>
 </RCC>

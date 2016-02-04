@@ -4,19 +4,14 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    width: 1000
+    width: 400
+    height:400
     id: window
     Motor{
         id: a
     }
-    DAC {
-        id: dac_area
+    Sweep {
+        id: sweep_area
         anchors.top: a.bottom
-        anchors.topMargin: 100;
-    }
-    Button {
-        anchors.top: dac_area.bottom
-        text: "Start frequency sweep"
-        onClicked: afm.frequency_sweep();
     }
 }

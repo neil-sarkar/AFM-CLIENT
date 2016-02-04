@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DDS_t {
     QByteArrayData data[9];
-    char stringdata0[111];
+    char stringdata0[117];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,17 +33,17 @@ QT_MOC_LITERAL(0, 0, 3), // "DDS"
 QT_MOC_LITERAL(1, 4, 23), // "start_frequency_changed"
 QT_MOC_LITERAL(2, 28, 0), // ""
 QT_MOC_LITERAL(3, 29, 17), // "step_size_changed"
-QT_MOC_LITERAL(4, 47, 18), // "num_points_changed"
-QT_MOC_LITERAL(5, 66, 7), // "cmd_set"
-QT_MOC_LITERAL(6, 74, 15), // "start_frequency"
-QT_MOC_LITERAL(7, 90, 9), // "step_size"
-QT_MOC_LITERAL(8, 100, 10) // "num_points"
+QT_MOC_LITERAL(4, 47, 21), // "end_frequency_changed"
+QT_MOC_LITERAL(5, 69, 7), // "cmd_set"
+QT_MOC_LITERAL(6, 77, 15), // "start_frequency"
+QT_MOC_LITERAL(7, 93, 9), // "step_size"
+QT_MOC_LITERAL(8, 103, 13) // "end_frequency"
 
     },
     "DDS\0start_frequency_changed\0\0"
-    "step_size_changed\0num_points_changed\0"
+    "step_size_changed\0end_frequency_changed\0"
     "cmd_set\0start_frequency\0step_size\0"
-    "num_points"
+    "end_frequency"
 };
 #undef QT_MOC_LITERAL
 
@@ -97,7 +97,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: _t->start_frequency_changed(); break;
         case 1: _t->step_size_changed(); break;
-        case 2: _t->num_points_changed(); break;
+        case 2: _t->end_frequency_changed(); break;
         case 3: _t->cmd_set(); break;
         default: ;
         }
@@ -118,7 +118,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         }
         {
             typedef void (DDS::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DDS::num_points_changed)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&DDS::end_frequency_changed)) {
                 *result = 2;
             }
         }
@@ -131,7 +131,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: *reinterpret_cast< quint32*>(_v) = _t->start_frequency(); break;
         case 1: *reinterpret_cast< quint16*>(_v) = _t->step_size(); break;
-        case 2: *reinterpret_cast< quint16*>(_v) = _t->num_points(); break;
+        case 2: *reinterpret_cast< quint16*>(_v) = _t->end_frequency(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -141,7 +141,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: _t->set_start_frequency(*reinterpret_cast< quint32*>(_v)); break;
         case 1: _t->set_step_size(*reinterpret_cast< quint16*>(_v)); break;
-        case 2: _t->set_num_points(*reinterpret_cast< quint16*>(_v)); break;
+        case 2: _t->set_end_frequency(*reinterpret_cast< quint16*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -216,7 +216,7 @@ void DDS::step_size_changed()
 }
 
 // SIGNAL 2
-void DDS::num_points_changed()
+void DDS::end_frequency_changed()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, Q_NULLPTR);
 }

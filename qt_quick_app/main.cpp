@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     QQmlContext* context = engine.rootContext();
     context->setContextProperty("motor", afm->motor);
     context->setContextProperty("afm", afm);
+    context->setContextProperty("dds", afm->dds);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Thread connections (to abstract later)

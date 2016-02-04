@@ -3,7 +3,8 @@ import QtQuick.Controls 1.4
 
 Item {
     id: motor_controls
-
+    height: 100
+    width: 100
     MotorButton {
         id: approach_button
         text: "Approach"
