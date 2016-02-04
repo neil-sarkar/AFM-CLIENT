@@ -39,10 +39,8 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     if (port->open(QIODevice::ReadWrite)) {
         port_scan_timer->stop();
         is_connected = true;
-        reset_mcu();
         initialize_reading();
-        QTimer::singleShot(500, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
-        // Also note that the signal is called 1 second after we get to this point to further mitigate lost data.
+        reset_mcu();
     }
     return is_connected;
 }
@@ -57,7 +55,6 @@ void SerialPort::reset_mcu() {
     write_byte('B');
     write_byte('C');
     write_byte('D');
-    assert (port->waitForReadyRead(100)); // we wait for 100 ms for the MCU to respond that it has reset
 }
 
 void SerialPort::initialize_reading() {
