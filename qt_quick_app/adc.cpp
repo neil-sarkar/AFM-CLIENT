@@ -24,3 +24,7 @@ const int ADC::Y_2 = 8;
 const int ADC::Z = 2;
 const int ADC::Z_Piezoresistor_Amplitude = 5;
 const int ADC::Phase = 0;
+
+const double ADC::MAX_VOLTAGE = 2.5;
+const int ADC::RESOLUTION = 4095;
+const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;

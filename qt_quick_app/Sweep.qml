@@ -49,6 +49,8 @@ Item {
         anchors.left: label3.right
         value: dds.step_size
         onValueChanged: dds.step_size = value;
+        minimumValue: 1
+        maximumValue: 1000
     }
 
 }

@@ -5,6 +5,7 @@
 
 PGA::PGA(qint8 id) {
     m_id = id;
+    m_value = default_value(m_id); // attenuation amount (%)
 }
 
 void PGA::set_value(double value) {
@@ -43,3 +44,22 @@ const int PGA::Z_Fine = 5;
 const int PGA::DDS_Amplitude = 6;
 const int PGA::Z_Coarse = 7;
 const int PGA::Leveling = 8;
+
+
+int PGA::default_value(int id) {
+    switch (id) {
+        case PGA::X_1:
+        case PGA::X_2:
+        case PGA::Y_1:
+        case PGA::Y_2:
+        case PGA::Z_Coarse:
+            return 100;
+        case PGA::Leveling:
+            return 0;
+        case PGA::Z_Fine:
+            return 5;
+        case PGA::DDS_Amplitude:
+            return 10;
+    }
+}
+

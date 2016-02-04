@@ -23,6 +23,7 @@ public:
     static const int DDS_Amplitude;
     static const int Z_Coarse;
     static const int Leveling;
+    static int default_value(int id);
 
 
 signals:
