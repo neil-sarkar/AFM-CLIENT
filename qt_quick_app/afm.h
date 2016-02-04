@@ -18,13 +18,11 @@ class AFM : public QObject
         QHash<int, AFMObject*> ADC_collection;
         Motor* motor;
         PID* pid;
-        QTimer *timer;
 
     signals:
 
     public slots:
         void init();
-        void start();
 
     private:
 

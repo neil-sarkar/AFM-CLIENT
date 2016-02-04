@@ -44,7 +44,7 @@ void ReceiveWorker::build_working_response() {
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
-//    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
+    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
     if (response_tag == Special_Message_Character) {
         handle_asynchronous_message();
         return;

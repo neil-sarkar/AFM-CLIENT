@@ -66,13 +66,11 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 }
 
 void SerialPort::on_ready_read() {
-    qDebug() << "RECEIVING";
     QByteArray q = port->readAll();
     for (char byte : q) {
 //        qDebug() << QString().sprintf("%2p",byte);
         emit byte_received(byte);
     }
-    qDebug() << "Writing";
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -90,7 +88,7 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 }
 
 void SerialPort::execute_command(CommandNode* command_node) {
-//    qDebug() << "Tag: " << command_node->tag << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
+    qDebug() << "Tag: " << command_node->tag << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
     result += write_byte(Message_Delimiter); // delimit the message
     for (char payload_byte : command_node->payload) // send all the associated data with the command
