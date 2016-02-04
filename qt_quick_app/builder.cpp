@@ -3,6 +3,7 @@
 #include "dac.h"
 #include "adc.h"
 #include "pga.h"
+#include "dds.h"
 #include "serial_port.h"
 #include "send_worker.h"
 #include "receive_worker.h"
@@ -51,8 +52,8 @@ AFM* Builder::build_afm() {
 
     Motor* motor = new Motor();
     PID* pid = new PID();
-
-    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid);
+    DDS* dds = new DDS();
+    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, dds);
 }
 
 
@@ -67,6 +68,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     // There is likely a cleaner way to connect all the command_generated SIGNALS to the enqueue_command SLOT as command_generated is inherited from AFMObject
     QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     wire_hash_command_generated(afm->ADC_collection, send_worker);
     wire_hash_command_generated(afm->DAC_collection, send_worker);
     wire_hash_command_generated(afm->PGA_collection, send_worker);
@@ -111,20 +113,20 @@ void Builder::generate_command_nodes() {
        QList<QByteArray> line = file.readLine().split(delimiter); // tab separated values
        if (line[in_use_index] == "1") {
            CommandNode node = CommandNode(); // create a new CommandNode
-           node.id= bytes_to_int(line[id_index], line);
-           node.num_send_bytes = bytes_to_int(line[num_send_bytes_index], line);
-           node.num_receive_bytes = bytes_to_int(line[num_receive_bytes_index], line);
+           node.id= bytes_to_int(line[id_index], line, 16);
+           node.num_send_bytes = bytes_to_int(line[num_send_bytes_index], line, 10);
+           node.num_receive_bytes = bytes_to_int(line[num_receive_bytes_index], line, 10);
            command_hash[line[message_index]] = node;
        }
     }
     qDebug() << "Loaded " << command_hash.size() << "command node types.";
 }
 
-int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line) {
+int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base) {
     bytes.resize(2); // force it to be two bytes long (might not be necessary)
     bytes = bytes.simplified(); // remove any newlines or carriage returns [MIGHT CAUSE ISSUES]
     bool conversion_successful; // need this to call toInt() method below
-    int result = bytes.toInt(&conversion_successful, 16);
+    int result = bytes.toInt(&conversion_successful, base);
 
     if (conversion_successful)
         return result;

@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     builder.cpp \
     afm_object.cpp \
     constants.cpp \
-    command_node.cpp
+    command_node.cpp \
+    dds.cpp
 
 RESOURCES += qml.qrc
 
@@ -49,7 +50,8 @@ HEADERS += \
     pid.h \
     builder.h \
     afm_object.h \
-    constants.h
+    constants.h \
+    dds.h
 
 DISTFILES += \
     command_spec.tsv

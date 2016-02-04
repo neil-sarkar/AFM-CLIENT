@@ -1,14 +1,16 @@
 #include "afm.h"
 #include "dac.h"
+#include "dds.h"
 #include "afm_object.h"
 #include "serial_port.h"
 
-AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid) {
+AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, DDS* dds) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
     this->motor = motor;
     this->pid = pid;
+    this->dds = dds;
 }
 
 void AFM::init() {
@@ -25,4 +27,5 @@ void AFM::init() {
 
     motor->init();
     pid->init();
+    dds->init();
 }

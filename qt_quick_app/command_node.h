@@ -22,6 +22,7 @@ public:
     int num_send_bytes;
 
     CommandNode(const CommandNode& other, QObject* _instance, QByteArray _payload = 0);
+    CommandNode(const CommandNode& other, QByteArray _payload);
     CommandNode(const CommandNode& other, std::function<void(QByteArray)> _process_callback, QByteArray _payload = 0);
     CommandNode() {}
     CommandNode(const CommandNode& other); // copy constructor
