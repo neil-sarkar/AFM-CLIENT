@@ -11,7 +11,6 @@ ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
     assert (command_queue.isFull() == false);
-//    emit hurry_up();
     command_queue.enqueue(command_node);
 }
 

@@ -75,9 +75,6 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(receive_worker, SIGNAL(mcu_reset_message_received()), afm, SLOT(init()));
 
 
-    QObject::connect(receive_worker, SIGNAL(hurry_up()), serial_port, SLOT(on_ready_read()), Qt::DirectConnection);
-
-
     // Misc connections
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);

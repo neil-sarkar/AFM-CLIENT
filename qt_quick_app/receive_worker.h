@@ -17,7 +17,6 @@ signals:
     void command_received();
     void response_byte_received();
     void mcu_reset_message_received();
-    void hurry_up();
 
 public slots:
     void enqueue_command(CommandNode*);
