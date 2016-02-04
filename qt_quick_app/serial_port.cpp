@@ -6,11 +6,13 @@
 #include <QDebug>
 #include <QTimer>
 #include <QTextCodec>
+#include <assert.h>
 #include "constants.h"
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
     QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
+
 }
 
 SerialPort::~SerialPort() { // Destructor - handle all cleanup
@@ -64,13 +66,13 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 }
 
 void SerialPort::on_ready_read() {
-//    qDebug() << "RECEIVING";
+    qDebug() << "RECEIVING";
     QByteArray q = port->readAll();
     for (char byte : q) {
-        qDebug() << QString().sprintf("%2p",byte);
+//        qDebug() << QString().sprintf("%2p",byte);
         emit byte_received(byte);
     }
-
+    qDebug() << "Writing";
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
@@ -88,14 +90,16 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 }
 
 void SerialPort::execute_command(CommandNode* command_node) {
-    qDebug() << "Tag: " << QString().sprintf("%2p", command_node->tag) << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
+//    qDebug() << "Tag: " << command_node->tag << "Id: " << QString().sprintf("%2p", command_node->id)<< "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
     result += write_byte(Message_Delimiter); // delimit the message
     for (char payload_byte : command_node->payload) // send all the associated data with the command
         result += write_byte(payload_byte);
     result += write_byte(Message_Delimiter); // delimit the message
-    command_node->num_failed_bytes = -result;
-    emit message_sent(command_node);
+    assert (result == 0);
+
+    if (!result)
+        emit message_sent(command_node);
 
     // should we wait for ready read here?
 }

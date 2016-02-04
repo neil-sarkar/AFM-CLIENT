@@ -5,12 +5,14 @@
 
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 {
+    num_commands_received = 0;
     QObject::connect(this, SIGNAL(response_byte_received()), this, SLOT(build_working_response()));
 }
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
+    assert (command_queue.isFull() == false);
+//    emit hurry_up();
     command_queue.enqueue(command_node);
-    emit command_received();
 }
 
 void ReceiveWorker::enqueue_response_byte(char byte) {
@@ -42,23 +44,29 @@ void ReceiveWorker::build_working_response() {
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
+//    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
     if (response_tag == Special_Message_Character) {
         handle_asynchronous_message();
         return;
     }
 
-
+    assert (command_queue.isFull() == false);
     CommandNode* node = command_queue.dequeue();
-    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
+    num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
+//        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
     }
     delete node;
 }
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
-    assert (tag == node->tag);
+    if (tag != node->tag) {
+        qDebug() << "Command queue count" << command_queue.count();
+        qDebug() << "Number of commands received" << num_commands_received;
+        qDebug() << "tag mismatch " << tag << node->tag;
+        assert (tag == node->tag);
+    }
     assert (id  == node->id);
     assert (length == node->num_receive_bytes);
 }

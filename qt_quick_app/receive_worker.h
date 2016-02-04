@@ -17,6 +17,7 @@ signals:
     void command_received();
     void response_byte_received();
     void mcu_reset_message_received();
+    void hurry_up();
 
 public slots:
     void enqueue_command(CommandNode*);
@@ -34,6 +35,7 @@ private:
     void handle_asynchronous_message();
     bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
+    int num_commands_received;
 
 
 };

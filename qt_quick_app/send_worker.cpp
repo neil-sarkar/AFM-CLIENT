@@ -1,5 +1,6 @@
 #include "send_worker.h"
 #include "constants.h"
+#include <assert.h>
 #include <QDebug>
 
 SendWorker::SendWorker(QObject *parent) : QObject(parent)
@@ -11,6 +12,7 @@ SendWorker::SendWorker(QObject *parent) : QObject(parent)
 void SendWorker::enqueue_command(CommandNode* command_node) {
     command_node->tag = iterate_tag(); // assign tag then increment
     command_queue.enqueue(command_node);
+    assert (command_queue.isFull() == false);
     emit command_received(); // emit this signal so that we're processing dequeue's in the send_workers event loop, not in the caller thread's event loop which would be blocking
 }
 
@@ -29,15 +31,15 @@ void SendWorker::populate_send_bytes(CommandNode* command_node) {
 }
 
 int SendWorker::iterate_tag() {
-    tag = (tag + 1) % 255;
-    if (tag == Message_Delimiter || tag == Escape_Character) // we can't write these - they're deemed special characters
+    tag = (tag + 1) % 256;
+    if (tag == Message_Delimiter || tag == Escape_Character || tag == Special_Message_Character) // we can't write these - they're deemed special characters
         return iterate_tag();
     return tag;
 }
 
 void SendWorker::validate_send_length(CommandNode* command_node) {
-    if (command_node->payload.length() != command_node->num_send_bytes - Num_Meta_Data_Bytes)  // we haven't added the tag or id yet, hence subtract num_meta_data_bytes
-        qDebug() << "ERROR" << command_node->id << command_node->payload.length() << command_node->num_send_bytes; // raise exception
+    assert (command_node->payload.length() == command_node->num_send_bytes - Num_Meta_Data_Bytes);
+    // we haven't added the tag or id yet, hence subtract num_meta_data_bytes
 }
 
 void SendWorker::mask_special_characters(CommandNode* command_node) {
