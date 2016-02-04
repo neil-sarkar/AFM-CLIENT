@@ -35,6 +35,7 @@ private:
     bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
     int num_commands_received;
+    bool print;
 
 
 };
