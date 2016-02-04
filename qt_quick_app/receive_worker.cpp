@@ -25,6 +25,12 @@ void ReceiveWorker::build_working_response() {
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (command_queue.count())
                 process_working_response(); // could technically spin up a new thread for each response process
+            else if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character) {
+                qDebug() << "got async message";
+                handle_asynchronous_message();
+            } else {
+                qDebug() << "i dont know" << working_response.at(0);
+            }
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
@@ -37,17 +43,13 @@ void ReceiveWorker::build_working_response() {
         working_response = working_response.remove(working_response.length() - 1, 1); // remove the escape char from the working_response
     }
     working_response += byte;
+
 }
 
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
     qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
-
-    if (response_tag == Special_Message_Character) {
-        handle_asynchronous_message();
-        return;
-    }
 
     assert (command_queue.isFull() == false);
     CommandNode* node = command_queue.dequeue();

@@ -37,11 +37,10 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     port->setPortName(port_name);
     port->setBaudRate(baud_rate);
     if (port->open(QIODevice::ReadWrite)) {
-//        port_scan_timer->stop();
+        port_scan_timer->stop();
         is_connected = true;
-        port->readAll(); // Read any data left on the port
-        initialize_reading();
         reset_mcu();
+        initialize_reading();
         QTimer::singleShot(500, this, SIGNAL(connected())); // Signal emitted after timer is stopped - otherwise the port scan timer might try to fire again and then cause issues in if a message gets sent.
         // Also note that the signal is called 1 second after we get to this point to further mitigate lost data.
     }
@@ -51,11 +50,18 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
 void SerialPort::reset_mcu() {
     // Sending a bunch of delimiters should force the mcu out of
     // any previous state it was in and put it back in its main loop
-    for (int i = 0; i < 50; i++)
-        write_byte(Message_Delimiter);
+//    for (int i = 0; i < 50; i++)
+//        write_byte(Message_Delimiter);
+    write_byte('M');
+    write_byte('A');
+    write_byte('B');
+    write_byte('C');
+    write_byte('D');
+    assert (port->waitForReadyRead(100)); // we wait for 100 ms for the MCU to respond that it has reset
 }
 
 void SerialPort::initialize_reading() {
+    port->readAll(); // Read any data left on the port
     QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
@@ -78,6 +84,7 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 void SerialPort::on_ready_read() {
     QByteArray q = port->readAll();
     for (char byte : q) {
+//        qDebug() << QString().sprintf("%2p",byte);
         emit byte_received(byte);
     }
 }
@@ -88,7 +95,7 @@ void SerialPort::check_connected() { // In order to check if the AFM is connecte
     if (port->peek(temp_buffer, sizeof(temp_buffer)) == -1) // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
         auto_connect(); // call auto_connect() since we're not connected
     else {
-       on_ready_read();
+       on_ready_read(); // ensure that any bytes missed by the last read operation get processed
     }
 }
 
