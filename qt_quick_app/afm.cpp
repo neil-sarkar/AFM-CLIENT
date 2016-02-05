@@ -1,6 +1,7 @@
 #include "afm.h"
 #include "dac.h"
 #include "dds.h"
+#include "adc.h"
 #include "afm_object.h"
 #include "constants.h"
 #include "serial_port.h"
@@ -28,6 +29,14 @@ void AFM::init() {
     motor->init();
     pid->init();
     sweeper->init();
+}
+
+void AFM::cmd_start_auto_approach() {
+    quint16 scaled_setpoint = 1.0/ADC::SCALE_FACTOR;
+    QByteArray payload;
+    payload += (scaled_setpoint & 0xFF);
+    payload += ((scaled_setpoint & 0xFF) >> 8);
+    emit command_generated(new CommandNode(command_hash[AFM_Begin_Auto_Approach], payload));
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {

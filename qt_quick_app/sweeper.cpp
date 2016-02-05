@@ -104,6 +104,7 @@ Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
 
 int Sweeper::find_peak() {
     // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
+    // http://billauer.co.il/peakdet.html
     QVector<double> data;
     for (int i = 0; i < m_amplitude_data.size(); i++)
         data.append(m_amplitude_data[i].y());

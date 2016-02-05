@@ -34,6 +34,7 @@ class AFM : public AFMObject
         // typedefs
         callback_return_type bind(void (AFM::*method)(QByteArray));
         typedef void (AFM::*callback_type)(QByteArray);
+        void cmd_start_auto_approach();
 
 
 
