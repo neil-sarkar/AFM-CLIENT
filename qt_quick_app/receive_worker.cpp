@@ -21,8 +21,19 @@ void ReceiveWorker::enqueue_response_byte(char byte) {
 }
 
 void ReceiveWorker::build_working_response() {
-    bool print = false;
     quint8 byte = response_byte_queue.dequeue();
+
+    if (byte == Escape_Character && !escape) {
+        escape = true;
+        return;
+    }
+    if (escape) { // previous char was escape character
+        byte &= ~Mask_Character; // unmask byte
+        escape = false;
+        working_response += byte;
+        return;
+    }
+
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
@@ -30,27 +41,14 @@ void ReceiveWorker::build_working_response() {
             else if (command_queue.count())
                 process_working_response(); // could technically spin up a new thread for each response process
             else
-                qDebug() << "i dont know" << working_response.at(0);
+                qDebug() << "This async command is not accounted for" << working_response.at(0);
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
             return;
         }
     }
-
-    if (working_response.length() && working_response.endsWith(Escape_Character)) { // previous char was escape character
-        qDebug() << "Processing byte after escape character" << working_response << QString().sprintf("%2p",byte);
-        byte = byte & (~Mask_Character); // unmask byte
-        qDebug() << "Byte after processing" << QString().sprintf("%2p",byte);
-        working_response.chop(1); // remove the escape char from the working_response
-        qDebug() << "Response after chopping" << working_response;
-        print = true;
-    }
-
     working_response += byte;
-    if (print)
-        qDebug() << "Response after adding" << working_response;
-
 }
 
 void ReceiveWorker::process_working_response() {

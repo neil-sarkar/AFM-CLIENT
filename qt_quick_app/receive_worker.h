@@ -40,7 +40,7 @@ private:
     void handle_auto_approach_stopped_message();
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
     int num_commands_received;
-    bool print;
+    bool escape;
 
 
 };
