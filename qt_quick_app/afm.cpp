@@ -6,13 +6,14 @@
 #include "constants.h"
 #include "serial_port.h"
 
-AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, Sweeper* sweeper) {
+AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, Sweeper* sweeper, Approacher* approacher) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
     this->motor = motor;
     this->pid = pid;
     this->sweeper = sweeper;
+    this->approacher = approacher;
 }
 
 void AFM::init() {
@@ -29,14 +30,6 @@ void AFM::init() {
     motor->init();
     pid->init();
     sweeper->init();
-}
-
-void AFM::cmd_start_auto_approach() {
-    quint16 scaled_setpoint = 1.0/ADC::SCALE_FACTOR;
-    QByteArray payload;
-    payload += (scaled_setpoint & 0xFF);
-    payload += ((scaled_setpoint & 0xFF00) >> 8);
-    emit command_generated(new CommandNode(command_hash[AFM_Begin_Auto_Approach], payload));
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {

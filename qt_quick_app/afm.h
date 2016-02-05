@@ -10,6 +10,7 @@
 #include "pid.h"
 #include "afm_object.h"
 #include "sweeper.h"
+#include "approacher.h"
 #include <QStateMachine>
 
 
@@ -17,19 +18,19 @@ class AFM : public AFMObject
 {
     Q_OBJECT
     public:
-        explicit AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, Sweeper* sweeper);
+        explicit AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, Sweeper* sweeper, Approacher* approacher);
         QHash<int, AFMObject*> PGA_collection;
         QHash<int, AFMObject*> DAC_collection;
         QHash<int, AFMObject*> ADC_collection;
         Motor* motor;
         PID* pid;
         Sweeper* sweeper;
+        Approacher* approacher;
 
     signals:
 
     public slots:
         void init();
-        Q_INVOKABLE void cmd_start_auto_approach();
 
     private:
         // typedefs

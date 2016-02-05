@@ -14,11 +14,7 @@ Window {
         id: sweep_area
         anchors.top: a.bottom
     }
-    Button {
-        x: 0
-        y: 75
-        text: "auto approach"
-        id: auto_approach
-        onClicked: afm.cmd_start_auto_approach();
+    Approach {
+
     }
 }

@@ -9,5 +9,6 @@
         <file>PGA.qml</file>
         <file>PID.qml</file>
         <file>Sweep.qml</file>
+        <file>Approach.qml</file>
     </qresource>
 </RCC>

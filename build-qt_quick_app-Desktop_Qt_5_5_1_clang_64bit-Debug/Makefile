@@ -64,7 +64,8 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		../qt_quick_app/constants.cpp \
 		../qt_quick_app/command_node.cpp \
 		../qt_quick_app/dds.cpp \
-		../qt_quick_app/sweeper.cpp qrc_qml.cpp \
+		../qt_quick_app/sweeper.cpp \
+		../qt_quick_app/approacher.cpp qrc_qml.cpp \
 		moc_receiver.cpp \
 		moc_serial_port.cpp \
 		moc_adc.cpp \
@@ -78,7 +79,8 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		moc_pid.cpp \
 		moc_afm_object.cpp \
 		moc_dds.cpp \
-		moc_sweeper.cpp
+		moc_sweeper.cpp \
+		moc_approacher.cpp
 OBJECTS       = main.o \
 		receiver.o \
 		serial_port.o \
@@ -96,6 +98,7 @@ OBJECTS       = main.o \
 		command_node.o \
 		dds.o \
 		sweeper.o \
+		approacher.o \
 		qrc_qml.o \
 		moc_receiver.o \
 		moc_serial_port.o \
@@ -110,7 +113,8 @@ OBJECTS       = main.o \
 		moc_pid.o \
 		moc_afm_object.o \
 		moc_dds.o \
-		moc_sweeper.o
+		moc_sweeper.o \
+		moc_approacher.o
 DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/test.html \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
@@ -277,7 +281,8 @@ DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/constants.h \
 		../qt_quick_app/dds.h \
-		../qt_quick_app/sweeper.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/sweeper.h \
+		../qt_quick_app/approacher.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -293,7 +298,8 @@ DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/constants.cpp \
 		../qt_quick_app/command_node.cpp \
 		../qt_quick_app/dds.cpp \
-		../qt_quick_app/sweeper.cpp
+		../qt_quick_app/sweeper.cpp \
+		../qt_quick_app/approacher.cpp
 QMAKE_TARGET  = qt_quick_app
 DESTDIR       = ../qt_quick_app/#avoid trailing-slash linebreak
 TARGET        = ../qt_quick_app/qt_quick_app.app/Contents/MacOS/qt_quick_app
@@ -682,8 +688,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h ../qt_quick_app/builder.h ../qt_quick_app/afm_object.h ../qt_quick_app/constants.h ../qt_quick_app/dds.h ../qt_quick_app/sweeper.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/builder.cpp ../qt_quick_app/afm_object.cpp ../qt_quick_app/constants.cpp ../qt_quick_app/command_node.cpp ../qt_quick_app/dds.cpp ../qt_quick_app/sweeper.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h ../qt_quick_app/builder.h ../qt_quick_app/afm_object.h ../qt_quick_app/constants.h ../qt_quick_app/dds.h ../qt_quick_app/sweeper.h ../qt_quick_app/approacher.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/builder.cpp ../qt_quick_app/afm_object.cpp ../qt_quick_app/constants.cpp ../qt_quick_app/command_node.cpp ../qt_quick_app/dds.cpp ../qt_quick_app/sweeper.cpp ../qt_quick_app/approacher.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -717,14 +723,15 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/PGA.qml \
 		../qt_quick_app/Sweep.qml \
 		../qt_quick_app/Motor.qml \
+		../qt_quick_app/Approach.qml \
 		../qt_quick_app/MotorButton.qml \
 		../qt_quick_app/main.qml \
 		../qt_quick_app/MyItem.qml
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
-compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp
+compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp
+	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp
 moc_receiver.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		../qt_quick_app/receiver.h
@@ -799,6 +806,9 @@ moc_afm.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		../qt_quick_app/sweeper.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
 		../qt_quick_app/afm.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm.h -o moc_afm.cpp
 
@@ -896,8 +906,19 @@ moc_sweeper.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObje
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/sweeper.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/sweeper.h -o moc_sweeper.cpp
+
+moc_approacher.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/afm_object.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/approacher.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/approacher.h -o moc_approacher.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -966,6 +987,9 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		../qt_quick_app/sweeper.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDir \
@@ -1064,6 +1088,9 @@ afm.o: ../qt_quick_app/afm.cpp ../qt_quick_app/afm.h \
 		../qt_quick_app/sweeper.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
 		../qt_quick_app/constants.h \
 		../qt_quick_app/serial_port.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/QSerialPort \
@@ -1121,6 +1148,8 @@ receive_worker.o: ../qt_quick_app/receive_worker.cpp ../qt_quick_app/receive_wor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
 		../qt_quick_app/constants.h \
+		../qt_quick_app/adc.h \
+		../qt_quick_app/afm_object.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers/QtConcurrent \
 		/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers/qtconcurrentcompilertest.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers/qtconcurrentexception.h \
@@ -1185,6 +1214,9 @@ builder.o: ../qt_quick_app/builder.cpp ../qt_quick_app/builder.h \
 		../qt_quick_app/sweeper.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
 		../qt_quick_app/serial_port.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/QSerialPort \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/qserialport.h \
@@ -1249,11 +1281,24 @@ sweeper.o: ../qt_quick_app/sweeper.cpp ../qt_quick_app/sweeper.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/adc.h \
 		../qt_quick_app/constants.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QFinalState \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qfinalstate.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sweeper.o ../qt_quick_app/sweeper.cpp
+
+approacher.o: ../qt_quick_app/approacher.cpp ../qt_quick_app/approacher.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/afm_object.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/constants.h \
+		../qt_quick_app/adc.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o approacher.o ../qt_quick_app/approacher.cpp
 
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
@@ -1299,6 +1344,9 @@ moc_dds.o: moc_dds.cpp
 
 moc_sweeper.o: moc_sweeper.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sweeper.o moc_sweeper.cpp
+
+moc_approacher.o: moc_approacher.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_approacher.o moc_approacher.cpp
 
 ####### Install
 

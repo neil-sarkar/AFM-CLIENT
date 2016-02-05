@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("motor", afm->motor);
     context->setContextProperty("afm", afm);
     context->setContextProperty("sweeper", afm->sweeper);
+    context->setContextProperty("approacher", afm->approacher);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Thread connections (to abstract later)

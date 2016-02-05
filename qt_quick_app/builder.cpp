@@ -9,6 +9,7 @@
 #include "sweeper.h"
 #include "receive_worker.h"
 #include "constants.h"
+#include "approacher.h"
 #include <iostream>
 #include <iomanip>
 #include <QFinalState>
@@ -54,9 +55,10 @@ AFM* Builder::build_afm() {
 
     Motor* motor = new Motor();
     PID* pid = new PID();
+    Approacher* approacher = new Approacher();
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
-    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, sweeper);
+    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, sweeper, approacher);
 
 }
 
@@ -75,6 +77,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(afm->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     wire_hash_command_generated(afm->ADC_collection, send_worker);
     wire_hash_command_generated(afm->DAC_collection, send_worker);
     wire_hash_command_generated(afm->PGA_collection, send_worker);

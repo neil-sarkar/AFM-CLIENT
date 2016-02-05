@@ -101,7 +101,8 @@ bool ReceiveWorker::is_mcu_reset_message() {
 }
 
 void ReceiveWorker::handle_auto_approach_info_message() {
-    qDebug() << static_cast<unsigned char>(working_response.at(2)) << "  " << double(quint16((quint8(working_response.at(4)) << 8)| quint8(working_response.at(3)))) * ADC::SCALE_FACTOR;
+    double adc_value = double(quint16((quint8(working_response.at(4)) << 8)| quint8(working_response.at(3)))) * ADC::SCALE_FACTOR;
+    qDebug() << static_cast<unsigned char>(working_response.at(2)) << "  " << adc_value;
 }
 
 bool ReceiveWorker::is_auto_approach_info() {
