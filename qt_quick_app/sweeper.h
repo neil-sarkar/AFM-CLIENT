@@ -5,12 +5,13 @@
 #include "afm_object.h"
 #include "dds.h"
 #include <QStateMachine>
+#include <QPointF>
 
 class Sweeper : public AFMObject
 {
     Q_OBJECT
 public:
-    typedef QVector<double> data_model;
+    typedef QVector<QPointF> data_model;
     typedef void (Sweeper::*callback_type)(QByteArray);
 
     explicit Sweeper();
@@ -23,6 +24,7 @@ public:
 signals:
     void sweep_done();
     void peak_detection_done();
+    void peak_detection_failed();
     void machine_finished();
 
 public slots:

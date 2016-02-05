@@ -1,21 +1,19 @@
 #include "sweeper.h"
 #include "adc.h"
 #include "constants.h"
+#include <QPointF>
 #include "QFinalState"
 
 Sweeper::Sweeper() {
     // to be loaded from a settings file
-    m_num_repetitions = 4;
+    m_num_repetitions = 2;
     m_repetitions_counter = 0;
     m_starting_center_frequency = m_current_resonant_frequency = 7000;
-    m_step_sizes.append(100);
-    m_step_sizes.append(20);
-    m_step_sizes.append(2);
-    m_step_sizes.append(1);
+    m_step_sizes.append(50);
     m_boundaries.append(5000);
+    m_step_sizes.append(1);
     m_boundaries.append(100);
-    m_boundaries.append(10);
-    m_boundaries.append(1);
+    qDebug() << m_boundaries;
 }
 
 void Sweeper::init() {
@@ -30,6 +28,7 @@ void Sweeper::init() {
     sweep->addTransition(this, SIGNAL(sweep_done()), detect_peak);
     sweep->addTransition(this, SIGNAL(machine_finished()), finish);
     detect_peak->addTransition(this, SIGNAL(peak_detection_done()), sweep);
+    detect_peak->addTransition(this, SIGNAL(peak_detection_failed()), finish);
 
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
@@ -64,18 +63,18 @@ void Sweeper::frequency_sweep() {
     qDebug() << "LOWER" << dds->start_frequency() << "UPPER" << dds->end_frequency();
     dds->cmd_set();
     cmd_frequency_sweep();
-    m_repetitions_counter += 1;
 }
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
+    quint32 current_frequency;
     for (int i = Num_Meta_Data_Bytes; i < return_bytes.size(); i += 4) {
-        quint16 amplitude_value = bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]));
-        quint16 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
-        m_amplitude_data.append(double(amplitude_value) * ADC::SCALE_FACTOR);
-        m_phase_data.append(double(phase_value) * ADC::SCALE_FACTOR);
+        current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
+        quint32 amplitude_value = bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]));
+        quint32 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
+        m_amplitude_data.append(QPointF(current_frequency, double(amplitude_value) * ADC::SCALE_FACTOR));
+        m_phase_data.append(QPointF(current_frequency, double(phase_value) * ADC::SCALE_FACTOR));
     }
-    qDebug() << "amplitude" << m_amplitude_data;
-//    qDebug() << "phase" << m_phase_data;
+    m_repetitions_counter += 1;
     emit sweep_done();
 }
 
@@ -92,8 +91,10 @@ Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
 
 int Sweeper::find_peak() {
     // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
-    data_model data = this->m_amplitude_data;
-    int data_count = this->m_amplitude_data.size();
+    QVector<double> data;
+    for (int i = 0; i < m_amplitude_data.size(); i++)
+        data.append(m_amplitude_data[i].y());
+    int data_count = data.size();
     int emi_peaks[500];
     int num_emi_peaks[500];
     int max_emi_peaks = 500;
@@ -102,20 +103,7 @@ int Sweeper::find_peak() {
     int max_absop_peaks = 500;
     double delta = 1e-6;
     int emi_first = 0;
-//            const double*   data, /* the data */
-//            int             data_count, /* row count of data */
-//            int*            emi_peaks, /* emission peaks will be put here */
-//            int*            num_emi_peaks, /* number of emission peaks found */
-//            int             max_emi_peaks, /* maximum number of emission peaks */
-//            int*            absop_peaks, /* absorption peaks will be put here */
-//            int*            num_absop_peaks, /* number of absorption peaks found */
-//            int             max_absop_peaks, /* maximum number of absorption peaks
-//                                                */
-//            double          delta, /* delta used for distinguishing peaks */
-//            int             emi_first /* should we search emission peak first of
-//                                         absorption peak first? */
-//            )
-//    {
+
     int     i;
     double  mx;
     double  mn;
@@ -146,8 +134,10 @@ int Sweeper::find_peak() {
         if(is_detecting_emi &&
                 data[i] < mx - delta)
         {
-            if(*num_emi_peaks >= max_emi_peaks) /* not enough spaces */
+            if(*num_emi_peaks >= max_emi_peaks) /* not enough spaces */ {
+                emit peak_detection_failed();
                 return 1;
+            }
 
             emi_peaks[*num_emi_peaks] = mx_pos;
             ++ (*num_emi_peaks);
@@ -162,8 +152,10 @@ int Sweeper::find_peak() {
         else if((!is_detecting_emi) &&
                 data[i] > mn + delta)
         {
-            if(*num_absop_peaks >= max_absop_peaks)
+            if(*num_absop_peaks >= max_absop_peaks) {
+                emit peak_detection_failed();
                 return 2;
+            }
 
             absop_peaks[*num_absop_peaks] = mn_pos;
             ++ (*num_absop_peaks);
@@ -176,16 +168,17 @@ int Sweeper::find_peak() {
             mx_pos = mn_pos;
         }
     }
-    emit peak_detection_done();
     qDebug() << "here";
     double max = 0;
     int max_index = -1;
     for (int i = 0; i < *num_emi_peaks; i++) {
         if (data[emi_peaks[i]] > max) {
             max = data[emi_peaks[i]];
-            max_index = i;
+            max_index = emi_peaks[i];
         }
     }
-    qDebug() << "max amp" << max << max_index;
+    qDebug() << "max amp" << max << m_amplitude_data[max_index].x();
+    m_current_resonant_frequency = m_amplitude_data[max_index].x();
+    emit peak_detection_done();
     return 0;
 }
