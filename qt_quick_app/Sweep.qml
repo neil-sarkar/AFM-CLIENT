@@ -8,7 +8,7 @@ Item {
     Button {
         id: start_button
         text: "Start Sweep"
-        onClicked: afm.frequency_sweep();
+        onClicked: afm.start_state_machine();
     }
     Text {
         id: label1

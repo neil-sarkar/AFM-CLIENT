@@ -15,6 +15,7 @@ public:
     void wire_hash_command_generated(QHash<int, AFMObject*> & collection, SendWorker* & send_worker);
     void generate_command_nodes();  // pull all the command nodes from .tsv file
     int bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base);
+    void create_AFM_state_machines(AFM* afm);
 
 };
 

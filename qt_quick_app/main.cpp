@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
     builder->generate_command_nodes();
+    builder->create_AFM_state_machines(afm);
 
 
     // Set up the view

@@ -10,6 +10,7 @@
 #include "constants.h"
 #include <iostream>
 #include <iomanip>
+#include <QFinalState>
 
 Builder::Builder() {}
 
@@ -54,6 +55,31 @@ AFM* Builder::build_afm() {
     PID* pid = new PID();
     DDS* dds = new DDS();
     return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, dds);
+}
+
+void Builder::create_AFM_state_machines(AFM* afm) {
+    QStateMachine* sweep_machine = new QStateMachine();
+    QState* coarse_sweep = new QState();
+    QState* coarse_peak_detection = new QState();
+    QState* fine_sweep = new QState();
+    QFinalState* fine_peak_detection = new QFinalState();
+
+    coarse_sweep->addTransition(afm, SIGNAL(sweep_done()), coarse_peak_detection);
+    coarse_peak_detection->addTransition(afm, SIGNAL(peak_detection_done()), fine_sweep);
+    fine_sweep->addTransition(afm, SIGNAL(sweep_done()), fine_peak_detection);
+
+    QObject::connect(coarse_sweep, SIGNAL(entered()), afm, SLOT(coarse_frequency_sweep()));
+    QObject::connect(coarse_peak_detection, SIGNAL(entered()), afm, SLOT(find_peak()));
+    QObject::connect(fine_sweep, SIGNAL(entered()), afm, SLOT(fine_frequency_sweep()));
+    QObject::connect(fine_peak_detection, SIGNAL(entered()), afm, SLOT(find_peak()));
+
+    sweep_machine->addState(coarse_sweep);
+    sweep_machine->addState(coarse_peak_detection);
+    sweep_machine->addState(fine_sweep);
+    sweep_machine->addState(fine_peak_detection);
+    sweep_machine->setInitialState(coarse_sweep);
+
+    afm->sweep_machine = sweep_machine;
 }
 
 

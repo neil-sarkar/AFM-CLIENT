@@ -31,12 +31,6 @@ void AFM::init() {
     dds->init();
 }
 
-void AFM::frequency_sweep() {
-    // note that the PGA has to get set
-    dds->cmd_set();
-    cmd_frequency_sweep();
-}
-
 void AFM::cmd_frequency_sweep() {
     CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837], bind(&AFM::callback_cmd_frequency_sweep));
     node->num_receive_bytes = Num_Meta_Data_Bytes + dds->num_steps() * 4; // 4 bytes per step - two for amplitude, two for phase
@@ -59,6 +53,30 @@ void AFM::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     }
     qDebug() << "amplitude" << amplitude_data;
     qDebug() << "phase" << phase_data;
+    emit sweep_done();
+}
 
-//    qDebug() << "here" << return_bytes;
+
+void AFM::coarse_frequency_sweep() {
+    dds->set_start_frequency(5000);
+    dds->set_end_frequency(15000);
+    dds->set_step_size(100);
+    dds->cmd_set();
+    cmd_frequency_sweep();
+}
+
+void AFM::fine_frequency_sweep() {
+    dds->set_start_frequency(6000);
+    dds->set_end_frequency(8000);
+    dds->set_step_size(20);
+    dds->cmd_set();
+    cmd_frequency_sweep();
+}
+
+void AFM::find_peak() {
+    emit peak_detection_done();
+}
+
+void AFM::start_state_machine() {
+    sweep_machine->start();
 }
