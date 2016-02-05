@@ -17,7 +17,6 @@ void DDS::set_start_frequency(quint32 start_frequency) {
         m_start_frequency = start_frequency;
         qDebug() << "Changing DDS start frequency to" << m_start_frequency;
         emit start_frequency_changed();
-        cmd_set();
     }
 }
 
@@ -26,7 +25,6 @@ void DDS::set_step_size(quint16 step_size) {
         m_step_size = step_size;
         qDebug() << "Changing DDS step size to" << m_step_size;
         emit step_size_changed();
-        cmd_set();
     }
 }
 
@@ -35,7 +33,6 @@ void DDS::set_end_frequency(quint32 end_frequency) {
         m_end_frequency = end_frequency;
         qDebug() << "Changing DDS end frequency to" << m_end_frequency;
         emit end_frequency_changed();
-        cmd_set();
     }
 }
 

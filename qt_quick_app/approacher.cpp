@@ -21,3 +21,24 @@ void Approacher::cmd_start_auto_approach() {
 void Approacher::cmd_stop_auto_approach() {
     emit command_generated(new CommandNode(command_hash[AFM_Stop_Auto_Approach]));
 }
+
+double Approacher::setpoint() {
+    return m_setpoint;
+}
+
+void Approacher::set_setpoint(double setpoint) {
+    if (m_setpoint != setpoint) {
+        m_setpoint = setpoint;
+        qDebug() << "Setting set_point to" << m_setpoint;
+        emit setpoint_changed();
+    }
+}
+
+int Approacher::state() {
+    return m_state;
+}
+
+void Approacher::handle_auto_approach_info_message(QByteArray working_response) {
+    double adc_value = double(quint16((quint8(working_response.at(4)) << 8)| quint8(working_response.at(3)))) * ADC::SCALE_FACTOR;
+    qDebug() << static_cast<unsigned char>(working_response.at(2)) << "  " << adc_value;
+}

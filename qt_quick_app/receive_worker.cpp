@@ -85,7 +85,9 @@ void ReceiveWorker::handle_asynchronous_message() {
     if (is_mcu_reset_message())
         emit mcu_reset_message_received();
     else if (is_auto_approach_info())
-        handle_auto_approach_info_message();
+        emit auto_approach_info_received(working_response);
+    else if (is_auto_approach_stopped_message())
+        handle_auto_approach_stopped_message();
     else
         qDebug() << "unknown message" << working_response;
 }
@@ -100,15 +102,25 @@ bool ReceiveWorker::is_mcu_reset_message() {
     return false;
 }
 
-void ReceiveWorker::handle_auto_approach_info_message() {
-    double adc_value = double(quint16((quint8(working_response.at(4)) << 8)| quint8(working_response.at(3)))) * ADC::SCALE_FACTOR;
-    qDebug() << static_cast<unsigned char>(working_response.at(2)) << "  " << adc_value;
-}
-
 bool ReceiveWorker::is_auto_approach_info() {
     if (static_cast<unsigned char>(working_response.at(1)) == Auto_Approach_Info_Character)
         return true;
     return false;
+}
+
+bool ReceiveWorker::is_auto_approach_stopped_message() {
+    return (static_cast<unsigned char>(working_response.at(1)) == Auto_Approach_Stopped_Character);
+}
+
+void ReceiveWorker::handle_auto_approach_stopped_message() {
+    CommandNode* node = command_queue.dequeue();
+    if (working_response.length() == node->num_receive_bytes) {
+        if (node->id == Auto_Approach_Stopped_Character) {
+            delete node;
+            return;
+        }
+    }
+    assert(false);
 }
 
 const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};

@@ -6,15 +6,13 @@
 
 Sweeper::Sweeper() {
     // to be loaded from a settings file
-    m_num_repetitions = 2;
+    m_num_repetitions = 1;
     m_repetitions_counter = 0;
     m_starting_center_frequency = m_current_resonant_frequency = 7000;
-    m_step_sizes.append(100);
-    m_boundaries.append(4000);
     m_step_sizes.append(2);
-    m_boundaries.append(50);
-//    m_step_sizes.append(1);
-//    m_boundaries.append(15);
+    m_boundaries.append(10);
+//    m_step_sizes.append(2);
+//    m_boundaries.append(50);
     qDebug() << m_boundaries;
 }
 
@@ -111,95 +109,111 @@ Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
 
 
 int Sweeper::find_peak() {
-    // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
-    // http://billauer.co.il/peakdet.html
-    QVector<double> data;
-    for (int i = 0; i < m_amplitude_data.size(); i++)
-        data.append(m_amplitude_data[i].y());
-    int data_count = data.size();
-    int emi_peaks[500];
-    int num_emi_peaks[500];
-    int max_emi_peaks = 500;
-    int absop_peaks[500];
-    int num_absop_peaks[500];
-    int max_absop_peaks = 500;
-    double delta = 1e-6;
-    int emi_first = 0;
-
-    int     i;
-    double  mx;
-    double  mn;
-    int     mx_pos = 0;
-    int     mn_pos = 0;
-    int     is_detecting_emi = emi_first;
-
-
-    mx = data[0];
-    mn = data[0];
-
-    *num_emi_peaks = 0;
-    *num_absop_peaks = 0;
-
-    for(i = 1; i < data_count; ++i)
-    {
-        if(data[i] > mx)
-        {
-            mx_pos = i;
-            mx = data[i];
-        }
-        if(data[i] < mn)
-        {
-            mn_pos = i;
-            mn = data[i];
-        }
-
-        if(is_detecting_emi &&
-                data[i] < mx - delta)
-        {
-            if(*num_emi_peaks >= max_emi_peaks) /* not enough spaces */ {
-                emit peak_detection_failed();
-                return 1;
-            }
-
-            emi_peaks[*num_emi_peaks] = mx_pos;
-            ++ (*num_emi_peaks);
-
-            is_detecting_emi = 0;
-
-            i = mx_pos - 1;
-
-            mn = data[mx_pos];
-            mn_pos = mx_pos;
-        }
-        else if((!is_detecting_emi) &&
-                data[i] > mn + delta)
-        {
-            if(*num_absop_peaks >= max_absop_peaks) {
-                emit peak_detection_failed();
-                return 2;
-            }
-
-            absop_peaks[*num_absop_peaks] = mn_pos;
-            ++ (*num_absop_peaks);
-
-            is_detecting_emi = 1;
-
-            i = mn_pos - 1;
-
-            mx = data[mn_pos];
-            mx_pos = mn_pos;
-        }
-    }
     double max = 0;
     int max_index = -1;
-    for (int i = 0; i < *num_emi_peaks; i++) {
-        if (data[emi_peaks[i]] > max) {
-            max = data[emi_peaks[i]];
-            max_index = emi_peaks[i];
+    for (int i = 0; i < m_amplitude_data.size(); i++) {
+        if (m_amplitude_data[i].y() > max) {
+            max = m_amplitude_data[i].y();
+            max_index = m_amplitude_data[i].x();
         }
     }
-    qDebug() << "Max amplitude found" << max <<"Volts at" << m_amplitude_data[max_index].x() << "Hz";
-    m_current_resonant_frequency = m_amplitude_data[max_index].x();
+    m_current_resonant_frequency = max_index;
+    qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << max;
     emit peak_detection_done();
-    return 0;
 }
+
+//int Sweeper::find_peak() {
+//    // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
+//    // http://billauer.co.il/peakdet.html
+//    QVector<double> data;
+//    for (int i = 0; i < m_amplitude_data.size(); i++)
+//        data.append(m_amplitude_data[i].y());
+
+//    qDebug() << m_amplitude_data;
+//    int data_count = data.size();
+//    int emi_peaks[500];
+//    int num_emi_peaks[500];
+//    int max_emi_peaks = 500;
+//    int absop_peaks[500];
+//    int num_absop_peaks[500];
+//    int max_absop_peaks = 500;
+//    double delta = 1e-6;
+//    int emi_first = 0;
+
+//    int     i;
+//    double  mx;
+//    double  mn;
+//    int     mx_pos = 0;
+//    int     mn_pos = 0;
+//    int     is_detecting_emi = emi_first;
+
+
+//    mx = data[0];
+//    mn = data[0];
+
+//    *num_emi_peaks = 0;
+//    *num_absop_peaks = 0;
+
+//    for(i = 1; i < data_count; ++i)
+//    {
+//        if(data[i] > mx)
+//        {
+//            mx_pos = i;
+//            mx = data[i];
+//        }
+//        if(data[i] < mn)
+//        {
+//            mn_pos = i;
+//            mn = data[i];
+//        }
+
+//        if(is_detecting_emi &&
+//                data[i] < mx - delta)
+//        {
+//            if(*num_emi_peaks >= max_emi_peaks) /* not enough spaces */ {
+//                emit peak_detection_failed();
+//                return 1;
+//            }
+
+//            emi_peaks[*num_emi_peaks] = mx_pos;
+//            ++ (*num_emi_peaks);
+
+//            is_detecting_emi = 0;
+
+//            i = mx_pos - 1;
+
+//            mn = data[mx_pos];
+//            mn_pos = mx_pos;
+//        }
+//        else if((!is_detecting_emi) &&
+//                data[i] > mn + delta)
+//        {
+//            if(*num_absop_peaks >= max_absop_peaks) {
+//                emit peak_detection_failed();
+//                return 2;
+//            }
+
+//            absop_peaks[*num_absop_peaks] = mn_pos;
+//            ++ (*num_absop_peaks);
+
+//            is_detecting_emi = 1;
+
+//            i = mn_pos - 1;
+
+//            mx = data[mn_pos];
+//            mx_pos = mn_pos;
+//        }
+//    }
+//    double max = 0;
+//    int max_index = -1;
+//    for (int i = 0; i < *num_emi_peaks; i++) {
+//        if (data[emi_peaks[i]] > max) {
+//            max = data[emi_peaks[i]];
+//            max_index = emi_peaks[i];
+//        }
+//    }
+//    qDebug() << "Max amplitude found" << max <<"Volts at" << m_amplitude_data[max_index].x() << "Hz";
+//    m_current_resonant_frequency = m_amplitude_data[max_index].x();
+//    emit peak_detection_done();
+//    return 0;
+//}

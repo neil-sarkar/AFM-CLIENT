@@ -84,6 +84,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
 
     // Async serial communication handling (when the MCU sends a message without us making an associated call for that message)
     QObject::connect(receive_worker, SIGNAL(mcu_reset_message_received()), afm, SLOT(init()));
+    QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray)));
 
 
     // Misc connections
