@@ -18,6 +18,7 @@ signals:
     void response_byte_received();
     void mcu_reset_message_received();
     void auto_approach_info_received(QByteArray);
+    void serial_read();
 
 public slots:
     void enqueue_command(CommandNode*);

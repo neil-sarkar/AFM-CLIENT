@@ -85,6 +85,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
         quint32 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
         m_amplitude_data.append(QPointF(current_frequency, double(amplitude_value) * ADC::SCALE_FACTOR));
         m_phase_data.append(QPointF(current_frequency, double(phase_value) * ADC::SCALE_FACTOR));
+        qDebug() << QString().sprintf("%2p", quint8(return_bytes[i])) << QString().sprintf("%2p", quint8(return_bytes[i + 1])) << double(amplitude_value * ADC::SCALE_FACTOR) << QString().sprintf("%2p", quint8(return_bytes[i + 2])) << QString().sprintf("%2p", quint8(return_bytes[i + 3])) << double(phase_value * ADC::SCALE_FACTOR);
     }
     m_repetitions_counter += 1;
     emit sweep_done();

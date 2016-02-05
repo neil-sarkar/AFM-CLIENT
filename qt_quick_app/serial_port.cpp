@@ -81,7 +81,9 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 void SerialPort::on_ready_read() {
     QByteArray q = port->readAll();
     for (char byte : q) {
-//        qDebug() << QString().sprintf("%2p",byte);
+        qDebug() << QString().sprintf("%2p",byte);
+        if (byte == Escape_Character)
+                qDebug() << "got an escape char" << byte;
         emit byte_received(byte);
     }
 }

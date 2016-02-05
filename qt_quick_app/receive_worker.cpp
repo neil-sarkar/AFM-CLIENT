@@ -21,7 +21,8 @@ void ReceiveWorker::enqueue_response_byte(char byte) {
 }
 
 void ReceiveWorker::build_working_response() {
-    char byte = response_byte_queue.dequeue();
+    bool print = false;
+    quint8 byte = response_byte_queue.dequeue();
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
@@ -37,11 +38,18 @@ void ReceiveWorker::build_working_response() {
         }
     }
 
-    if (working_response.length() && working_response.at(working_response.length() - 1) == Escape_Character) { // previous char was escape character
-        byte &= ~Mask_Character; // unmask byte
-        working_response = working_response.remove(working_response.length() - 1, 1); // remove the escape char from the working_response
+    if (working_response.length() && working_response.endsWith(Escape_Character)) { // previous char was escape character
+        qDebug() << "Processing byte after escape character" << working_response << QString().sprintf("%2p",byte);
+        byte = byte & (~Mask_Character); // unmask byte
+        qDebug() << "Byte after processing" << QString().sprintf("%2p",byte);
+        working_response.chop(1); // remove the escape char from the working_response
+        qDebug() << "Response after chopping" << working_response;
+        print = true;
     }
+
     working_response += byte;
+    if (print)
+        qDebug() << "Response after adding" << working_response;
 
 }
 
@@ -73,9 +81,10 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
     }
 
-    if (length != node->num_receive_bytes) {
-        qDebug() << length << node->num_receive_bytes;
-    }
+//    if (length != node->num_receive_bytes) {
+    qDebug() << length << node->num_receive_bytes;
+//        emit serial_read();
+//    }
 
     assert (length == node->num_receive_bytes);
 }
