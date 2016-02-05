@@ -6,6 +6,7 @@
 #include "dds.h"
 #include "serial_port.h"
 #include "send_worker.h"
+#include "sweeper.h"
 #include "receive_worker.h"
 #include "constants.h"
 #include <iostream>
@@ -53,33 +54,10 @@ AFM* Builder::build_afm() {
 
     Motor* motor = new Motor();
     PID* pid = new PID();
-    DDS* dds = new DDS();
-    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, dds);
-}
+    Sweeper* sweeper = new Sweeper();
+    sweeper->dds = new DDS();
+    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, sweeper);
 
-void Builder::create_AFM_state_machines(AFM* afm) {
-    QStateMachine* sweep_machine = new QStateMachine();
-    QState* coarse_sweep = new QState();
-    QState* coarse_peak_detection = new QState();
-    QState* fine_sweep = new QState();
-    QFinalState* fine_peak_detection = new QFinalState();
-
-    coarse_sweep->addTransition(afm, SIGNAL(sweep_done()), coarse_peak_detection);
-    coarse_peak_detection->addTransition(afm, SIGNAL(peak_detection_done()), fine_sweep);
-    fine_sweep->addTransition(afm, SIGNAL(sweep_done()), fine_peak_detection);
-
-    QObject::connect(coarse_sweep, SIGNAL(entered()), afm, SLOT(coarse_frequency_sweep()));
-    QObject::connect(coarse_peak_detection, SIGNAL(entered()), afm, SLOT(find_peak()));
-    QObject::connect(fine_sweep, SIGNAL(entered()), afm, SLOT(fine_frequency_sweep()));
-    QObject::connect(fine_peak_detection, SIGNAL(entered()), afm, SLOT(find_peak()));
-
-    sweep_machine->addState(coarse_sweep);
-    sweep_machine->addState(coarse_peak_detection);
-    sweep_machine->addState(fine_sweep);
-    sweep_machine->addState(fine_peak_detection);
-    sweep_machine->setInitialState(coarse_sweep);
-
-    afm->sweep_machine = sweep_machine;
 }
 
 
@@ -95,7 +73,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(afm, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(afm->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     wire_hash_command_generated(afm->ADC_collection, send_worker);
     wire_hash_command_generated(afm->DAC_collection, send_worker);
     wire_hash_command_generated(afm->PGA_collection, send_worker);

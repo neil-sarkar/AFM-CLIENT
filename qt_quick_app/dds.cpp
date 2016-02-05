@@ -30,7 +30,7 @@ void DDS::set_step_size(quint16 step_size) {
     }
 }
 
-void DDS::set_end_frequency(quint16 end_frequency) {
+void DDS::set_end_frequency(quint32 end_frequency) {
     if (m_end_frequency != end_frequency) {
         m_end_frequency = end_frequency;
         qDebug() << "Changing DDS end frequency to" << m_end_frequency;
@@ -51,7 +51,7 @@ quint16 DDS::step_size() {
     return m_step_size;
 }
 
-quint16 DDS::end_frequency() {
+quint32 DDS::end_frequency() {
     return m_end_frequency;
 }
 

@@ -79,7 +79,7 @@ static const uint qt_meta_data_DDS[] = {
  // properties: name, type, flags
        6, QMetaType::UInt, 0x00495003,
        7, QMetaType::UShort, 0x00495003,
-       8, QMetaType::UShort, 0x00495003,
+       8, QMetaType::UInt, 0x00495003,
 
  // properties: notify_signal_id
        0,
@@ -131,7 +131,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: *reinterpret_cast< quint32*>(_v) = _t->start_frequency(); break;
         case 1: *reinterpret_cast< quint16*>(_v) = _t->step_size(); break;
-        case 2: *reinterpret_cast< quint16*>(_v) = _t->end_frequency(); break;
+        case 2: *reinterpret_cast< quint32*>(_v) = _t->end_frequency(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -141,7 +141,7 @@ void DDS::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         switch (_id) {
         case 0: _t->set_start_frequency(*reinterpret_cast< quint32*>(_v)); break;
         case 1: _t->set_step_size(*reinterpret_cast< quint16*>(_v)); break;
-        case 2: _t->set_end_frequency(*reinterpret_cast< quint16*>(_v)); break;
+        case 2: _t->set_end_frequency(*reinterpret_cast< quint32*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {

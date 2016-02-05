@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     afm_object.cpp \
     constants.cpp \
     command_node.cpp \
-    dds.cpp
+    dds.cpp \
+    sweeper.cpp
 
 RESOURCES += qml.qrc
 
@@ -51,7 +52,8 @@ HEADERS += \
     builder.h \
     afm_object.h \
     constants.h \
-    dds.h
+    dds.h \
+    sweeper.h
 
 DISTFILES += \
     command_spec.tsv
