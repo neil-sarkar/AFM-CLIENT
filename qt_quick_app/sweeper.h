@@ -27,7 +27,7 @@ signals:
 
 public slots:
     void frequency_sweep();
-    void find_peak();
+    int find_peak();
 
 private:
     data_model m_amplitude_data;

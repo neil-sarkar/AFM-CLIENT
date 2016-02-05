@@ -77,7 +77,7 @@ static const uint qt_meta_data_Sweeper[] = {
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Int,
 
  // methods: parameters
     QMetaType::Void,
@@ -95,7 +95,8 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 1: _t->peak_detection_done(); break;
         case 2: _t->machine_finished(); break;
         case 3: _t->frequency_sweep(); break;
-        case 4: _t->find_peak(); break;
+        case 4: { int _r = _t->find_peak();
+            if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
         case 5: _t->start_state_machine(); break;
         default: ;
         }
@@ -121,7 +122,6 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
             }
         }
     }
-    Q_UNUSED(_a);
 }
 
 const QMetaObject Sweeper::staticMetaObject = {

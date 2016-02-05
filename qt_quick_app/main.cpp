@@ -17,7 +17,9 @@
 #include "builder.h"
 #include "afm.h"
 #include "command_node.h"
+#include <QWebView>
 #include <QDir>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +28,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     qDebug() << "App path" << app.applicationDirPath();
+
+//    QWebView *view = new QWebView();
+//    view->setContent("<html><p>hi</p></html>");
+//    view->show();
+//    return app.exec();
 
     // Thread declarations
     QThread* serial_thread = new QThread();

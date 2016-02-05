@@ -136,6 +136,4 @@ int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base) {
 
     if (conversion_successful)
         return result;
-
-    qDebug() << "Parsing failed" << line;
 }

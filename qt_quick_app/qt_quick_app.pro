@@ -3,6 +3,7 @@ TEMPLATE = app
 QT += qml quick
 QT += serialport
 QT += concurrent
+QT += webkit webkitwidgets
 CONFIG += c++11
 
 DESTDIR = $$PWD
@@ -56,4 +57,5 @@ HEADERS += \
     sweeper.h
 
 DISTFILES += \
-    command_spec.tsv
+    command_spec.tsv \
+    test.html
