@@ -43,6 +43,8 @@ const char Newline_Character = 0x0A;
 const char Escape_Character = 0x10;
 const char Mask_Character = 0x80;
 const int Special_Message_Character = 0xF2;
+const int Auto_Approach_Info_Character = 0x9C;
 const int Num_Meta_Data_Bytes = 2; // tag and id are the only two bytes that are 'metadata'
 const int Message_Size_Minimum = 2; // tag and id make up the minimum message
 const int Set_Receive_Bytes_Error = -1;
+

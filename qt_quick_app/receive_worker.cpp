@@ -1,6 +1,7 @@
 #include "receive_worker.h"
 #include "assert.h"
 #include "constants.h"
+#include "adc.h"
 #include <QtConcurrent>
 
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
@@ -23,14 +24,12 @@ void ReceiveWorker::build_working_response() {
     char byte = response_byte_queue.dequeue();
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
-            if (command_queue.count())
-                process_working_response(); // could technically spin up a new thread for each response process
-            else if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character) {
-                qDebug() << "got async message";
+            if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
                 handle_asynchronous_message();
-            } else {
+            else if (command_queue.count())
+                process_working_response(); // could technically spin up a new thread for each response process
+            else
                 qDebug() << "i dont know" << working_response.at(0);
-            }
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
@@ -82,8 +81,13 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
 }
 
 void ReceiveWorker::handle_asynchronous_message() {
+    qDebug() << "Received async message";
     if (is_mcu_reset_message())
         emit mcu_reset_message_received();
+    else if (is_auto_approach_info())
+        handle_auto_approach_info_message();
+    else
+        qDebug() << "unknown message" << working_response;
 }
 
 bool ReceiveWorker::is_mcu_reset_message() {
@@ -93,6 +97,16 @@ bool ReceiveWorker::is_mcu_reset_message() {
                 return false;
         return true;
     }
+    return false;
+}
+
+void ReceiveWorker::handle_auto_approach_info_message() {
+    qDebug() << static_cast<unsigned char>(working_response.at(2)) << "  " << double(quint16((quint8(working_response.at(4)) << 8)| quint8(working_response.at(3)))) * ADC::SCALE_FACTOR;
+}
+
+bool ReceiveWorker::is_auto_approach_info() {
+    if (static_cast<unsigned char>(working_response.at(1)) == Auto_Approach_Info_Character)
+        return true;
     return false;
 }
 

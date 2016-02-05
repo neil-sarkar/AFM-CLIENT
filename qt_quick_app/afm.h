@@ -29,12 +29,13 @@ class AFM : public AFMObject
 
     public slots:
         void init();
+        Q_INVOKABLE void cmd_start_auto_approach();
 
     private:
         // typedefs
         callback_return_type bind(void (AFM::*method)(QByteArray));
         typedef void (AFM::*callback_type)(QByteArray);
-        void cmd_start_auto_approach();
+
 
 
 

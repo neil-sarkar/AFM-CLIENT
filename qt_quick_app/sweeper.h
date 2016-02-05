@@ -29,6 +29,7 @@ signals:
     void machine_finished();
 
 public slots:
+    void set_stable_frequency();
     void frequency_sweep();
     int find_peak();
     void initialize_machine();

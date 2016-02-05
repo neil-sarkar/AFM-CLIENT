@@ -48,6 +48,7 @@ extern const char Newline_Character;
 extern const char Escape_Character;
 extern const char Mask_Character;
 extern const int Special_Message_Character;
+extern const int Auto_Approach_Info_Character;
 extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
 extern const int Set_Receive_Bytes_Error;

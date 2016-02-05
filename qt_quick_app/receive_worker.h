@@ -32,7 +32,9 @@ private:
     bool complete_message;
     void process_working_response();
     void handle_asynchronous_message();
+    void handle_auto_approach_info_message();
     bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
+    bool is_auto_approach_info();
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
     int num_commands_received;
     bool print;

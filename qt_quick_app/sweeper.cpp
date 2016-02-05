@@ -37,6 +37,7 @@ void Sweeper::init() {
     QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_machine()));
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
+    QObject::connect(finish, SIGNAL(entered()), this, SLOT(set_stable_frequency()));
 
     m_state_machine.addState(initialize_machine);
     m_state_machine.addState(sweep);
@@ -95,6 +96,13 @@ void Sweeper::cmd_frequency_sweep() {
     CommandNode* node = new CommandNode(command_hash[AFM_Start_Frequency_Sweep_AD9837], bind(&Sweeper::callback_cmd_frequency_sweep));
     node->num_receive_bytes = Num_Meta_Data_Bytes + dds->num_steps() * 4; // 4 bytes per step - two for amplitude, two for phase
     emit command_generated(node);
+}
+
+void Sweeper::set_stable_frequency() {
+    dds->set_step_size(0);
+    dds->set_start_frequency(m_current_resonant_frequency);
+    dds->set_end_frequency(m_current_resonant_frequency);
+    qDebug() << "Set stable frequency";
 }
 
 Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {

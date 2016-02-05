@@ -35,7 +35,7 @@ void AFM::cmd_start_auto_approach() {
     quint16 scaled_setpoint = 1.0/ADC::SCALE_FACTOR;
     QByteArray payload;
     payload += (scaled_setpoint & 0xFF);
-    payload += ((scaled_setpoint & 0xFF) >> 8);
+    payload += ((scaled_setpoint & 0xFF00) >> 8);
     emit command_generated(new CommandNode(command_hash[AFM_Begin_Auto_Approach], payload));
 }
 
