@@ -22,6 +22,7 @@ public:
     DDS* dds;
 
 signals:
+    void initialization_done();
     void sweep_done();
     void peak_detection_done();
     void peak_detection_failed();
@@ -30,6 +31,7 @@ signals:
 public slots:
     void frequency_sweep();
     int find_peak();
+    void initialize_machine();
 
 private:
     data_model m_amplitude_data;

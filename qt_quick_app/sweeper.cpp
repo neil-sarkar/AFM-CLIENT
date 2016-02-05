@@ -9,10 +9,12 @@ Sweeper::Sweeper() {
     m_num_repetitions = 2;
     m_repetitions_counter = 0;
     m_starting_center_frequency = m_current_resonant_frequency = 7000;
-    m_step_sizes.append(50);
-    m_boundaries.append(5000);
-    m_step_sizes.append(1);
-    m_boundaries.append(100);
+    m_step_sizes.append(100);
+    m_boundaries.append(4000);
+    m_step_sizes.append(2);
+    m_boundaries.append(50);
+//    m_step_sizes.append(1);
+//    m_boundaries.append(15);
     qDebug() << m_boundaries;
 }
 
@@ -21,23 +23,27 @@ void Sweeper::init() {
     dds->init();
 
     // set up framework
+    QState* initialize_machine = new QState();
     QState* sweep = new QState();
     QState* detect_peak = new QState();
     QFinalState* finish = new QFinalState();
 
+    initialize_machine->addTransition(this, SIGNAL(initialization_done()), sweep);
     sweep->addTransition(this, SIGNAL(sweep_done()), detect_peak);
     sweep->addTransition(this, SIGNAL(machine_finished()), finish);
     detect_peak->addTransition(this, SIGNAL(peak_detection_done()), sweep);
     detect_peak->addTransition(this, SIGNAL(peak_detection_failed()), finish);
 
+    QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_machine()));
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
 
+    m_state_machine.addState(initialize_machine);
     m_state_machine.addState(sweep);
     m_state_machine.addState(detect_peak);
     m_state_machine.addState(finish);
 
-    m_state_machine.setInitialState(sweep);
+    m_state_machine.setInitialState(initialize_machine);
 }
 
 Sweeper::data_model Sweeper::amplitude_data() {
@@ -50,6 +56,11 @@ Sweeper::data_model Sweeper::phase_data() {
 
 void Sweeper::start_state_machine() {
     m_state_machine.start();
+}
+
+void Sweeper::initialize_machine() {
+    m_repetitions_counter = 0;
+    emit initialization_done();
 }
 
 void Sweeper::frequency_sweep() {
@@ -67,6 +78,8 @@ void Sweeper::frequency_sweep() {
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     quint32 current_frequency;
+    m_amplitude_data.clear(); // remove any past data
+    m_phase_data.clear();
     for (int i = Num_Meta_Data_Bytes; i < return_bytes.size(); i += 4) {
         current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
         quint32 amplitude_value = bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]));
@@ -168,7 +181,6 @@ int Sweeper::find_peak() {
             mx_pos = mn_pos;
         }
     }
-    qDebug() << "here";
     double max = 0;
     int max_index = -1;
     for (int i = 0; i < *num_emi_peaks; i++) {
@@ -177,7 +189,7 @@ int Sweeper::find_peak() {
             max_index = emi_peaks[i];
         }
     }
-    qDebug() << "max amp" << max << m_amplitude_data[max_index].x();
+    qDebug() << "Max amplitude found" << max <<"Volts at" << m_amplitude_data[max_index].x() << "Hz";
     m_current_resonant_frequency = m_amplitude_data[max_index].x();
     emit peak_detection_done();
     return 0;

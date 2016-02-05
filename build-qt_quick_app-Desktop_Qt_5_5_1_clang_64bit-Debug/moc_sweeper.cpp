@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Sweeper_t {
-    QByteArrayData data[9];
-    char stringdata0[125];
+    QByteArrayData data[11];
+    char stringdata0[164];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,19 +30,23 @@ struct qt_meta_stringdata_Sweeper_t {
 static const qt_meta_stringdata_Sweeper_t qt_meta_stringdata_Sweeper = {
     {
 QT_MOC_LITERAL(0, 0, 7), // "Sweeper"
-QT_MOC_LITERAL(1, 8, 10), // "sweep_done"
-QT_MOC_LITERAL(2, 19, 0), // ""
-QT_MOC_LITERAL(3, 20, 19), // "peak_detection_done"
-QT_MOC_LITERAL(4, 40, 21), // "peak_detection_failed"
-QT_MOC_LITERAL(5, 62, 16), // "machine_finished"
-QT_MOC_LITERAL(6, 79, 15), // "frequency_sweep"
-QT_MOC_LITERAL(7, 95, 9), // "find_peak"
-QT_MOC_LITERAL(8, 105, 19) // "start_state_machine"
+QT_MOC_LITERAL(1, 8, 19), // "initialization_done"
+QT_MOC_LITERAL(2, 28, 0), // ""
+QT_MOC_LITERAL(3, 29, 10), // "sweep_done"
+QT_MOC_LITERAL(4, 40, 19), // "peak_detection_done"
+QT_MOC_LITERAL(5, 60, 21), // "peak_detection_failed"
+QT_MOC_LITERAL(6, 82, 16), // "machine_finished"
+QT_MOC_LITERAL(7, 99, 15), // "frequency_sweep"
+QT_MOC_LITERAL(8, 115, 9), // "find_peak"
+QT_MOC_LITERAL(9, 125, 18), // "initialize_machine"
+QT_MOC_LITERAL(10, 144, 19) // "start_state_machine"
 
     },
-    "Sweeper\0sweep_done\0\0peak_detection_done\0"
-    "peak_detection_failed\0machine_finished\0"
-    "frequency_sweep\0find_peak\0start_state_machine"
+    "Sweeper\0initialization_done\0\0sweep_done\0"
+    "peak_detection_done\0peak_detection_failed\0"
+    "machine_finished\0frequency_sweep\0"
+    "find_peak\0initialize_machine\0"
+    "start_state_machine"
 };
 #undef QT_MOC_LITERAL
 
@@ -52,27 +56,30 @@ static const uint qt_meta_data_Sweeper[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x06 /* Public */,
-       3,    0,   50,    2, 0x06 /* Public */,
-       4,    0,   51,    2, 0x06 /* Public */,
-       5,    0,   52,    2, 0x06 /* Public */,
+       1,    0,   59,    2, 0x06 /* Public */,
+       3,    0,   60,    2, 0x06 /* Public */,
+       4,    0,   61,    2, 0x06 /* Public */,
+       5,    0,   62,    2, 0x06 /* Public */,
+       6,    0,   63,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       6,    0,   53,    2, 0x0a /* Public */,
-       7,    0,   54,    2, 0x0a /* Public */,
+       7,    0,   64,    2, 0x0a /* Public */,
+       8,    0,   65,    2, 0x0a /* Public */,
+       9,    0,   66,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-       8,    0,   55,    2, 0x02 /* Public */,
+      10,    0,   67,    2, 0x02 /* Public */,
 
  // signals: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -81,6 +88,7 @@ static const uint qt_meta_data_Sweeper[] = {
  // slots: parameters
     QMetaType::Void,
     QMetaType::Int,
+    QMetaType::Void,
 
  // methods: parameters
     QMetaType::Void,
@@ -94,14 +102,16 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         Sweeper *_t = static_cast<Sweeper *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->sweep_done(); break;
-        case 1: _t->peak_detection_done(); break;
-        case 2: _t->peak_detection_failed(); break;
-        case 3: _t->machine_finished(); break;
-        case 4: _t->frequency_sweep(); break;
-        case 5: { int _r = _t->find_peak();
+        case 0: _t->initialization_done(); break;
+        case 1: _t->sweep_done(); break;
+        case 2: _t->peak_detection_done(); break;
+        case 3: _t->peak_detection_failed(); break;
+        case 4: _t->machine_finished(); break;
+        case 5: _t->frequency_sweep(); break;
+        case 6: { int _r = _t->find_peak();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 6: _t->start_state_machine(); break;
+        case 7: _t->initialize_machine(); break;
+        case 8: _t->start_state_machine(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -109,26 +119,32 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         void **func = reinterpret_cast<void **>(_a[1]);
         {
             typedef void (Sweeper::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::sweep_done)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::initialization_done)) {
                 *result = 0;
             }
         }
         {
             typedef void (Sweeper::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::peak_detection_done)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::sweep_done)) {
                 *result = 1;
             }
         }
         {
             typedef void (Sweeper::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::peak_detection_failed)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::peak_detection_done)) {
                 *result = 2;
             }
         }
         {
             typedef void (Sweeper::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::machine_finished)) {
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::peak_detection_failed)) {
                 *result = 3;
+            }
+        }
+        {
+            typedef void (Sweeper::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::machine_finished)) {
+                *result = 4;
             }
         }
     }
@@ -159,38 +175,44 @@ int Sweeper::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 9)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 9;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 9)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 9;
     }
     return _id;
 }
 
 // SIGNAL 0
-void Sweeper::sweep_done()
+void Sweeper::initialization_done()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
 }
 
 // SIGNAL 1
-void Sweeper::peak_detection_done()
+void Sweeper::sweep_done()
 {
     QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
 }
 
 // SIGNAL 2
-void Sweeper::peak_detection_failed()
+void Sweeper::peak_detection_done()
 {
     QMetaObject::activate(this, &staticMetaObject, 2, Q_NULLPTR);
 }
 
 // SIGNAL 3
-void Sweeper::machine_finished()
+void Sweeper::peak_detection_failed()
 {
     QMetaObject::activate(this, &staticMetaObject, 3, Q_NULLPTR);
+}
+
+// SIGNAL 4
+void Sweeper::machine_finished()
+{
+    QMetaObject::activate(this, &staticMetaObject, 4, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE
