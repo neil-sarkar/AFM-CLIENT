@@ -80,7 +80,7 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
     }
 
     if (length != node->num_receive_bytes) {
-        qDebug() << length << node->num_receive_bytes;
+        qDebug() << length << node->num_receive_bytes << node->id;
     }
 
     assert (length == node->num_receive_bytes);

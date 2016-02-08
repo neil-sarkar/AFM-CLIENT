@@ -5,6 +5,7 @@
 #include "afm_object.h"
 #include <QStateMachine>
 #include "pid.h"
+#include "scan_data.h"
 
 class Scanner : public AFMObject
 {
@@ -33,12 +34,20 @@ private:
     quint16 m_num_lines;
     quint16 m_num_points;
     quint8 m_ratio;
+
+
+    int m_num_points_received;
     void cmd_set_signal_generator();
     void cmd_start_scan();
     void cmd_step_scan();
     void callback_step_scan(QByteArray payload);
+    bool is_scanning_forward();
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
+    bool scanning_forward;
+
+    ScanData* forward_data;
+    ScanData* reverse_data;
 };
 
 #endif // SCANNER_H

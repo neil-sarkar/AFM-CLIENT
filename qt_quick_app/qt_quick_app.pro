@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     dds.cpp \
     sweeper.cpp \
     approacher.cpp \
-    scanner.cpp
+    scanner.cpp \
+    scan_data.cpp
 
 RESOURCES += qml.qrc
 
@@ -58,7 +59,9 @@ HEADERS += \
     dds.h \
     sweeper.h \
     approacher.h \
-    scanner.h
+    scanner.h \
+    scan_data.h \
+    data_point.h
 
 DISTFILES += \
     command_spec.tsv \
