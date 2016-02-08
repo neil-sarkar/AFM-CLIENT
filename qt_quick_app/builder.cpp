@@ -91,7 +91,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
-    QObject::connect(receive_worker, SIGNAL(serial_read()), serial_port, SLOT(on_ready_read()), Qt::DirectConnection);
+
+    QObject::connect((afm->PGA_collection)[PGA::DDS_Amplitude], SIGNAL(value_changed()), afm, SLOT(print()));
 }
 
 void Builder::generate_command_nodes() {

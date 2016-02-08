@@ -5,7 +5,7 @@
 
 PGA::PGA(qint8 id) {
     m_id = id;
-    m_value = default_value(m_id); // attenuation amount (%)
+    m_value = default_value(id); // attenuation amount (%)
 }
 
 void PGA::set_value(double value) {
@@ -29,11 +29,20 @@ void PGA::cmd_set_value() {
     QByteArray payload;
     payload += m_id;
     payload += value_to_pga();
-    emit command_generated(new CommandNode(command_hash[PGA_Set], this, payload));
+    qDebug() << m_id << m_value << value_to_pga();
+    emit command_generated(new CommandNode(command_hash[PGA_Set], payload));
 }
 
 qint8 PGA::value_to_pga() {
-    return round(20 * log10(m_value / 100) * 2 + 210);
+//    qDebug() << "ID" << m_id;
+//    qDebug() << (m_value) / 100;
+//    qDebug() << 10 * log10((m_value) / 100);
+//    qDebug() << 20 * log10((m_value) / 100);
+//    qDebug() << 20 * log10((m_value) / 100) + 210;
+    qDebug() << "here" << m_id;
+    qDebug() << (round(20 * log10(double(m_value) / 100))  * 2 + 210);
+    qDebug() << qint8((round(20 * log10(double(m_value) / 100))  * 2 + 210));
+    return (round(20 * log10(double(m_value) / 100))  * 2 + 210);
 }
 
 const int PGA::X_1 = 1;

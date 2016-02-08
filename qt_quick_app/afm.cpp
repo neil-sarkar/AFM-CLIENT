@@ -35,3 +35,7 @@ void AFM::init() {
 AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
+
+void AFM::print() {
+    qDebug() << "HEEEERE";
+}

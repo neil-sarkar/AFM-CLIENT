@@ -6,14 +6,15 @@
 
 Sweeper::Sweeper() {
     // to be loaded from a settings file
-    m_num_repetitions = 1;
+    m_num_repetitions = 3;
     m_repetitions_counter = 0;
-    m_starting_center_frequency = m_current_resonant_frequency = 7000;
-    m_step_sizes.append(2);
-    m_boundaries.append(10);
-//    m_step_sizes.append(2);
-//    m_boundaries.append(50);
-    qDebug() << m_boundaries;
+    m_starting_center_frequency = 7000;
+    m_step_sizes.append(100);
+    m_boundaries.append(5000);
+    m_step_sizes.append(10);
+    m_boundaries.append(500);
+    m_step_sizes.append(1);
+    m_boundaries.append(50);
 }
 
 void Sweeper::init() {
@@ -59,6 +60,7 @@ void Sweeper::start_state_machine() {
 
 void Sweeper::initialize_machine() {
     m_repetitions_counter = 0;
+    m_current_resonant_frequency = m_starting_center_frequency;
     emit initialization_done();
 }
 
@@ -70,6 +72,7 @@ void Sweeper::frequency_sweep() {
     dds->set_start_frequency(m_current_resonant_frequency - m_boundaries[m_repetitions_counter]);
     dds->set_end_frequency(m_current_resonant_frequency + m_boundaries[m_repetitions_counter]);
     dds->set_step_size(m_step_sizes[m_repetitions_counter]);
+    qDebug() << "Math" << m_current_resonant_frequency << m_boundaries;
     qDebug() << "LOWER" << dds->start_frequency() << "UPPER" << dds->end_frequency();
     dds->cmd_set();
     cmd_frequency_sweep();
@@ -85,7 +88,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
         quint32 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
         m_amplitude_data.append(QPointF(current_frequency, double(amplitude_value) * ADC::SCALE_FACTOR));
         m_phase_data.append(QPointF(current_frequency, double(phase_value) * ADC::SCALE_FACTOR));
-        qDebug() << QString().sprintf("%2p", quint8(return_bytes[i])) << QString().sprintf("%2p", quint8(return_bytes[i + 1])) << double(amplitude_value * ADC::SCALE_FACTOR) << QString().sprintf("%2p", quint8(return_bytes[i + 2])) << QString().sprintf("%2p", quint8(return_bytes[i + 3])) << double(phase_value * ADC::SCALE_FACTOR);
+//        qDebug() << QString().sprintf("%2p", quint8(return_bytes[i])) << QString().sprintf("%2p", quint8(return_bytes[i + 1])) << double(amplitude_value * ADC::SCALE_FACTOR) << QString().sprintf("%2p", quint8(return_bytes[i + 2])) << QString().sprintf("%2p", quint8(return_bytes[i + 3])) << double(phase_value * ADC::SCALE_FACTOR);
     }
     m_repetitions_counter += 1;
     emit sweep_done();
@@ -101,7 +104,8 @@ void Sweeper::set_stable_frequency() {
     dds->set_step_size(0);
     dds->set_start_frequency(m_current_resonant_frequency);
     dds->set_end_frequency(m_current_resonant_frequency);
-    qDebug() << "Set stable frequency";
+    dds->cmd_set();
+    qDebug() << "Set stable frequency to " << dds->start_frequency();
 }
 
 Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
@@ -119,6 +123,7 @@ int Sweeper::find_peak() {
         }
     }
     m_current_resonant_frequency = max_index;
+    qDebug() << m_amplitude_data;
     qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << max;
     emit peak_detection_done();
 }

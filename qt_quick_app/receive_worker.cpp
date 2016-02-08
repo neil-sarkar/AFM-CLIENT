@@ -21,6 +21,8 @@ void ReceiveWorker::enqueue_response_byte(char byte) {
 }
 
 void ReceiveWorker::build_working_response() {
+    // Relevant test cases: escape, newline | escape escape | escape newline newline | escape (char when unmasked returns escape) (another char) |
+
     quint8 byte = response_byte_queue.dequeue();
 
     if (byte == Escape_Character && !escape) {
@@ -41,7 +43,7 @@ void ReceiveWorker::build_working_response() {
             else if (command_queue.count())
                 process_working_response(); // could technically spin up a new thread for each response process
             else
-                qDebug() << "This async command is not accounted for" << working_response.at(0);
+                qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
@@ -68,8 +70,6 @@ void ReceiveWorker::process_working_response() {
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
     if (tag != node->tag) {
-        qDebug() << "Command queue count" << command_queue.count();
-        qDebug() << "Number of commands received" << num_commands_received;
         qDebug() << "tag mismatch " << tag << node->tag;
         assert (tag == node->tag);
     }
@@ -79,10 +79,9 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
     }
 
-//    if (length != node->num_receive_bytes) {
-    qDebug() << length << node->num_receive_bytes;
-//        emit serial_read();
-//    }
+    if (length != node->num_receive_bytes) {
+        qDebug() << length << node->num_receive_bytes;
+    }
 
     assert (length == node->num_receive_bytes);
 }
@@ -116,18 +115,24 @@ bool ReceiveWorker::is_auto_approach_info() {
 }
 
 bool ReceiveWorker::is_auto_approach_stopped_message() {
+    qDebug() << static_cast<unsigned char>(working_response.at(1)) << Auto_Approach_Stopped_Character;
     return (static_cast<unsigned char>(working_response.at(1)) == Auto_Approach_Stopped_Character);
 }
 
 void ReceiveWorker::handle_auto_approach_stopped_message() {
-    CommandNode* node = command_queue.dequeue();
-    if (working_response.length() == node->num_receive_bytes) {
-        if (node->id == Auto_Approach_Stopped_Character) {
-            delete node;
-            return;
-        }
+    // I think the MCU auto approach routine is blocking - it would be better to trigger it on interrupt
+    // Either way, to circumvent that for now, we have to flush all the commands that came
+    // before the stop message, and just stop all execution
+    bool stop_command_had_been_queued = false;
+    while (command_queue.count()) {
+        CommandNode* node = command_queue.dequeue();
+        if (node->id == Auto_Approach_Stopped_Character)
+            stop_command_had_been_queued = true;
+        delete node;
     }
-    assert(false);
+
+    assert(stop_command_had_been_queued);
+    qDebug() << "Command queue flushed - new count" << command_queue.count();
 }
 
 const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};

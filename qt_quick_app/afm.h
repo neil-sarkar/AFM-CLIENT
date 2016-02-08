@@ -31,6 +31,7 @@ class AFM : public AFMObject
 
     public slots:
         void init();
+        void print();
 
     private:
         // typedefs

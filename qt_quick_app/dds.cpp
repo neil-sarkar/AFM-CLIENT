@@ -53,6 +53,7 @@ quint32 DDS::end_frequency() {
 }
 
 void DDS::cmd_set() {
+    qDebug() << "Setting DDS";
     QByteArray payload;
     quint32 scaled_start_frequency = m_start_frequency * SCALE_FACTOR;
     quint16 scaled_step_size = m_step_size * SCALE_FACTOR;

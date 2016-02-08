@@ -16,6 +16,7 @@ public:
     void generate_command_nodes();  // pull all the command nodes from .tsv file
     int bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base);
 
+
 };
 
 #endif // APPLICATIONBUILDER_H
