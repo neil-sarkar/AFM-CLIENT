@@ -38,7 +38,9 @@ int SendWorker::iterate_tag() {
 }
 
 void SendWorker::validate_send_length(CommandNode* command_node) {
-    assert (command_node->payload.length() == command_node->num_send_bytes - Num_Meta_Data_Bytes);
+    if (command_node->payload.length() != command_node->num_send_bytes - Num_Meta_Data_Bytes)
+        qDebug() << command_node->payload.length() << command_node->num_send_bytes - Num_Meta_Data_Bytes;
+        assert (command_node->payload.length() == command_node->num_send_bytes - Num_Meta_Data_Bytes);
     // we haven't added the tag or id yet, hence subtract num_meta_data_bytes
 }
 

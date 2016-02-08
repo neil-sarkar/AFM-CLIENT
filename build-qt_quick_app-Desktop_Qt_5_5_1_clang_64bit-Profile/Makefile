@@ -238,6 +238,7 @@ DIST          = ../qt_quick_app/command_spec.tsv \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/qt_config.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_post.prf \
+		../qt_quick_app/.qmake.stash \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/default_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -465,6 +466,7 @@ Makefile: ../qt_quick_app/qt_quick_app.pro /Users/abali/Qt/5.5/clang_64/mkspecs/
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/qt_config.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/default_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf \
@@ -623,6 +625,7 @@ Makefile: ../qt_quick_app/qt_quick_app.pro /Users/abali/Qt/5.5/clang_64/mkspecs/
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/qt_config.prf:
 /Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang/qmake.conf:
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/exclusive_builds.prf:
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/default_pre.prf:
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/mac/default_pre.prf:
@@ -1104,7 +1107,9 @@ afm.o: ../qt_quick_app/afm.cpp ../qt_quick_app/afm.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QSemaphore \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qsemaphore.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
-		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QFinalState \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qfinalstate.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o afm.o ../qt_quick_app/afm.cpp
 
 dac.o: ../qt_quick_app/dac.cpp ../qt_quick_app/dac.h \

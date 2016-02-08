@@ -91,7 +91,7 @@ void ReceiveWorker::handle_asynchronous_message() {
     if (is_mcu_reset_message())
         emit mcu_reset_message_received();
     else if (is_auto_approach_info())
-        emit auto_approach_info_received(working_response);
+        emit auto_approach_info_received(working_response.right(working_response.length() - 2));
     else if (is_auto_approach_stopped_message())
         handle_auto_approach_stopped_message();
     else

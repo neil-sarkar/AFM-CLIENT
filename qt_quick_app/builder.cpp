@@ -59,7 +59,6 @@ AFM* Builder::build_afm() {
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
     return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, sweeper, approacher);
-
 }
 
 
@@ -91,8 +90,6 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
-
-    QObject::connect((afm->PGA_collection)[PGA::DDS_Amplitude], SIGNAL(value_changed()), afm, SLOT(print()));
 }
 
 void Builder::generate_command_nodes() {
@@ -135,7 +132,6 @@ void Builder::generate_command_nodes() {
 }
 
 int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base) {
-    bytes.resize(2); // force it to be two bytes long (might not be necessary)
     bytes = bytes.simplified(); // remove any newlines or carriage returns [MIGHT CAUSE ISSUES]
     bool conversion_successful; // need this to call toInt() method below
     int result = bytes.toInt(&conversion_successful, base);

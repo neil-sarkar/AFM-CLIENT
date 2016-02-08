@@ -8,7 +8,7 @@ AFM_PCBMOT_STAGE_DIR_FWD_SELECT	0						108	6C	l		1	2		3	Y	Stat Byte
 AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT	0						107	6B	k		1	2		3	Y	Stat Byte
 AFM_Read_Signal_Phase_Offset	1	AFM	Signal Phase Offset	read			101	65	e		1	2		8	N	6 bytes (ADC Amplitude byte1, ADC Amplitude byte2, DAC Z Offset byte1, DAC Z Offset byte2, ADC PHASE byte1, ADC PHASE byte2)	read DAC8 and ADC5 and Phase
 AFM_Set_Auto_Approach	0	AFM	auto approach	Set			118	76	v		1	6	(setpoint byte1, setpoint byte2, tolerance byte1, tolerance byte2)	3	Y	1 or 3 byte (‘o’, Zcoarse byte1, Zcoarse byte2) OR (‘f’)
-AFM_Set_Dac_Table	1	AFM	DAC Table	set			83	53	S	4ACT	1	258	Send 16 messages of 256 bytes (256=PAGE_SIZE/2) in length to load the 4096*2byte 1D DAC Table grid array.	3	Y	Stat Byte
+AFM_Set_Dac_Table	1	AFM	DAC Table	set			83	53	S	4ACT	1	514	Send 16 messages of 256 bytes (256=PAGE_SIZE/2) in length to load the 4096*2byte 1D DAC Table grid array.	3	Y	Stat Byte
 AFM_Set_Pga	0	AFM	PGA	set			42	2A	*		1	4	(channel_enum, attenuation value)	3	Y	Stat Byte
 AFM_Set_Raster_Step	0	AFM	raster step	set			102	66	f		1	6	(val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2)	2	N	Nothing
 AFM_Set_Scan_Parameters	1	AFM	scan parameters	set			64	40	@	2ACT	1	12	11 bytes (‘@’, vmin_line byte 1, vmin_line byte2, vmin_scan byte 1, vmin_scan byte 2, vmax byte 1, vmax byte 2, numpts byte 1, numpts byte 2, numlines byte 1, numlines byte 2)	3	Y	Stat Byte
