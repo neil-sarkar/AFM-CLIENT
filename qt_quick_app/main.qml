@@ -15,6 +15,9 @@ Window {
         anchors.top: a.bottom
     }
     Approach {
-
+    }
+    Button {
+        id: scan
+        onClicked: afm.start_scan_state_machine();
     }
 }

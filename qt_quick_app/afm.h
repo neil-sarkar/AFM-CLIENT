@@ -29,23 +29,24 @@ class AFM : public AFMObject
 
         static const int DAC_Table_Block_Size;
         void callback_set_dac_table(QByteArray buffer);
-//        static const int DAC_Table_Values[4096];
 
     signals:
         void scanner_initialization_done();
-        void set_dac_table_done();
         void set_signal_generator_done();
         void all_data_received();
         void command_generated(CommandNode* );
 
     public slots:
         void init();
+        void set_dac_table();
+        Q_INVOKABLE void start_scan_state_machine();
+
         // Scan state machine methods
         void scan_state_machine_setup();
         void initialize_scan_state_machine();
-        void set_dac_table();
         void set_signal_generator();
         void receive_data();
+        void end_scan_state_machine();
 
 
     private:
@@ -54,7 +55,16 @@ class AFM : public AFMObject
         callback_return_type bind(void (AFM::*method)(QByteArray));
         typedef void (AFM::*callback_type)(QByteArray);
         void cmd_set_dac_table(int block_number);
+        void cmd_set_signal_generator();
+        void cmd_start_scan();
+        void cmd_step_scan();
+        void callback_step_scan(QByteArray payload);
         int dac_table_page_count;
+
+        quint16 num_lines = 16;
+        quint16 num_points = 16;
+        quint8 ratio = 0;
+        int i = 0;
 };
 
 #endif // AFM_H
