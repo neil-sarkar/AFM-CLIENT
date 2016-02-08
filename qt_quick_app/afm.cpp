@@ -9,14 +9,14 @@
 #include <QStateMachine>
 #include <QFinalState>
 
-AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, PID* pid, Sweeper* sweeper, Approacher* approacher) {
+AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
     this->motor = motor;
-    this->pid = pid;
     this->sweeper = sweeper;
     this->approacher = approacher;
+    this->scanner = scanner;
     dac_table_page_count = 0;
 }
 
@@ -32,48 +32,14 @@ void AFM::init() {
         i.value()->init();
 
     motor->init();
-    pid->init();
     sweeper->init();
     approacher->init();
-    scan_state_machine_setup();
+    scanner->init();
     set_dac_table();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
-}
-
-void AFM::scan_state_machine_setup() {
-    // set up framework
-    QState* initialize_machine = new QState();
-    QState* set_signal_generator = new QState();
-    QState* receive_data = new QState();
-    QFinalState* finish = new QFinalState();
-
-    initialize_machine->addTransition(this, SIGNAL(scanner_initialization_done()), set_signal_generator);
-    set_signal_generator->addTransition(this, SIGNAL(set_signal_generator_done()), receive_data);
-    receive_data->addTransition(this, SIGNAL(all_data_received()), finish);
-
-    QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_scan_state_machine()));
-    QObject::connect(set_signal_generator, SIGNAL(entered()), this, SLOT(set_signal_generator()));
-    QObject::connect(receive_data, SIGNAL(entered()), this, SLOT(receive_data()));
-    QObject::connect(finish, SIGNAL(entered()), this, SLOT(end_scan_state_machine()));
-
-    m_scan_state_machine.addState(initialize_machine);
-    m_scan_state_machine.addState(set_signal_generator);
-    m_scan_state_machine.addState(receive_data);
-    m_scan_state_machine.addState(finish);
-    m_scan_state_machine.setInitialState(initialize_machine);
-}
-
-void AFM::start_scan_state_machine() {
-    m_scan_state_machine.start();
-}
-
-void AFM::initialize_scan_state_machine() {
-    // Old code used to set PGAs here, but we really don't need to - they should already have been set
-    pid->set_enabled();
-    emit scanner_initialization_done();
 }
 
 void AFM::set_dac_table() {
@@ -88,44 +54,10 @@ void AFM::set_dac_table() {
     }
 }
 
-void AFM::set_signal_generator() {
-    qDebug() << "Setting sig gen";
-    cmd_set_signal_generator();
-    cmd_start_scan();
-    emit set_signal_generator_done();
-}
-
-void AFM::receive_data() {
-    qDebug() << "Receiving data";
-    if (i < 2) {
-        cmd_step_scan();
-        return;
-    }
-    emit all_data_received();
-}
-
-void AFM::cmd_step_scan() {
-    emit command_generated(new CommandNode(command_hash[AFM_Step_Scan], bind(&AFM::callback_step_scan)));
-}
-
-void AFM::callback_step_scan(QByteArray payload) {
-    i += 1;
-    receive_data();
-}
-
-void AFM::end_scan_state_machine() {
-    qDebug() << "scanning done";
-    i = 0;
-}
-
-void AFM::cmd_set_signal_generator() {
-    QByteArray payload;
-    payload += ratio;
-    payload += (num_points & 0xFF);
-    payload += ((num_points & 0xFF) >> 8);
-    payload += (num_lines & 0xFF);
-    payload += ((num_lines & 0xFF) >> 8);
-    emit command_generated(new CommandNode(command_hash[AFM_Set_Signal_Generation],  payload));
+void AFM::callback_set_dac_table(QByteArray buffer) {
+    assert(static_cast<unsigned char>(buffer.at(0)) == AFM_Success_Response); // ensure that the previous dac table page was successfully set
+    dac_table_page_count += 1;
+    set_dac_table();
 }
 
 void AFM::cmd_set_dac_table(int block_number) {
@@ -138,16 +70,5 @@ void AFM::cmd_set_dac_table(int block_number) {
     }
     emit command_generated(new CommandNode(command_hash[AFM_Set_Dac_Table], bind(&AFM::callback_set_dac_table), payload));
 }
-
-void AFM::cmd_start_scan() {
-    emit command_generated(new CommandNode(command_hash[AFM_Start_Scan]));
-}
-
-void AFM::callback_set_dac_table(QByteArray buffer) {
-    assert(static_cast<unsigned char>(buffer.at(0)) == AFM_Success_Response); // ensure that the previous dac table page was successfully set
-    dac_table_page_count += 1;
-    set_dac_table();
-}
-
 
 const int AFM::DAC_Table_Block_Size = 256;

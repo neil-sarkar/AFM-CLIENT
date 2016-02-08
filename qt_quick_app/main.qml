@@ -18,6 +18,6 @@ Window {
     }
     Button {
         id: scan
-        onClicked: afm.start_scan_state_machine();
+        onClicked: scanner.start_state_machine();
     }
 }

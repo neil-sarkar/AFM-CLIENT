@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     QQmlContext* context = engine.rootContext();
     context->setContextProperty("motor", afm->motor);
     context->setContextProperty("afm", afm);
+    context->setContextProperty("scanner", afm->scanner);
     context->setContextProperty("sweeper", afm->sweeper);
     context->setContextProperty("approacher", afm->approacher);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

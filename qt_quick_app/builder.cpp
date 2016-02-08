@@ -10,6 +10,7 @@
 #include "receive_worker.h"
 #include "constants.h"
 #include "approacher.h"
+#include "scanner.h"
 #include <iostream>
 #include <iomanip>
 #include <QFinalState>
@@ -54,11 +55,11 @@ AFM* Builder::build_afm() {
     pga_collection[PGA::Leveling] = new PGA(PGA::Leveling);
 
     Motor* motor = new Motor();
-    PID* pid = new PID();
+    Scanner* scanner = new Scanner(new PID());
     Approacher* approacher = new Approacher();
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
-    return new AFM(pga_collection, dac_collection, adc_collection, motor, pid, sweeper, approacher);
+    return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner);
 }
 
 
@@ -73,7 +74,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     // There is likely a cleaner way to connect all the command_generated SIGNALS to the enqueue_command SLOT as command_generated is inherited from AFMObject
     QObject::connect(afm, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-    QObject::connect(afm->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->scanner, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->scanner->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
