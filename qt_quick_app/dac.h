@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void cmd_read_value();
     Q_INVOKABLE void cmd_set_value();
 
+
     static const int Buffered_1;
     static const int Buffered_2;
     static const int Board_2;
@@ -47,6 +48,9 @@ private:
     double m_value;
     static constexpr int RESOLUTION = 4095;
     static constexpr double MAX_VOLTAGE = 3.3;
+    void callback_read_value(QByteArray);
+    callback_return_type bind(void (DAC::*method)(QByteArray));
+    typedef void (DAC::*callback_type)(QByteArray);
 
 };
 

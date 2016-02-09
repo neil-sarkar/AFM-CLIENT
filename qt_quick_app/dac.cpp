@@ -29,19 +29,26 @@ double DAC::value() {
 }
 
 void DAC::cmd_read_value() {
-    QByteArray q;
-    q.push_back(m_id);
-    CommandNode* node = new CommandNode(command_hash[DAC_Read], this, q);
+    QByteArray payload;
+    payload.push_back(m_id);
+    CommandNode* node = new CommandNode(command_hash[DAC_Read], bind(&DAC::callback_read_value), payload);
     emit command_generated(node);
 }
 
+void DAC::callback_read_value(QByteArray return_bytes) {
+    // comes back as DAC # (id), byte 1, byte 2
+    qDebug() << "UPDATING VALUE";
+    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)));
+    qDebug() << m_value;
+}
+
 void DAC::cmd_set_value() {
-    QByteArray q;
+    QByteArray payload;
     qint16 value = m_value / double(MAX_VOLTAGE/RESOLUTION);
-    q.push_back(m_id);
-    q.push_back((value & 0xFF));
-    q.push_back((value >> 8));
-    CommandNode* node = new CommandNode(command_hash[DAC_Write], this, q);
+    payload.push_back(m_id);
+    payload.push_back((value & 0xFF));
+    payload.push_back((value >> 8));
+    CommandNode* node = new CommandNode(command_hash[DAC_Write], payload);
     emit command_generated(node);
 }
 
@@ -55,6 +62,12 @@ void DAC::set_id(qint8 id) {
 
 qint8 DAC::id() {
     return m_id;
+}
+
+DAC::callback_return_type DAC::bind(callback_type method) {
+    // If keeping the instance alive by the time the command is called becomes an issue, use the trick showed in this post:
+    // http://stackoverflow.com/questions/9281172/how-do-i-write-a-pointer-to-member-function-with-stdfunction
+    return std::bind(method, this, std::placeholders::_1);
 }
 
 const int DAC::Buffered_1 = 0;
