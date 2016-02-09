@@ -9,6 +9,12 @@ Rectangle {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
+
+        PGA {
+            id: pGA1
+            x: 94
+            y: 156
+        }
     }
 
     Text {

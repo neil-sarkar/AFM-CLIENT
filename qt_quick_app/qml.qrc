@@ -10,5 +10,6 @@
         <file>PID.qml</file>
         <file>Sweep.qml</file>
         <file>Approach.qml</file>
+        <file>DDS.qml</file>
     </qresource>
 </RCC>
