@@ -11,7 +11,7 @@ PGA::PGA(qint8 id) {
 void PGA::set_value(double value) {
     if (m_value != value) {
         m_value = value;
-        qDebug() << "Setting PGA value to " << value;
+        qDebug() << "Setting PGA " << m_id << "value to " << value;
         emit value_changed();
         cmd_set_value();
     }
@@ -49,9 +49,13 @@ const int PGA::Leveling = 8;
 int PGA::default_value(int id) {
     switch (id) {
         case PGA::X_1:
+            return 100;
         case PGA::X_2:
+            return 100;
         case PGA::Y_1:
+            return 100;
         case PGA::Y_2:
+            return 100;
         case PGA::Z_Coarse:
             return 100;
         case PGA::Leveling:
