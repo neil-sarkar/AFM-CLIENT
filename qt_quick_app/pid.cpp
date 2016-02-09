@@ -2,9 +2,10 @@
 #include "constants.h"
 
 PID::PID() {
-    m_proportional = 0;
-    m_integral = 0;
+    m_proportional = .1;
+    m_integral = 50;
     m_derivative = 0;
+    m_setpoint = 1;
     m_enabled = 0;
 }
 
@@ -58,7 +59,7 @@ void PID::set_derivative(float derivative) {
 void PID::set_enabled(bool enabled) {
     if (m_enabled != enabled) {
         m_enabled = enabled;
-        qDebug() << "Setting enabled to" << m_enabled;
+        qDebug() << "Setting PID enabled to" << m_enabled;
         emit enabled_changed();
         m_enabled ? cmd_enable() : cmd_disable(); // for some reason this line hangs  - maybe race condition
     }
@@ -88,22 +89,22 @@ void PID::init() {
 void PID::cmd_set_proportional() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
-        payload += ((char *)&m_proportional)[i];
-    emit command_generated(new CommandNode(command_hash[PID_Set_Proportional], this, payload));
+        payload += (((char *)&m_proportional)[i]);
+    emit command_generated(new CommandNode(command_hash[PID_Set_Proportional], payload));
 }
 
 void PID::cmd_set_integral() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
-        payload += ((char *)&m_integral)[i];
-    emit command_generated(new CommandNode(command_hash[PID_Set_Integral], this, payload));
+        payload += (((char *)&m_integral)[i]);
+    emit command_generated(new CommandNode(command_hash[PID_Set_Integral], payload));
 }
 
 void PID::cmd_set_derivative() {
     QByteArray payload;
     for (int i = 0; i < 4; i++)
-        payload += ((char *)&m_derivative)[i];
-    emit command_generated(new CommandNode(command_hash[PID_Set_Derivative], this, payload));
+        payload += (((char *)&m_derivative)[i]);
+    emit command_generated(new CommandNode(command_hash[PID_Set_Derivative], payload));
 }
 
 void PID::cmd_set_setpoint() {
@@ -111,13 +112,13 @@ void PID::cmd_set_setpoint() {
     QByteArray payload;
     payload += (setpoint & 0xFF);
     payload += ((setpoint & 0xFF00) >> 8);
-    emit command_generated(new CommandNode(command_hash[PID_Set_Setpoint], this, payload));
+    emit command_generated(new CommandNode(command_hash[PID_Set_Setpoint], payload));
 }
 
 void PID::cmd_enable() {
-    emit command_generated(new CommandNode(command_hash[PID_Enable], this));
+    emit command_generated(new CommandNode(command_hash[PID_Enable]));
 }
 
 void PID::cmd_disable() {
-    emit command_generated(new CommandNode(command_hash[PID_Disable], this));
+    emit command_generated(new CommandNode(command_hash[PID_Disable]));
 }
