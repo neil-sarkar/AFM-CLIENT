@@ -40,6 +40,6 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
 
 void ScanData::print() {
     for (DataPoint data_point : data) {
-        qDebug() << data_point.x << data_point.x << data_point.z_amplitude;
+        qDebug() << data_point.x << data_point.y << data_point.z_amplitude << data_point.z_offset << data_point.z_phase;
     }
 }
