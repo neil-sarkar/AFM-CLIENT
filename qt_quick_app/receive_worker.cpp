@@ -22,7 +22,7 @@ void ReceiveWorker::enqueue_response_byte(char byte) {
 
 void ReceiveWorker::build_working_response() {
     // Relevant test cases: escape, newline | escape escape | escape newline newline | escape (char when unmasked returns escape) (another char) |
-
+    assert (!response_byte_queue.isFull());
     quint8 byte = response_byte_queue.dequeue();
 
     if (byte == Escape_Character && !escape) {
@@ -35,13 +35,13 @@ void ReceiveWorker::build_working_response() {
         working_response += byte;
         return;
     }
-
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
                 handle_asynchronous_message();
-            else if (command_queue.count())
+            else if (command_queue.count()) {
                 process_working_response(); // could technically spin up a new thread for each response process
+            }
             else
                 qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
             working_response.clear();
@@ -56,14 +56,13 @@ void ReceiveWorker::build_working_response() {
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
-    qDebug() << "Now processing" << response_tag << response_id << working_response.toHex();
-
+    qDebug() << "Now processing" << response_tag << response_id << working_response;
     assert (command_queue.isFull() == false);
     CommandNode* node = command_queue.dequeue();
-    num_commands_received += 1;
+//    num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-        QtConcurrent::run(node->process_callback, working_response.right(working_response.length() - 2)); // to avoid blocking this thread
+        node->process_callback, working_response.right(working_response.length() - 2); // maybe run in separate thread to avoid blocking
     }
     delete node;
 }
@@ -133,6 +132,14 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
 
     assert(stop_command_had_been_queued);
     qDebug() << "Command queue flushed - new count" << command_queue.count();
+}
+
+void ReceiveWorker::flush() {
+    qDebug() << "here" << command_queue.count();
+    while (command_queue.count())
+        delete command_queue.dequeue();
+    while (response_byte_queue.count())
+        response_byte_queue.dequeue();
 }
 
 const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};

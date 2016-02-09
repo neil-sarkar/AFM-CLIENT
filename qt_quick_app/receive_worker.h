@@ -25,6 +25,7 @@ public slots:
 
 private slots:
     void build_working_response();
+    void flush();
 
 private:
     ThreadSafeQueue<CommandNode*> command_queue;
