@@ -23,7 +23,6 @@ Button {
             longPressTimer.running = true;
         } else {
             motor.cmd_stop_continuous();
-            motor.state = 0;
         }
     }
 }
