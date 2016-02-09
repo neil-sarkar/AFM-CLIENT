@@ -53,3 +53,8 @@ void SendWorker::mask_special_characters(CommandNode* command_node) {
         }
     }
 }
+
+void SendWorker::flush() {
+    while (command_queue.count())
+        delete command_queue.dequeue();
+}

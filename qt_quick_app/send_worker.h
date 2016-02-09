@@ -21,6 +21,7 @@ private slots:
 
 public slots:
     void enqueue_command(CommandNode* command_node);
+    void flush();
 
 private:
     QMutex mutex;
