@@ -37,6 +37,7 @@ const QString PID_Set_Proportional = "PID_Set_Proportional";
 const QString PID_Set_Setpoint = "PID_Set_Setpoint";
 const QString Stage_Set_Pulse_Step = "Stage_Set_Pulse_Step";
 const QString Stage_Set_Pulse_Width = "Stage_Set_Pulse_Width";
+const QString Scanner_Set_Dwell_Time = "Scanner_Set_Dwell_Time";
 
 const char Message_Delimiter = 0x0A;
 const char Newline_Character = 0x0A;
