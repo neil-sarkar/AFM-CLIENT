@@ -5,15 +5,17 @@
 #include "afm_object.h"
 #include <QStateMachine>
 #include "pid.h"
+#include "dac.h"
 #include "scan_data.h"
 
 class Scanner : public AFMObject
 {
     Q_OBJECT
 public:
-    explicit Scanner(PID*);
+    explicit Scanner(PID*, AFMObject* dac);
     void init();
     PID* pid;
+    DAC* fine_z;
 
 signals:
     void scanner_initialization_done();
@@ -34,12 +36,14 @@ private:
     quint16 m_num_lines;
     quint16 m_num_points;
     quint8 m_ratio;
+    quint8 m_dwell_time;
 
 
     int m_num_points_received;
     void cmd_set_signal_generator();
     void cmd_start_scan();
     void cmd_step_scan();
+    void cmd_set_dwell_time();
     void callback_step_scan(QByteArray payload);
     bool is_scanning_forward();
     callback_return_type bind(void (Scanner::*method)(QByteArray));

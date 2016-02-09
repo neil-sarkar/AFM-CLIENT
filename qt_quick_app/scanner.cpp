@@ -2,16 +2,20 @@
 #include "QFinalState"
 #include "constants.h"
 
-Scanner::Scanner(PID* pid_)
+Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 16;
-    m_num_points = 16;
-    m_ratio = 2;
+    m_num_lines = 128;
+    m_num_points = 128;
+    m_ratio = 4;
+    m_dwell_time = 1;
     pid = pid_;
     scanning_forward = true;
+    fine_z = static_cast<DAC*>(dac_fine_z_);
 }
 
 void Scanner::init() {
+    cmd_set_dwell_time();
+
     // set up framework
     QState* initialize_machine = new QState();
     QState* set_signal_generator = new QState();
@@ -42,8 +46,8 @@ void Scanner::initialize_scan_state_machine() {
     // Old code used to set PGAs here, but we really don't need to - they should already have been set
     pid->set_enabled();
     emit scanner_initialization_done();
-    forward_data = new ScanData(16, 16, 2);
-    reverse_data = new ScanData(16, 16, 2);
+    forward_data = new ScanData(m_num_lines, m_num_points, m_ratio);
+    reverse_data = new ScanData(m_num_lines, m_num_points, m_ratio);
 }
 
 
@@ -75,6 +79,7 @@ bool Scanner::is_scanning_forward() {
 }
 
 void Scanner::callback_step_scan(QByteArray payload) {
+    qDebug() << "callback step scan";
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back
         double z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
@@ -87,27 +92,36 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_points_received += 1;
     }
-
+    fine_z->cmd_read_value();
     receive_data();
 }
 
 void Scanner::end_scan_state_machine() {
     qDebug() << "scanning done" << m_num_points_received;
+    forward_data->print();
+    pid->set_disabled();
 }
 
 void Scanner::cmd_set_signal_generator() {
     QByteArray payload;
     payload += m_ratio;
     payload += (m_num_points & 0xFF);
-    payload += ((m_num_points & 0xFF) >> 8);
+    payload += ((m_num_points & 0x0F00) >> 8);
     payload += (m_num_lines & 0xFF);
-    payload += ((m_num_lines & 0xFF) >> 8);
+    payload += ((m_num_lines & 0x0F00) >> 8);
     emit command_generated(new CommandNode(command_hash[AFM_Set_Signal_Generation],  payload));
 }
 
 void Scanner::cmd_start_scan() {
     emit command_generated(new CommandNode(command_hash[AFM_Start_Scan]));
 }
+
+void Scanner::cmd_set_dwell_time() {
+    QByteArray payload;
+    payload += m_dwell_time;
+    emit command_generated(new CommandNode(command_hash[Scanner_Set_Dwell_Time], payload));
+}
+
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
