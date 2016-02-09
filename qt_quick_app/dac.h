@@ -14,7 +14,7 @@ class DAC : public AFMObject
 
 public:
     explicit DAC(qint8 id);
-    void set_value(double value);
+    void set_value(double value, bool cmd = true);
     void set_id(qint8 id); // Convenience function for tests - once initialized, the id should not change.
     double value();
     qint8 id();
@@ -46,8 +46,9 @@ public slots:
 private:
     qint8 m_id;
     double m_value;
-    static constexpr int RESOLUTION = 4095;
-    static constexpr double MAX_VOLTAGE = 3.3;
+    static const quint16 RESOLUTION;
+    static const double MAX_VOLTAGE;
+    static const double SCALE_FACTOR;
     void callback_read_value(QByteArray);
     callback_return_type bind(void (DAC::*method)(QByteArray));
     typedef void (DAC::*callback_type)(QByteArray);
