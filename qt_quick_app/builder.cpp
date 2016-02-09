@@ -55,7 +55,7 @@ AFM* Builder::build_afm() {
     pga_collection[PGA::Leveling] = new PGA(PGA::Leveling);
 
     Motor* motor = new Motor();
-    Scanner* scanner = new Scanner(new PID());
+    Scanner* scanner = new Scanner(new PID(), dac_collection[DAC::Z_Offset_Fine]);
     Approacher* approacher = new Approacher();
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
@@ -85,6 +85,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
 
     // Async serial communication handling (when the MCU sends a message without us making an associated call for that message)
     QObject::connect(receive_worker, SIGNAL(mcu_reset_message_received()), afm, SLOT(init()));
+    QObject::connect(serial_port, SIGNAL(connected()), send_worker, SLOT(flush()), Qt::DirectConnection);
+    QObject::connect(serial_port, SIGNAL(connected()), receive_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray)));
 
 
