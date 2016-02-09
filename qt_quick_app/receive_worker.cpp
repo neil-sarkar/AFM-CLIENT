@@ -62,7 +62,7 @@ void ReceiveWorker::process_working_response() {
 //    num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
-        node->process_callback, working_response.right(working_response.length() - 2); // maybe run in separate thread to avoid blocking
+        node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
     delete node;
 }

@@ -15,7 +15,6 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 
 void Scanner::init() {
     cmd_set_dwell_time();
-
     // set up framework
     QState* initialize_machine = new QState();
     QState* set_signal_generator = new QState();
