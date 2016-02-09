@@ -739,6 +739,7 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/DAC.qml \
 		../qt_quick_app/PGA.qml \
 		../qt_quick_app/Sweep.qml \
+		../qt_quick_app/DDS.qml \
 		../qt_quick_app/Motor.qml \
 		../qt_quick_app/Approach.qml \
 		../qt_quick_app/MotorButton.qml \
@@ -827,6 +828,10 @@ moc_afm.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/approacher.h \
 		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		../qt_quick_app/afm.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm.h -o moc_afm.cpp
 
@@ -947,11 +952,20 @@ moc_scanner.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObje
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
 		../qt_quick_app/pid.h \
+		../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		../qt_quick_app/scanner.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scanner.h -o moc_scanner.cpp
 
 moc_scan_data.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		../qt_quick_app/data_point.h \
 		../qt_quick_app/scan_data.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scan_data.h -o moc_scan_data.cpp
@@ -1027,6 +1041,10 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/approacher.h \
 		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDir \
@@ -1129,6 +1147,10 @@ afm.o: ../qt_quick_app/afm.cpp ../qt_quick_app/afm.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/approacher.h \
 		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		../qt_quick_app/constants.h \
 		../qt_quick_app/serial_port.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/QSerialPort \
@@ -1258,6 +1280,10 @@ builder.o: ../qt_quick_app/builder.cpp ../qt_quick_app/builder.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/approacher.h \
 		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		../qt_quick_app/serial_port.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/QSerialPort \
 		/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers/qserialport.h \
@@ -1351,6 +1377,13 @@ scanner.o: ../qt_quick_app/scanner.cpp ../qt_quick_app/scanner.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
 		../qt_quick_app/pid.h \
+		../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QFinalState \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qfinalstate.h \
 		../qt_quick_app/constants.h
@@ -1359,7 +1392,11 @@ scanner.o: ../qt_quick_app/scanner.cpp ../qt_quick_app/scanner.h \
 scan_data.o: ../qt_quick_app/scan_data.cpp ../qt_quick_app/scan_data.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
-		../qt_quick_app/data_point.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scan_data.o ../qt_quick_app/scan_data.cpp
 
 qrc_qml.o: qrc_qml.cpp 
