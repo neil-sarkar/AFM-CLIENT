@@ -84,7 +84,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     wire_hash_command_generated(afm->PGA_collection, send_worker);
 
     // Async serial communication handling (when the MCU sends a message without us making an associated call for that message)
-    QObject::connect(receive_worker, SIGNAL(mcu_reset_message_received()), afm, SLOT(init()));
+    QObject::connect(receive_worker, SIGNAL(mcu_reset_message_received()), afm, SLOT(set_dac_table()));
+    QObject::connect(afm, SIGNAL(dac_table_set()), afm, SLOT(init()));
     QObject::connect(serial_port, SIGNAL(connected()), send_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(connected()), receive_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray)));

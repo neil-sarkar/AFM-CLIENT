@@ -22,7 +22,6 @@ AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_colle
 
 void AFM::init() {
     // This method calls the init methods of all the members
-
     QHash<int, AFMObject*>::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
@@ -35,7 +34,6 @@ void AFM::init() {
     sweeper->init();
     approacher->init();
     scanner->init();
-    set_dac_table();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
@@ -51,6 +49,7 @@ void AFM::set_dac_table() {
         cmd_set_dac_table(dac_table_page_count);
     } else {
         dac_table_page_count = 0; // after writing 16 pages to the flash, we're done.
+        emit dac_table_set();
     }
 }
 

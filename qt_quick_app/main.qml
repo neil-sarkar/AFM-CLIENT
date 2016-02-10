@@ -35,7 +35,7 @@ Window {
         id: coarse_z
         y: 275
 //        value: dac_z_coarse.value
-//        onValueChanged: dac_z_coarse.value = value;
+        onValueChanged: dac_z_coarse.value = value;
         decimals: 4
     }
     Button {
@@ -47,7 +47,7 @@ Window {
     SpinBox {
         y: 300
 //        value: dac_z_fine.value
-//        onValueChanged: dac_z_fine.value = value;
+        onValueChanged: dac_z_fine.value = value;
         decimals: 4
 
     }

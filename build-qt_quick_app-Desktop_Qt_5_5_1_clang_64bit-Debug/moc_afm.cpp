@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_AFM_t {
-    QByteArrayData data[6];
-    char stringdata0[55];
+    QByteArrayData data[7];
+    char stringdata0[69];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,12 +33,13 @@ QT_MOC_LITERAL(0, 0, 3), // "AFM"
 QT_MOC_LITERAL(1, 4, 17), // "command_generated"
 QT_MOC_LITERAL(2, 22, 0), // ""
 QT_MOC_LITERAL(3, 23, 12), // "CommandNode*"
-QT_MOC_LITERAL(4, 36, 4), // "init"
-QT_MOC_LITERAL(5, 41, 13) // "set_dac_table"
+QT_MOC_LITERAL(4, 36, 13), // "dac_table_set"
+QT_MOC_LITERAL(5, 50, 4), // "init"
+QT_MOC_LITERAL(6, 55, 13) // "set_dac_table"
 
     },
     "AFM\0command_generated\0\0CommandNode*\0"
-    "init\0set_dac_table"
+    "dac_table_set\0init\0set_dac_table"
 };
 #undef QT_MOC_LITERAL
 
@@ -48,22 +49,24 @@ static const uint qt_meta_data_AFM[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   29,    2, 0x06 /* Public */,
+       1,    1,   34,    2, 0x06 /* Public */,
+       4,    0,   37,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    0,   32,    2, 0x0a /* Public */,
-       5,    0,   33,    2, 0x0a /* Public */,
+       5,    0,   38,    2, 0x0a /* Public */,
+       6,    0,   39,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3,    2,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
@@ -79,8 +82,9 @@ void AFM::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->command_generated((*reinterpret_cast< CommandNode*(*)>(_a[1]))); break;
-        case 1: _t->init(); break;
-        case 2: _t->set_dac_table(); break;
+        case 1: _t->dac_table_set(); break;
+        case 2: _t->init(); break;
+        case 3: _t->set_dac_table(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -101,6 +105,12 @@ void AFM::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
             typedef void (AFM::*_t)(CommandNode * );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AFM::command_generated)) {
                 *result = 0;
+            }
+        }
+        {
+            typedef void (AFM::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AFM::dac_table_set)) {
+                *result = 1;
             }
         }
     }
@@ -131,13 +141,13 @@ int AFM::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
@@ -147,5 +157,11 @@ void AFM::command_generated(CommandNode * _t1)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void AFM::dac_table_set()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE

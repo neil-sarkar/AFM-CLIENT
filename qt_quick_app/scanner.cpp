@@ -4,10 +4,10 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 128;
-    m_num_points = 128;
+    m_num_lines = 64;
+    m_num_points = 64;
     m_ratio = 4;
-    m_dwell_time = 4;
+    m_dwell_time = 10;
     pid = pid_;
     scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
@@ -15,6 +15,8 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 
 void Scanner::init() {
     cmd_set_dwell_time();
+    cmd_set_signal_generator();
+    cmd_start_scan();
     // set up framework
     QState* initialize_machine = new QState();
     QState* set_signal_generator = new QState();
@@ -105,7 +107,6 @@ void Scanner::callback_step_scan(QByteArray payload) {
 void Scanner::end_scan_state_machine() {
     qDebug() << "scanning done" << m_num_points_received;
     forward_data->print();
-    pid->set_disabled();
 }
 
 void Scanner::cmd_set_signal_generator() {

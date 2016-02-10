@@ -61,7 +61,7 @@ int PGA::default_value(int id) {
         case PGA::Leveling:
             return 0;
         case PGA::Z_Fine:
-            return 5;
+            return 10;
         case PGA::DDS_Amplitude:
             return 60;
     }

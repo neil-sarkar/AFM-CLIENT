@@ -33,6 +33,7 @@ class AFM : public AFMObject
 
     signals:
         void command_generated(CommandNode*);
+        void dac_table_set();
 
     public slots:
         void init();
