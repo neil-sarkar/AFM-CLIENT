@@ -17,6 +17,7 @@
 #include "builder.h"
 #include "afm.h"
 #include "command_node.h"
+#include "mainwindow.h"
 #include <QWebView>
 #include <QDir>
 #include <QApplication>
@@ -27,10 +28,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     qDebug() << "App path" << app.applicationDirPath();
 
-    QWebView *view = new QWebView();
-    QUrl url = QUrl("qrc:/test.html");
-    view->setUrl(url);
-    view->show();
+    MainWindow m;
+    m.show();
     return app.exec();
 
     // Thread declarations

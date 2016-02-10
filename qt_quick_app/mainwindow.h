@@ -5,7 +5,7 @@
 #include <QWebElementCollection>
 #include <QNetworkDiskCache>
 
-class MainWindow : QWebView
+class MainWindow : public QWebView
 {
 Q_OBJECT
 public:

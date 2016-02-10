@@ -20,7 +20,7 @@ MainWindow::MainWindow()
                      this, SLOT(addJSObject()));
 
     // qrc:// URLs refer to resources. See imagenalayzer.qrc
-    QUrl startURL = QUrl("qrc:/index.html");
+    QUrl startURL = QUrl("qrc:/test.html");
 
     // Load web content now!
     setUrl(startURL);
