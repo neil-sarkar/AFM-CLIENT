@@ -18,6 +18,7 @@ private:
     QNetworkAccessManager * m_network;
     QNetworkDiskCache * m_cache;
     QWebPage m_welcome_page;
+    QWebPage m_sweep_page;
 };
 
 #endif // MAINWINDOW_H

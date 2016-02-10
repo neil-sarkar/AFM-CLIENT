@@ -68,4 +68,5 @@ HEADERS += \
 
 DISTFILES += \
     command_spec.tsv \
-    test.html
+    test.html \
+    sweep.html

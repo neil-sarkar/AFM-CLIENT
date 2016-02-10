@@ -131,6 +131,7 @@ OBJECTS       = main.o \
 		moc_mainwindow.o
 DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/test.html \
+		../qt_quick_app/sweep.html \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/qdevice.pri \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/device_config.prf \
@@ -754,6 +755,7 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
 qrc_window.cpp: ../qt_quick_app/window.qrc \
+		../qt_quick_app/sweep.html \
 		../qt_quick_app/test.html
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name window ../qt_quick_app/window.qrc -o qrc_window.cpp
 
@@ -1066,8 +1068,14 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		../qt_quick_app/data_point.h \
+		../qt_quick_app/mainwindow.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/QWebElementCollection \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebelement.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebkitglobal.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/QNetworkDiskCache \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/qnetworkdiskcache.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDir \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/QApplication \

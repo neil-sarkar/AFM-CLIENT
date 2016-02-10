@@ -25,8 +25,11 @@ MainWindow::MainWindow()
 
     QUrl startURL = QUrl("qrc:/test.html");
     m_welcome_page.mainFrame()->load(startURL);
+    QUrl sweepURL = QUrl("qrc:/sweep.html");
+    m_sweep_page.mainFrame()->load(sweepURL);
     setPage(&m_welcome_page);
-    // Load web content now!
+    setPage(&m_sweep_page);
+
 //    setUrl(startURL);
 }
 
