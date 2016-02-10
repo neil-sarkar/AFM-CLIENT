@@ -4,8 +4,8 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 256;
-    m_num_points = 256;
+    m_num_lines = 64;
+    m_num_points = 64;
     m_ratio = 4;
     m_dwell_time = 2;
     pid = pid_;
@@ -53,21 +53,16 @@ void Scanner::initialize_scan_state_machine() {
 
 
 void Scanner::set_signal_generator() {
-    qDebug() << "Setting sig gen";
     cmd_set_signal_generator();
     cmd_start_scan();
     emit set_signal_generator_done();
 }
 
 void Scanner::receive_data() {
-    qDebug() << "Receiving data";
     if (!(forward_data->is_full() && reverse_data->is_full())) {
-        qDebug() << "data not full, asking for more";
          cmd_step_scan();
-         qDebug() << "ran cmd_step_scan";
     }
     else {
-        qDebug() << "about to emit all data received";
         emit all_data_received();
     }
 }
@@ -85,7 +80,6 @@ bool Scanner::is_scanning_forward() {
 }
 
 void Scanner::callback_step_scan(QByteArray payload) {
-    qDebug() << "callback step scan";
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back
         double z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
@@ -98,11 +92,8 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_points_received += 1;
     }
-    qDebug() << "about to receive_data()";
     receive_data();
-    qDebug() << "about to cmd_read_value()";
     fine_z->cmd_read_value();
-    qDebug() << "done";
 }
 
 void Scanner::end_scan_state_machine() {

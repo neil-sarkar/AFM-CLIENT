@@ -11,11 +11,8 @@ void DAC::set_value(double value, bool cmd) {
         emit value_changed();
         qDebug() << "Changing DAC " <<  m_id << "value to " << m_value << cmd;
         if (cmd) {
-            qDebug() << "about to set value cmd";
             cmd_set_value();
-            qDebug() << "done set value cmd";
         }
-        qDebug() << "dac value changed";
     }
 }
 
@@ -24,7 +21,6 @@ void DAC::init() {
     q.push_back(m_id);
     q.push_back(RESOLUTION & 0xFF);
     q.push_back((RESOLUTION & 0x0F00) >> 8);
-    qDebug() << "here" << q;
     CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], q); // Set the maximum value of the DAC - make its own method
     emit command_generated(node);
     cmd_set_value(); // set the DAC to the value m_value
@@ -46,7 +42,7 @@ void DAC::callback_read_value(QByteArray return_bytes) {
 //    qDebug() << "UPDATING VALUE";
 //    qDebug() << return_bytes;
 //    qDebug() << bytes_to_word(return_bytes.at(1), return_bytes.at(2));
-//    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);\
+    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);\
 //    qDebug() << m_value;
 }
 

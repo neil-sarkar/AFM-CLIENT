@@ -18,7 +18,6 @@ void ReceiveWorker::enqueue_command(CommandNode* command_node) {
 void ReceiveWorker::enqueue_response_byte(char byte) {
     assert (response_byte_queue.isFull() == false);
     response_byte_queue.enqueue(byte);
-    qDebug() << "resp" << working_response << working_response.length() << "queue" << response_byte_queue.count();
     emit response_byte_received();
 }
 
@@ -47,7 +46,6 @@ void ReceiveWorker::build_working_response() {
             else
                 qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
             working_response.clear();
-            qDebug() << "clearned working resp";
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
             return;
@@ -68,7 +66,6 @@ void ReceiveWorker::process_working_response() {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
     delete node;
-    qDebug() << "deleted node";
 }
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {

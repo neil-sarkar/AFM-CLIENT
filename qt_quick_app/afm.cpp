@@ -75,7 +75,6 @@ void AFM::cmd_generate_force_curve() {
 }
 
 void AFM::callback_generate_force_curve(QByteArray return_bytes) {
-    qDebug() << return_bytes;
 }
 
 const int AFM::DAC_Table_Block_Size = 256;

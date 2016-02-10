@@ -84,7 +84,7 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 
 void SerialPort::on_ready_read() {
     QByteArray q = port->readAll();
-    qDebug() << "On serial read all" << q;
+//    qDebug() << "On serial read all" << q;
     for (char byte : q) {
         emit byte_received(byte);
     }
@@ -117,5 +117,4 @@ void SerialPort::execute_command(CommandNode* command_node) {
 
     assert (result == 0);
     emit message_sent(command_node);
-    qDebug() << "wrote tag: " << command_node->tag;
 }
