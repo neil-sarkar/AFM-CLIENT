@@ -70,4 +70,12 @@ void AFM::cmd_set_dac_table(int block_number) {
     emit command_generated(new CommandNode(command_hash[AFM_Set_Dac_Table], bind(&AFM::callback_set_dac_table), payload));
 }
 
+void AFM::cmd_generate_force_curve() {
+    emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&AFM::callback_generate_force_curve)));
+}
+
+void AFM::callback_generate_force_curve(QByteArray return_bytes) {
+    qDebug() << return_bytes;
+}
+
 const int AFM::DAC_Table_Block_Size = 256;

@@ -2,7 +2,7 @@ message	in use	Calling Object	Specific Property	Action	Board Version	# Actuators
 ADC_Read	1	ADC		read			99	63	c		1	3	(ADC#)	5	N	3 bytes (ADC channel #, ADC val byte 1, ADC val byte 2)
 AFM_Begin_Auto_Approach	1	AFM	auto approach	begin			154	9a		PCB3	1	4	Setpoint byte 1, Setpoint byte 2	2	N		MCU will start transmitting AFM_AUTOAPPR_STATUS
 AFM_Calibrate	1	AFM		calibrate			111	6F	o		1	5	(‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)	5	N	Vmax*4 bytes - [actuator_direct_adc_measurement byte 1, actuator_direct_adc_measurement byte 2, actuator_indirect_adc_measurement byte 1, actuator_indirect_adc_measurement byte 2]*4096 values (ADC measurements per DAC level)
-AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	0
+AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	4002
 AFM_Get_Auto_Approach_Status	1	AFM	auto approach status	get			156	9c		PCB3	1	2	None	5	N	3 Bytes: (Current state; Current coase Z offset measurement byte 1; Current coase Z offset measurement byte 2)
 AFM_PCBMOT_STAGE_DIR_FWD_SELECT	0						108	6C	l		1	2		3	Y	Stat Byte
 AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT	0						107	6B	k		1	2		3	Y	Stat Byte

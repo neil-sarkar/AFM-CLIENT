@@ -54,9 +54,10 @@ AFM* Builder::build_afm() {
     pga_collection[PGA::Z_Coarse] = new PGA(PGA::Z_Coarse);
     pga_collection[PGA::Leveling] = new PGA(PGA::Leveling);
 
+    PID* pid = new PID();
     Motor* motor = new Motor();
-    Scanner* scanner = new Scanner(new PID(), dac_collection[DAC::Z_Offset_Fine]);
-    Approacher* approacher = new Approacher();
+    Scanner* scanner = new Scanner(pid, dac_collection[DAC::Z_Offset_Fine]);
+    Approacher* approacher = new Approacher(pid);
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
     return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner);

@@ -23,30 +23,24 @@ int Motor::state() {
 }
 
 void Motor::set_speed(double speed) {
-    if (speed != m_speed) {
-        m_speed = speed;
-        qDebug() << "Changing speed to" << m_speed;
-        emit speed_changed();
-        cmd_set_speed();
-    }
+    m_speed = speed;
+    qDebug() << "Changing speed to" << m_speed;
+    emit speed_changed();
+    cmd_set_speed();
 }
 
 void Motor::set_direction(int direction) {
-    if (direction != m_direction) {
-        m_direction = direction;
-        qDebug() << "Changing direction to" << m_direction;
-        emit direction_changed();
-        cmd_set_direction();
-    }
+    m_direction = direction;
+    qDebug() << "Changing direction to" << m_direction;
+    emit direction_changed();
+    cmd_set_direction();
 }
 
 void Motor::set_state(int state) {
-    if (state != m_state) {
-        m_state = state;
-        qDebug() << "Changing state to" << m_state;
-        emit state_changed();
-        m_state == StatusConstants.Asleep  ? cmd_set_state_asleep() : cmd_set_state_awake();
-    }
+    m_state = state;
+    qDebug() << "Changing state to" << m_state;
+    emit state_changed();
+    m_state == StatusConstants.Asleep  ? cmd_set_state_asleep() : cmd_set_state_awake();
 }
 
 void Motor::init() {

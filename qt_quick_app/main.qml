@@ -68,5 +68,11 @@ Window {
         x:200
         y:250
     }
+    Button {
+        id: force_curve
+        text: "gen curve"
+        y:350
+        onClicked: afm.cmd_generate_force_curve();
+    }
 
 }

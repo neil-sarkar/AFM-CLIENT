@@ -30,6 +30,8 @@ class AFM : public AFMObject
 
         static const int DAC_Table_Block_Size;
         void callback_set_dac_table(QByteArray buffer);
+        void callback_generate_force_curve(QByteArray buffer);
+        Q_INVOKABLE void cmd_generate_force_curve();
 
     signals:
         void command_generated(CommandNode*);
