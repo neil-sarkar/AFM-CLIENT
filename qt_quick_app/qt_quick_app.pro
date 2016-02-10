@@ -3,7 +3,7 @@ TEMPLATE = app
 QT += qml quick
 QT += serialport
 QT += concurrent
-QT += webkit webkitwidgets
+QT += network webkitwidgets widgets
 CONFIG += c++11
 
 DESTDIR = $$PWD
@@ -27,9 +27,11 @@ SOURCES += main.cpp \
     sweeper.cpp \
     approacher.cpp \
     scanner.cpp \
-    scan_data.cpp
+    scan_data.cpp \
+    mainwindow.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    window.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -61,7 +63,8 @@ HEADERS += \
     approacher.h \
     scanner.h \
     scan_data.h \
-    data_point.h
+    data_point.h \
+    mainwindow.h
 
 DISTFILES += \
     command_spec.tsv \

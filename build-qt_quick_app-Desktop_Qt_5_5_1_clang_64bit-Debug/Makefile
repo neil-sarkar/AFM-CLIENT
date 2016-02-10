@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
-DEFINES       = -DQT_QML_DEBUG -DQT_QUICK_LIB -DQT_WEBKITWIDGETS_LIB -DQT_WEBKIT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_SERIALPORT_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_QML_DEBUG -DQT_QUICK_LIB -DQT_WEBKITWIDGETS_LIB -DQT_WIDGETS_LIB -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_QML_LIB -DQT_NETWORK_LIB -DQT_SERIALPORT_LIB -DQT_CONCURRENT_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I../qt_quick_app -I. -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AGL.framework/Headers -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -F/Users/abali/Qt/5.5/clang_64/lib
+INCPATH       = -I../qt_quick_app -I. -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AGL.framework/Headers -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -F/Users/abali/Qt/5.5/clang_64/lib
 QMAKE         = /Users/abali/Qt/5.5/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -67,7 +67,9 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		../qt_quick_app/sweeper.cpp \
 		../qt_quick_app/approacher.cpp \
 		../qt_quick_app/scanner.cpp \
-		../qt_quick_app/scan_data.cpp qrc_qml.cpp \
+		../qt_quick_app/scan_data.cpp \
+		../qt_quick_app/mainwindow.cpp qrc_qml.cpp \
+		qrc_window.cpp \
 		moc_receiver.cpp \
 		moc_serial_port.cpp \
 		moc_adc.cpp \
@@ -84,7 +86,8 @@ SOURCES       = ../qt_quick_app/main.cpp \
 		moc_sweeper.cpp \
 		moc_approacher.cpp \
 		moc_scanner.cpp \
-		moc_scan_data.cpp
+		moc_scan_data.cpp \
+		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		receiver.o \
 		serial_port.o \
@@ -105,7 +108,9 @@ OBJECTS       = main.o \
 		approacher.o \
 		scanner.o \
 		scan_data.o \
+		mainwindow.o \
 		qrc_qml.o \
+		qrc_window.o \
 		moc_receiver.o \
 		moc_serial_port.o \
 		moc_adc.o \
@@ -122,7 +127,8 @@ OBJECTS       = main.o \
 		moc_sweeper.o \
 		moc_approacher.o \
 		moc_scanner.o \
-		moc_scan_data.o
+		moc_scan_data.o \
+		moc_mainwindow.o
 DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/test.html \
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/spec_pre.prf \
@@ -293,7 +299,8 @@ DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/approacher.h \
 		../qt_quick_app/scanner.h \
 		../qt_quick_app/scan_data.h \
-		../qt_quick_app/data_point.h ../qt_quick_app/main.cpp \
+		../qt_quick_app/data_point.h \
+		../qt_quick_app/mainwindow.h ../qt_quick_app/main.cpp \
 		../qt_quick_app/receiver.cpp \
 		../qt_quick_app/serial_port.cpp \
 		../qt_quick_app/adc.cpp \
@@ -312,7 +319,8 @@ DIST          = ../qt_quick_app/command_spec.tsv \
 		../qt_quick_app/sweeper.cpp \
 		../qt_quick_app/approacher.cpp \
 		../qt_quick_app/scanner.cpp \
-		../qt_quick_app/scan_data.cpp
+		../qt_quick_app/scan_data.cpp \
+		../qt_quick_app/mainwindow.cpp
 QMAKE_TARGET  = qt_quick_app
 DESTDIR       = ../qt_quick_app/#avoid trailing-slash linebreak
 TARGET        = ../qt_quick_app/qt_quick_app.app/Contents/MacOS/qt_quick_app
@@ -503,10 +511,11 @@ Makefile: ../qt_quick_app/qt_quick_app.pro /Users/abali/Qt/5.5/clang_64/mkspecs/
 		/Users/abali/Qt/5.5/clang_64/mkspecs/features/lex.prf \
 		../qt_quick_app/qt_quick_app.pro \
 		../qt_quick_app/qml.qrc \
+		../qt_quick_app/window.qrc \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/QtQuick.prl \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/QtWebKitWidgets.prl \
-		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/QtWebKit.prl \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/QtWidgets.prl \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/QtWebKit.prl \
 		/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/QtGui.prl \
 		/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/QtQml.prl \
 		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/QtNetwork.prl \
@@ -661,10 +670,11 @@ Makefile: ../qt_quick_app/qt_quick_app.pro /Users/abali/Qt/5.5/clang_64/mkspecs/
 /Users/abali/Qt/5.5/clang_64/mkspecs/features/lex.prf:
 ../qt_quick_app/qt_quick_app.pro:
 ../qt_quick_app/qml.qrc:
+../qt_quick_app/window.qrc:
 /Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/QtQuick.prl:
 /Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/QtWebKitWidgets.prl:
-/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/QtWebKit.prl:
 /Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/QtWidgets.prl:
+/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/QtWebKit.prl:
 /Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/QtGui.prl:
 /Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/QtQml.prl:
 /Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/QtNetwork.prl:
@@ -700,9 +710,9 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h ../qt_quick_app/builder.h ../qt_quick_app/afm_object.h ../qt_quick_app/constants.h ../qt_quick_app/dds.h ../qt_quick_app/sweeper.h ../qt_quick_app/approacher.h ../qt_quick_app/scanner.h ../qt_quick_app/scan_data.h ../qt_quick_app/data_point.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/builder.cpp ../qt_quick_app/afm_object.cpp ../qt_quick_app/constants.cpp ../qt_quick_app/command_node.cpp ../qt_quick_app/dds.cpp ../qt_quick_app/sweeper.cpp ../qt_quick_app/approacher.cpp ../qt_quick_app/scanner.cpp ../qt_quick_app/scan_data.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/qml.qrc ../qt_quick_app/window.qrc $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/receiver.h ../qt_quick_app/serial_port.h ../qt_quick_app/serial_port_constants.h ../qt_quick_app/adc.h ../qt_quick_app/motor.h ../qt_quick_app/afm.h ../qt_quick_app/dac.h ../qt_quick_app/command_node.h ../qt_quick_app/motor_constants.h ../qt_quick_app/send_worker.h ../qt_quick_app/thread_safe_queue.h ../qt_quick_app/receive_worker.h ../qt_quick_app/command_names.h ../qt_quick_app/pga.h ../qt_quick_app/pid.h ../qt_quick_app/builder.h ../qt_quick_app/afm_object.h ../qt_quick_app/constants.h ../qt_quick_app/dds.h ../qt_quick_app/sweeper.h ../qt_quick_app/approacher.h ../qt_quick_app/scanner.h ../qt_quick_app/scan_data.h ../qt_quick_app/data_point.h ../qt_quick_app/mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../qt_quick_app/main.cpp ../qt_quick_app/receiver.cpp ../qt_quick_app/serial_port.cpp ../qt_quick_app/adc.cpp ../qt_quick_app/motor.cpp ../qt_quick_app/afm.cpp ../qt_quick_app/dac.cpp ../qt_quick_app/send_worker.cpp ../qt_quick_app/receive_worker.cpp ../qt_quick_app/pga.cpp ../qt_quick_app/pid.cpp ../qt_quick_app/builder.cpp ../qt_quick_app/afm_object.cpp ../qt_quick_app/constants.cpp ../qt_quick_app/command_node.cpp ../qt_quick_app/dds.cpp ../qt_quick_app/sweeper.cpp ../qt_quick_app/approacher.cpp ../qt_quick_app/scanner.cpp ../qt_quick_app/scan_data.cpp ../qt_quick_app/mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -726,9 +736,9 @@ check: first
 
 compiler_objective_c_make_all:
 compiler_objective_c_clean:
-compiler_rcc_make_all: qrc_qml.cpp
+compiler_rcc_make_all: qrc_qml.cpp qrc_window.cpp
 compiler_rcc_clean:
-	-$(DEL_FILE) qrc_qml.cpp
+	-$(DEL_FILE) qrc_qml.cpp qrc_window.cpp
 qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/MainForm.ui.qml \
 		../qt_quick_app/PID.qml \
@@ -743,13 +753,17 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/MyItem.qml
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
-compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp
+qrc_window.cpp: ../qt_quick_app/window.qrc \
+		../qt_quick_app/test.html
+	/Users/abali/Qt/5.5/clang_64/bin/rcc -name window ../qt_quick_app/window.qrc -o qrc_window.cpp
+
+compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp moc_mainwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp
+	-$(DEL_FILE) moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp moc_mainwindow.cpp
 moc_receiver.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		../qt_quick_app/receiver.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/receiver.h -o moc_receiver.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/receiver.h -o moc_receiver.cpp
 
 moc_serial_port.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -770,7 +784,7 @@ moc_serial_port.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/Q
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
 		../qt_quick_app/serial_port.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/serial_port.h -o moc_serial_port.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/serial_port.h -o moc_serial_port.cpp
 
 moc_adc.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -779,7 +793,7 @@ moc_adc.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/adc.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/adc.h -o moc_adc.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/adc.h -o moc_adc.cpp
 
 moc_motor.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -794,7 +808,7 @@ moc_motor.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/motor.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/motor.h -o moc_motor.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/motor.h -o moc_motor.cpp
 
 moc_afm.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -829,7 +843,7 @@ moc_afm.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		../qt_quick_app/data_point.h \
 		../qt_quick_app/afm.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm.h -o moc_afm.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm.h -o moc_afm.cpp
 
 moc_dac.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -840,14 +854,14 @@ moc_dac.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/dac.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/dac.h -o moc_dac.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/dac.h -o moc_dac.cpp
 
 moc_command_node.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/command_node.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/command_node.h -o moc_command_node.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/command_node.h -o moc_command_node.cpp
 
 moc_send_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -862,7 +876,7 @@ moc_send_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/Q
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
 		../qt_quick_app/send_worker.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/send_worker.h -o moc_send_worker.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/send_worker.h -o moc_send_worker.cpp
 
 moc_receive_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -877,7 +891,7 @@ moc_receive_worker.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Header
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QMutex \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmutex.h \
 		../qt_quick_app/receive_worker.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/receive_worker.h -o moc_receive_worker.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/receive_worker.h -o moc_receive_worker.cpp
 
 moc_pga.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -886,7 +900,7 @@ moc_pga.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/pga.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/pga.h -o moc_pga.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/pga.h -o moc_pga.cpp
 
 moc_pid.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -895,7 +909,7 @@ moc_pid.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h \
 		../qt_quick_app/pid.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/pid.h -o moc_pid.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/pid.h -o moc_pid.cpp
 
 moc_afm_object.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -903,7 +917,7 @@ moc_afm_object.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QO
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		../qt_quick_app/afm_object.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm_object.h -o moc_afm_object.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/afm_object.h -o moc_afm_object.cpp
 
 moc_dds.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -913,7 +927,7 @@ moc_dds.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmath.h \
 		../qt_quick_app/dds.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/dds.h -o moc_dds.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/dds.h -o moc_dds.cpp
 
 moc_sweeper.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -928,7 +942,7 @@ moc_sweeper.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObje
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
 		../qt_quick_app/sweeper.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/sweeper.h -o moc_sweeper.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/sweeper.h -o moc_sweeper.cpp
 
 moc_approacher.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -936,8 +950,9 @@ moc_approacher.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QO
 		../qt_quick_app/command_node.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/pid.h \
 		../qt_quick_app/approacher.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/approacher.h -o moc_approacher.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/approacher.h -o moc_approacher.cpp
 
 moc_scanner.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -956,7 +971,7 @@ moc_scanner.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObje
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		../qt_quick_app/data_point.h \
 		../qt_quick_app/scanner.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scanner.h -o moc_scanner.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scanner.h -o moc_scanner.cpp
 
 moc_scan_data.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -964,7 +979,17 @@ moc_scan_data.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QOb
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
 		../qt_quick_app/data_point.h \
 		../qt_quick_app/scan_data.h
-	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scan_data.h -o moc_scan_data.cpp
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scan_data.h -o moc_scan_data.cpp
+
+moc_mainwindow.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/QWebElementCollection \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebelement.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebkitglobal.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/QNetworkDiskCache \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/qnetworkdiskcache.h \
+		../qt_quick_app/mainwindow.h
+	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -1359,6 +1384,7 @@ approacher.o: ../qt_quick_app/approacher.cpp ../qt_quick_app/approacher.h \
 		../qt_quick_app/command_node.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/pid.h \
 		../qt_quick_app/constants.h \
 		../qt_quick_app/adc.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o approacher.o ../qt_quick_app/approacher.cpp
@@ -1395,8 +1421,25 @@ scan_data.o: ../qt_quick_app/scan_data.cpp ../qt_quick_app/scan_data.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scan_data.o ../qt_quick_app/scan_data.cpp
 
+mainwindow.o: ../qt_quick_app/mainwindow.cpp ../qt_quick_app/mainwindow.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/QWebElementCollection \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebelement.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebkitglobal.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/QNetworkDiskCache \
+		/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers/qnetworkdiskcache.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebFrame \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebframe.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStandardPaths \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstandardpaths.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../qt_quick_app/mainwindow.cpp
+
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
+
+qrc_window.o: qrc_window.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_window.o qrc_window.cpp
 
 moc_receiver.o: moc_receiver.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_receiver.o moc_receiver.cpp
@@ -1448,6 +1491,9 @@ moc_scanner.o: moc_scanner.cpp
 
 moc_scan_data.o: moc_scan_data.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_scan_data.o moc_scan_data.cpp
+
+moc_mainwindow.o: moc_mainwindow.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
 
 ####### Install
 

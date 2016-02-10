@@ -23,14 +23,15 @@
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     QQmlApplicationEngine engine;
     qDebug() << "App path" << app.applicationDirPath();
 
-//    QWebView *view = new QWebView();
-//    view->setContent("<html><p>hi</p></html>");
-//    view->show();
-//    return app.exec();
+    QWebView *view = new QWebView();
+    QUrl url = QUrl("qrc:/test.html");
+    view->setUrl(url);
+    view->show();
+    return app.exec();
 
     // Thread declarations
     QThread* serial_thread = new QThread();
