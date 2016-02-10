@@ -18,6 +18,7 @@ void ReceiveWorker::enqueue_command(CommandNode* command_node) {
 void ReceiveWorker::enqueue_response_byte(char byte) {
     assert (response_byte_queue.isFull() == false);
     response_byte_queue.enqueue(byte);
+    qDebug() << "resp" << working_response << working_response.length() << "queue" << response_byte_queue.count();
     emit response_byte_received();
 }
 
@@ -89,14 +90,17 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
 }
 
 void ReceiveWorker::handle_asynchronous_message() {
-    qDebug() << "Received async message";
+    qDebug() << "Received async message" << working_response;
     if (is_mcu_reset_message())
         emit mcu_reset_message_received();
     else if (is_auto_approach_info())
         emit auto_approach_info_received(working_response.right(working_response.length() - 2));
     else if (is_auto_approach_stopped_message())
         handle_auto_approach_stopped_message();
-    else
+    else if (static_cast<unsigned char>(working_response.at(1)) == 0xaa) {
+        qDebug() << "BUFFER FULL";
+        assert(false);
+    } else
         qDebug() << "unknown message" << working_response;
 }
 

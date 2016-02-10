@@ -75,9 +75,8 @@ public:
         _semUsed.release();
         return val;
     }
-
-private:
     QQueue<T> _queue;
+private:
     QSemaphore _semFree;
     QSemaphore _semUsed;
     QMutex _mutex;

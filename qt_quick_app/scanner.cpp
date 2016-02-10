@@ -4,10 +4,10 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 64;
-    m_num_points = 64;
+    m_num_lines = 256;
+    m_num_points = 256;
     m_ratio = 4;
-    m_dwell_time = 10;
+    m_dwell_time = 2;
     pid = pid_;
     scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
@@ -98,9 +98,10 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_points_received += 1;
     }
-    fine_z->cmd_read_value();
-    qDebug() << "almost done";
+    qDebug() << "about to receive_data()";
     receive_data();
+    qDebug() << "about to cmd_read_value()";
+    fine_z->cmd_read_value();
     qDebug() << "done";
 }
 
