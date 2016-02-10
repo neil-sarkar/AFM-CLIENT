@@ -33,7 +33,6 @@ Q_OBJECT
         void initialize_reading();
 
     private:
-        ThreadSafeQueue<char> bytes_received_queue;
         QTimer* port_scan_timer;
         bool is_connected;
         QSerialPort* port;

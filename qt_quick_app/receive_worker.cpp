@@ -16,13 +16,14 @@ void ReceiveWorker::enqueue_command(CommandNode* command_node) {
 }
 
 void ReceiveWorker::enqueue_response_byte(char byte) {
+    assert (response_byte_queue.isFull() == false);
     response_byte_queue.enqueue(byte);
     emit response_byte_received();
 }
 
 void ReceiveWorker::build_working_response() {
     // Relevant test cases: escape, newline | escape escape | escape newline newline | escape (char when unmasked returns escape) (another char) |
-    assert (!response_byte_queue.isFull());
+    assert (!response_byte_queue.isEmpty());
     quint8 byte = response_byte_queue.dequeue();
 
     if (byte == Escape_Character && !escape) {
@@ -45,6 +46,7 @@ void ReceiveWorker::build_working_response() {
             else
                 qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
             working_response.clear();
+            qDebug() << "clearned working resp";
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
             return;
@@ -57,7 +59,7 @@ void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
     qDebug() << "Now processing" << response_tag << response_id << working_response;
-    assert (command_queue.isFull() == false);
+    assert (command_queue.isEmpty() == false);
     CommandNode* node = command_queue.dequeue();
 //    num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
@@ -65,6 +67,7 @@ void ReceiveWorker::process_working_response() {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
     delete node;
+    qDebug() << "deleted node";
 }
 
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {

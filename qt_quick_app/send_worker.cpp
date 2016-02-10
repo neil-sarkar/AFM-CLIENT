@@ -10,16 +10,22 @@ SendWorker::SendWorker(QObject *parent) : QObject(parent)
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {
+    qDebug() << "enqueueing";
     command_node->tag = iterate_tag(); // assign tag then increment
-    command_queue.enqueue(command_node);
     assert (command_queue.isFull() == false);
+    command_queue.enqueue(command_node);
     emit command_received(); // emit this signal so that we're processing dequeue's in the send_workers event loop, not in the caller thread's event loop which would be blocking
 }
 
 void SendWorker::dequeue_command() {
+    qDebug() << "dequeue command";
+    assert(command_queue.isEmpty() == false);
     CommandNode* command_node = command_queue.dequeue();
+    qDebug() << "about to populate sned bytes";
     populate_send_bytes(command_node);
+    qDebug() << "pre command dequeue";
     emit command_dequeued(command_node);
+    qDebug() << "command dequeued emitted";
 }
 
 void SendWorker::populate_send_bytes(CommandNode* command_node) {

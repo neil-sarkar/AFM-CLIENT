@@ -82,7 +82,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     quint32 current_frequency;
     m_amplitude_data.clear(); // remove any past data
     m_phase_data.clear();
-    for (int i = Num_Meta_Data_Bytes; i < return_bytes.size(); i += 4) {
+    for (int i = 0; i < return_bytes.size(); i += 4) {
         current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
         quint16 amplitude_value = bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]));
         quint16 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
@@ -126,6 +126,7 @@ int Sweeper::find_peak() {
     qDebug() << m_amplitude_data;
     qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << max;
     emit peak_detection_done();
+    return 0;
 }
 
 //int Sweeper::find_peak() {

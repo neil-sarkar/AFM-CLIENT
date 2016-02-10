@@ -36,7 +36,6 @@ Window {
         y: 275
 //        value: dac_z_coarse.value
 //        onValueChanged: dac_z_coarse.value = value;
-        maximumValue: 3.3
         decimals: 4
     }
     Button {
@@ -49,7 +48,6 @@ Window {
         y: 300
 //        value: dac_z_fine.value
 //        onValueChanged: dac_z_fine.value = value;
-        maximumValue: 3.3
         decimals: 4
 
     }

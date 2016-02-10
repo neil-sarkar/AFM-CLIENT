@@ -7,7 +7,7 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     m_num_lines = 128;
     m_num_points = 128;
     m_ratio = 4;
-    m_dwell_time = 1;
+    m_dwell_time = 4;
     pid = pid_;
     scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
@@ -59,10 +59,15 @@ void Scanner::set_signal_generator() {
 
 void Scanner::receive_data() {
     qDebug() << "Receiving data";
-    if (!(forward_data->is_full() && reverse_data->is_full()))
-        cmd_step_scan();
-    else
+    if (!(forward_data->is_full() && reverse_data->is_full())) {
+        qDebug() << "data not full, asking for more";
+         cmd_step_scan();
+         qDebug() << "ran cmd_step_scan";
+    }
+    else {
+        qDebug() << "about to emit all data received";
         emit all_data_received();
+    }
 }
 
 void Scanner::cmd_step_scan() {
@@ -92,7 +97,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
         m_num_points_received += 1;
     }
     fine_z->cmd_read_value();
+    qDebug() << "almost done";
     receive_data();
+    qDebug() << "done";
 }
 
 void Scanner::end_scan_state_machine() {

@@ -4,12 +4,14 @@
 #include <QQueue>
 #include <QSemaphore>
 #include <QMutex>
+#include <QDebug>
+#include <climits>
 
 //http://www.qtcentre.org/threads/26250-Thread-Safe-Queue-container
 template<class T> class ThreadSafeQueue
 {
 public:
-    ThreadSafeQueue(int maxSize = 2147483647) : _semFree(maxSize), _semUsed(0)
+    ThreadSafeQueue(long int maxSize = 100000000000) : _semFree(maxSize), _semUsed(0)
     {
 
     }

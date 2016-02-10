@@ -117,4 +117,5 @@ void SerialPort::execute_command(CommandNode* command_node) {
 
     assert (result == 0);
     emit message_sent(command_node);
+    qDebug() << "wrote tag: " << command_node->tag;
 }

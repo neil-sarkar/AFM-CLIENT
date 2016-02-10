@@ -9,10 +9,13 @@ void DAC::set_value(double value, bool cmd) {
     if (m_value != value) {
         m_value = value;
         emit value_changed();
-        qDebug() << "Changing DAC " <<  m_id << "value to " << m_value;
+        qDebug() << "Changing DAC " <<  m_id << "value to " << m_value << cmd;
         if (cmd) {
+            qDebug() << "about to set value cmd";
             cmd_set_value();
+            qDebug() << "done set value cmd";
         }
+        qDebug() << "dac value changed";
     }
 }
 
@@ -43,7 +46,7 @@ void DAC::callback_read_value(QByteArray return_bytes) {
 //    qDebug() << "UPDATING VALUE";
 //    qDebug() << return_bytes;
 //    qDebug() << bytes_to_word(return_bytes.at(1), return_bytes.at(2));
-    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);
+//    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);\
 //    qDebug() << m_value;
 }
 
