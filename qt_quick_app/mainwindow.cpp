@@ -6,6 +6,8 @@
 
 MainWindow::MainWindow()
 {
+    //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
+
     m_network = new QNetworkAccessManager(this);
     m_cache = new QNetworkDiskCache(this);
     m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/imageanalyzer");
@@ -20,10 +22,12 @@ MainWindow::MainWindow()
                      this, SLOT(addJSObject()));
 
     // qrc:// URLs refer to resources. See imagenalayzer.qrc
-    QUrl startURL = QUrl("qrc:/test.html");
 
+    QUrl startURL = QUrl("qrc:/test.html");
+    m_welcome_page.mainFrame()->load(startURL);
+    setPage(&m_welcome_page);
     // Load web content now!
-    setUrl(startURL);
+//    setUrl(startURL);
 }
 
 void MainWindow::addJSObject() {

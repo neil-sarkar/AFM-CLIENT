@@ -11,10 +11,13 @@ Q_OBJECT
 public:
     explicit MainWindow();
 
-private:
+private slots:
     void addJSObject();
+
+private:
     QNetworkAccessManager * m_network;
     QNetworkDiskCache * m_cache;
+    QWebPage m_welcome_page;
 };
 
 #endif // MAINWINDOW_H

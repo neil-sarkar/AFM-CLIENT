@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
 
     MainWindow m;
     m.show();
-    return app.exec();
 
     // Thread declarations
     QThread* serial_thread = new QThread();
