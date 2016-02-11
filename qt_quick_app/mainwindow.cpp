@@ -25,7 +25,7 @@ MainWindow::MainWindow(AFM* afm)
 
     // qrc:// URLs refer to resources. See imagenalayzer.qrc
 
-    QUrl startURL = QUrl("qrc:/html/test.html");
+    QUrl startURL = QUrl("qrc:/html/home.html");
     m_welcome_page.mainFrame()->load(startURL);
 //    QUrl sweepURL = QUrl("qrc:/sweep.html");
 //    m_sweep_page.mainFrame()->load(sweepURL);
@@ -40,5 +40,9 @@ MainWindow::MainWindow(AFM* afm)
 void MainWindow::addJSObject() {
     qDebug() << "called here";
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
-    page()->mainFrame()->evaluateJavaScript("console.log('testing test');");
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
+}
+
+void MainWindow::log_cpp(QString text) {
+    qDebug() << text;
 }

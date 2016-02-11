@@ -1,3 +1,36 @@
-button {
-color:red
+.home-wrapper  {
+    height: 100%;      /* equals max image height */
+    width: 100%;
+    white-space: nowrap;
+    text-align: center;
 }
+
+
+.vertical-align-helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#home-image {
+    vertical-align: middle;
+    max-height: 55%;
+}
+
+.image-animation {
+    -webkit-transition-delay: 0s;
+    -webkit-animation: image-animation 0s ease-in-out forwards;
+}
+
+@-webkit-keyframes image-animation {
+    100% {
+        -webkit-transform: translate(-60%, 0);
+    }
+}
+
+#welcome-text {
+
+    font-family: 'Roboto-Regular';
+    height: 10%;
+}
+
