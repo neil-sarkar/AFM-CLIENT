@@ -71,6 +71,7 @@ void AFM::cmd_set_dac_table(int block_number) {
 }
 
 void AFM::cmd_generate_force_curve() {
+    qDebug() << "CALLED";
     emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&AFM::callback_generate_force_curve)));
 }
 
