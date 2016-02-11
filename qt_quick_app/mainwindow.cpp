@@ -25,10 +25,10 @@ MainWindow::MainWindow(AFM* afm)
 
     // qrc:// URLs refer to resources. See imagenalayzer.qrc
 
-    QUrl startURL = QUrl("qrc:/test.html");
+    QUrl startURL = QUrl("qrc:/html/test.html");
     m_welcome_page.mainFrame()->load(startURL);
-    QUrl sweepURL = QUrl("qrc:/sweep.html");
-    m_sweep_page.mainFrame()->load(sweepURL);
+//    QUrl sweepURL = QUrl("qrc:/sweep.html");
+//    m_sweep_page.mainFrame()->load(sweepURL);
 
 //    setPage(&m_sweep_page);
 

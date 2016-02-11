@@ -1,9 +1,12 @@
 <RCC>
-    <qresource prefix="/">
-        <file>test.html</file>
-        <file>sweep.html</file>
+    <qresource lang="js" prefix="/js">
         <file>test.js</file>
         <file>jquery.js</file>
+    </qresource>
+    <qresource lang="css" prefix="/css">
         <file>styles.css</file>
+    </qresource>
+    <qresource lang="html" prefix="/html">
+        <file>test.html</file>
     </qresource>
 </RCC>
