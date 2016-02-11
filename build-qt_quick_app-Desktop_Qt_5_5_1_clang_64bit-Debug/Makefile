@@ -756,7 +756,8 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 
 qrc_window.cpp: ../qt_quick_app/window.qrc \
 		../qt_quick_app/sweep.html \
-		../qt_quick_app/test.html
+		../qt_quick_app/test.html \
+		../qt_quick_app/test.js
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name window ../qt_quick_app/window.qrc -o qrc_window.cpp
 
 compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp moc_mainwindow.cpp
@@ -983,7 +984,40 @@ moc_scan_data.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QOb
 		../qt_quick_app/scan_data.h
 	/Users/abali/Qt/5.5/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/Users/abali/Qt/5.5/clang_64/mkspecs/macx-clang -I'/Users/abali/Google Drive/Code/icspi/AFM-CLIENT/qt_quick_app' -I/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtGui.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtQml.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtNetwork.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtSerialPort.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtConcurrent.framework/Headers -I/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers -I. -F/Users/abali/Qt/5.5/clang_64/lib ../qt_quick_app/scan_data.h -o moc_scan_data.cpp
 
-moc_mainwindow.cpp: /Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
+moc_mainwindow.cpp: ../qt_quick_app/afm.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/pga.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/afm_object.h \
+		../qt_quick_app/adc.h \
+		../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
+		../qt_quick_app/dds.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmath.h \
+		../qt_quick_app/motor.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QTimer \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QString \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstring.h \
+		../qt_quick_app/pid.h \
+		../qt_quick_app/sweeper.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
+		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/QWebElementCollection \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/qwebelement.h \
@@ -1430,6 +1464,39 @@ scan_data.o: ../qt_quick_app/scan_data.cpp ../qt_quick_app/scan_data.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scan_data.o ../qt_quick_app/scan_data.cpp
 
 mainwindow.o: ../qt_quick_app/mainwindow.cpp ../qt_quick_app/mainwindow.h \
+		../qt_quick_app/afm.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
+		../qt_quick_app/pga.h \
+		../qt_quick_app/command_node.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDebug \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdebug.h \
+		../qt_quick_app/afm_object.h \
+		../qt_quick_app/adc.h \
+		../qt_quick_app/dac.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QtGlobal \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qglobal.h \
+		../qt_quick_app/dds.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qmath.h \
+		../qt_quick_app/motor.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QTimer \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/QQuickItem \
+		/Users/abali/Qt/5.5/clang_64/lib/QtQuick.framework/Headers/qquickitem.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QString \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstring.h \
+		../qt_quick_app/pid.h \
+		../qt_quick_app/sweeper.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QStateMachine \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qstatemachine.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QPointF \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qpoint.h \
+		../qt_quick_app/approacher.h \
+		../qt_quick_app/scanner.h \
+		../qt_quick_app/scan_data.h \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QVector \
+		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qvector.h \
+		../qt_quick_app/data_point.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/QWebView \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKitWidgets.framework/Headers/qwebview.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWebKit.framework/Headers/QWebElementCollection \
