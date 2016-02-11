@@ -3,6 +3,8 @@
         <file>jquery.js</file>
         <file>home.js</file>
         <file>console.js</file>
+        <file>sweep.js</file>
+        <file>highcharts.js</file>
     </qresource>
     <qresource lang="css" prefix="/css">
         <file>styles.css</file>

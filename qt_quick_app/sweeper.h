@@ -27,6 +27,8 @@ signals:
     void peak_detection_done();
     void peak_detection_failed();
     void machine_finished();
+    void new_amplitude_data(QVariantList);
+    void new_phase_point(double, double);
 
 public slots:
     void set_stable_frequency();

@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Sweeper_t {
-    QByteArrayData data[12];
-    char stringdata0[185];
+    QByteArrayData data[14];
+    char stringdata0[220];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,16 +36,19 @@ QT_MOC_LITERAL(3, 29, 10), // "sweep_done"
 QT_MOC_LITERAL(4, 40, 19), // "peak_detection_done"
 QT_MOC_LITERAL(5, 60, 21), // "peak_detection_failed"
 QT_MOC_LITERAL(6, 82, 16), // "machine_finished"
-QT_MOC_LITERAL(7, 99, 20), // "set_stable_frequency"
-QT_MOC_LITERAL(8, 120, 15), // "frequency_sweep"
-QT_MOC_LITERAL(9, 136, 9), // "find_peak"
-QT_MOC_LITERAL(10, 146, 18), // "initialize_machine"
-QT_MOC_LITERAL(11, 165, 19) // "start_state_machine"
+QT_MOC_LITERAL(7, 99, 18), // "new_amplitude_data"
+QT_MOC_LITERAL(8, 118, 15), // "new_phase_point"
+QT_MOC_LITERAL(9, 134, 20), // "set_stable_frequency"
+QT_MOC_LITERAL(10, 155, 15), // "frequency_sweep"
+QT_MOC_LITERAL(11, 171, 9), // "find_peak"
+QT_MOC_LITERAL(12, 181, 18), // "initialize_machine"
+QT_MOC_LITERAL(13, 200, 19) // "start_state_machine"
 
     },
     "Sweeper\0initialization_done\0\0sweep_done\0"
     "peak_detection_done\0peak_detection_failed\0"
-    "machine_finished\0set_stable_frequency\0"
+    "machine_finished\0new_amplitude_data\0"
+    "new_phase_point\0set_stable_frequency\0"
     "frequency_sweep\0find_peak\0initialize_machine\0"
     "start_state_machine"
 };
@@ -57,28 +60,30 @@ static const uint qt_meta_data_Sweeper[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      12,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       5,       // signalCount
+       7,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   64,    2, 0x06 /* Public */,
-       3,    0,   65,    2, 0x06 /* Public */,
-       4,    0,   66,    2, 0x06 /* Public */,
-       5,    0,   67,    2, 0x06 /* Public */,
-       6,    0,   68,    2, 0x06 /* Public */,
+       1,    0,   74,    2, 0x06 /* Public */,
+       3,    0,   75,    2, 0x06 /* Public */,
+       4,    0,   76,    2, 0x06 /* Public */,
+       5,    0,   77,    2, 0x06 /* Public */,
+       6,    0,   78,    2, 0x06 /* Public */,
+       7,    1,   79,    2, 0x06 /* Public */,
+       8,    2,   82,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       7,    0,   69,    2, 0x0a /* Public */,
-       8,    0,   70,    2, 0x0a /* Public */,
-       9,    0,   71,    2, 0x0a /* Public */,
-      10,    0,   72,    2, 0x0a /* Public */,
+       9,    0,   87,    2, 0x0a /* Public */,
+      10,    0,   88,    2, 0x0a /* Public */,
+      11,    0,   89,    2, 0x0a /* Public */,
+      12,    0,   90,    2, 0x0a /* Public */,
 
  // methods: name, argc, parameters, tag, flags
-      11,    0,   73,    2, 0x02 /* Public */,
+      13,    0,   91,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -86,6 +91,8 @@ static const uint qt_meta_data_Sweeper[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::QVariantList,    2,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double,    2,    2,
 
  // slots: parameters
     QMetaType::Void,
@@ -110,12 +117,14 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
         case 2: _t->peak_detection_done(); break;
         case 3: _t->peak_detection_failed(); break;
         case 4: _t->machine_finished(); break;
-        case 5: _t->set_stable_frequency(); break;
-        case 6: _t->frequency_sweep(); break;
-        case 7: { int _r = _t->find_peak();
+        case 5: _t->new_amplitude_data((*reinterpret_cast< QVariantList(*)>(_a[1]))); break;
+        case 6: _t->new_phase_point((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2]))); break;
+        case 7: _t->set_stable_frequency(); break;
+        case 8: _t->frequency_sweep(); break;
+        case 9: { int _r = _t->find_peak();
             if (_a[0]) *reinterpret_cast< int*>(_a[0]) = _r; }  break;
-        case 8: _t->initialize_machine(); break;
-        case 9: _t->start_state_machine(); break;
+        case 10: _t->initialize_machine(); break;
+        case 11: _t->start_state_machine(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -151,6 +160,18 @@ void Sweeper::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, voi
                 *result = 4;
             }
         }
+        {
+            typedef void (Sweeper::*_t)(QVariantList );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::new_amplitude_data)) {
+                *result = 5;
+            }
+        }
+        {
+            typedef void (Sweeper::*_t)(double , double );
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Sweeper::new_phase_point)) {
+                *result = 6;
+            }
+        }
     }
 }
 
@@ -179,13 +200,13 @@ int Sweeper::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 12)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 12;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 12)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 10;
+        _id -= 12;
     }
     return _id;
 }
@@ -218,5 +239,19 @@ void Sweeper::peak_detection_failed()
 void Sweeper::machine_finished()
 {
     QMetaObject::activate(this, &staticMetaObject, 4, Q_NULLPTR);
+}
+
+// SIGNAL 5
+void Sweeper::new_amplitude_data(QVariantList _t1)
+{
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 5, _a);
+}
+
+// SIGNAL 6
+void Sweeper::new_phase_point(double _t1, double _t2)
+{
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 6, _a);
 }
 QT_END_MOC_NAMESPACE

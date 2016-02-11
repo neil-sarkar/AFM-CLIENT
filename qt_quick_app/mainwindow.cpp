@@ -16,8 +16,6 @@ MainWindow::MainWindow(AFM* afm)
     m_network->setCache(m_cache);
     setPage(&m_welcome_page);
     page()->setNetworkAccessManager(m_network);
-
-
     m_afm = afm;
 
     // Signal is emitted before frame loads any web content:
@@ -27,8 +25,8 @@ MainWindow::MainWindow(AFM* afm)
 
     QUrl startURL = QUrl("qrc:/html/home.html");
     m_welcome_page.mainFrame()->load(startURL);
-//    QUrl sweepURL = QUrl("qrc:/sweep.html");
-//    m_sweep_page.mainFrame()->load(sweepURL);
+    QUrl sweepURL = QUrl("qrc:/html/sweep.html");
+    m_sweep_page.mainFrame()->load(sweepURL);
 
 //    setPage(&m_sweep_page);
 
@@ -41,6 +39,10 @@ void MainWindow::addJSObject() {
     qDebug() << "called here";
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
+    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
+    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
+    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
 }
 
 void MainWindow::log_cpp(QString text) {

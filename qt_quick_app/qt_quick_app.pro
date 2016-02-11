@@ -4,6 +4,7 @@ QT += qml quick
 QT += serialport
 QT += concurrent
 QT += network webkitwidgets widgets
+QT += script
 CONFIG += c++11
 
 DESTDIR = $$PWD

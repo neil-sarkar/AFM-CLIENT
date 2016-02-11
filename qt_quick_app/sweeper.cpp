@@ -84,14 +84,24 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     m_phase_data.clear();
     for (int i = 0; i < return_bytes.size(); i += 4) {
         current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
-        quint16 amplitude_value = bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]));
-        quint16 phase_value = bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]));
-        m_amplitude_data.append(QPointF(current_frequency, double(amplitude_value) * ADC::SCALE_FACTOR));
-        m_phase_data.append(QPointF(current_frequency, double(phase_value) * ADC::SCALE_FACTOR));
-//        qDebug() << QString().sprintf("%2p", quint8(return_bytes[i])) << QString().sprintf("%2p", quint8(return_bytes[i + 1])) << double(amplitude_value * ADC::SCALE_FACTOR) << QString().sprintf("%2p", quint8(return_bytes[i + 2])) << QString().sprintf("%2p", quint8(return_bytes[i + 3])) << double(phase_value * ADC::SCALE_FACTOR);
+        double amplitude_value = double(bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]))) * ADC::SCALE_FACTOR;
+        double phase_value = double(bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]))) * ADC::SCALE_FACTOR;
+        QPointF amplitude_point(current_frequency, amplitude_value);
+        QPointF phase_point(current_frequency, phase_value);
+        m_amplitude_data.append(amplitude_point);
+        m_phase_data.append(phase_point);
+//        emit new_amplitude_point(amplitude_point.x(), amplitude_point.y());
+//        emit new_phase_point(phase_point.x(), phase_point.y());
     }
+    QVariantList amplitude_data_for_js;
+    for (int i = 0; i < m_amplitude_data.length();  i++) {
+        amplitude_data_for_js.append(m_amplitude_data[i].x());
+        amplitude_data_for_js.append(m_amplitude_data[i].y());
+    }
+    emit new_amplitude_data(amplitude_data_for_js);
     m_repetitions_counter += 1;
     emit sweep_done();
+    qDebug() << "DONE";
 }
 
 void Sweeper::cmd_frequency_sweep() {
@@ -119,11 +129,10 @@ int Sweeper::find_peak() {
     for (int i = 0; i < m_amplitude_data.size(); i++) {
         if (m_amplitude_data[i].y() > max) {
             max = m_amplitude_data[i].y();
-            max_index = m_amplitude_data[i].x();
+            max_index =  m_amplitude_data[i].x();
         }
     }
     m_current_resonant_frequency = max_index;
-    qDebug() << m_amplitude_data;
     qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << max;
     emit peak_detection_done();
     return 0;
