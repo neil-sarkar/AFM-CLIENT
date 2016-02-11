@@ -3,5 +3,6 @@
         <file>test.html</file>
         <file>sweep.html</file>
         <file>test.js</file>
+        <file>jquery.js</file>
     </qresource>
 </RCC>

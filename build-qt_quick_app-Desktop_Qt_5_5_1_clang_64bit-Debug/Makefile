@@ -751,13 +751,15 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/Approach.qml \
 		../qt_quick_app/MotorButton.qml \
 		../qt_quick_app/main.qml \
-		../qt_quick_app/MyItem.qml
+		../qt_quick_app/MyItem.qml \
+		../qt_quick_app/jquery.min.js
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name qml ../qt_quick_app/qml.qrc -o qrc_qml.cpp
 
 qrc_window.cpp: ../qt_quick_app/window.qrc \
 		../qt_quick_app/sweep.html \
 		../qt_quick_app/test.html \
-		../qt_quick_app/test.js
+		../qt_quick_app/test.js \
+		../qt_quick_app/jquery.js
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name window ../qt_quick_app/window.qrc -o qrc_window.cpp
 
 compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp moc_mainwindow.cpp

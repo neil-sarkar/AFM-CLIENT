@@ -11,5 +11,6 @@
         <file>Sweep.qml</file>
         <file>Approach.qml</file>
         <file>DDS.qml</file>
+        <file>jquery.min.js</file>
     </qresource>
 </RCC>
