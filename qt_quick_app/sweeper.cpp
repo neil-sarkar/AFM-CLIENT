@@ -94,11 +94,14 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
 //        emit new_phase_point(phase_point.x(), phase_point.y());
     }
     QVariantList amplitude_data_for_js;
+    QVariantList phase_data_for_js;
     for (int i = 0; i < m_amplitude_data.length();  i++) {
         amplitude_data_for_js.append(m_amplitude_data[i].x());
         amplitude_data_for_js.append(m_amplitude_data[i].y());
+        phase_data_for_js.append(m_phase_data[i].x());
+        phase_data_for_js.append(m_phase_data[i].y());
     }
-    emit new_amplitude_data(amplitude_data_for_js);
+    emit new_sweep_data(amplitude_data_for_js, phase_data_for_js);
     m_repetitions_counter += 1;
     emit sweep_done();
     qDebug() << "DONE";
