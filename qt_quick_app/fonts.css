@@ -17,3 +17,8 @@
     font-family: 'Roboto-Light';
     src: url('qrc:/fonts/roboto/Roboto-Light.ttf')
 }
+
+@font-face {
+    font-family: 'Rubik-Regular';
+    src: url('qrc:/fonts/rubik/Rubik-Regular.ttf')
+}

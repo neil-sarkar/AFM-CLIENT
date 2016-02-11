@@ -46,3 +46,7 @@ void MainWindow::addJSObject() {
 void MainWindow::log_cpp(QString text) {
     qDebug() << text;
 }
+
+void MainWindow::load_sweep_page() {
+    setPage(&m_sweep_page);
+}

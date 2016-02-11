@@ -12,6 +12,7 @@ Q_OBJECT
 public:
     explicit MainWindow(AFM*);
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
+    Q_INVOKABLE void load_sweep_page();
 
 private slots:
     void addJSObject();

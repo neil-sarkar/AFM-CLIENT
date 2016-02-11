@@ -10,6 +10,7 @@
     </qresource>
     <qresource lang="html" prefix="/html">
         <file>home.html</file>
+        <file>sweep.html</file>
     </qresource>
     <qresource prefix="/images">
         <file>icspi_logo_chopped.jpg</file>
@@ -85,5 +86,15 @@
         <file>roboto/Roboto-BoldItalic.ttf</file>
         <file>roboto/Roboto-Black.ttf</file>
         <file>roboto/Roboto-BlackItalic.ttf</file>
+        <file>rubik/Rubik-Black.ttf</file>
+        <file>rubik/Rubik-BlackItalic.ttf</file>
+        <file>rubik/Rubik-Bold.ttf</file>
+        <file>rubik/Rubik-BoldItalic.ttf</file>
+        <file>rubik/Rubik-Italic.ttf</file>
+        <file>rubik/Rubik-Light.ttf</file>
+        <file>rubik/Rubik-LightItalic.ttf</file>
+        <file>rubik/Rubik-Medium.ttf</file>
+        <file>rubik/Rubik-MediumItalic.ttf</file>
+        <file>rubik/Rubik-Regular.ttf</file>
     </qresource>
 </RCC>

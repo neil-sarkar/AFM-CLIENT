@@ -1,8 +1,9 @@
-function x() {
-//    afm.cmd_generate_force_curve();
+function next() {
+    main_window.load_sweep_page();
 }
 
 $(window).on("load", function() {
-    $('#home-image').addClass('image-animation');
-    console.log("here");
+//    $('#home-image').addClass('image-animation');
 });
+
+

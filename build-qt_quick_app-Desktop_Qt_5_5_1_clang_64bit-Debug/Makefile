@@ -828,6 +828,16 @@ qrc_window.cpp: ../qt_quick_app/window.qrc \
 		../qt_quick_app/roboto/Roboto-LightItalic.ttf \
 		../qt_quick_app/roboto/RobotoCondensed-Regular.ttf \
 		../qt_quick_app/roboto/Roboto-Medium.ttf \
+		../qt_quick_app/rubik/Rubik-BoldItalic.ttf \
+		../qt_quick_app/rubik/Rubik-Italic.ttf \
+		../qt_quick_app/rubik/Rubik-MediumItalic.ttf \
+		../qt_quick_app/rubik/Rubik-Regular.ttf \
+		../qt_quick_app/rubik/Rubik-BlackItalic.ttf \
+		../qt_quick_app/rubik/Rubik-Bold.ttf \
+		../qt_quick_app/rubik/Rubik-Black.ttf \
+		../qt_quick_app/rubik/Rubik-Light.ttf \
+		../qt_quick_app/rubik/Rubik-Medium.ttf \
+		../qt_quick_app/rubik/Rubik-LightItalic.ttf \
 		../qt_quick_app/home.html \
 		../qt_quick_app/afm.jpeg \
 		../qt_quick_app/icspi_logo_chopped.jpg \
