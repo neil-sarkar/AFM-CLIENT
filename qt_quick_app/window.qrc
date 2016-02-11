@@ -4,5 +4,6 @@
         <file>sweep.html</file>
         <file>test.js</file>
         <file>jquery.js</file>
+        <file>styles.css</file>
     </qresource>
 </RCC>
