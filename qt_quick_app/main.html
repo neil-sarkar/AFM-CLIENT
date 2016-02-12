@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Sample Project</title>
+        <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
+        <script data-main="qrc:/js/common.js" src="qrc:/js/lib/require.js"></script>
+        <script>
+            require(["common"], function() {
+                require(["main"]);
+            });
+        </script>
+    </head>
+    <body>
+        <h1></h1>
+    </body>
+</html>

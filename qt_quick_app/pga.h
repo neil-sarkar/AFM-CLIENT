@@ -25,7 +25,6 @@ public:
     static const int Leveling;
     static int default_value(int id);
 
-
 signals:
     void value_changed();
 

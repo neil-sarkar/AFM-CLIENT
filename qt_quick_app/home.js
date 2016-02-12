@@ -3,7 +3,6 @@ function next() {
 }
 
 $(window).on("load", function() {
-//    $('#home-image').addClass('image-animation');
 });
 
 

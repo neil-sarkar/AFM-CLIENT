@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[6];
-    char stringdata0[53];
+    QByteArrayData data[7];
+    char stringdata0[68];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,11 +34,12 @@ QT_MOC_LITERAL(1, 11, 11), // "addJSObject"
 QT_MOC_LITERAL(2, 23, 0), // ""
 QT_MOC_LITERAL(3, 24, 7), // "log_cpp"
 QT_MOC_LITERAL(4, 32, 4), // "text"
-QT_MOC_LITERAL(5, 37, 15) // "load_sweep_page"
+QT_MOC_LITERAL(5, 37, 15), // "load_sweep_page"
+QT_MOC_LITERAL(6, 53, 14) // "load_home_page"
 
     },
     "MainWindow\0addJSObject\0\0log_cpp\0text\0"
-    "load_sweep_page"
+    "load_sweep_page\0load_home_page"
 };
 #undef QT_MOC_LITERAL
 
@@ -48,7 +49,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -56,17 +57,19 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x08 /* Private */,
+       1,    0,   34,    2, 0x08 /* Private */,
 
  // methods: name, argc, parameters, tag, flags
-       3,    1,   30,    2, 0x02 /* Public */,
-       5,    0,   33,    2, 0x02 /* Public */,
+       3,    1,   35,    2, 0x02 /* Public */,
+       5,    0,   38,    2, 0x02 /* Public */,
+       6,    0,   39,    2, 0x02 /* Public */,
 
  // slots: parameters
     QMetaType::Void,
 
  // methods: parameters
     QMetaType::Void, QMetaType::QString,    4,
+    QMetaType::Void,
     QMetaType::Void,
 
        0        // eod
@@ -81,6 +84,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->addJSObject(); break;
         case 1: _t->log_cpp((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 2: _t->load_sweep_page(); break;
+        case 3: _t->load_home_page(); break;
         default: ;
         }
     }
@@ -111,13 +115,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }

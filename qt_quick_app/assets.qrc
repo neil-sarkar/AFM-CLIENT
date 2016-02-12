@@ -1,0 +1,59 @@
+<RCC>
+    <qresource lang="js" prefix="/js">
+        <file>home.js</file>
+        <file>console.js</file>
+        <file>sweep.js</file>
+        <file>step.js</file>
+        <file>main.js</file>
+        <file>common.js</file>
+    </qresource>
+    <qresource lang="css" prefix="/css">
+        <file>home.css</file>
+        <file>fonts.css</file>
+        <file>sweep.css</file>
+    </qresource>
+    <qresource lang="html" prefix="/html">
+        <file>home.html</file>
+        <file>sweep.html</file>
+        <file>main.html</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>icspi_logo_chopped.jpg</file>
+        <file>afm.jpeg</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>roboto/RobotoCondensed-Regular.ttf</file>
+        <file>roboto/RobotoCondensed-Light.ttf</file>
+        <file>roboto/RobotoCondensed-LightItalic.ttf</file>
+        <file>roboto/RobotoCondensed-BoldItalic.ttf</file>
+        <file>roboto/RobotoCondensed-Italic.ttf</file>
+        <file>roboto/RobotoCondensed-Bold.ttf</file>
+        <file>roboto/Roboto-Thin.ttf</file>
+        <file>roboto/Roboto-ThinItalic.ttf</file>
+        <file>roboto/Roboto-Regular.ttf</file>
+        <file>roboto/Roboto-LightItalic.ttf</file>
+        <file>roboto/Roboto-Medium.ttf</file>
+        <file>roboto/Roboto-MediumItalic.ttf</file>
+        <file>roboto/Roboto-Italic.ttf</file>
+        <file>roboto/Roboto-Light.ttf</file>
+        <file>roboto/Roboto-Bold.ttf</file>
+        <file>roboto/Roboto-BoldItalic.ttf</file>
+        <file>roboto/Roboto-Black.ttf</file>
+        <file>roboto/Roboto-BlackItalic.ttf</file>
+        <file>rubik/Rubik-Black.ttf</file>
+        <file>rubik/Rubik-BlackItalic.ttf</file>
+        <file>rubik/Rubik-Bold.ttf</file>
+        <file>rubik/Rubik-BoldItalic.ttf</file>
+        <file>rubik/Rubik-Italic.ttf</file>
+        <file>rubik/Rubik-Light.ttf</file>
+        <file>rubik/Rubik-LightItalic.ttf</file>
+        <file>rubik/Rubik-Medium.ttf</file>
+        <file>rubik/Rubik-MediumItalic.ttf</file>
+        <file>rubik/Rubik-Regular.ttf</file>
+    </qresource>
+    <qresource prefix="/js/lib">
+        <file>jquery.js</file>
+        <file>require.js</file>
+        <file>highcharts.js</file>
+    </qresource>
+</RCC>

@@ -12,5 +12,6 @@
         <file>Approach.qml</file>
         <file>DDS.qml</file>
         <file>jquery.min.js</file>
+        <file>main.js</file>
     </qresource>
 </RCC>
