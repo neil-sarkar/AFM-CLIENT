@@ -27,11 +27,8 @@ MainWindow::MainWindow(AFM* afm)
     m_welcome_page.mainFrame()->load(startURL);
     QUrl sweepURL = QUrl("qrc:/html/sweep.html");
     m_sweep_page.mainFrame()->load(sweepURL);
-
 //    setPage(&m_sweep_page);
-
 //    setUrl(startURL);
-
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 }
 
@@ -51,4 +48,8 @@ void MainWindow::log_cpp(QString text) {
 
 void MainWindow::load_sweep_page() {
     setPage(&m_sweep_page);
+}
+
+void MainWindow::load_home_page() {
+    setPage(&m_welcome_page);
 }
