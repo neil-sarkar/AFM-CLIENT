@@ -6,19 +6,19 @@ $(function () {
         title: {
             text: 'Amplitude'
         },
-        subtitle: {
-                   text: 'Click and drag in the plot area to zoom in'
+        tooltip: {
+           crosshairs: [true, true]
         },
         xAxis: {
             type: 'linear',
             title: {
                text: "Frequency (Hz)"
-            }
+            },
         },
         yAxis: {
             title: {
                 text: 'Amplitude (V)'
-            }
+            },
         },
         legend: {
             enabled: false
@@ -33,8 +33,8 @@ $(function () {
         title: {
             text: 'Phase'
         },
-        subtitle: {
-                   text: 'Click and drag in the plot area to zoom in'
+        tooltip: {
+           crosshairs: [true, true]
         },
         xAxis: {
             type: 'linear',
@@ -65,11 +65,10 @@ var phase_chart;
 function sweep() {
     amplitude_chart = $('#amplitude-chart-container').highcharts();
     phase_chart = $('#phase-chart-container').highcharts();
-    while (amplitude_chart.series.length > 0) {
+    while (amplitude_chart.series.length > 0) { // remove any existing data
         amplitude_chart.series[0].remove(true);
         phase_chart.series[0].remove(true);
     }
-
     sweeper.start_state_machine();
 }
 
@@ -125,7 +124,6 @@ function update_chart(chart, data, name) {
         two_dimensional_data.push([data[i], data[i+1]]);
     }
     var series = create_series(two_dimensional_data);
-    console.log("there");
     chart.addSeries(series);
     chart.xAxis[0].setExtremes(min_x - 300, max_x + 300);
     sweep_number += 1;

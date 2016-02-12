@@ -7,8 +7,9 @@
         <file>highcharts.js</file>
     </qresource>
     <qresource lang="css" prefix="/css">
-        <file>styles.css</file>
+        <file>home.css</file>
         <file>fonts.css</file>
+        <file>sweep.css</file>
     </qresource>
     <qresource lang="html" prefix="/html">
         <file>home.html</file>

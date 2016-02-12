@@ -807,8 +807,9 @@ qrc_window.cpp: ../qt_quick_app/window.qrc \
 		../qt_quick_app/motor.cpp \
 		../qt_quick_app/data_point.h \
 		../qt_quick_app/approacher.cpp \
+		../qt_quick_app/home.css \
 		../qt_quick_app/fonts.css \
-		../qt_quick_app/styles.css \
+		../qt_quick_app/sweep.css \
 		../qt_quick_app/home.js \
 		../qt_quick_app/highcharts.js \
 		../qt_quick_app/jquery.js \
@@ -929,8 +930,6 @@ qrc_window.cpp: ../qt_quick_app/window.qrc \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
-		/Users/abali/Qt/5.5/clang_64/lib/QtScript.framework/Headers/QScriptValue \
-		/Users/abali/Qt/5.5/clang_64/lib/QtScript.framework/Headers/qscriptvalue.h \
 		../qt_quick_app/pid.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QObject \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qobject.h \
@@ -1902,9 +1901,7 @@ main.o: ../qt_quick_app/main.cpp /Users/abali/Qt/5.5/clang_64/lib/QtGui.framewor
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/QDir \
 		/Users/abali/Qt/5.5/clang_64/lib/QtCore.framework/Headers/qdir.h \
 		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/QApplication \
-		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
-		/Users/abali/Qt/5.5/clang_64/lib/QtScript.framework/Headers/QScriptValue \
-		/Users/abali/Qt/5.5/clang_64/lib/QtScript.framework/Headers/qscriptvalue.h
+		/Users/abali/Qt/5.5/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../qt_quick_app/main.cpp
 
 receiver.o: ../qt_quick_app/receiver.cpp ../qt_quick_app/receiver.h \

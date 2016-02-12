@@ -1,11 +1,21 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="qrc:/css/fonts.css">
-        <link rel="stylesheet" type="text/css" href="qrc:/css/styles.css">
+        <link rel="stylesheet" type="text/css" href="qrc:/css/sweep.css">
     </head>
-   <button onclick="sweep()">Start sweep</button>
-    <div id="amplitude-chart-container"></div>
-    <div id="phase-chart-container"></div>
+    <div class="wrapper">
+        <div class='left-flexbox'>
+            <div id="amplitude-chart-container"></div>
+            <div id="phase-chart-container"></div>
+        </div>
+        <div class='right-flexbox'>
+            <h1 class='step-name'> Frequency Sweep</h1>
+            <p class="step-description">
+
+            </p>
+            <button class="sweep-button" onclick="sweep()">SWEEP</button>
+        </div>
+    </div>
 </html>
 
 

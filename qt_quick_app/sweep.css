@@ -1,0 +1,67 @@
+/*.sweep-button {
+    font-family: 'Rubik-Regular';
+    border: solid black 2px;
+    margin: auto;
+    background-color: white;
+    margin-top: 2.5%;
+    padding: 3%;
+    -webkit-transition: color 0.2s ease-in;
+    -webkit-transition: background-color 0.2s ease-in;
+}
+
+.sweep-button:hover {
+    background-color: black;
+    color: white;
+}*/
+
+.wrapper  {
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+    -webkit-align-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.left-flexbox {
+    display: -webkit-flex;
+    -webkit-flex: 1;
+    -webkit-flex-flow: column;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+    -webkit-align-content: center;
+    height: 100%;
+    margin: auto;
+}
+
+.right-flexbox {
+    height: 100%;
+    -webkit-flex: 1;
+    display: -webkit-flex;
+    -webkit-flex-flow: column wrap;
+}
+
+.step-name {
+    font-family: "Roboto-Thin";
+}
+
+.step-description {
+    font-family: "Roboto-Thin";
+}
+
+.sweep-button {
+    font-family: 'Rubik-Regular';
+    border: solid black 2px;
+    margin: auto;
+    background-color: white;
+    width: 20%;
+    padding: 2.5%;
+    -webkit-transition: color 0.2s ease-in;
+    -webkit-transition: background-color 0.2s ease-in;
+}
+
+.sweep-button:hover {
+    background-color: black;
+    color: white;
+}
