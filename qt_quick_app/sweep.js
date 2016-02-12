@@ -72,7 +72,7 @@ $(function () {
                           var chart = this.series.chart;
                           var index = this.index;
                           var series = this.series._i;
-                          sync_tooltips(index, series);
+                          sync_tooltips(index, series, e);
                       }
                   }
               },
@@ -90,9 +90,61 @@ var sweep_colors = ["#0066FF","#FF0000", "FF530D"];
 var amplitude_chart;
 var phase_chart;
 
-function sync_tooltips(index, series) {
-    phase_chart.tooltip.refresh(phase_chart.series[series].points[index]);
-    amplitude_chart.tooltip.refresh(phase_chart.series[series].points[index]);
+/**
+ * In order to synchronize tooltips and crosshairs, override the
+ * built-in events with handlers defined on the parent element.
+ */
+//$('#container').bind('mousemove touchmove touchstart', function (e) {
+//    var chart, point, i;
+//    for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+//        chart = Highcharts.charts[i];
+//        e = chart.pointer.normalize(e.originalEvent); // Find coordinates within the chart
+//        for (int j = 0; j < 3; j++) {
+//            point = chart.series[j].searchPoint(e, true); // Get the hovered point
+//            if (point)
+//                break;
+//        }
+
+//        if (point) {
+//            point.onMouseOver(); // Show the hover marker
+//            console.log(point);
+//            chart.tooltip.refresh(point); // Show the tooltip
+//            chart.xAxis[0].drawCrosshair(e, point); // Show the crosshair
+//        }
+//    }
+//});
+/**
+ * Override the reset function, we don't need to hide the tooltips and crosshairs.
+ */
+//Highcharts.Pointer.prototype.reset = function () {
+//    return undefined;
+//};
+
+/**
+ * Synchronize zooming through the setExtremes event handler.
+ */
+function syncExtremes(e) {
+    var thisChart = this.chart;
+    console.log("syncing");
+    if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
+        Highcharts.each(Highcharts.charts, function (chart) {
+            if (chart !== thisChart) {
+                if (chart.xAxis[0].setExtremes) { // It is null while updating
+                    chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
+                }
+            }
+        });
+    }
+}
+function sync_tooltips(index, series, e) {
+    var phase_point = phase_chart.series[series].points[index]
+    var amplitude_point = amplitude_chart.series[series].points[index];
+    phase_chart.tooltip.refresh(phase_point);
+    amplitude_chart.tooltip.refresh(amplitude_point);
+    amplitude_chart.xAxis[0].drawCrosshair(e, amplitude_point);
+    phase_chart.xAxis[0].drawCrosshair(e, phase_point);
+    amplitude_chart.yAxis[0].drawCrosshair(e, amplitude_point);
+    phase_chart.yAxis[0].drawCrosshair(e, phase_point);
 }
 
 function sweep() {
