@@ -14,6 +14,18 @@ $(function () {
             title: {
                text: "Frequency (Hz)"
             },
+            events: {
+                afterSetExtremes: function (event) {
+                  if (!auto_populating) {
+                      var xMin = event.min;
+                      var xMax = event.max;
+
+                      var ex = phase_chart.xAxis[0].getExtremes();
+
+                      if (ex.min != xMin || ex.max != xMax) phase_chart.xAxis[0].setExtremes(xMin, xMax, true, false);
+                    }
+                }
+            }
         },
         yAxis: {
             title: {
@@ -54,6 +66,18 @@ $(function () {
             type: 'linear',
             title: {
                 text: "Frequency (Hz)"
+            },
+            events: {
+                afterSetExtremes: function (event) {
+                   if (!auto_populating) {
+                       var xMin = event.min;
+                       var xMax = event.max;
+
+                       var ex = amplitude_chart.xAxis[0].getExtremes();
+
+                       if (ex.min != xMin || ex.max != xMax) amplitude_chart.xAxis[0].setExtremes(xMin, xMax, true, false);
+                   }
+                }
             }
         },
         yAxis: {
@@ -72,7 +96,7 @@ $(function () {
                           var chart = this.series.chart;
                           var index = this.index;
                           var series = this.series._i;
-                          sync_tooltips(index, series, e);
+                          sync_tooltips(index, series);
                       }
                   }
               },
@@ -89,6 +113,8 @@ var sweep_number = 0;
 var sweep_colors = ["#0066FF","#FF0000", "FF530D"];
 var amplitude_chart;
 var phase_chart;
+var auto_populating;
+
 
 /**
  * In order to synchronize tooltips and crosshairs, override the
@@ -137,7 +163,7 @@ function syncExtremes(e) {
     }
 }
 function sync_tooltips(index, series, e) {
-    var phase_point = phase_chart.series[series].points[index]
+    var phase_point = phase_chart.series[series].points[index];
     var amplitude_point = amplitude_chart.series[series].points[index];
     phase_chart.tooltip.refresh(phase_point);
     amplitude_chart.tooltip.refresh(amplitude_point);
@@ -148,6 +174,7 @@ function sync_tooltips(index, series, e) {
 }
 
 function sweep() {
+    auto_populating = true;
     amplitude_chart = $('#amplitude-chart-container').highcharts();
     phase_chart = $('#phase-chart-container').highcharts();
     while (amplitude_chart.series.length > 0) { // remove any existing data
@@ -211,7 +238,9 @@ function update_chart(chart, data, name) {
     var series = create_series(two_dimensional_data);
     chart.addSeries(series);
     chart.xAxis[0].setExtremes(min_x - 300, max_x + 300);
-    sweep_number += 1;
+    sweep_number = (sweep_number + 1) % 3;
+    if (sweep_number == 0)
+        auto_populating = false;
 }
 
 function add_data(amplitude_data, phase_data) {
