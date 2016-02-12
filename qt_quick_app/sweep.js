@@ -23,6 +23,20 @@ $(function () {
         legend: {
             enabled: false
         },
+        plotOptions: {
+           series: {
+               point: {
+                   events: {
+                       mouseOver: function () {
+                           var chart = this.series.chart;
+                           var index = this.index;
+                           var series = this.series._i;
+                           sync_tooltips(index, series);
+                       }
+                   }
+               },
+            }
+        }
     });
 });
 $(function () {
@@ -50,6 +64,20 @@ $(function () {
         legend: {
             enabled: false
         },
+        plotOptions: {
+          series: {
+              point: {
+                  events: {
+                      mouseOver: function () {
+                          var chart = this.series.chart;
+                          var index = this.index;
+                          var series = this.series._i;
+                          sync_tooltips(index, series);
+                      }
+                  }
+              },
+           }
+        }
     });
 });
 
@@ -61,6 +89,11 @@ var sweep_number = 0;
 var sweep_colors = ["#0066FF","#FF0000", "FF530D"];
 var amplitude_chart;
 var phase_chart;
+
+function sync_tooltips(index, series) {
+    phase_chart.tooltip.refresh(phase_chart.series[series].points[index]);
+    amplitude_chart.tooltip.refresh(phase_chart.series[series].points[index]);
+}
 
 function sweep() {
     amplitude_chart = $('#amplitude-chart-container').highcharts();
@@ -133,5 +166,3 @@ function add_data(amplitude_data, phase_data) {
     update_chart(amplitude_chart, amplitude_data, "Amplitude (V)");
     update_chart(phase_chart, phase_data, "Phase (rad)");
 }
-
-
