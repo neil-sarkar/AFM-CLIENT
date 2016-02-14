@@ -1,17 +1,20 @@
 <html>
 <head>
-	<title></title>
+  <meta charset="utf-8">
+  <title>React</title>
+  <div id="content"></div>
+  
 </head>
 <body>
-	<div id="container"></div>
 </body>
-<script data-main='js/common' src='js/lib/require.js'></script>
+<script type="text/javascript" data-main="js/common" src="js/lib/require.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script> -->
 <script type="text/javascript">
-	require(['common'], function() {
-		require(['components/synced_chart'], function(chart) {
-			$('#container').highcharts(chart);	
-		});
-	});
-</script>
+require(["common"], function() {
+	require(['react', 'jsx!pages/app'], function(){
 
+	})
+});
+  </script>
 </html>
