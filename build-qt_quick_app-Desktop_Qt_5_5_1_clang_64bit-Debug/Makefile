@@ -748,7 +748,6 @@ qrc_qml.cpp: ../qt_quick_app/qml.qrc \
 		../qt_quick_app/PID.qml \
 		../qt_quick_app/DAC.qml \
 		../qt_quick_app/PGA.qml \
-		../qt_quick_app/main.js \
 		../qt_quick_app/Sweep.qml \
 		../qt_quick_app/DDS.qml \
 		../qt_quick_app/Motor.qml \
@@ -797,14 +796,22 @@ qrc_assets.cpp: ../qt_quick_app/assets.qrc \
 		../qt_quick_app/rubik/Rubik-Medium.ttf \
 		../qt_quick_app/rubik/Rubik-LightItalic.ttf \
 		../qt_quick_app/home.js \
-		../qt_quick_app/main.js \
+		../qt_quick_app/text.js \
+		../qt_quick_app/JSXTransformer.js \
 		../qt_quick_app/console.js \
 		../qt_quick_app/common.js \
-		../qt_quick_app/step.js \
+		../qt_quick_app/synced_chart.js \
+		../qt_quick_app/jsx.js \
 		../qt_quick_app/sweep.js \
+		../qt_quick_app/handlebars-v4.0.5.js \
 		../qt_quick_app/highcharts.js \
 		../qt_quick_app/jquery.js \
-		../qt_quick_app/require.js
+		../qt_quick_app/browser.js \
+		../qt_quick_app/react.js \
+		../qt_quick_app/require.js \
+		../qt_quick_app/react-dom.js \
+		../qt_quick_app/sidebar.jsx \
+		../qt_quick_app/app.jsx
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name assets ../qt_quick_app/assets.qrc -o qrc_assets.cpp
 
 compiler_moc_header_make_all: moc_receiver.cpp moc_serial_port.cpp moc_adc.cpp moc_motor.cpp moc_afm.cpp moc_dac.cpp moc_command_node.cpp moc_send_worker.cpp moc_receive_worker.cpp moc_pga.cpp moc_pid.cpp moc_afm_object.cpp moc_dds.cpp moc_sweeper.cpp moc_approacher.cpp moc_scanner.cpp moc_scan_data.cpp moc_mainwindow.cpp

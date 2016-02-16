@@ -9,7 +9,7 @@ define(["jquery", "react", "dom","jsx!pages/sidebar", "highcharts"], function($,
                 chart: {
                   plotBackgroundColor: '#EFEFEF',
                     height:300,
-                    type: 'bar'
+                    type: 'line'
                 },
                 title: { 
                 	text: 'Amplitude' 
@@ -72,7 +72,7 @@ define(["jquery", "react", "dom","jsx!pages/sidebar", "highcharts"], function($,
                 }
             });
         });
-     
+     	
       },
       componentWillReceiveProps: function(nextProps) {
         // we can use this method to see if the component is receiving props
@@ -92,7 +92,7 @@ define(["jquery", "react", "dom","jsx!pages/sidebar", "highcharts"], function($,
       componentDidUpdate: function() {
         this.renderChart(); // after the component props are updated, render the chart into the DOM node
       },
-      addPoint: function() {
+      addSeries: function() {
       	var series = {
             data: [[3,3],[4,4],[5,5]],
             type: "area",
@@ -154,15 +154,16 @@ define(["jquery", "react", "dom","jsx!pages/sidebar", "highcharts"], function($,
 			var that = this;
 			window.setTimeout(function () {
 				that.updateState(2);
+				console.log("here");
 			}, 2000)
 			if (this.state.x == 1)
 				return (<div><Sidebar /><div>l</div></div>);
 			else
-				return (<div></div>);
+				return (<div><HighchartsBar/></div>);
 		}
 	});
-	var x = [[1,1], [2,2]]
-	ReactDOM.render(<HighchartsBar model={x}/>, document.getElementById('content'));
+
+	ReactDOM.render(<X />, document.getElementById('content'));
 	// element = React.createElement(Chart, {container:"chart", options:config});
 	// ReactDOM.render(element, document.getElementById('content'));
 	// React.render(<ReactHighcharts config = {config}></ReactHighcharts>, document.getElementById('content'));

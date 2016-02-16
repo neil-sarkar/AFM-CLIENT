@@ -3,9 +3,11 @@
         <file>home.js</file>
         <file>console.js</file>
         <file>sweep.js</file>
-        <file>step.js</file>
-        <file>main.js</file>
         <file>common.js</file>
+        <file>synced_chart.js</file>
+        <file>jsx.js</file>
+        <file>JSXTransformer.js</file>
+        <file>text.js</file>
     </qresource>
     <qresource lang="css" prefix="/css">
         <file>home.css</file>
@@ -55,5 +57,13 @@
         <file>jquery.js</file>
         <file>require.js</file>
         <file>highcharts.js</file>
+        <file>handlebars-v4.0.5.js</file>
+        <file>react.js</file>
+        <file>react-dom.js</file>
+        <file>browser.js</file>
+    </qresource>
+    <qresource prefix="/js/pages">
+        <file>app.jsx</file>
+        <file>sidebar.jsx</file>
     </qresource>
 </RCC>

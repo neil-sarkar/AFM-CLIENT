@@ -1,17 +1,19 @@
-<!DOCTYPE html>
 <html>
-    <head>
-        <title>My Sample Project</title>
-        <!-- data-main attribute tells require.js to load
-             scripts/main.js after require.js loads. -->
-        <script data-main="qrc:/js/common.js" src="qrc:/js/lib/require.js"></script>
-        <script>
-            require(["common"], function() {
-                require(["main"]);
-            });
-        </script>
-    </head>
-    <body>
-        <h1></h1>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <title>React</title>
+  <div id="content"></div>
+
+</head>
+<body>
+</body>
+<script type="text/javascript" data-main="qrc:/js/common.js" src="qrc:/js/lib/require.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script> -->
+<script type="text/javascript">
+        require(["common"], function() {
+                require(['react', 'jsx!pages/app'], function(){
+                })
+    });
+</script>
 </html>
