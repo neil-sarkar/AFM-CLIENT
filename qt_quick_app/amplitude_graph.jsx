@@ -177,7 +177,8 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	        );
 	    }
 	});
-	return (<div><AmplitudePhaseGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
-		<AmplitudePhaseGraph title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect}/>
+	return (<div>
+			<AmplitudePhaseGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
+			<AmplitudePhaseGraph title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect}/>
 		</div>)
 });
