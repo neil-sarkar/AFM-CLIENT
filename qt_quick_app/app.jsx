@@ -1,9 +1,4 @@
 define(["jquery", "react", "dom","jsx!pages/sidebar", "jsx!pages/amplitude_graph"], function($, React, ReactDOM, Sidebar, AmplitudePhaseGraph) {
-    function x() {
-        console.log('here');
-        sweeper.start_state_machine();
-    }
-
     var X = React.createClass({
         getInitialState: function() {
             return {

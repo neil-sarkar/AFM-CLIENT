@@ -91,8 +91,6 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
         QPointF phase_point(current_frequency, phase_value);
         m_amplitude_data.append(amplitude_point);
         m_phase_data.append(phase_point);
-//        emit new_amplitude_point(amplitude_point.x(), amplitude_point.y());
-//        emit new_phase_point(phase_point.x(), phase_point.y());
     }
     QVariantList amplitude_data_for_js;
     QVariantList phase_data_for_js;
@@ -103,6 +101,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
         phase_data_for_js.append(m_phase_data[i].y());
     }
     emit new_amplitude_data(amplitude_data_for_js);
+    emit new_phase_data(phase_data_for_js);
     m_repetitions_counter += 1;
     emit sweep_done();
     qDebug() << "DONE";

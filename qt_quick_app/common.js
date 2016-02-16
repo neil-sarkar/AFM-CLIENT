@@ -2,6 +2,7 @@ requirejs.config({
     baseUrl: "qrc:/js",
     paths: {
         home: "pages/home",
+        console: "console",
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
         react: 'lib/react',

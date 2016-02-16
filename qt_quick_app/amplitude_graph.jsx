@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, highcharts) {
+define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
 	var AmplitudePhaseGraph = React.createClass({
 	    renderChart: function() {
 	    	var component = this;
@@ -78,7 +78,7 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	    },
 	    getInitialState: function() {
 	        return {
-	            model: [[1,1],[2,2]]
+	            model: []
 	        };
 	    },
 	    shouldComponentUpdate: function(nextProps, nextState) {
@@ -86,45 +86,54 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	    },
 	    componentDidMount: function() {
 	        this.renderChart();
-	        // this.props.establishDataConnection(this.addSeries);
+	        this.props.establishDataConnection(this.handleNewData);
 	        $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
-
 	    },
 	    componentDidUpdate: function() {
 	        this.renderChart(); // after the component props are updated, render the chart into the DOM node
 	    },
-	    addSeries: function() {
-	   	console.log("here");
-	    var series = {
-	        data: [[3,3],[4,4],[5,5]],
-	        type: "area",
-	        plotOptions: {
-	            area: {
-	                fillColor: {
-	                    linearGradient: {
-	                        x1: 0,
-	                        y1: 0,
-	                        x2: 0,
-	                        y2: 1
-	                    },
-	                    stops: [
-	                        [0, Highcharts.getOptions().colors[0]],
-	                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-	                    ]
-	                },
-	                marker: {
-	                    radius: 2
-	                },
-	                lineWidth: 1,
-	                states: {
-	                    hover: {
-	                        lineWidth: 1
-	                    }
-	                },
-	                threshold: null
-	            }
-	        },
-	    	};
+	    handleNewData: function(data) {
+	    	var two_dimensional_data = [];
+	    	var min_x = 100000;
+	    	var max_x = 0;
+	    	for (i = 0; i < data.length; i += 2) {
+	    	    min_x = data[i] < min_x  ? data[i] : min_x;
+	    	    max_x = data[i] > max_x  ? data[i] : max_x;
+	    	    two_dimensional_data.push([data[i], data[i+1]]);
+	    	}
+	    	this.addSeries(two_dimensional_data);
+	    },
+	    addSeries: function(data) {
+		    var series = {
+		    	data: data,
+		        type: "area",
+		        plotOptions: {
+		            area: {
+		                fillColor: {
+		                    linearGradient: {
+		                        x1: 0,
+		                        y1: 0,
+		                        x2: 0,
+		                        y2: 1
+		                    },
+		                    stops: [
+		                        [0, Highcharts.getOptions().colors[0]],
+		                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+		                    ]
+		                },
+		                marker: {
+		                    radius: 2
+		                },
+		                lineWidth: 1,
+		                states: {
+		                    hover: {
+		                        lineWidth: 1
+		                    }
+		                },
+		                threshold: null
+		            }
+		        },
+		    };
 	        var node = this.refs.chartNode.getDOMNode();
 	        $(node).highcharts().addSeries(series);
 	    },
@@ -134,8 +143,7 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	        );
 	    }
 	});
-	console.log(sweeper);
 	return (<div><AmplitudePhaseGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
-		// <AmplitudePhaseGraph title={"Phase"} />
+		<AmplitudePhaseGraph title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect}/>
 		</div>)
 });
