@@ -3,6 +3,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    renderChart: function() {
 	    	var component = this;
 	        var node = this.refs.chartNode.getDOMNode();
+	        var siblings = $(node).siblings();
 	        var dataSeries = this.state.model;
 	        jQuery(function ($) {
 	        $(node).highcharts({
@@ -64,7 +65,18 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	               	series: {
 	                 	point: {
 	                      	events: {
-								mouseOver: function () {}
+								mouseOver: function (e) {
+									var chart = this.series.chart;
+									var index = this.index;
+									var series = this.series._i;
+									for (var i = 0; i < siblings.length; i += 1) {
+										var chart = $(siblings[i]).highcharts();
+										var point = chart.series[series].points[index];
+										chart.tooltip.refresh(point);
+										chart.xAxis[0].drawCrosshair(e, point);
+										chart.yAxis[0].drawCrosshair(e, point);
+									}
+								}
 	                       }
 	                   },
 	                }
@@ -78,7 +90,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    },
 	    getInitialState: function() {
 	        return {
-	            model: []
+	            model: [[1,1],[2,2]]
 	        };
 	    },
 	    shouldComponentUpdate: function(nextProps, nextState) {
