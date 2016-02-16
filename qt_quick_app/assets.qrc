@@ -65,5 +65,6 @@
     <qresource prefix="/js/pages">
         <file>app.jsx</file>
         <file>sidebar.jsx</file>
+        <file>amplitude_graph.jsx</file>
     </qresource>
 </RCC>
