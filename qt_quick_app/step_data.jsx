@@ -15,9 +15,9 @@
 			}	
 			return (
 				<div>
-					<button onClick={this.props.go_to_next_step}>Next</button>
-					<button onClick={this.props.go_to_previous_step}>Back</button>		
 					{step_component}
+					<button onClick={this.props.go_to_previous_step}>Back</button>		
+					<button onClick={this.props.go_to_next_step}>Next</button>
 				</div>
 			)
 			

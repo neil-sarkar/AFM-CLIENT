@@ -44,6 +44,8 @@
 
 .step-name {
     font-family: "Roboto-Thin";
+    font-size: 300%;
+    margin-bottom: 5%;
 }
 
 .step-description {

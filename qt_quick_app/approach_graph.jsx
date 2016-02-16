@@ -1,5 +1,5 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
-    var AppraochGraph = React.createClass({
+    var ApproachGraph = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode.getDOMNode();
             jQuery(function ($) {
@@ -62,6 +62,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         handleNewData: function(approach_state, approach_adc_read) {
             var node = this.refs.chartNode.getDOMNode();
             var point = [(new Date()).getTime(), approach_adc_read];
+            // should probably add state to the tooltip or some other box
             $(node).highcharts().series[0].addPoint(point);
         },
         componentDidMount: function() {
@@ -73,5 +74,5 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return <AppraochGraph establishDataConnection={approacher.new_data.connect}/>;
+    return <ApproachGraph establishDataConnection={approacher.new_data.connect}/>;
 });
