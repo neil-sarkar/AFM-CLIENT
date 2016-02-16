@@ -15,8 +15,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 },
                 tooltip: { crosshairs: [true, true] },
                 xAxis: {
-                    type: 'linear',
-                    title: { text: "Frequency (Hz)" },
+                    type: 'datetime',
                 },
                 yAxis: {
                     title: {
@@ -62,7 +61,8 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         handleNewData: function(approach_state, approach_adc_read) {
             var node = this.refs.chartNode.getDOMNode();
-            $(node).highcharts().series[0].addPoint(approach_adc_read);
+            var point = [(new Date()).getTime(), approach_adc_read];
+            $(node).highcharts().series[0].addPoint(point);
         },
         componentDidMount: function() {
             this.renderChart();

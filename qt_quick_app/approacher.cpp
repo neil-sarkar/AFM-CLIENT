@@ -1,6 +1,7 @@
 #include "approacher.h"
 #include "constants.h"
 #include "adc.h"
+#include <QDateTime>
 
 Approacher::Approacher(PID* pid, AFMObject* adc)
 {
