@@ -1,18 +1,18 @@
 define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, highcharts) {
-	var AmplitudeGraph = React.createClass({displayName: 'AmplitudeGraph',
+	var AmplitudePhaseGraph = React.createClass({
 	    renderChart: function() {
+	    	var component = this;
 	        var node = this.refs.chartNode.getDOMNode();
 	        var dataSeries = this.state.model;
-	        console.log("render", dataSeries);
 	        jQuery(function ($) {
 	        $(node).highcharts({
 	            chart: {
 	              	plotBackgroundColor: '#EFEFEF',
-	                height:300,
+	                height: 300,
 	                type: 'line'
 	            },
 	            title: {
-	                text: 'Amplitude'
+	                text: component.props.title
 	            },
 	            tooltip: { crosshairs: [true, true] },
 	            xAxis: {
@@ -86,11 +86,15 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	    },
 	    componentDidMount: function() {
 	        this.renderChart();
+	        // this.props.establishDataConnection(this.addSeries);
+	        $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
+
 	    },
 	    componentDidUpdate: function() {
 	        this.renderChart(); // after the component props are updated, render the chart into the DOM node
 	    },
 	    addSeries: function() {
+	   	console.log("here");
 	    var series = {
 	        data: [[3,3],[4,4],[5,5]],
 	        type: "area",
@@ -120,7 +124,7 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	                threshold: null
 	            }
 	        },
-	    };
+	    	};
 	        var node = this.refs.chartNode.getDOMNode();
 	        $(node).highcharts().addSeries(series);
 	    },
@@ -130,5 +134,8 @@ define(["jquery", "react", "dom", "highcharts"], function($, React, ReactDOM, hi
 	        );
 	    }
 	});
-	return AmplitudeGraph;
+	console.log(sweeper);
+	return (<div><AmplitudePhaseGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
+		// <AmplitudePhaseGraph title={"Phase"} />
+		</div>)
 });

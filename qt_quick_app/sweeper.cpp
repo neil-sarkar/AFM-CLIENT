@@ -55,6 +55,7 @@ Sweeper::data_model Sweeper::phase_data() {
 }
 
 void Sweeper::start_state_machine() {
+    qDebug() << "HERE";
     m_state_machine.start();
 }
 
@@ -101,7 +102,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
         phase_data_for_js.append(m_phase_data[i].x());
         phase_data_for_js.append(m_phase_data[i].y());
     }
-    emit new_sweep_data(amplitude_data_for_js, phase_data_for_js);
+    emit new_amplitude_data(amplitude_data_for_js);
     m_repetitions_counter += 1;
     emit sweep_done();
     qDebug() << "DONE";

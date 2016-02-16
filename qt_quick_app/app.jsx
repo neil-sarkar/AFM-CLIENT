@@ -1,18 +1,23 @@
-define(["jquery", "react", "dom","jsx!pages/sidebar", "jsx!pages/amplitude_graph"], function($, React, ReactDOM, Sidebar, HighchartsBar) {
+define(["jquery", "react", "dom","jsx!pages/sidebar", "jsx!pages/amplitude_graph"], function($, React, ReactDOM, Sidebar, AmplitudePhaseGraph) {
+    function x() {
+        console.log('here');
+        sweeper.start_state_machine();
+    }
+
     var X = React.createClass({
         getInitialState: function() {
             return {
-                x: 1
-            }
+                step_number: 1
+            };
         },
         updateState: function(num) {
-            console.log("here");
             this.setState({
-                x: num
-            })
+                step_number: num
+            });
         },
         render: function() {
-            return (<div><Sidebar /><HighchartsBar /></div>);
+            sweeper.start_state_machine();
+            return (<div><button onClick={sweeper.start_state_machine}>Click me</button><Sidebar />{AmplitudePhaseGraph}</div>);
         }
     });
 

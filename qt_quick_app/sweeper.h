@@ -27,7 +27,7 @@ signals:
     void peak_detection_done();
     void peak_detection_failed();
     void machine_finished();
-    void new_sweep_data(QVariantList, QVariantList);
+    void new_amplitude_data(QVariantList);
 
 public slots:
     void set_stable_frequency();
