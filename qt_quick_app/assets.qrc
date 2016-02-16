@@ -69,5 +69,8 @@
         <file>step_data.jsx</file>
         <file>settings_drawer.jsx</file>
         <file>approach.jsx</file>
+        <file>scan.jsx</file>
+        <file>sweep.jsx</file>
+        <file>right_pane.jsx</file>
     </qresource>
 </RCC>

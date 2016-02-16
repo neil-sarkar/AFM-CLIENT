@@ -2,8 +2,9 @@
 #include "constants.h"
 #include "adc.h"
 
-Approacher::Approacher(PID* pid)
+Approacher::Approacher(PID* pid, AFMObject* adc)
 {
+    m_adc = static_cast<ADC*>(adc);
     m_pid = pid;
     m_state = 0;
 }
@@ -29,6 +30,7 @@ int Approacher::state() {
 void Approacher::handle_auto_approach_info_message(QByteArray working_response) {
     double adc_value = double(quint16((quint8(working_response.at(2)) << 8)| quint8(working_response.at(1)))) * ADC::SCALE_FACTOR;
     m_state = working_response.at(0);
+    m_adc->update_value(adc_value);
 
     // we should also store the adc value?
     qDebug() << static_cast<unsigned char>(working_response.at(0)) << "  " << adc_value;

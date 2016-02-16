@@ -8,12 +8,13 @@
 class ADC : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(double value READ value NOTIFY value_changed)
+    Q_PROPERTY(double value READ value NOTIFY value_set)
 public:
     explicit ADC(qint8 id);
     void init();
     Q_INVOKABLE double value();
     Q_INVOKABLE void read();
+    void update_value(double value);
 
     // ADC channel (aka id) constants
     static const int X_1;
@@ -28,7 +29,7 @@ public:
     static const double SCALE_FACTOR;
 
 signals:
-    void value_changed();
+    void value_set();
 
 public slots:
 
@@ -38,7 +39,6 @@ private:
     void callback_read(QByteArray );
     callback_return_type bind(void (ADC::*method)(QByteArray));
     typedef void (ADC::*callback_type)(QByteArray);
-    void update_value(double value);
     void cmd_read();
 };
 

@@ -8,11 +8,9 @@ ADC::ADC(qint8 id)
 }
 
 void ADC::update_value(double value) {
-    if (value != m_value) {
-        m_value = value;
-        qDebug() << "Setting ADC" << m_id << "value to " << value;
-        emit value_changed();
-    }
+    m_value = value;
+    qDebug() << "Setting ADC" << m_id << "value to " << value;
+    emit value_set();
 }
 
 double ADC::value() {

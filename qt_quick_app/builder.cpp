@@ -57,7 +57,7 @@ AFM* Builder::build_afm() {
     PID* pid = new PID();
     Motor* motor = new Motor();
     Scanner* scanner = new Scanner(pid, dac_collection[DAC::Z_Offset_Fine]);
-    Approacher* approacher = new Approacher(pid);
+    Approacher* approacher = new Approacher(pid, adc_collection[ADC::Z_Piezoresistor_Amplitude]);
     Sweeper* sweeper = new Sweeper();
     sweeper->dds = new DDS();
     return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner);
