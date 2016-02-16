@@ -20,7 +20,6 @@
     -webkit-justify-content: center;
     -webkit-align-items: center;
     -webkit-align-content: center;
-    height: 100%;
     width: 100%;
 }
 
@@ -67,3 +66,12 @@
     background-color: black;
     color: white;
 }
+
+.progress-bar {
+    top: 0;
+    height: 6%;
+    width: 100%;
+    border-bottom: 1px solid gray;
+    margin-bottom: 1%;
+}
+

@@ -3,6 +3,7 @@ requirejs.config({
     paths: {
         home: "pages/home",
         console: "console",
+        classnames: "lib/classNames",
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
         react: 'lib/react',

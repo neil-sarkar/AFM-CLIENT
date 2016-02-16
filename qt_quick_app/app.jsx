@@ -15,15 +15,16 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
               step : this.state.step - 1
             });
         },
-        go_to_step: function(step) {
+        go_to_step: function(step_to_jump_to) {
+            step_to_jump_to = parseInt(step_to_jump_to); // ensure we're getting ints, not string representations of ints
             this.setState({
-              step : step
+              step : step_to_jump_to
             });
         },
         render: function() {
             return (
                 <div>
-                    <ProgressBar step={this.state.step} go_to_step={this.go_to_step} />
+                    <ProgressBar step={this.state.step} go_to_step={this.go_to_step} step_list={["Sweep", "Approach", "Scan"]}/>
                     <StepData step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
                     <SettingsDrawer step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
                 </div>
@@ -32,9 +33,6 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
     });
 
     ReactDOM.render(<X />, document.getElementById('content'));
-    // element = React.createElement(Chart, {container:"chart", options:config});
-    // ReactDOM.render(element, document.getElementById('content'));
-    // React.render(<ReactHighcharts config = {config}></ReactHighcharts>, document.getElementById('content'));
 });
 
 
