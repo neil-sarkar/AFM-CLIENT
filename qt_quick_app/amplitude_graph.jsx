@@ -3,14 +3,15 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    renderChart: function() {
 	    	var component = this;
 	        var node = this.refs.chartNode.getDOMNode();
-	        var siblings = $(node).siblings();
+	        var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
 	        var dataSeries = this.state.model;
 	        jQuery(function ($) {
 	        $(node).highcharts({
 	            chart: {
 	              	plotBackgroundColor: '#EFEFEF',
 	                height: 300,
-	                type: 'line'
+	                type: 'line',
+	                zoomType: 'x',
 	            },
 	            title: {
 	                text: component.props.title
@@ -19,6 +20,19 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	            xAxis: {
 	                type: 'linear',
 	                title: { text: "Frequency (Hz)" },
+	                events: {
+	                    afterSetExtremes: function (event) {
+                          var xMin = event.min;
+                          var xMax = event.max;
+
+                          for (var i = 0; i < siblings.length; i += 1) {
+                          	var chart = $(siblings[i]).highcharts();
+                          	var ex = chart.xAxis[0].getExtremes();
+                          	if (ex.min != xMin || ex.max != xMax) 
+                          		chart.xAxis[0].setExtremes(xMin, xMax, true, false);
+                          }
+	                    }
+	                },
 	            },
 	            yAxis: {
 	                title: {
@@ -66,6 +80,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	                 	point: {
 	                      	events: {
 								mouseOver: function (e) {
+									// sync the tooltips of all sibling graphs
 									var chart = this.series.chart;
 									var index = this.index;
 									var series = this.series._i;
@@ -90,7 +105,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    },
 	    getInitialState: function() {
 	        return {
-	            model: [[1,1],[2,2]]
+	            model: [[1,1],[2,2], [3,3], [4,4], [5,5]]
 	        };
 	    },
 	    shouldComponentUpdate: function(nextProps, nextState) {
@@ -114,6 +129,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    	    two_dimensional_data.push([data[i], data[i+1]]);
 	    	}
 	    	this.addSeries(two_dimensional_data);
+	    	chart.xAxis[0].setExtremes(min_x - 300, max_x + 300);
 	    },
 	    addSeries: function(data) {
 		    var series = {
