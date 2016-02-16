@@ -105,7 +105,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    },
 	    getInitialState: function() {
 	        return {
-	            model: [[1,1],[2,2], [3,3], [4,4], [5,5]]
+	            model: []
+	        };
+	    },
+	    getDefaultProps: function() {
+	        return {
+	            zoom_buffer: 300,
 	        };
 	    },
 	    shouldComponentUpdate: function(nextProps, nextState) {
@@ -129,7 +134,8 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
 	    	    two_dimensional_data.push([data[i], data[i+1]]);
 	    	}
 	    	this.addSeries(two_dimensional_data);
-	    	chart.xAxis[0].setExtremes(min_x - 300, max_x + 300);
+	    	var node = this.refs.chartNode.getDOMNode();
+	    	$(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);	
 	    },
 	    addSeries: function(data) {
 		    var series = {
