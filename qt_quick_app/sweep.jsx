@@ -1,4 +1,4 @@
- define(["react", "jsx!pages/amplitude_graph"], function(React, Graphs) {
+ define(["react", "jsx!pages/sweep_graphs"], function(React, Graphs) {
 	var Sweep = React.createClass({
 		render: function() {
 			return (

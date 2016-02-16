@@ -5,7 +5,7 @@ PID::PID() {
     m_proportional = .1;
     m_integral = 200;
     m_derivative = 0;
-    m_setpoint = 1;
+    m_setpoint = 0.7;
     m_enabled = 0;
 }
 

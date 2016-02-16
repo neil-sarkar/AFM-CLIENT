@@ -8,9 +8,9 @@ Sweeper::Sweeper() {
     // to be loaded from a settings file
     m_num_repetitions = 3;
     m_repetitions_counter = 0;
-    m_starting_center_frequency = 7000;
+    m_starting_center_frequency = 15000;
     m_step_sizes.append(100);
-    m_boundaries.append(5000);
+    m_boundaries.append(12000);
     m_step_sizes.append(10);
     m_boundaries.append(500);
     m_step_sizes.append(1);

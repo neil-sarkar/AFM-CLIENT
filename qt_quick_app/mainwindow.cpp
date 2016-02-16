@@ -37,9 +37,7 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
-    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
-    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
-    m_sweep_page.mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
 }
 
 void MainWindow::log_cpp(QString text) {

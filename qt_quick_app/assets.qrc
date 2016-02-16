@@ -64,7 +64,6 @@
     </qresource>
     <qresource prefix="/js/pages">
         <file>app.jsx</file>
-        <file>amplitude_graph.jsx</file>
         <file>progress_bar.jsx</file>
         <file>step_data.jsx</file>
         <file>settings_drawer.jsx</file>
@@ -72,5 +71,7 @@
         <file>scan.jsx</file>
         <file>sweep.jsx</file>
         <file>right_pane.jsx</file>
+        <file>sweep_graphs.jsx</file>
+        <file>approach_graph.jsx</file>
     </qresource>
 </RCC>

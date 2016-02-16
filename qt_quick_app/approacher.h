@@ -9,7 +9,7 @@
 class Approacher : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(int state READ state NOTIFY state_changed)
+    Q_PROPERTY(int state READ state NOTIFY new_data)
 public:
     explicit Approacher(PID*, AFMObject*);
     void init();
@@ -18,7 +18,7 @@ public:
     int state();
 
 signals:
-    void state_changed();
+    void new_data(int, double);
 
 public slots:
     void handle_auto_approach_info_message(QByteArray working_response);
