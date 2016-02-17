@@ -6,8 +6,8 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
             $(node).highcharts({
                 chart: {
                     type: 'heatmap',
-                    height: 300,
-                    width: 300
+                    height: 400,
+                    width: 400
                 },
                 title: {
                     text: 'Highcharts heat map',
@@ -41,8 +41,6 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
                         [0.5, '#fffbbc'],
                         [0.9, '#c4463a']
                     ],
-                    min: 0,
-                    max: 4095,
                 },
 
                 series: [{
@@ -55,8 +53,13 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
         handleNewData: function(data) {
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts()
+            var z_value_sum = data.reduce(function(previousValue, currentValue, currentIndex, array) {
+              return (currentIndex + 1) % 3 == 0 ? previousValue + currentValue : previousValue;
+            }, 0); // 0 is the initial value parameter, which would be set to the first element if not specified
+
+            var z_value_avg = z_value_sum / (data.length / 3);
             for (var i = 0; i < data.length; i += 3) {
-                chart.series[0].addPoint([data[i], data[i+1], data[i+2]], false);
+                chart.series[0].addPoint([data[i], data[i+1], data[i+2] - z_value_avg], false);
             }
             console.log(data);
             chart.redraw();
