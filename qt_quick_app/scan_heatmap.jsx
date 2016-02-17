@@ -96,27 +96,41 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, heatm
             });
         });
         },
+        asyncAddPoint: function(chart, point, callback) {
+            chart.series[0].addPoint(point, false, false);
+            callback();
+        },
+        redrawChart: function() {
+            console.log("redrawing chart");
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            chart.redraw();
+        },
         handleNewData: function(data) {
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();
+            var that = this;
             // var z_value_sum = data.reduce(function(previousValue, currentValue, currentIndex, array) {
             //   return (currentIndex + 1) % 3 == 0 ? previousValue + currentValue : previousValue;
             // }, 0); // 0 is the initial value parameter, which would be set to the first element if not specified
             asyncLoop(data.length / 3, function(loop) {
                 var i = 3 * loop.iteration();
-                chart.series[0].addPoint([data[i], data[i+1], data[i+2]], false, false);
-                console.log(data[i], data[i+1], data[i+2]);
-                loop.next();
-            }, chart.redraw());
+                that.asyncAddPoint(chart, [data[i], data[i+1], data[i+2]], function() {
+                    loop.next();
+                });
+            }, function() {
+                chart.redraw(); // I think this get triggered just a little bit before the addPoint methods all return...
+            });
         },
         componentDidMount: function() {
             this.renderChart();
             this.props.establishDataConnection(this.handleNewData);
+            this.props.finishSignal(this.redrawChart);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return <ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect}/>;
+    return <ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect} finishSignal={scanner.all_data_received.connect}/>;
 });
