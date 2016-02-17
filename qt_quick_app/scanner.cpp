@@ -4,8 +4,8 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 64;
-    m_num_points = 64;
+    m_num_lines = 32;
+    m_num_points = 32;
     m_ratio = 4;
     m_dwell_time = 2;
     pid = pid_;
