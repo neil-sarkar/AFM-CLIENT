@@ -1,5 +1,10 @@
-define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highcharts) {
+define(["jquery", "react", "dom", "heatmap", "highcharts_canvas"], function($, React, ReactDOM, highcharts, heatmap) {
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
+        getInitialState: function() {
+            return {
+                num_rendered: 0
+            };
+        },
         renderChart: function() {
             var node = this.refs.chartNode.getDOMNode();
             jQuery(function ($) {
@@ -20,7 +25,8 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
                 },
 
                 xAxis: {
-                    categories: Array.apply(null, Array(256)).map(function (_, i) {return i;})
+                    min: 0,
+                    max: 63
                 },
 
                 yAxis: {
@@ -31,8 +37,8 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
                     // maxPadding: 0,
                     // startOnTick: false,
                     // endOnTick: false,
-                    // tickWidth: 1,
-                    categories: Array.apply(null, Array(256)).map(function (_, i) {return i;})
+                    min: 0,
+                    max: 63,
                 },
 
                 colorAxis: {
@@ -42,32 +48,41 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highc
                         [0.9, '#c4463a']
                     ],
                 },
-
+                plotOptions: {
+                    heatmap: {
+                        animation: false, // doesnt seem to work
+                    },
+                    series: {
+                        animation: false,
+                    }
+                },
                 series: [{
                     borderWidth: 0,
-                    data: []
+                    data: [],
+                    turboThreshold: Number.MAX_VALUE // #3404, remove after 4.0.5 release
                 }]
             });
         });
         },
         handleNewData: function(data) {
             var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts()
-            var z_value_sum = data.reduce(function(previousValue, currentValue, currentIndex, array) {
-              return (currentIndex + 1) % 3 == 0 ? previousValue + currentValue : previousValue;
-            }, 0); // 0 is the initial value parameter, which would be set to the first element if not specified
-
-            var z_value_avg = z_value_sum / (data.length / 3);
-            for (var i = 0; i < data.length; i += 3) {
-                chart.series[0].addPoint([data[i], data[i+1], data[i+2] - z_value_avg], false);
-            }
-            console.log(data);
+            var chart = $(node).highcharts();
+            // var z_value_sum = data.reduce(function(previousValue, currentValue, currentIndex, array) {
+            //   return (currentIndex + 1) % 3 == 0 ? previousValue + currentValue : previousValue;
+            // }, 0); // 0 is the initial value parameter, which would be set to the first element if not specified
+            
             chart.redraw();
         },
         componentDidMount: function() {
             this.renderChart();
             var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
             this.props.establishDataConnection(this.handleNewData);
+            for (var i = 0; i < 63; i += 1) {
+                for (var j = 0; j < 63; j += 1)
+                chart.series[0].addPoint([i, j, 0], false);
+            }
+            chart.redraw();
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {

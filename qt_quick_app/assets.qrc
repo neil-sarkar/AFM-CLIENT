@@ -76,6 +76,7 @@
         <file>approach_graph.jsx</file>
         <file>flow.jsx</file>
         <file>scan_heatmap.jsx</file>
+        <file>highcharts-canvas.js</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

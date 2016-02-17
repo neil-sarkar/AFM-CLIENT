@@ -6,6 +6,7 @@ requirejs.config({
         classnames: "lib/classNames",
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
+        highcharts_canvas: 'pages/highcharts-canvas',
         heatmap: 'lib/modules/heatmap',
         react: 'lib/react',
         dom: 'lib/react-dom',
