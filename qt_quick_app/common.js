@@ -6,11 +6,14 @@ requirejs.config({
         classnames: "lib/classNames",
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
+        heatmap: 'lib/modules/heatmap',
         react: 'lib/react',
         dom: 'lib/react-dom',
         browser: 'lib/browser',
         JSXTransformer: "JSXTransformer",
         jsx: "jsx",
+    },
+    shim: {
     },
     jsx: {
         fileExtension: '.jsx'
