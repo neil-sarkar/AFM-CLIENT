@@ -60,9 +60,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         });
         },
         handleNewData: function(approach_state, approach_adc_read) {
+            // we don't use the appraoch state here...we use it in a separate dialog
+            // might be worth refactoring the signal
             var node = this.refs.chartNode.getDOMNode();
             var point = [(new Date()).getTime(), approach_adc_read];
-            // should probably add state to the tooltip or some other box
             $(node).highcharts().series[0].addPoint(point);
         },
         componentDidMount: function() {
