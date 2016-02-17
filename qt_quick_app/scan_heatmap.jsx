@@ -1,76 +1,75 @@
 define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, highcharts) {
-    var ScanHeatMap = React.createClass({
+    var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
         renderChart: function() {
             var node = this.refs.chartNode.getDOMNode();
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
                     type: 'heatmap',
-                    marginTop: 40,
-                    marginBottom: 40
+                    height: 300,
+                    width: 300
                 },
                 title: {
-                    text: 'Sales per employee per weekday'
+                    text: 'Highcharts heat map',
+                    align: 'left'
+                },
+
+                subtitle: {
+                    text: 'Temperature variation by day and hour through May 2015',
+                    align: 'left'
                 },
 
                 xAxis: {
-                    categories: ['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura']
+                    categories: Array.apply(null, Array(256)).map(function (_, i) {return i;})
                 },
 
                 yAxis: {
-                    categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                    title: null
+                    title: {
+                        text: null
+                    },
+                    // minPadding: 0,
+                    // maxPadding: 0,
+                    // startOnTick: false,
+                    // endOnTick: false,
+                    // tickWidth: 1,
+                    categories: Array.apply(null, Array(256)).map(function (_, i) {return i;})
                 },
 
                 colorAxis: {
+                    stops: [
+                        [0, '#3060cf'],
+                        [0.5, '#fffbbc'],
+                        [0.9, '#c4463a']
+                    ],
                     min: 0,
-                    minColor: '#FFFFFF',
-                    maxColor: Highcharts.getOptions().colors[0]
-                },
-
-                legend: {
-                    align: 'right',
-                    layout: 'vertical',
-                    margin: 0,
-                    verticalAlign: 'top',
-                    y: 25,
-                    symbolHeight: 320
-                },
-
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.xAxis.categories[this.point.x] + '</b> sold <br><b>' +
-                            this.point.value + '</b> items on <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
-                    }
+                    max: 4095,
                 },
 
                 series: [{
-                    name: 'Sales per employee',
-                    borderWidth: 1,
-                    data: [[0,0,10],[0,1,19],[0,2,8],[0,3,24],[0,4,67],[1,0,92],[1,1,58],[1,2,78],[1,3,117],[1,4,48],[2,0,35],[2,1,15],[2,2,123],[2,3,64],[2,4,52],[3,0,72],[3,1,132],[3,2,114],[3,3,19],[3,4,16],[4,0,38],[4,1,5],[4,2,8],[4,3,117],[4,4,115],[5,0,88],[5,1,32],[5,2,12],[5,3,6],[5,4,120],[6,0,13],[6,1,44],[6,2,88],[6,3,98],[6,4,96],[7,0,31],[7,1,1],[7,2,82],[7,3,32],[7,4,30],[8,0,85],[8,1,97],[8,2,123],[8,3,64],[8,4,84],[9,0,47],[9,1,114],[9,2,31],[9,3,48],[9,4,91]],
-                    dataLabels: {
-                        enabled: true,
-                        color: 'black',
-                        style: {
-                            textShadow: 'none'
-                        }
-                    }
+                    borderWidth: 0,
+                    data: []
                 }]
-
             });
         });
         },
-        handleNewData: function() {
+        handleNewData: function(data) {
             var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts()
+            for (var i = 0; i < data.length; i += 3) {
+                chart.series[0].addPoint([data[i], data[i+1], data[i+2]], false);
+            }
+            console.log(data);
+            chart.redraw();
         },
         componentDidMount: function() {
             this.renderChart();
-            // this.props.establishDataConnection(this.handleNewData);
+            var node = this.refs.chartNode.getDOMNode();
+            this.props.establishDataConnection(this.handleNewData);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return <ScanHeatMap />;
+    return <ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect}/>;
 });

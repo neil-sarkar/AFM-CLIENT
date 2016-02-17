@@ -38,6 +38,18 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     return true;
 }
 
+QVariantList ScanData::get_latest_offset_data(int num_points) {
+    QVariantList latest_data;
+    num_points = std::min(num_points, size());
+    for (int i = 0 ; i < num_points; i++) {
+        DataPoint point = data[size() - i - 1];
+        latest_data.append(point.x);
+        latest_data.append(point.y);
+        latest_data.append(point.z_offset);
+    }
+    return latest_data;
+}
+
 void ScanData::print() {
     for (DataPoint data_point : data) {
         qDebug() << data_point.x << data_point.y << data_point.z_amplitude << data_point.z_offset << data_point.z_phase;

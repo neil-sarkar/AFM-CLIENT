@@ -9,8 +9,9 @@
 					<div className="right-flexbox">
 						<div className="step-name">Scan</div>
 						<div className="step-description">
+						Scanning is so cool.
 						</div>
-						<button>Scan (unimplemented)</button>
+						<button onClick={scanner.start_state_machine}>Scan</button>
 					</div>
 				</div>
 				)

@@ -21,6 +21,8 @@ signals:
     void scanner_initialization_done();
     void set_signal_generator_done();
     void all_data_received();
+    void new_forward_offset_data(QVariantList); // eventually make it convert the data struct into json
+    void new_reverse_offset_data(QVariantList);
 
 public slots:
     // Scan state machine methods
