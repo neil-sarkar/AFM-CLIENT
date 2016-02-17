@@ -13,6 +13,26 @@
     background-color: black;
     color: white;
 }*/
+* {
+    font-family: "Roboto-Thin";
+}
+
+button {
+    font-family: 'Rubik-Regular';
+    border: solid black 2px;
+    background-color: white;
+    margin: 2.5% auto;
+    width: 25%;
+    padding: 2%;
+    -webkit-transition: color 0.2s ease-in;
+    -webkit-transition: background-color 0.2s ease-in;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: black;
+    color: white;
+}
 
 .wrapper  {
     display: -webkit-flex;

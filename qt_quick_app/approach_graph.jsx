@@ -26,7 +26,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     enabled: false
                 },
                 series: [ {
-                    name: "ADC",
+                    name: "Z Piezoresistor Amplitude",
                     type: "area",
                     plotOptions: {
                         area: {

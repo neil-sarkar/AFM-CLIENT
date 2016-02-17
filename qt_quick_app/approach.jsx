@@ -45,7 +45,7 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 					{status_map[this.state.status]}
 					{this.state.approach_complete && <div>Approach complete</div>}
 				</div>
-				);
+			);
 		},
 	});
 
@@ -62,7 +62,8 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 						<div className="step-description">
 							Press the "Approach" button to begin a raising the sample towards the AFM chip.
 						</div>
-						<button onClick={approacher.cmd_start_auto_approach}>Approach</button>
+						<button onClick={approacher.cmd_start_auto_approach}>Start Approach</button>
+						<button onClick={approacher.cmd_stop_auto_approach}>Pause Approach</button>
 					</div>
 				</div>
 			);
