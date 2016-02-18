@@ -84,4 +84,7 @@
         <file>heatmap.js</file>
         <file>boost.js</file>
     </qresource>
+    <qresource prefix="/static">
+        <file>command_spec.tsv</file>
+    </qresource>
 </RCC>

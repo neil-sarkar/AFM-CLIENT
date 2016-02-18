@@ -68,7 +68,6 @@ HEADERS += \
     mainwindow.h
 
 DISTFILES += \
-    command_spec.tsv \
     test.html \
     sweep.html \
     styles.css

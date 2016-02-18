@@ -99,7 +99,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
 }
 
 void Builder::generate_command_nodes() {
-    QString path = "/Users/abali/Drive/Code/icspi/AFM-CLIENT/qt_quick_app/command_spec.tsv"; // change to relative path
+    QString path = ":/static/command_spec.tsv";
     QFile file(path);
 
     if (!file.open(QIODevice::ReadOnly))
