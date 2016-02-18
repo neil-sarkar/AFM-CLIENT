@@ -35,7 +35,6 @@ MainWindow::MainWindow(AFM* afm)
 }
 
 void MainWindow::addJSObject() {
-    qDebug() << "called here";
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);

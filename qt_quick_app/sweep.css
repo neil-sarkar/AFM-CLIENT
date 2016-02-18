@@ -92,6 +92,10 @@ button:hover {
     height: 6%;
     width: 100%;
     border-bottom: 1px solid gray;
-    margin-bottom: 1%;
+    margin: 1%;
+    text-align: center;
 }
 
+.progress-bar-step {
+    margin: 1%;
+}
