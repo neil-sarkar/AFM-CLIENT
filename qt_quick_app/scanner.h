@@ -30,8 +30,9 @@ public slots:
     void set_signal_generator();
     void receive_data();
     void end_scan_state_machine();
-
     Q_INVOKABLE void start_state_machine();
+    Q_INVOKABLE void pause_state_machine();
+    Q_INVOKABLE void resume_state_machine();
 
 private:
     QStateMachine m_state_machine;
@@ -51,6 +52,7 @@ private:
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
     bool scanning_forward;
+    bool m_should_pause;
 
     ScanData* forward_data;
     ScanData* reverse_data;

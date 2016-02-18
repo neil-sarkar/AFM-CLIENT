@@ -27,6 +27,8 @@ define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 						Scanning is so cool.
 						</div>
 						<button onClick={scanner.start_state_machine}>Scan</button>
+						<button onClick={scanner.pause_state_machine}>Pause</button>
+						<button onClick={scanner.resume_state_machine}>Resume</button>
 						<div className="nav-buttons-wrapper">
 							<button id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 						</div>

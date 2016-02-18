@@ -1,5 +1,6 @@
 #include "scanner.h"
 #include "QFinalState"
+#include <QHistoryState>
 #include "constants.h"
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
@@ -11,13 +12,24 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     pid = pid_;
     scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
+    m_should_pause = false;
+}
+
+void Scanner::pause_state_machine() {
+    m_should_pause = true;
+}
+
+void Scanner::resume_state_machine() {
+    m_should_pause = false;
+    receive_data();
 }
 
 void Scanner::init() {
     cmd_set_dwell_time();
     cmd_set_signal_generator();
     cmd_start_scan();
-    // set up framework
+
+    // set up state machine framework
     QState* initialize_machine = new QState();
     QState* set_signal_generator = new QState();
     QState* receive_data = new QState();
@@ -35,22 +47,10 @@ void Scanner::init() {
     m_state_machine.addState(initialize_machine);
     m_state_machine.addState(set_signal_generator);
     m_state_machine.addState(receive_data);
-    m_state_machine.addState(finish);
     m_state_machine.setInitialState(initialize_machine);
 }
 
 void Scanner::start_state_machine() {
-    // for (int i = 0; i < 64; i++) {
-    //     QVariantList lis;
-    //     for (int j = 0; j < 64  ; j++) {
-    //         lis.append(i);
-    //         lis.append(j);
-    //         lis.append(i*j);
-    //     }
-    //     lis.append(0);
-    //     emit new_forward_offset_data(lis);
-    //     qDebug() << "emitting";
-    // }
     m_state_machine.start();
 }
 
@@ -70,6 +70,10 @@ void Scanner::set_signal_generator() {
 }
 
 void Scanner::receive_data() {
+    if (m_should_pause) {
+        return;
+    }
+
     if (!(forward_data->is_full() && reverse_data->is_full())) {
          cmd_step_scan();
     }
