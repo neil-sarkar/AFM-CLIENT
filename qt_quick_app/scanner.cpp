@@ -40,19 +40,18 @@ void Scanner::init() {
 }
 
 void Scanner::start_state_machine() {
-    for (int i = 0; i < 64; i++) {
-        QVariantList lis;
-        for (int j = 0; j < 64  ; j++) {
-            lis.append(i);
-            lis.append(j);
-            lis.append(i*j);
-        }
-        lis.append(0);
-        emit new_forward_offset_data(lis);
-        qDebug() << "emitting";
-    }
+    // for (int i = 0; i < 64; i++) {
+    //     QVariantList lis;
+    //     for (int j = 0; j < 64  ; j++) {
+    //         lis.append(i);
+    //         lis.append(j);
+    //         lis.append(i*j);
+    //     }
+    //     lis.append(0);
+    //     emit new_forward_offset_data(lis);
+    //     qDebug() << "emitting";
+    // }
     m_state_machine.start();
-    emit all_data_received();
 }
 
 void Scanner::initialize_scan_state_machine() {
@@ -105,8 +104,8 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_points_received += 1;
     }
-    if (scanning_forward) {
-        emit new_forward_offset_data(forward_data->package_data_for_ui(payload.size()/6));
+    if (scanning_forward && forward_data->size() % m_num_points == 0) {
+        emit new_forward_offset_data(forward_data->package_data_for_ui(m_num_points));
     } else {
         emit new_reverse_offset_data(reverse_data->package_data_for_ui(payload.size()/6));
     }

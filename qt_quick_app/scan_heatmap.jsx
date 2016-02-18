@@ -104,46 +104,44 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             });
         });
         },
-        asyncAddPoint: function(point) {
-            // if (point[2] > 50 || point[2] < -50)
-            //     point[2] = 50;
-            this.state.chart.series[0].addPoint(point, false, false);
+        asyncAddPoint: function(i, data, avg) {
+            var self = this;
+            setTimeout(function() {
+                self.setState({
+                    data: self.state.data.concat([[data[i], data[i+1], data[i+2] - avg]])
+                });
+            }, 0);
         },
         redrawChartWrapper: function() {
             _.defer(this.redrawChart).bind(this);
         },
         redrawChart: function() {
-            console.log("redrawing");
             this.state.chart.redraw();
         },
         handleNewDataWrapper: function(data) {
-            console.log("wrap");
+            console.log("called w");
             var self = this;
             setTimeout(function(){ self.handleNewData(data); }, 0);
         },
         handleNewData: function(data) {
-            console.log("enter");
+            console.log("called");
             var self = this;
-            var average = data[data.length - 1];
-            // for (var i = 0; i < data.length; i += 3) {
-            //     setTimeout(function() {
-            //         self.state.data.push, 1);
-            //     });
-            // }
+            var average = data.pop(); // remove the average from the array
+            for (var i = 0; i < data.length; i += 3) {
+                self.asyncAddPoint(i, data, average);
+            }
             setTimeout(function() {
-                console.log("setting data", self.state.data);
                 self.state.chart.series[0].setData(self.state.data);
             }, 0);
+            
             // _.defer(self.state.chart.series[0].setData(data)); // I think this get triggered just a little bit before the addPoint methods all return...
                                 // That's why we have a separate redrawChart method that gets called at the end of scanning,
                                 // to ensure the last points get drawn - maybe we can hook into the addpoint method or check
                                 // the length of chart.series[0].data
-            console.log("exit");
         },
         componentDidMount: function() {
             this.renderChart();
             this.props.establishDataConnection(this.handleNewDataWrapper);
-            this.props.finishSignal(this.redrawChartWrapper);
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();
             this.setState({

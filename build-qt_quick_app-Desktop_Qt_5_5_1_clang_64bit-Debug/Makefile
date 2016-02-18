@@ -810,7 +810,14 @@ qrc_assets.cpp: ../qt_quick_app/assets.qrc \
 		../qt_quick_app/react.js \
 		../qt_quick_app/require.js \
 		../qt_quick_app/react-dom.js \
-		../qt_quick_app/sidebar.jsx \
+		../qt_quick_app/progress_bar.jsx \
+		../qt_quick_app/settings_drawer.jsx \
+		../qt_quick_app/approach.jsx \
+		../qt_quick_app/step_data.jsx \
+		../qt_quick_app/amplitude_graph.jsx \
+		../qt_quick_app/sweep.jsx \
+		../qt_quick_app/right_pane.jsx \
+		../qt_quick_app/scan.jsx \
 		../qt_quick_app/app.jsx
 	/Users/abali/Qt/5.5/clang_64/bin/rcc -name assets ../qt_quick_app/assets.qrc -o qrc_assets.cpp
 
