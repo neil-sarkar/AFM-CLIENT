@@ -7,6 +7,7 @@ requirejs.config({
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
         highcharts_canvas: 'pages/highcharts-canvas',
+        boost: 'lib/modules/boost',
         heatmap: 'lib/modules/heatmap',
         underscore: 'lib/underscore',
         react: 'lib/react',

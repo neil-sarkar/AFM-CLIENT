@@ -34,10 +34,18 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
         getInitialState: function() {
             return {
-                num_rendered: 0
+                num_rendered: 0,
+                data: []
             };
         },
         renderChart: function() {
+            Highcharts.setOptions({
+                plotOptions: {
+                    series: {
+                        animation: false
+                    }
+                }
+            });
             var node = this.refs.chartNode.getDOMNode();
             jQuery(function ($) {
             $(node).highcharts({
@@ -57,6 +65,8 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                 },
 
                 xAxis: {
+                    min: 0,
+                    max: 63
                 },
 
                 yAxis: {
@@ -115,10 +125,16 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             console.log("enter");
             var self = this;
             var average = data[data.length - 1];
-            for (var i = 0; i < data.length; i += 3) {
-                _.defer(self.asyncAddPoint, [data[i], data[i+1], data[i+2] - average]);
-            }
-            _.defer(self.redrawChart); // I think this get triggered just a little bit before the addPoint methods all return...
+            // for (var i = 0; i < data.length; i += 3) {
+            //     setTimeout(function() {
+            //         self.state.data.push, 1);
+            //     });
+            // }
+            setTimeout(function() {
+                console.log("setting data", self.state.data);
+                self.state.chart.series[0].setData(self.state.data);
+            }, 0);
+            // _.defer(self.state.chart.series[0].setData(data)); // I think this get triggered just a little bit before the addPoint methods all return...
                                 // That's why we have a separate redrawChart method that gets called at the end of scanning,
                                 // to ensure the last points get drawn - maybe we can hook into the addpoint method or check
                                 // the length of chart.series[0].data

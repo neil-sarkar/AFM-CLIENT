@@ -78,8 +78,10 @@
         <file>flow.jsx</file>
         <file>scan_heatmap.jsx</file>
         <file>highcharts-canvas.js</file>
+        <file>spinner.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
+        <file>boost.js</file>
     </qresource>
 </RCC>

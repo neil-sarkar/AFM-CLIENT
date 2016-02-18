@@ -1,8 +1,19 @@
- define(["react", "jsx!pages/sweep_graphs"], function(React, Graphs) {
-	var Sweep = React.createClass({
+ define(["jquery" ,"react", "jsx!pages/sweep_graphs"], function($, React, Graphs) {
+	var Sweep = React.createClass({	
+		componentWillReceiveProps : function(nextProps) {
+			if (nextProps.showStep == false) {
+				$('#sweep-wrapper').hide();
+			} else {
+				$('#sweep-wrapper').show();
+			}
+		},
+		shouldComponentUpdate :function() {
+			return false;
+		},
 		render: function() {
+			console.log('rendering');
 			return (
-				<div className="wrapper">
+				<div className="wrapper" id="sweep-wrapper">
 					<div className="left-flexbox">
 						{Graphs}
 					</div>

@@ -50,9 +50,19 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 	});
 
 	var Approach = React.createClass({
+		componentWillReceiveProps : function(nextProps) {
+			if (nextProps.showStep == false) {
+				$('#approach-wrapper').hide();
+			} else {
+				$('#approach-wrapper').show();
+			}
+		},
+		shouldComponentUpdate :function() {
+			return false;
+		},
 		render: function() {
 			return (
-				<div className="wrapper">
+				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
 						{Graph}
 						<ApproachStatus />

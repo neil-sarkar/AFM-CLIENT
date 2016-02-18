@@ -5,21 +5,20 @@
 			var step_component;
 			switch(this.props.step) {
 				case 0:
-					console.log(this.props.step)
 					step_component = <Sweep />
 					break;
 				case 1:
-					console.log(this.props.step)
-					step_component = <Approach />
+					step_component = <Approach />;
 					break;
 				case 2:
-					console.log(this.props.step)
-					step_component = <Scan />
+					step_component = <Scan />;
 					break;
 			}
 			return (
 				<div>
-					{step_component}
+					<Sweep showStep={this.props.step == 0}/>
+					<Approach showStep={this.props.step == 1} />
+					<Scan showStep={this.props.step == 2} />
 					<button onClick={this.props.go_to_previous_step}>Back</button>
 					<button onClick={this.props.go_to_next_step}>Next</button>
 				</div>

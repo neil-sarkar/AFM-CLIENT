@@ -40,9 +40,9 @@ void Scanner::init() {
 }
 
 void Scanner::start_state_machine() {
-    for (int i = 0; i < 8192; i++) {
+    for (int i = 0; i < 64; i++) {
         QVariantList lis;
-        for (int j = 0; j < 8 ; j++) {
+        for (int j = 0; j < 64  ; j++) {
             lis.append(i);
             lis.append(j);
             lis.append(i*j);
@@ -57,7 +57,7 @@ void Scanner::start_state_machine() {
 
 void Scanner::initialize_scan_state_machine() {
     // Old code used to set PGAs here, but we really don't need to - they should already have been set
-    pid->set_enabled();
+
     emit scanner_initialization_done();
     forward_data = new ScanData(m_num_lines, m_num_points, m_ratio);
     reverse_data = new ScanData(m_num_lines, m_num_points, m_ratio);
