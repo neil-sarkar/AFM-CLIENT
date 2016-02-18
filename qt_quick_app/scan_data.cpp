@@ -35,6 +35,7 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     point.z_amplitude = z_amplitude;
     point.z_phase = z_phase;
     data.append(point);
+    qDebug() << point.x << point.y;
     return true;
 }
 

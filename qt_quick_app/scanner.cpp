@@ -4,8 +4,8 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 64;
-    m_num_points = 64;
+    m_num_lines = 128;
+    m_num_points = 128;
     m_ratio = 4;
     m_dwell_time = 2;
     pid = pid_;
@@ -106,8 +106,8 @@ void Scanner::callback_step_scan(QByteArray payload) {
     }
     if (scanning_forward && forward_data->size() % m_num_points == 0) {
         emit new_forward_offset_data(forward_data->package_data_for_ui(m_num_points));
-    } else {
-        emit new_reverse_offset_data(reverse_data->package_data_for_ui(payload.size()/6));
+    } else if (!scanning_forward && reverse_data->size() % m_num_points == 0) {
+        emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_num_points));
     }
     receive_data();
 }

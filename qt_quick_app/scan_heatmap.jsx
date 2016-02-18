@@ -47,6 +47,7 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                 }
             });
             var node = this.refs.chartNode.getDOMNode();
+            var self = this;
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
@@ -55,18 +56,12 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                     width: 400
                 },
                 title: {
-                    text: 'Highcharts heat map',
-                    align: 'left'
-                },
-
-                subtitle: {
-                    text: 'Temperature variation by day and hour through May 2015',
-                    align: 'left'
+                    text: self.props.chart_name,
                 },
 
                 xAxis: {
                     min: 0,
-                    max: 63
+                    max: 127
                 },
 
                 yAxis: {
@@ -78,7 +73,7 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                     // startOnTick: false,
                     // endOnTick: false,
                     min: 0,
-                    max: 63,
+                    max: 127,
                 },
 
                 colorAxis: {
@@ -104,12 +99,10 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             });
         });
         },
-        asyncAddPoint: function(i, data, avg) {
+        asyncAddPoint: function(add_point, i, data, avg) {
             var self = this;
             setTimeout(function() {
-                self.setState({
-                    data: self.state.data.concat([[data[i], data[i+1], data[i+2] - avg]])
-                });
+                self.state.chart.series[0].addPoint([data[i], data[i+1], data[i+2] - avg], false, false); // add point WITHOUT redrawing or animating
             }, 0);
         },
         redrawChartWrapper: function() {
@@ -119,20 +112,20 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             this.state.chart.redraw();
         },
         handleNewDataWrapper: function(data) {
-            console.log("called w");
             var self = this;
             setTimeout(function(){ self.handleNewData(data); }, 0);
         },
         handleNewData: function(data) {
-            console.log("called");
             var self = this;
             var average = data.pop(); // remove the average from the array
+            var add_point = this.state.chart.series[0].addPoint;
             for (var i = 0; i < data.length; i += 3) {
-                self.asyncAddPoint(i, data, average);
+                self.asyncAddPoint(add_point, i, data, average);
             }
             setTimeout(function() {
-                self.state.chart.series[0].setData(self.state.data);
+                self.state.chart.redraw(false);
             }, 0);
+
             
             // _.defer(self.state.chart.series[0].setData(data)); // I think this get triggered just a little bit before the addPoint methods all return...
                                 // That's why we have a separate redrawChart method that gets called at the end of scanning,
@@ -153,5 +146,5 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return <ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect} finishSignal={scanner.all_data_received.connect}/>;
+    return ScanHeatMap;
 });

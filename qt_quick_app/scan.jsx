@@ -14,7 +14,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/spinner"], function(React,
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
-						{ScanHeatMap}
+						<ScanHeatMap chart_name="Forward Offset" establishDataConnection={scanner.new_forward_offset_data.connect} />
+						
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Scan</div>
@@ -30,3 +31,5 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/spinner"], function(React,
 	});
 	return Scan;
 });
+
+// <ScanHeatMap chart_name="Reverse Offset" establishDataConnection={scanner.new_reverse_offset_data.connect} />
