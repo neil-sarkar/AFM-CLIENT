@@ -40,14 +40,14 @@ void Scanner::init() {
 }
 
 void Scanner::start_state_machine() {
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 8192; i++) {
         QVariantList lis;
-        for (int j = 0; j < 1000; j++) {
+        for (int j = 0; j < 8 ; j++) {
             lis.append(i);
             lis.append(j);
             lis.append(i*j);
         }
-        lis.append(10);
+        lis.append(0);
         emit new_forward_offset_data(lis);
         qDebug() << "emitting";
     }

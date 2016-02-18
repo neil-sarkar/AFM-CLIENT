@@ -57,8 +57,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                 },
 
                 xAxis: {
-                    min: 0,
-                    max: 63
                 },
 
                 yAxis: {
@@ -96,11 +94,10 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             });
         });
         },
-        asyncAddPoint: function(point, callback) {
+        asyncAddPoint: function(point) {
             // if (point[2] > 50 || point[2] < -50)
             //     point[2] = 50;
             this.state.chart.series[0].addPoint(point, false, false);
-            callback();
         },
         redrawChartWrapper: function() {
             _.defer(this.redrawChart).bind(this);
@@ -118,17 +115,13 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             console.log("enter");
             var self = this;
             var average = data[data.length - 1];
-            asyncLoop(data.length / 3, function(loop) {
-                var i = 3 * loop.iteration();
-                self.asyncAddPoint([data[i], data[i+1], data[i+2] - average], function() {
-                    loop.next();
-                });
-            }, function() {
-                self.redrawChart(); // I think this get triggered just a little bit before the addPoint methods all return...
+            for (var i = 0; i < data.length; i += 3) {
+                _.defer(self.asyncAddPoint, [data[i], data[i+1], data[i+2] - average]);
+            }
+            _.defer(self.redrawChart); // I think this get triggered just a little bit before the addPoint methods all return...
                                 // That's why we have a separate redrawChart method that gets called at the end of scanning,
                                 // to ensure the last points get drawn - maybe we can hook into the addpoint method or check
                                 // the length of chart.series[0].data
-            });
             console.log("exit");
         },
         componentDidMount: function() {
