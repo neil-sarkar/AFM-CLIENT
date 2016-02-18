@@ -10,12 +10,16 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/spinner"], function(React,
 		shouldComponentUpdate :function() {
 			return false;
 		},
+		popout: function() {
+			console.log("popout");
+			main_window.createWindow();
+		},
 		render: function() {
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
 						<ScanHeatMap chart_name="Forward Offset" establishDataConnection={scanner.new_forward_offset_data.connect} />
-						
+						<button onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Scan</div>

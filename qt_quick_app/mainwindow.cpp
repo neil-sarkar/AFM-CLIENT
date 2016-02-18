@@ -4,6 +4,7 @@
 #include <QWebElementCollection>
 #include <QNetworkDiskCache>
 #include <QStandardPaths>
+#include <QWebSettings>
 
 MainWindow::MainWindow(AFM* afm)
 {
@@ -14,10 +15,11 @@ MainWindow::MainWindow(AFM* afm)
     m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/imageanalyzer");
     m_cache->setMaximumCacheSize(1000000); //set the cache to 10megs
     m_network->setCache(m_cache);
+    m_welcome_page.settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+    m_welcome_page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
     setPage(&m_welcome_page);
     page()->setNetworkAccessManager(m_network);
     m_afm = afm;
-
     // Signal is emitted before frame loads any web content:
     QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
 
@@ -45,10 +47,21 @@ void MainWindow::log_cpp(QString text) {
     qDebug() << text;
 }
 
-void MainWindow::load_sweep_page() { 
+void MainWindow::load_sweep_page() {
     setPage(&m_sweep_page);
 }
 
 void MainWindow::load_home_page() {
     setPage(&m_welcome_page);
+}
+
+QWebView* MainWindow::createWindow()
+{
+    QWebView *webView = new QWebView;
+    QWebPage *newWeb = new QWebPage(webView);
+    webView->setAttribute(Qt::WA_DeleteOnClose, true);
+    webView->setPage(newWeb);
+    webView->show();
+
+    return webView;
 }

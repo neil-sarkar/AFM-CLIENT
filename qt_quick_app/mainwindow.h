@@ -14,6 +14,7 @@ public:
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
     Q_INVOKABLE void load_sweep_page();
     Q_INVOKABLE void load_home_page();
+    Q_INVOKABLE QWebView* createWindow();
 
 private slots:
     void addJSObject();
