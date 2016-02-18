@@ -62,6 +62,7 @@
         <file>react-dom.js</file>
         <file>browser.js</file>
         <file>classNames.js</file>
+        <file>underscore.js</file>
     </qresource>
     <qresource prefix="/js/pages">
         <file>app.jsx</file>

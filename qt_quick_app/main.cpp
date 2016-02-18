@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("sweeper", afm->sweeper);
     context->setContextProperty("dds", afm->sweeper->dds);
     context->setContextProperty("approacher", afm->approacher);
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+//    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // Assign objects to threads
     serial_port->moveToThread(serial_thread);

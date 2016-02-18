@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, heatmap) {
+define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function($, React, ReactDOM, heatmap, _, console) {
     function asyncLoop(iterations, func, callback) {
         var index = 0;
         var done = false;
@@ -96,36 +96,50 @@ define(["jquery", "react", "dom", "heatmap"], function($, React, ReactDOM, heatm
             });
         });
         },
-        asyncAddPoint: function(chart, point, callback) {
-            chart.series[0].addPoint(point, false, false);
+        asyncAddPoint: function(point, callback) {
+            // if (point[2] > 50 || point[2] < -50)
+            //     point[2] = 50;
+            this.state.chart.series[0].addPoint(point, false, false);
             callback();
         },
+        redrawChartWrapper: function() {
+            _.defer(this.redrawChart).bind(this);
+        },
         redrawChart: function() {
-            console.log("redrawing chart");
-            var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts();
-            chart.redraw();
+            console.log("redrawing");
+            this.state.chart.redraw();
+        },
+        handleNewDataWrapper: function(data) {
+            console.log("wrap");
+            var self = this;
+            setTimeout(function(){ self.handleNewData(data); }, 0);
         },
         handleNewData: function(data) {
-            var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts();
-            var that = this;
-            // var z_value_sum = data.reduce(function(previousValue, currentValue, currentIndex, array) {
-            //   return (currentIndex + 1) % 3 == 0 ? previousValue + currentValue : previousValue;
-            // }, 0); // 0 is the initial value parameter, which would be set to the first element if not specified
+            console.log("enter");
+            var self = this;
+            var average = data[data.length - 1];
             asyncLoop(data.length / 3, function(loop) {
                 var i = 3 * loop.iteration();
-                that.asyncAddPoint(chart, [data[i], data[i+1], data[i+2]], function() {
+                self.asyncAddPoint([data[i], data[i+1], data[i+2] - average], function() {
                     loop.next();
                 });
             }, function() {
-                chart.redraw(); // I think this get triggered just a little bit before the addPoint methods all return...
+                self.redrawChart(); // I think this get triggered just a little bit before the addPoint methods all return...
+                                // That's why we have a separate redrawChart method that gets called at the end of scanning,
+                                // to ensure the last points get drawn - maybe we can hook into the addpoint method or check
+                                // the length of chart.series[0].data
             });
+            console.log("exit");
         },
         componentDidMount: function() {
             this.renderChart();
-            this.props.establishDataConnection(this.handleNewData);
-            this.props.finishSignal(this.redrawChart);
+            this.props.establishDataConnection(this.handleNewDataWrapper);
+            this.props.finishSignal(this.redrawChartWrapper);
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            this.setState({
+                chart: chart
+            });
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {

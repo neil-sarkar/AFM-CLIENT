@@ -4,8 +4,8 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 32;
-    m_num_points = 32;
+    m_num_lines = 64;
+    m_num_points = 64;
     m_ratio = 4;
     m_dwell_time = 2;
     pid = pid_;
@@ -40,9 +40,19 @@ void Scanner::init() {
 }
 
 void Scanner::start_state_machine() {
-    qDebug() << "Starting scan state machine";
+    for (int i = 0; i < 1000; i++) {
+        QVariantList lis;
+        for (int j = 0; j < 1000; j++) {
+            lis.append(i);
+            lis.append(j);
+            lis.append(i*j);
+        }
+        lis.append(10);
+        emit new_forward_offset_data(lis);
+        qDebug() << "emitting";
+    }
     m_state_machine.start();
-    qDebug() << "Starting scan state machine";
+    emit all_data_received();
 }
 
 void Scanner::initialize_scan_state_machine() {
@@ -96,9 +106,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
         m_num_points_received += 1;
     }
     if (scanning_forward) {
-        emit new_forward_offset_data(forward_data->get_latest_offset_data(payload.size()/6));
+        emit new_forward_offset_data(forward_data->package_data_for_ui(payload.size()/6));
     } else {
-        emit new_reverse_offset_data(reverse_data->get_latest_offset_data(payload.size()/6));
+        emit new_reverse_offset_data(reverse_data->package_data_for_ui(payload.size()/6));
     }
     receive_data();
 }

@@ -38,15 +38,19 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     return true;
 }
 
-QVariantList ScanData::get_latest_offset_data(int num_points) {
+QVariantList ScanData::package_data_for_ui(int num_points) {
+    // data comes back as a series of x y z, and then tacks on the average z
     QVariantList latest_data;
+    double sum = 0;
     num_points = std::min(num_points, size());
     for (int i = 0 ; i < num_points; i++) {
         DataPoint point = data[size() - i - 1];
         latest_data.append(point.x);
         latest_data.append(point.y);
         latest_data.append(point.z_offset);
+        sum += point.z_offset;
     }
+    latest_data.append(double(sum) / num_points);
     return latest_data;
 }
 

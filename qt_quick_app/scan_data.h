@@ -15,7 +15,7 @@ public:
     int size();
     void print();
     int max_size();
-    QVariantList get_latest_offset_data(int num_points);
+    QVariantList package_data_for_ui(int num_points);
 
 signals:
 

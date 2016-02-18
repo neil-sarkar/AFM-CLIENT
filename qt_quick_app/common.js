@@ -8,6 +8,7 @@ requirejs.config({
         highcharts: 'lib/highcharts',
         highcharts_canvas: 'pages/highcharts-canvas',
         heatmap: 'lib/modules/heatmap',
+        underscore: 'lib/underscore',
         react: 'lib/react',
         dom: 'lib/react-dom',
         browser: 'lib/browser',

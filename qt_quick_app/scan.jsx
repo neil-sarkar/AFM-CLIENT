@@ -1,4 +1,4 @@
- define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
+define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 	var Scan = React.createClass({
 		render: function() {
 			return (
