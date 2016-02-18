@@ -75,6 +75,10 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 						</div>
 						<button onClick={approacher.cmd_start_auto_approach}>Start Approach</button>
 						<button onClick={approacher.cmd_stop_auto_approach}>Pause Approach</button>
+						<div className="nav-buttons-wrapper">
+							<button id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+							<button id="next-button" onClick={this.props.go_to_next_step}>Next</button>
+						</div>
 					</div>
 				</div>
 			);

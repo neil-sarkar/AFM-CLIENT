@@ -1,7 +1,6 @@
- define(["react", "jsx!pages/sweep", "jsx!pages/approach", "jsx!pages/scan"], function(React, Sweep, Approach, Scan) {
+define(["react", "jsx!pages/sweep", "jsx!pages/approach", "jsx!pages/scan"], function(React, Sweep, Approach, Scan) {
 	var StepData = React.createClass({
 		render: function() {
-			console.log("rerendering step data", typeof(this.props.step));
 			var step_component;
 			switch(this.props.step) {
 				case 0:
@@ -16,11 +15,13 @@
 			}
 			return (
 				<div>
-					<Sweep showStep={this.props.step == 0}/>
-					<Approach showStep={this.props.step == 1} />
-					<Scan showStep={this.props.step == 2} />
-					<button onClick={this.props.go_to_previous_step}>Back</button>
-					<button onClick={this.props.go_to_next_step}>Next</button>
+					<Sweep showStep={this.props.step == 0} 
+						   go_to_next_step={this.props.go_to_next_step} />
+					<Approach showStep={this.props.step == 1} 
+						   go_to_next_step={this.props.go_to_next_step} 
+						   go_to_previous_step={this.props.go_to_previous_step} />
+					<Scan showStep={this.props.step == 2} 
+						   go_to_previous_step={this.props.go_to_previous_step} />
 				</div>
 			)	
 		},

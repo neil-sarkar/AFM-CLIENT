@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/scan_heatmap", "jsx!pages/spinner"], function(React, ScanHeatMap, Spinner) {
+define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 	var Scan = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {
@@ -27,7 +27,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/spinner"], function(React,
 						Scanning is so cool.
 						</div>
 						<button onClick={scanner.start_state_machine}>Scan</button>
-						<Spinner />
+						<div className="nav-buttons-wrapper">
+							<button id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+						</div>
 					</div>
 				</div>
 				)
