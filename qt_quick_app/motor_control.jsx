@@ -111,11 +111,6 @@ define(["react"], function(React, Slider) {
 				</div>
 			);
 		}
-		// set speed (slider)
-		// approach/retract buttons
-		// wake up / put to sleep
-		// step (button) (pulse step check box)
-		// move continuously (button)
 	});
 	return MotorControl;
 });

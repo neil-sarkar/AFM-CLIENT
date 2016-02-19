@@ -46,7 +46,8 @@ define(["react"], function(React) {
 			}
 		},
 		render: function() {
-			return (
+			var value_to_display = this.state.value.toFixed(this.calculate_num_decimal_places(this.props.step));
+			return (	
 				<div>
 					<label for={this.props.name}>{this.props.name}: </label>
 					<input type="number" className="number-input" 
@@ -54,7 +55,7 @@ define(["react"], function(React) {
 										min={this.props.min} 
 										max={this.props.max} 
 										step={this.props.step} 
-										value={this.state.value} 
+										value={value_to_display} 
 										onInput={this.update_value_from_user_input}/>
 				</div>
 			);

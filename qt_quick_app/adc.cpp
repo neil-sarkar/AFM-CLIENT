@@ -32,7 +32,9 @@ void ADC::callback_read(QByteArray return_bytes) {
     update_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)));
 }
 
-void ADC::init() {} // no initialization required for ADC
+void ADC::init() {
+    read();  
+} // no initialization required for ADC
 
 
 ADC::callback_return_type ADC::bind(callback_type method) {

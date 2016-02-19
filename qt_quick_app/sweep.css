@@ -142,6 +142,13 @@
     margin-top: 25%;
 }
 
+.setting-section-name {
+    text-align: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid grey;
+    margin-top: 15%;
+}
+
 #nav-toggle { 
   position: fixed;
   right: 2%;
@@ -190,7 +197,15 @@
     width: 100%;
 }
 
-.number-input {
+.settings-container-column {
+    display: -webkit-flex;
+    -webkit-flex-flow: column;   
+    -webkit-justify-content: space-between;
+    width: 100%;
+}
+
+
+* {
     border: none;
     outline: none;
 }
@@ -202,10 +217,6 @@
 
 .adc-control-wrapper {
     margin-right: 2%;
-}
-
-.adc-name {
-    display: inline-block;
 }
 
 .motor-control-button {
@@ -223,4 +234,8 @@
 
 .motor-control {
     text-align: center;
+}
+
+.adc-controller {
+    margin-right: 5%;
 }

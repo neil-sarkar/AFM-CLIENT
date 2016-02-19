@@ -35,7 +35,7 @@
 						<div id="settings-drawer-wrapper">
 							<p className="setting-section-name">Motor Control</p>
 							<MotorControl />
-							<p className="setting-section-name">Programmable Gain Amplifiers</p>
+							<p className="setting-section-name">PGAs</p>
 							<div className="settings-container">
 								<PGAController name="X1" qt_object={pga_1}/>
 								<PGAController name="X2" qt_object={pga_2}/>
@@ -46,7 +46,7 @@
 								<PGAController name="DDS" qt_object={pga_6}/>
 								<PGAController name="Leveling" qt_object={pga_8}/>
 							</div>
-							<p className="setting-section-name">Digital to Analog Converters</p>
+							<p className="setting-section-name">DACs</p>
 							<div className="settings-container">
 								<DACController name="Buffered 1" qt_object={dac_0}/>
 								<DACController name="Buffered 2" qt_object={dac_1}/>
@@ -61,7 +61,7 @@
 								<DACController name="Z Fine" qt_object={dac_6} slider={true}/>
 								<DACController name="Z Coarse" qt_object={dac_8} slider={true}/>
 							</div>
-							<p className="setting-section-name">Analog to Digital Converters</p>
+							<p className="setting-section-name">ADCs</p>
 							<div className="settings-container">
 								<ADCController name="X1" qt_object={adc_3}/>
 								<ADCController name="X2" qt_object={adc_7}/>

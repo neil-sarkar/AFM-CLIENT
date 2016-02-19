@@ -10,16 +10,17 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 				value: value
 			});
 		},
+		bits_to_volts: function(value) {
+			return (value / 4095 * 2.5).toFixed(2);
+		},
 		getInitialState: function() {
 			return {
 				value: this.props.qt_object.value
-			}
+			};
 		},
 		render: function() {
 			return (
-					<div className="adc-control-wrapper">
-						<p className="adc-name">{this.props.name + ": " + (this.state.value / 4095 * 2.5).toFixed(2)} <span className="adc-read-button" onClick={this.props.qt_object.read}>(Read)</span></p> 
-					</div>
+					<div className="adc-controller">{this.props.name + ": " + this.bits_to_volts(this.state.value)} <span className="adc-read-button" onClick={this.props.qt_object.read}>(Read)</span></div>
 				);
 		}
 	});
