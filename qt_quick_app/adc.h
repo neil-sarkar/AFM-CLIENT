@@ -8,7 +8,7 @@
 class ADC : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(double value READ value NOTIFY value_set)
+    Q_PROPERTY(double value READ value NOTIFY value_changed)
 public:
     explicit ADC(qint8 id);
     void init();
@@ -29,7 +29,7 @@ public:
     static const double SCALE_FACTOR;
 
 signals:
-    void value_set();
+    void value_changed(double);
 
 public slots:
 

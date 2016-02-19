@@ -19,18 +19,18 @@ define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
 						<ScanHeatMap chart_name="Forward Offset" establishDataConnection={scanner.new_forward_offset_data.connect} />
-						<button onClick={this.popout}>Popout</button>
+						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Scan</div>
 						<div className="step-description">
 						Scanning is so cool.
 						</div>
-						<button onClick={scanner.start_state_machine}>Scan</button>
-						<button onClick={scanner.pause_state_machine}>Pause</button>
-						<button onClick={scanner.resume_state_machine}>Resume</button>
+						<button className="action-button" onClick={scanner.start_state_machine}>Scan</button>
+						<button className="action-button" onClick={scanner.pause_state_machine}>Pause</button>
+						<button className="action-button" onClick={scanner.resume_state_machine}>Resume</button>
 						<div className="nav-buttons-wrapper">
-							<button id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 						</div>
 					</div>
 				</div>

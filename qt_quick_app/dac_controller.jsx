@@ -1,7 +1,23 @@
-define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
+define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, NumberInput, Slider) {
 	var DACController = React.createClass({
+	getDefaultProps: function() {
+		return {
+			slider: false
+		};
+	},
 	render: function() {
-		return <NumberInput name={this.props.name} qt_object={this.props.qt_object}  min={0} max={3.3} step={0.001} /> 
+		var slider;
+		if (this.props.slider) {
+			slider = <Slider name={this.props.name} qt_object={this.props.qt_object} />;
+		} else {
+			slider = false;
+		}
+		return (
+				<div>
+					{slider}
+					<NumberInput name={this.props.name} qt_object={this.props.qt_object}  min={0} max={3.3} step={0.001} /> 
+				</div>
+			);
 	}
 	});
 	return DACController;

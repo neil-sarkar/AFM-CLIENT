@@ -47,7 +47,7 @@ define(["react"], function(React) {
 		},
 		render: function() {
 			return (
-				<div className="slider">
+				<div>
 					<label for={this.props.name}>{this.props.name}: </label>
 					<input type="number" className="number-input" 
 										id={this.props.name} 

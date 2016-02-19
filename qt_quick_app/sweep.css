@@ -17,7 +17,7 @@
     font-family: "Roboto-Thin";
 }
 
-button {
+.action-button {
     font-family: 'Rubik-Regular';
     border: solid black 2px;
     background-color: white;
@@ -29,7 +29,7 @@ button {
     text-transform: uppercase;
 }
 
-button:hover {
+.action-button:hover {
     background-color: black;
     color: white;
 }
@@ -130,6 +130,7 @@ button:hover {
     padding-bottom: 0;
     padding-right: 3%;
     box-shadow: 10px 0px 8px 8px black;
+    overflow: scroll;
 }
 
 .setting-section-name:first-of-type {
@@ -187,4 +188,16 @@ button:hover {
 .number-input {
     border: none;
     outline: none;
+}
+
+.adc-read-button {
+    cursor: pointer;
+}
+
+.adc-control-wrapper {
+    margin-right: 2%;
+}
+
+.adc-name {
+    display: inline-block;
 }

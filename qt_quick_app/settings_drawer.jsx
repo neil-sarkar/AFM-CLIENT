@@ -1,8 +1,8 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller"], function($, React, Slider, NumberInput, PGAController, DACController) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
-			$('#settings-drawer-wrapper').css('visibility', 'hidden');
+			// $('#settings-drawer-wrapper').css('visibility', 'hidden');
 
 			// if the user clicks away from the settings drawer, hide it
 			// taken from http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
@@ -56,8 +56,18 @@
 								<DACController name="X2" qt_object={dac_11}/>
 								<DACController name="Y1" qt_object={dac_7}/>
 								<DACController name="Y2" qt_object={dac_9}/>
-								<DACController name="Z Fine" qt_object={dac_6}/>
-								<DACController name="Z Coarse" qt_object={dac_8}/>
+								<DACController name="Z Fine" qt_object={dac_6} slider={true}/>
+								<DACController name="Z Coarse" qt_object={dac_8} slider={true}/>
+							</div>
+							<p className="setting-section-name">Analog to Digital Converters</p>
+							<div className="settings-container">
+								<ADCController name="X1" qt_object={adc_3}/>
+								<ADCController name="X2" qt_object={adc_7}/>
+								<ADCController name="Y1" qt_object={adc_6}/>
+								<ADCController name="Y2" qt_object={adc_8}/>
+								<ADCController name="Z" qt_object={adc_2}/>
+								<ADCController name="Z Piezo" qt_object={adc_5}/>
+								<ADCController name="Phase" qt_object={adc_0}/>
 							</div>
 						</div>
 					</div>

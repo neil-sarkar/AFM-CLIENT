@@ -84,6 +84,7 @@
         <file>settings_drawer.js</file>
         <file>pga_controller.jsx</file>
         <file>dac_controller.jsx</file>
+        <file>adc_controller.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

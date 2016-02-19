@@ -90,3 +90,4 @@ const int DAC::X_2 = 11;
 const quint16 DAC::RESOLUTION = 4095;
 const double DAC::MAX_VOLTAGE = 3.3;
 const double DAC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
+
