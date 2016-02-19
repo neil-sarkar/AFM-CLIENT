@@ -85,6 +85,7 @@
         <file>pga_controller.jsx</file>
         <file>dac_controller.jsx</file>
         <file>adc_controller.jsx</file>
+        <file>motor_control.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

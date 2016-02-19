@@ -1,3 +1,8 @@
+*::selection {
+    background-color:Transparent;
+    color:#000;
+}
+
 /*.sweep-button {
     font-family: 'Rubik-Regular';
     border: solid black 2px;
@@ -192,6 +197,7 @@
 
 .adc-read-button {
     cursor: pointer;
+    text-decoration: none;
 }
 
 .adc-control-wrapper {

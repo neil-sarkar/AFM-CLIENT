@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController, MotorControl) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -33,6 +33,8 @@
 				return (
 					<div>
 						<div id="settings-drawer-wrapper">
+							<p className="setting-section-name">Motor Control</p>
+							<MotorControl />
 							<p className="setting-section-name">Programmable Gain Amplifiers</p>
 							<div className="settings-container">
 								<PGAController name="X1" qt_object={pga_1}/>
