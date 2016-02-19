@@ -26,7 +26,7 @@ public:
     static int default_value(int id);
 
 signals:
-    void value_changed();
+    void value_changed(double);
 
 public slots:
 

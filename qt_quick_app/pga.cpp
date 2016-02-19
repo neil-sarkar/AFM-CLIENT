@@ -12,7 +12,7 @@ void PGA::set_value(double value) {
     if (m_value != value) {
         m_value = value;
         qDebug() << "Setting PGA " << m_id << "value to " << value;
-        emit value_changed();
+        emit value_changed(m_value);
         cmd_set_value();
     }
 }

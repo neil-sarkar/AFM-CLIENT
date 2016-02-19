@@ -43,7 +43,14 @@ void MainWindow::addJSObject() {
     QHash<int, AFMObject*>::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
         QString name = "pga_" + QString::number(i.key());
-        qDebug() << name;
+        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+    }
+    for (i = m_afm->DAC_collection.begin(); i != m_afm->DAC_collection.end(); ++i) {
+        QString name = "dac_" + QString::number(i.key());
+        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+    }
+    for (i = m_afm->ADC_collection.begin(); i != m_afm->ADC_collection.end(); ++i) {
+        QString name = "adc_" + QString::number(i.key());
         page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
 }
