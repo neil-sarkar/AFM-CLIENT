@@ -122,6 +122,7 @@ button:hover {
 #settings-drawer-wrapper {
     background-color: white;
     height: 100%;
+    max-width: 15%;
     position: absolute;
     right: 0;
     top: 0;
@@ -174,4 +175,16 @@ button:hover {
 }
 #nav-toggle.active span:after {
   -webkit-transform: rotate(-45deg);
+}
+
+.settings-container {
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;   
+    -webkit-justify-content: space-between;
+    width: 100%;
+}
+
+.number-input {
+    border: none;
+    outline: none;
 }

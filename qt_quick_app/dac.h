@@ -37,7 +37,7 @@ public:
     static const int X_2;
 
 signals:
-    void value_changed();
+    void value_changed(double);
     void id_changed();
 
 public slots:

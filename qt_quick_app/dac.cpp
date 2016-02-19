@@ -8,7 +8,7 @@ DAC::DAC(qint8 id) {
 void DAC::set_value(double value, bool cmd) {
     if (m_value != value) {
         m_value = value;
-        emit value_changed();
+        emit value_changed(m_value);
         qDebug() << "Changing DAC " <<  m_id << "value to " << m_value << cmd;
         if (cmd) {
             cmd_set_value();

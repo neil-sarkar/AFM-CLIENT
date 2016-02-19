@@ -21,6 +21,10 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
               step : step_to_jump_to
             });
         },
+        componentDidMount: function() {
+            $('.wrapper').hide(); // hide all the steps
+            $('#sweep-wrapper').show(); // show the sweep step
+        },
         render: function() {
             return (
                 <div>

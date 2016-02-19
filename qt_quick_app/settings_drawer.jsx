@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input"], function($, React, Slider, NumberInput) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller"], function($, React, Slider, NumberInput, PGAController, DACController) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -34,15 +34,31 @@
 					<div>
 						<div id="settings-drawer-wrapper">
 							<p className="setting-section-name">Programmable Gain Amplifiers</p>
-							<Slider name="X1" qt_object={pga_1}/>
-							<Slider name="X2" qt_object={pga_2}/>
-							<Slider name="Y1" qt_object={pga_3}/>
-							<Slider name="Y2" qt_object={pga_4}/>
-							<Slider name="Z Fine" qt_object={pga_5}/>
-							<Slider name="Z Coarse" qt_object={pga_7}/>
-							<Slider name="DDS Amplitude" qt_object={pga_6}/>
-							<Slider name="Leveling" qt_object={pga_8}/>
-							<p>Digital to Analog Converters</p>
+							<div className="settings-container">
+								<PGAController name="X1" qt_object={pga_1}/>
+								<PGAController name="X2" qt_object={pga_2}/>
+								<PGAController name="Y1" qt_object={pga_3}/>
+								<PGAController name="Y2" qt_object={pga_4}/>
+								<PGAController name="Z Fine" qt_object={pga_5}/>
+								<PGAController name="Z Coarse" qt_object={pga_7}/>
+								<PGAController name="DDS" qt_object={pga_6}/>
+								<PGAController name="Leveling" qt_object={pga_8}/>
+							</div>
+							<p className="setting-section-name">Digital to Analog Converters</p>
+							<div className="settings-container">
+								<DACController name="Buffered 1" qt_object={dac_0}/>
+								<DACController name="Buffered 2" qt_object={dac_1}/>
+								<DACController name="Buffered 3" qt_object={dac_5}/>
+								<DACController name="Board 1" qt_object={dac_4}/>
+								<DACController name="Board 2" qt_object={dac_2}/>
+								<DACController name="Z Amplitude" qt_object={dac_3}/>
+								<DACController name="X1" qt_object={dac_10}/>
+								<DACController name="X2" qt_object={dac_11}/>
+								<DACController name="Y1" qt_object={dac_7}/>
+								<DACController name="Y2" qt_object={dac_9}/>
+								<DACController name="Z Fine" qt_object={dac_6}/>
+								<DACController name="Z Coarse" qt_object={dac_8}/>
+							</div>
 						</div>
 					</div>
 				);

@@ -32,8 +32,9 @@ define(["react"], function(React) {
 		render: function() {
 			return (
 				<div className="slider">
-					<div>{this.props.name}</div>
-					<input type="range" min={this.props.min} 
+					<label for={this.props.name}>{this.props.name}: </label>
+					<input type="range" id={this.props.name}
+										min={this.props.min} 
 										max={this.props.max} 
 										step={this.props.step} 
 										value={this.state.value} 
