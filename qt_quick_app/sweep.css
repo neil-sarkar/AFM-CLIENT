@@ -207,3 +207,20 @@
 .adc-name {
     display: inline-block;
 }
+
+.motor-control-button {
+    background: black;
+    color: white;
+    padding: 6px;
+    display: inline-block;
+    width: 40%;
+    margin-top: 5%;
+    margin-left: 2%;
+    margin-right: 2%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.motor-control {
+    text-align: center;
+}

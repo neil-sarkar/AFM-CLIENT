@@ -41,41 +41,57 @@ define(["react"], function(React, Slider) {
 		}
 	});
 	var MotorControl = React.createClass({
+		getInitialState: function() {
+			return {
+				approach_button_pressed: false,
+				retract_button_pressed: false
+			}
+		},
 		componentDidMount: function() {
+			var self = this;
 			$('.approach-button, .retract-button').mousedown(function() {
-				$(this).data('clicked', true);
+				if ($(this).hasClass('approach-button'))
+					self.setState({ approach_button_pressed: true });
+				else if ($(this).hasClass('retract-button'))
+					self.setState({ retract_button_pressed: true });		
 			});
 			$('.approach-button, .retract-button').mouseup(function() {
-				$(this).data('clicked', false);
+				self.setState({
+					approach_button_pressed: false,
+					retract_button_pressed: false
+
+				})
 			});
 		},
 		approach: function() {
 			motor.direction = 1;
 			motor.state = 1;
 			motor.cmd_single_step();
+			var self = this;
 			setTimeout(function() {
-				if ($('.approach-button').data('clicked')) 
+				if (self.state.approach_button_pressed)
 					motor.run_continuous();
-			}, 100);
+			}, 50);
 		},
 		retract: function() {
 			motor.direction = 0;
 			motor.state = 1;
 			motor.cmd_single_step();
+			var self = this;
 			setTimeout(function() {
-				if ($('.retract-button').data('clicked'))
+				if (self.state.retract_button_pressed)
 					motor.run_continuous();
-			}, 100);
+			}, 50);
 		},
 		stop_motor: function() {
 			motor.cmd_stop_continuous();
 		},
 		render: function() {
 			return (
-				<div>
+				<div className="motor-control">
 					<SpeedSlider />
-					<span className="approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
-					<span className="retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
+					<span className="motor-control-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
+					<span className="motor-control-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
 				</div>
 			);
 		}
@@ -87,3 +103,4 @@ define(["react"], function(React, Slider) {
 	});
 	return MotorControl;
 });
+
