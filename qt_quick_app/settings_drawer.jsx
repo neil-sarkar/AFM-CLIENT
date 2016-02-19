@@ -1,7 +1,7 @@
  define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input"], function($, React, Slider, NumberInput) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
-			// hide the settings
+			// hide the settings drawer
 			$('#settings-drawer-wrapper').css('visibility', 'hidden');
 
 			// register click handler on open/close button
@@ -12,7 +12,20 @@
 				} else {
 					$("#settings-drawer-wrapper").css('visibility', 'hidden');
 				}
-			  });
+			});
+
+			// also, if the user clicks away from the settings drawer, hide it
+			// taken from http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
+			$(document).mouseup(function (e) {
+			    var container = $("#settings-drawer-wrapper");
+			    if (!container.is(e.target) // if the target of the click isn't the container...
+			        && container.has(e.target).length === 0) // ... nor a descendant of the container
+			    {
+			        container.css('visibility', 'hidden');
+			        $('#nav-toggle').removeClass("active");
+			    }
+			});
+
 		},
 		render: function() {
 			var self = this;
