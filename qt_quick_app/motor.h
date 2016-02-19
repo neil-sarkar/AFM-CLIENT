@@ -14,26 +14,31 @@ class Motor : public AFMObject
     Q_PROPERTY(int speed READ speed WRITE set_speed NOTIFY speed_changed)
     Q_PROPERTY(int direction READ direction WRITE set_direction NOTIFY direction_changed)
     Q_PROPERTY(int state READ state WRITE set_state NOTIFY state_changed)
+    Q_PROPERTY(int microstep READ microstep WRITE set_microstep NOTIFY microstep_changed)
 
 public:
     explicit Motor();
     void set_direction(int direction);
     void set_speed(double speed);
     void set_state(int state);
+    void set_microstep(int microstep);
     int speed();
     int direction();
     int state();
+    int microstep();
     void init();
     void callback(QByteArray);
     Q_INVOKABLE void cmd_single_step();
     Q_INVOKABLE void run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();
+    Q_INVOKABLE void cmd_set_micro_step();
 
 signals:
     // MODIFY signals for Q_PROPERTY macros
     void speed_changed();
     void direction_changed();
     void state_changed();
+    void microstep_changed();
 
     // Cross-Thread
 //    void command_generated(CommandNode*);
@@ -50,7 +55,6 @@ private:
     void cmd_set_direction();
     void cmd_set_state_asleep();
     void cmd_set_state_awake();
-    void cmd_set_micro_step();
     void cmd_run_continuous();
     callback_return_type bind(void (Motor::*method)(QByteArray));
     typedef void (Motor::*callback_type)(QByteArray);

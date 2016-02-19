@@ -22,6 +22,10 @@ int Motor::state() {
     return m_state;
 }
 
+int Motor::microstep() {
+    return m_microstep;
+}
+
 void Motor::set_speed(double speed) {
     m_speed = speed;
     qDebug() << "Changing speed to" << m_speed;
@@ -41,6 +45,13 @@ void Motor::set_state(int state) {
     qDebug() << "Changing state to" << m_state;
     emit state_changed();
     m_state == StatusConstants.Asleep  ? cmd_set_state_asleep() : cmd_set_state_awake();
+}
+
+void Motor::set_microstep(int microstep) {
+    m_microstep = microstep;
+    qDebug() << "Changing microstep to" << m_microstep;
+    emit microstep_changed();
+    cmd_set_micro_step();
 }
 
 void Motor::init() {

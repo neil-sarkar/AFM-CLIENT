@@ -2,28 +2,44 @@ define(["react"], function(React, Slider) {
 	var SpeedSlider = React.createClass({
 		getInitialState: function() {
 			return {
-				speed: motor.speed
+				slider_position: 1 // start at the slowest 
 			};
 		},
 		getDefaultProps: function() {
 			return {
-				min: 20000,
-				max: 26300,
-				step: 100,
+				min: 1,
+				max: 4,
+				step: 1,
 			};
 		},
-		update_value_from_backend_change: function(value) {
-			this.setState({
-				speed: value
-			});
-		},
 		update_value_from_slider_input: function(e) {
-			var new_value = parseInt(e.target.value);
-			if (this.state.value != new_value) {
+			var slider_input = parseInt(e.target.value);
+			var speed;
+			var microsteps;
+			switch(slider_input) {
+				case 4:
+					speed = 26300;
+					microsteps = 1;
+					break;
+				case 3:
+					speed = 26300;
+					microsteps = 3;
+					break;
+				case 2:
+					speed = 23000;
+					microsteps = 3;
+					break;
+				case 1:
+					speed = 20000;
+					microsteps = 3;
+					break;
+			}
+			if (this.state.slider_position != slider_input) {
 				this.setState({
-					speed: new_value
+					slider_position: slider_input
 				});
-				motor.speed = new_value; // calls set_speed
+				motor.speed = speed;
+				motor.microstep = microsteps;
 			}
 		},
 		render: function() {
@@ -34,7 +50,7 @@ define(["react"], function(React, Slider) {
 										min={this.props.min} 
 										max={this.props.max} 
 										step={this.props.step} 
-										value={this.state.value} 
+										value={this.state.slider_position} 
 										onInput={this.update_value_from_slider_input}/>
 				</div>
 			);
