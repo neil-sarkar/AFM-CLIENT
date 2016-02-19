@@ -11,6 +11,10 @@ requirejs.config({
         JSXTransformer: "JSXTransformer",
         jsx: "jsx",
         synced_chart: 'components/synced_chart',
+        browser_detect: 'lib/browserdetect-mixin',
+        bootstrap: 'lib/bootstrap',
+        bootstrap_slider: 'lib/bootstrap-slider',
+
     },
     jsx: {
         fileExtension: '.jsx'

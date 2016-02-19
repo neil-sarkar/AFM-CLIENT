@@ -40,6 +40,12 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
+    QHash<int, AFMObject*>::iterator i;
+    for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
+        QString name = "pga_" + QString::number(i.key());
+        qDebug() << name;
+        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+    }
 }
 
 void MainWindow::log_cpp(QString text) {

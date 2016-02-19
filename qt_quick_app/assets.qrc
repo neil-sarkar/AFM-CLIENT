@@ -79,6 +79,7 @@
         <file>scan_heatmap.jsx</file>
         <file>highcharts-canvas.js</file>
         <file>spinner.jsx</file>
+        <file>slider.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

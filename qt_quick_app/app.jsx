@@ -1,5 +1,5 @@
 define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pages/settings_drawer"], function(React, ReactDOM, ProgressBar, StepData, SettingsDrawer) {
-    var X = React.createClass({
+    var App = React.createClass({
         getInitialState: function() {
             return {
                 step: 0
@@ -31,8 +31,7 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
             )
         }
     });
-
-    ReactDOM.render(<X />, document.getElementById('content'));
+    ReactDOM.render(<App />, document.getElementById('content'));
 });
 
 

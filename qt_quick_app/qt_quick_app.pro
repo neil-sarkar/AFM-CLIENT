@@ -53,7 +53,6 @@ HEADERS += \
     send_worker.h \
     thread_safe_queue.h \
     receive_worker.h \
-    command_names.h \
     pga.h \
     pid.h \
     builder.h \

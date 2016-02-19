@@ -50,15 +50,17 @@ button:hover {
     -webkit-justify-content: center;
     -webkit-align-items: center;
     -webkit-align-content: center;
-    height: 100%;
+    -webkit-align-self: center;
     margin: auto;
+    padding: 2%;
 }
 
 .right-flexbox {
-    height: 100%;
     -webkit-flex: 1;
     display: -webkit-flex;
     -webkit-flex-flow: column wrap;
+    -webkit-align-self: flex-start;
+    padding: 2%;
 }
 
 .step-name {
@@ -115,4 +117,11 @@ button:hover {
 
 #next-button {
 
+}
+
+#settings-drawer-wrapper {
+    height: 100%;
+    position:absolute;
+    right:0;
+    top: 0;
 }
