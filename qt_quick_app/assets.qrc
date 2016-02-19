@@ -80,6 +80,8 @@
         <file>highcharts-canvas.js</file>
         <file>spinner.jsx</file>
         <file>slider.jsx</file>
+        <file>number_input.jsx</file>
+        <file>settings_drawer.js</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

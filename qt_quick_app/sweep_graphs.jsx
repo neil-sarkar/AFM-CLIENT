@@ -188,7 +188,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
         });
         return (<div>
-                        <SweepGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
-                        <SweepGraph title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect}/>
+                    <SweepGraph title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect}/>
+                    <SweepGraph title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect}/>
                 </div>)
 });

@@ -12,7 +12,12 @@
 			for (var step in this.props.step_list) {
 				steps.push(<ProgressBarStep key={step} name={this.props.step_list[step]} this_step={step} go_to_step={this.props.go_to_step}/>);
 			}
-            return (<div className="progress-bar">{steps}</div>);
+            return (
+            	<div>
+            		<div className="progress-bar">{steps}</div>
+            		<a id="nav-toggle" href="#"><span></span></a>
+            	</div>
+            	);
 		},
 	});
 

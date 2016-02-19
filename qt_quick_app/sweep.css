@@ -120,8 +120,58 @@ button:hover {
 }
 
 #settings-drawer-wrapper {
+    background-color: white;
     height: 100%;
-    position:absolute;
-    right:0;
+    position: absolute;
+    right: 0;
     top: 0;
+    padding-left: 2%;
+    padding-bottom: 0;
+    padding-right: 3%;
+    box-shadow: 10px 0px 8px 8px black;
+}
+
+.setting-section-name:first-of-type {
+    margin-top: 25%;
+}
+
+#nav-toggle { 
+  position: fixed;
+  right: 2%;
+  top: 2%;
+  z-index: 1;
+}
+
+#nav-toggle { cursor: pointer; padding: 10px 35px 16px 0px; }
+#nav-toggle span, #nav-toggle span:before, #nav-toggle span:after {
+  cursor: pointer;
+  border-radius: 1px;
+  height: 1px;
+  width: 25px;
+  background: black;
+  position: absolute;
+  display: block; 
+  content: '';
+}
+#nav-toggle span:before {
+  top: -7px; 
+}
+#nav-toggle span:after {
+  bottom: -7px;
+}
+
+#nav-toggle span, #nav-toggle span:before, #nav-toggle span:after {
+  transition: all 200ms ease-in-out;
+}
+#nav-toggle.active span {
+  background-color: transparent;
+}
+#nav-toggle.active span:before, #nav-toggle.active span:after {
+  top: 0;
+}
+#nav-toggle.active span:before {
+  -webkit-transform: rotate(45deg);
+}
+#nav-toggle.active span:after {
+  -webkit-transform: rotate(-45deg);
 }
