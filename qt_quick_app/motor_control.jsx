@@ -1,4 +1,4 @@
-define(["react"], function(React, Slider) {
+define(["react"], function(React) {
 	var SpeedSlider = React.createClass({
 		getInitialState: function() {
 			return {

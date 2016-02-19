@@ -8,33 +8,33 @@
 class PID : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(float proportional READ proportional WRITE set_proportional NOTIFY proportional_changed)
-    Q_PROPERTY(float integral READ integral WRITE set_integral NOTIFY integral_changed)
-    Q_PROPERTY(float derivative READ derivative WRITE set_derivative NOTIFY derivative_changed)
-    Q_PROPERTY(float setpoint READ setpoint WRITE set_setpoint NOTIFY setpoint_changed)
-    Q_PROPERTY(bool enabled READ enabled WRITE set_enabled NOTIFY enabled_changed)
+    // Q_PROPERTY(float proportional READ proportional WRITE set_proportional NOTIFY proportional_changed)
+    // Q_PROPERTY(float integral READ integral WRITE set_integral NOTIFY integral_changed)
+    // Q_PROPERTY(float derivative READ derivative WRITE set_derivative NOTIFY derivative_changed)
+    // Q_PROPERTY(float setpoint READ setpoint WRITE set_setpoint NOTIFY setpoint_changed)
+    // Q_PROPERTY(bool enabled READ enabled WRITE set_enabled NOTIFY enabled_changed)
 
 public:
     explicit PID();
-    float proportional();
-    float integral();
-    float derivative();
-    float setpoint();
-    bool enabled();
-    void set_proportional(float p);
-    void set_integral(float i);
+    Q_INVOKABLE float proportional();
+    Q_INVOKABLE float integral();
+    Q_INVOKABLE float derivative();
+    Q_INVOKABLE float setpoint();
+    Q_INVOKABLE bool enabled();
+    Q_INVOKABLE void set_proportional(float p);
+    Q_INVOKABLE void set_integral(float i);
     void set_derivative(float d);
-    void set_setpoint(float s);
+    Q_INVOKABLE void set_setpoint(float s);
     void init();
     Q_INVOKABLE void set_enabled(bool e = true);
     Q_INVOKABLE void set_disabled();
 
 signals:
-    void proportional_changed();
-    void integral_changed();
-    void derivative_changed();
-    void setpoint_changed();
-    void enabled_changed();
+    void proportional_changed(float);
+    void integral_changed(float);
+    void derivative_changed(float);
+    void setpoint_changed(float);
+    void enabled_changed(bool);
 
 public slots:
 

@@ -135,7 +135,7 @@
     padding-bottom: 0;
     padding-right: 3%;
     box-shadow: 10px 0px 8px 8px black;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 .setting-section-name:first-of-type {
@@ -237,5 +237,6 @@
 }
 
 .adc-controller {
+    margin-bottom: 2%;
     margin-right: 5%;
 }

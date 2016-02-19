@@ -41,6 +41,7 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     QHash<int, AFMObject*>::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
         QString name = "pga_" + QString::number(i.key());

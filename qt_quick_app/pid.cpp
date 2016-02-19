@@ -33,7 +33,7 @@ void PID::set_proportional(float proportional) {
     if (m_proportional != proportional) {
         m_proportional = proportional;
         qDebug() << "Setting proportional to" << m_proportional;
-        emit proportional_changed();
+        emit proportional_changed(m_proportional);
         cmd_set_proportional();
     }
 }
@@ -42,7 +42,7 @@ void PID::set_integral(float integral) {
     if (m_integral != integral) {
         m_integral = integral;
         qDebug() << "Setting integral to" << m_integral;
-        emit integral_changed();
+        emit integral_changed(m_integral);
         cmd_set_integral();
     }
 }
@@ -51,7 +51,7 @@ void PID::set_derivative(float derivative) {
     if (m_derivative != derivative) {
         m_derivative = derivative;
         qDebug() << "Setting derivative to" << m_derivative;
-        emit derivative_changed();
+        emit derivative_changed(m_derivative);
         cmd_set_derivative();
     }
 }
@@ -60,7 +60,7 @@ void PID::set_enabled(bool enabled) {
     if (m_enabled != enabled) {
         m_enabled = enabled;
         qDebug() << "Setting PID enabled to" << m_enabled;
-        emit enabled_changed();
+        emit enabled_changed(m_enabled);
         m_enabled ? cmd_enable() : cmd_disable(); // for some reason this line hangs  - maybe race condition
     }
 }
@@ -73,7 +73,7 @@ void PID::set_setpoint(float setpoint) {
     if (m_setpoint != setpoint) {
         m_setpoint = setpoint;
         qDebug() << "Setting set_point to" << m_setpoint;
-        emit setpoint_changed();
+        emit setpoint_changed(m_setpoint);
         cmd_set_setpoint();
     }
 }

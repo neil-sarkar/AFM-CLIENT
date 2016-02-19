@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController, MotorControl) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController, MotorControl, PIDControl) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -35,7 +35,9 @@
 						<div id="settings-drawer-wrapper">
 							<p className="setting-section-name">Motor Control</p>
 							<MotorControl />
-							<p className="setting-section-name">PGAs</p>
+							<p className="setting-section-name">PID Control</p>
+							<PIDControl />
+							<p className="setting-section-name">PGAs (/100%)</p>
 							<div className="settings-container">
 								<PGAController name="X1" qt_object={pga_1}/>
 								<PGAController name="X2" qt_object={pga_2}/>
@@ -46,7 +48,7 @@
 								<PGAController name="DDS" qt_object={pga_6}/>
 								<PGAController name="Leveling" qt_object={pga_8}/>
 							</div>
-							<p className="setting-section-name">DACs</p>
+							<p className="setting-section-name">DACs (/3.3V)</p>
 							<div className="settings-container">
 								<DACController name="Buffered 1" qt_object={dac_0}/>
 								<DACController name="Buffered 2" qt_object={dac_1}/>
@@ -61,7 +63,7 @@
 								<DACController name="Z Fine" qt_object={dac_6} slider={true}/>
 								<DACController name="Z Coarse" qt_object={dac_8} slider={true}/>
 							</div>
-							<p className="setting-section-name">ADCs</p>
+							<p className="setting-section-name">ADCs (/2.5V)</p>
 							<div className="settings-container">
 								<ADCController name="X1" qt_object={adc_3}/>
 								<ADCController name="X2" qt_object={adc_7}/>

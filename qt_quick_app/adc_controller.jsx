@@ -3,7 +3,6 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 	var ADCController = React.createClass({
 		componentDidMount: function() {
 			this.props.qt_object.value_changed.connect(this.update_value_from_backend);
-			// this.props.qt_object.read();
 		},
 		update_value_from_backend: function(value) {
 			this.setState({
@@ -11,7 +10,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 			});
 		},
 		bits_to_volts: function(value) {
-			return (value / 4095 * 2.5).toFixed(2);
+			return (value / 4095 * 2.5).toFixed(4);
 		},
 		getInitialState: function() {
 			return {
