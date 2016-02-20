@@ -1,43 +1,16 @@
 define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function($, React, ReactDOM, heatmap, _, console) {
-    function asyncLoop(iterations, func, callback) {
-        var index = 0;
-        var done = false;
-        var loop = {
-            next: function() {
-                if (done) {
-                    return;
-                }
+    var ScanViewer = React.createClass({
+        render: function() { 
+            return (
+                <div>
+                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} />
+                </div>
+            );
+        }
+    });
 
-                if (index < iterations) {
-                    index++;
-                    func(loop);
-
-                } else {
-                    done = true;
-                    callback();
-                }
-            },
-
-            iteration: function() {
-                return index - 1;
-            },
-
-            break: function() {
-                done = true;
-                callback();
-            }
-        };
-        loop.next();
-        return loop;
-    }
 
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
-        getInitialState: function() {
-            return {
-                num_rendered: 0,
-                data: []
-            };
-        },
         renderChart: function() {
             Highcharts.setOptions({
                 plotOptions: {
@@ -65,13 +38,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
                 },
 
                 yAxis: {
-                    title: {
-                        text: null
-                    },
-                    // minPadding: 0,
-                    // maxPadding: 0,
-                    // startOnTick: false,
-                    // endOnTick: false,
                     min: 0,
                     max: 127,
                 },
@@ -125,12 +91,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             setTimeout(function() {
                 self.state.chart.redraw(false);
             }, 0);
-
-            
-            // _.defer(self.state.chart.series[0].setData(data)); // I think this get triggered just a little bit before the addPoint methods all return...
-                                // That's why we have a separate redrawChart method that gets called at the end of scanning,
-                                // to ensure the last points get drawn - maybe we can hook into the addpoint method or check
-                                // the length of chart.series[0].data
         },
         componentDidMount: function() {
             this.renderChart();
@@ -146,5 +106,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return ScanHeatMap;
+    // return ScanViewer;
+    return ScanViewer;
 });

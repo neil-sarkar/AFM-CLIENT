@@ -87,6 +87,7 @@
         <file>adc_controller.jsx</file>
         <file>motor_control.jsx</file>
         <file>pid.jsx</file>
+        <file>line_profile.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
