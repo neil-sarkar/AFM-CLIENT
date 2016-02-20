@@ -55,7 +55,18 @@ Sweeper::data_model Sweeper::phase_data() {
 }
 
 void Sweeper::start_state_machine() {
-    
+    for (int i = 1; i < 3; i++) {
+        QVariantList list;
+        QVariantList lis;
+        for (int j = 0; j < 10000; j += 100) {
+            list.append(j);
+            list.append(j * i);
+            lis.append(j);
+            lis.append(j/2 * i);
+        }
+        emit new_amplitude_data(list);
+        emit new_phase_data(lis);
+    }
     m_state_machine.start();
 }
 

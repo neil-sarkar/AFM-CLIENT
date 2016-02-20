@@ -15,7 +15,7 @@
 			return (
 				<div className="wrapper" id="sweep-wrapper">
 					<div className="left-flexbox">
-						{Graphs}
+						<Graphs/>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Frequency Sweep</div>
