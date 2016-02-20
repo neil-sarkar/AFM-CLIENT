@@ -51,6 +51,7 @@ void Scanner::init() {
 }
 
 void Scanner::start_state_machine() {
+    emit started_scan_state_machine();
     for (int i = 0; i < 64; i++) {
         QVariantList data;
         for (int j = 0; j < 64; j++) {
@@ -58,7 +59,6 @@ void Scanner::start_state_machine() {
             data.append(j);
             data.append(i*j);
         }
-        data.append(0); 
         emit new_forward_offset_data(data);
     }
     return;

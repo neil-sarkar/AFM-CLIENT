@@ -51,7 +51,10 @@ QVariantList ScanData::package_data_for_ui(int num_points) {
         latest_data.append(point.z_offset);
         sum += point.z_offset;
     }
-    latest_data.append(double(sum) / num_points);
+    double average = sum / num_points;
+    for (int i = 2; i < num_points; i += 3) {
+        latest_data[i] = (latest_data[i]).toDouble() - average;
+    }
     return latest_data;
 }
 

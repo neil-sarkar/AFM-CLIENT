@@ -18,7 +18,7 @@ define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
-						<ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect}/>
+						<ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect} newScan={scanner.started_scan_state_machine.connect}/>
 						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">

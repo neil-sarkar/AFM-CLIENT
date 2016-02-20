@@ -1,9 +1,10 @@
-define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function($, React, ReactDOM, heatmap, _, console) {
+define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages/line_profile"], function($, React, ReactDOM, heatmap, _, console, LineProfile) {
     var ScanViewer = React.createClass({
-        render: function() { 
+        render: function() {
             return (
                 <div>
-                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} />
+                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} newScan={this.props.newScan}/>
+                    <LineProfile ref="line_profile" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} newScan={this.props.newScan}/>
                 </div>
             );
         }
@@ -65,14 +66,11 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
             });
         });
         },
-        asyncAddPoint: function(add_point, i, data, avg) {
+        asyncAddPoint: function(add_point, i, data) {
             var self = this;
             setTimeout(function() {
-                self.state.chart.series[0].addPoint([data[i], data[i+1], data[i+2] - avg], false, false); // add point WITHOUT redrawing or animating
+                self.state.chart.series[0].addPoint([data[i], data[i+1], data[i+2]], false, false); // add point WITHOUT redrawing or animating
             }, 0);
-        },
-        redrawChartWrapper: function() {
-            _.defer(this.redrawChart).bind(this);
         },
         redrawChart: function() {
             this.state.chart.redraw();
@@ -83,18 +81,21 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console"], function(
         },
         handleNewData: function(data) {
             var self = this;
-            var average = data.pop(); // remove the average from the array
             var add_point = this.state.chart.series[0].addPoint;
             for (var i = 0; i < data.length; i += 3) {
-                self.asyncAddPoint(add_point, i, data, average);
+                self.asyncAddPoint(add_point, i, data);
             }
             setTimeout(function() {
                 self.state.chart.redraw(false);
             }, 0);
         },
+        erase_data: function() {
+            this.state.chart.series[0].setData([]);
+        },
         componentDidMount: function() {
             this.renderChart();
             this.props.establishDataConnection(this.handleNewDataWrapper);
+            this.props.newScan(this.erase_data);
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();
             this.setState({
