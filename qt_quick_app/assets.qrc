@@ -88,6 +88,7 @@
         <file>motor_control.jsx</file>
         <file>pid.jsx</file>
         <file>line_profile.jsx</file>
+        <file>scan_viewer.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

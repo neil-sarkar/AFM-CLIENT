@@ -52,9 +52,9 @@ void Scanner::init() {
 
 void Scanner::start_state_machine() {
     emit started_scan_state_machine();
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 10; i++) {
         QVariantList data;
-        for (int j = 0; j < 64; j++) {
+        for (int j = 0; j < 10; j++) {
             data.append(i);
             data.append(j);
             data.append(i*j);

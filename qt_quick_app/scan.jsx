@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/scan_heatmap"], function(React, ScanViewer) {
+define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 	var Scan = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {

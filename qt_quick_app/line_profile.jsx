@@ -95,8 +95,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.state.chart.redraw();
         },
         redraw: function() {
-            // this.state.chart.redraw();
-            this.state.chart.series[this.state.chart.series.length - 2].hide();
+            this.state.chart.series[this.state.chart.series.length - 2].hide(); // automatically redraws
+        },
+        select_series_to_display: function(series_index) {
+            for (var i = 0; i < this.state.chart.series.length; i++)
+                this.state.chart.series[i].hide();
+            this.state.chart.series[series_index].show();
         },
         print_series: function() {
             console.log(this.state.chart.series);

@@ -1,52 +1,4 @@
-define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages/line_profile"], function($, React, ReactDOM, heatmap, _, console, LineProfile) {
-    var ScanViewer = React.createClass({
-        componentDidMount: function() {
-            this.props.establishDataConnection(this.handle_new_data_wrapper);
-        },
-        handle_new_data_wrapper: function(data) {
-            var self = this;
-            setTimeout(function(){ self.handle_new_data(data); }, 0);            
-        },
-        handle_new_data: function(data) {
-            var self = this;
-            for (var i = 0; i < data.length; i += 3) {
-                self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
-            }
-            this.prompt_redraw();
-            this.refs.line_profile.print_series();
-        },
-        dispatch_data: function(x, y, z, new_series) {
-            console.log("dispatch_data", x, y, z);
-            var self = this;
-            setTimeout(function() {
-                if (new_series)
-                    self.refs.line_profile.addSeries();
-                self.refs.heatmap.asyncAddPoint(x, y, z);
-            }, 0);
-            setTimeout(function() {
-                self.refs.line_profile.asyncAddPoint(y, z);
-            }, 0);
-        },
-        prompt_redraw: function() {
-            var self = this;
-            setTimeout(function() {
-                self.refs.heatmap.redraw();
-            }, 0);
-            setTimeout(function() {
-                self.refs.line_profile.redraw();
-            }, 0);
-        },
-        render: function() {
-            return (
-                <div>
-                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset"/>
-                    <LineProfile ref="line_profile" chart_name="Forward Offset"/>
-                </div>
-            );
-        }
-    });
-
-
+define(["jquery", "react", "dom", "heatmap", "console"], function($, React, ReactDOM, heatmap, console) {
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
         renderChart: function() {
             Highcharts.setOptions({
@@ -91,7 +43,12 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
                     },
                     series: {
                         animation: false,
-                    }
+                        events: {
+                            click: function(e) {
+                                self.props.handle_tooltip_select(e.point.y);
+                            }
+                        }
+                    },
                 },
                 series: [{
                     borderWidth: 0,
@@ -122,7 +79,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
             this.state.chart.series[0].setData([]);
         },
         redraw: function() {
-            console.log("redrawing")
             this.state.chart.redraw();
         },
         componentDidMount: function() {
@@ -140,6 +96,5 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    // return ScanViewer;
-    return ScanViewer;
+    return ScanHeatMap;
 });
