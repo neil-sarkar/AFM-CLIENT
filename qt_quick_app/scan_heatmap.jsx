@@ -1,10 +1,46 @@
 define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages/line_profile"], function($, React, ReactDOM, heatmap, _, console, LineProfile) {
     var ScanViewer = React.createClass({
+        componentDidMount: function() {
+            this.props.establishDataConnection(this.handle_new_data_wrapper);
+        },
+        handle_new_data_wrapper: function(data) {
+            var self = this;
+            setTimeout(function(){ self.handle_new_data(data); }, 0);            
+        },
+        handle_new_data: function(data) {
+            var self = this;
+            for (var i = 0; i < data.length; i += 3) {
+                self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
+            }
+            this.prompt_redraw();
+            this.refs.line_profile.print_series();
+        },
+        dispatch_data: function(x, y, z, new_series) {
+            console.log("dispatch_data", x, y, z);
+            var self = this;
+            setTimeout(function() {
+                if (new_series)
+                    self.refs.line_profile.addSeries();
+                self.refs.heatmap.asyncAddPoint(x, y, z);
+            }, 0);
+            setTimeout(function() {
+                self.refs.line_profile.asyncAddPoint(y, z);
+            }, 0);
+        },
+        prompt_redraw: function() {
+            var self = this;
+            setTimeout(function() {
+                self.refs.heatmap.redraw();
+            }, 0);
+            setTimeout(function() {
+                self.refs.line_profile.redraw();
+            }, 0);
+        },
         render: function() {
             return (
                 <div>
-                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} newScan={this.props.newScan}/>
-                    <LineProfile ref="line_profile" chart_name="Forward Offset" establishDataConnection={this.props.establishDataConnection} newScan={this.props.newScan}/>
+                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset"/>
+                    <LineProfile ref="line_profile" chart_name="Forward Offset"/>
                 </div>
             );
         }
@@ -42,7 +78,6 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
                     min: 0,
                     max: 127,
                 },
-
                 colorAxis: {
                     stops: [
                         [0, '#3060cf'],
@@ -66,14 +101,8 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
             });
         });
         },
-        asyncAddPoint: function(add_point, i, data) {
-            var self = this;
-            setTimeout(function() {
-                self.state.chart.series[0].addPoint([data[i], data[i+1], data[i+2]], false, false); // add point WITHOUT redrawing or animating
-            }, 0);
-        },
-        redrawChart: function() {
-            this.state.chart.redraw();
+        asyncAddPoint: function(x, y, z) {
+            this.state.chart.series[0].addPoint([x, y, z], false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
             var self = this;
@@ -92,10 +121,14 @@ define(["jquery", "react", "dom", "heatmap", "underscore", "console", "jsx!pages
         erase_data: function() {
             this.state.chart.series[0].setData([]);
         },
+        redraw: function() {
+            console.log("redrawing")
+            this.state.chart.redraw();
+        },
         componentDidMount: function() {
             this.renderChart();
-            this.props.establishDataConnection(this.handleNewDataWrapper);
-            this.props.newScan(this.erase_data);
+            // this.props.establishDataConnection(this.handleNewDataWrapper);
+            // this.props.newScan(this.erase_data);
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();
             this.setState({

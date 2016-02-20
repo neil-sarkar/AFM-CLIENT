@@ -1,47 +1,47 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
     var LineProfile = React.createClass({
+        getInitialState: function() {
+            return {
+                current_series: 0
+            };
+        },
         renderChart: function() {
             var node = this.refs.lineProfileNode.getDOMNode();
             jQuery(function ($) {
-            $(node).highcharts({
-                chart: {
-                    plotBackgroundColor: '#EFEFEF',
-                    height: 300,
-                    type: 'line',
-                    zoomType: 'x',
-                },
-                title: {
-                    text: "Line Profile"
-                },
-                tooltip: { crosshairs: [true, true] },
-                xAxis: {
-                    type: 'linear',
-                },
-                yAxis: {
-                    title: {
-                        text: 'Amplitude (V)'
+                $(node).highcharts({
+                    chart: {
+                        plotBackgroundColor: '#EFEFEF',
+                        height: 300,
+                        type: 'line',
+                        zoomType: 'x',
                     },
-                },
-                legend: {
-                    enabled: false
-                },
-                series: [],
+                    title: {
+                        text: "Line Profile"
+                    },
+                    tooltip: { crosshairs: [true, true] },
+                    xAxis: {
+                        type: 'linear',
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Amplitude (V)'
+                        },
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    series: [],
+                });
             });
-        });
         },
-        asyncAddPoint: function(series_index, i, data) {
-            var self = this;
-            setTimeout(function() {
-                self.state.chart.series[series_index].addPoint([data[i+1], data[i+2]], false, false); // add point WITHOUT redrawing or animating
-            }, 0);
+        asyncAddPoint: function(y, z) {
+            this.state.chart.series[this.state.chart.series.length - 1].addPoint([y, z], false, false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
-        	console.log("wrapper");
         	var self = this;
         	setTimeout(function() {self.handleNewData(data);}, 0);
         },
         handleNewData: function(data) {
-        	console.log("new data");
 			var self = this;
 			if (self.state.chart.length)
 				var prev_series_index = this.state.chart.series.length - 1;
@@ -52,7 +52,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         	    self.asyncAddPoint(new_series_index, i, data);
         	}
         	setTimeout(function() {
-        		console.log("redraw");
     			self.state.chart.series[self.state.chart.series.length - 2].hide();
         	    self.state.chart.redraw(false);
         	}, 0);
@@ -95,11 +94,17 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
             this.state.chart.redraw();
         },
+        redraw: function() {
+            // this.state.chart.redraw();
+            this.state.chart.series[this.state.chart.series.length - 2].hide();
+        },
+        print_series: function() {
+            console.log(this.state.chart.series);
+        },
         componentDidMount: function() {
             this.renderChart();
-            this.props.establishDataConnection(this.handleNewDataWrapper);
-            this.props.newScan(this.erase_data);
-            this.props.s
+            // this.props.establishDataConnection(this.handleNewDataWrapper);
+            // this.props.newScan(this.erase_data);
             var node = this.refs.lineProfileNode.getDOMNode();
             var chart = $(node).highcharts();
             this.setState({

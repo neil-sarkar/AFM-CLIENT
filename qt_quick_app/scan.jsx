@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
+define(["react", "jsx!pages/scan_heatmap"], function(React, ScanViewer) {
 	var Scan = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {
@@ -18,7 +18,7 @@ define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
-						<ScanHeatMap establishDataConnection={scanner.new_forward_offset_data.connect} newScan={scanner.started_scan_state_machine.connect}/>
+						<ScanViewer establishDataConnection={scanner.new_forward_offset_data.connect} newScan={scanner.started_scan_state_machine.connect}/>
 						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">
@@ -39,5 +39,3 @@ define(["react", "jsx!pages/scan_heatmap"], function(React, ScanHeatMap) {
 	});
 	return Scan;
 });
-
-// <ScanHeatMap chart_name="Reverse Offset" establishDataConnection={scanner.new_reverse_offset_data.connect} />
