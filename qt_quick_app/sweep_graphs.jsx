@@ -55,6 +55,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                                     var series = this.series._i;
                                     component.props.emit_tooltip(index, series, e);
                                 },
+                                click: function(e) {
+                                    component.props.handle_click(e.point.x); // capture the y value
+                                },
                            }
                        },
                     }
@@ -193,11 +196,14 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.refs.amplitude_graph.update_tooltip(index, series, e);
             this.refs.phase_graph.update_tooltip(index, series, e);
         },
+        handle_click: function(frequency) {
+            sweeper.set_frequency_on_select(frequency);
+        },
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect} emit_tooltip={this.emit_tooltip}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect} emit_tooltip={this.emit_tooltip}/>
+                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="phase_graph" title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
                 </div>
             );
         }

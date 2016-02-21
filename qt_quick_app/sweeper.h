@@ -19,6 +19,7 @@ public:
     data_model amplitude_data();
     data_model phase_data();
     Q_INVOKABLE void start_state_machine();
+    Q_INVOKABLE void set_frequency_on_select(int);
     DDS* dds;
 
 signals:

@@ -151,6 +151,11 @@ int Sweeper::find_peak() {
     return 0;
 }
 
+void Sweeper::set_frequency_on_select(int frequency) {
+    m_current_resonant_frequency = frequency;
+    set_stable_frequency();
+}
+
 //int Sweeper::find_peak() {
 //    // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
 //    // http://billauer.co.il/peakdet.html
