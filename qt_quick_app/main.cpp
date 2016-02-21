@@ -21,10 +21,11 @@
 #include <QWebView>
 #include <QDir>
 #include <QApplication>
+#include "safe_application.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    SafeApplication app(argc, argv);
     QQmlApplicationEngine engine;
     qDebug() << "App path" << app.applicationDirPath();
 

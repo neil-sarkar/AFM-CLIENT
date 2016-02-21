@@ -69,8 +69,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         update_plotline: function(value) {
             while (this.state.chart.yAxis[0].plotLinesAndBands.length) {
                 this.state.chart.yAxis[0].removePlotLine('setpoint');
-            }   
+            }
             this.state.chart.yAxis[0].addPlotLine({
+                // tried adding a label but it always hides behind the graph
                 value: value,
                 color: 'red',
                 dashStyle: 'dash',

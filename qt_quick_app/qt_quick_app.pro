@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     approacher.cpp \
     scanner.cpp \
     scan_data.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    safe_application.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -64,7 +65,8 @@ HEADERS += \
     scanner.h \
     scan_data.h \
     data_point.h \
-    mainwindow.h
+    mainwindow.h \
+    safe_application.h
 
 DISTFILES += \
     test.html \
