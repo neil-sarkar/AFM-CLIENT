@@ -43,6 +43,14 @@ void AFM::read_all_ADCs() {
         static_cast<ADC*>(i.value())->read();
 }
 
+void AFM::cmd_get_resistances() {
+    emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
+}
+
+void AFM::callback_get_resistances(QByteArray return_bytes) {
+    // x1 x2 y1 y2 zoffset
+}
+
 AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }

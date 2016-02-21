@@ -12,11 +12,12 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 		9: "Reached setpoint",
 	};
 
-	var ApproachStatus = React.createClass({
+	var Approach = React.createClass({
 		getInitialState : function() {
 			return {
 				status: 0,
 				approach_complete: false,
+				approach_in_progress: false,
 			};
 		},
 		componentDidMount: function() {
@@ -35,21 +36,13 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 			if (this.state.approach_complete && approacher_state == 1) {
 				this.setState({
 					approach_complete: false
-				})
+				});
 			}
+			this.setState({
+				approach_in_progress: (approacher_state !== 0)
+			});
+			console.log(this.state.status);
 		},
-		render: function() {
-			console.log(status_map[this.state.status]);
-			return (
-				<div className="approacher-status">
-					{status_map[this.state.status]}
-					{this.state.approach_complete && <div>Approach complete</div>}
-				</div>
-			);
-		},
-	});
-
-	var Approach = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {
 				$('#approach-wrapper').hide();
@@ -57,15 +50,15 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 				$('#approach-wrapper').show();
 			}
 		},
-		shouldComponentUpdate :function() {
-			return false;
-		},
 		render: function() {
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
 						{Graph}
-						<ApproachStatus />
+						<div className="approacher-status">
+							{status_map[this.state.status]}
+							{this.state.approach_complete && <div>Approach complete</div>}
+						</div>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Sample Approach</div>
@@ -73,8 +66,7 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 							Press the "Approach" button to begin a raising the sample towards the AFM chip.
 							The approach is complete once the amplitude value reaches the desired setpoint.
 						</div>
-						<button className="action-button" onClick={approacher.cmd_start_auto_approach}>Start Approach</button>
-						<button className="action-button" onClick={approacher.cmd_stop_auto_approach}>Pause Approach</button>
+						<button className="action-button" onClick={this.state.approach_in_progress ? approacher.cmd_stop_auto_approach : approacher.cmd_start_auto_approach}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

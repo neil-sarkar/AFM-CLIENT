@@ -42,3 +42,4 @@ Serial_Worker_Raise_Invalid_Command	0	Serial Worker	Invalid Command	raise			241	
 Stage_Set_Pulse_Step	0	Stage	Pulse Step	set			109	6D	m		1	2		3	Y	Stat Byte
 Stage_Set_Pulse_Width	0	Stage	Pulse Width	set			106	6A	j		1	3	(val)	3	Y	Stat Byte	Pulse Width
 Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None
+AFM_Get_Resistances	1	AFM	resistances	get			106	6A	j		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
