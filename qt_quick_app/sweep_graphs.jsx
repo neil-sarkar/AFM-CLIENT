@@ -67,33 +67,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         generate_initial_series : function() {
             var series_skeleton = {
-                type: "area",
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {
-                                x1: 0,
-                                y1: 0,
-                                x2: 0,
-                                y2: 1
-                            },
-                            stops: [
-                                [0, Highcharts.getOptions().colors[0]],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                            ]
-                        },
-                        marker: {
-                            radius: 2
-                        },
-                        lineWidth: 1,
-                        states: {
-                            hover: {
-                                lineWidth: 1
-                            }
-                        },
-                        threshold: null
-                    }
-                }
             };
             var series = [];
             for (var i = 0; i < this.state.model; i += 1) {
@@ -146,33 +119,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         addSeries: function(data) {
                 var series = {
                     data: data,
-                    type: "area",
-                    plotOptions: {
-                        area: {
-                            fillColor: {
-                                linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                },
-                                stops: [
-                                    [0, Highcharts.getOptions().colors[0]],
-                                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                ]
-                            },
-                            marker: {
-                                radius: 2
-                            },
-                            lineWidth: 1,
-                            states: {
-                                hover: {
-                                    lineWidth: 1
-                                }
-                            },
-                            threshold: null
-                        }
-                    },
                 };
             var node = this.refs.chartNode.getDOMNode();
             $(node).highcharts().addSeries(series);
