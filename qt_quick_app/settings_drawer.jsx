@@ -74,6 +74,8 @@
 								<ADCController name="Phase" qt_object={adc_0}/>
 							</div>
 							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
+							<br />
+							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={serial_port.reset_mcu}>Reset AFM</button>
 						</div>
 					</div>
 				);

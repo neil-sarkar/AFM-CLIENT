@@ -50,10 +50,7 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
 }
 
 void SerialPort::reset_mcu() {
-    // Sending a bunch of delimiters should force the mcu out of
-    // any previous state it was in and put it back in its main loop
-//    for (int i = 0; i < 50; i++)
-//        write_byte(Message_Delimiter);
+    qDebug() << "Resetting MCU";
     write_byte('M');
     write_byte('A');
     write_byte('B');

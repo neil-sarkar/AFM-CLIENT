@@ -227,10 +227,11 @@
     margin-right: 5%;
 }
 
-.pid-enable-button {
+.pid-enable-button, .adc-read-button {
     left: 30%;
 }
 
- .adc-read-button {
-    left: 30%;
- }
+.reset-afm-button {
+    left: 25%;
+    width: 50%;
+}

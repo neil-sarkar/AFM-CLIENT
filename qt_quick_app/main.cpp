@@ -47,9 +47,8 @@ int main(int argc, char *argv[])
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
-    MainWindow m(afm);
+    MainWindow m(afm, serial_port);
     m.show();
-
 
 
     // Set up the view
