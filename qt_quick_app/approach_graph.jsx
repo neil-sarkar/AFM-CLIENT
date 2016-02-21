@@ -20,7 +20,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 yAxis: {
                     title: {
                         text: 'Amplitude (V)'
-                    },
+                    }
                 },
                 legend: {
                     enabled: false
@@ -66,10 +66,31 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var point = [(new Date()).getTime(), approach_adc_read];
             $(node).highcharts().series[0].addPoint(point);
         },
+        update_plotline: function(value) {
+            while (this.state.chart.yAxis[0].plotLinesAndBands.length) {
+                this.state.chart.yAxis[0].removePlotLine('setpoint');
+            }   
+            this.state.chart.yAxis[0].addPlotLine({
+                value: value,
+                color: 'red',
+                dashStyle: 'dash',
+                width: 2,
+                id: 'setpoint'
+            });
+        },
         componentDidMount: function() {
             this.renderChart();
+            var node = this.refs.chartNode.getDOMNode();
+            this.setState({
+                chart: $(node).highcharts()
+            });
             this.props.establishDataConnection(this.handleNewData);
+            pid.setpoint_changed.connect(this.update_plotline);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
+            var that = this;
+            setTimeout(function() {
+                that.update_plotline(pid.setpoint());
+            }, 1000);
         },
         render: function() {
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
