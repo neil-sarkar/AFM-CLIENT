@@ -56,7 +56,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                                     component.props.emit_tooltip(index, series, e);
                                 },
                                 click: function(e) {
-                                    component.props.handle_click(e.point.x); // capture the y value
+                                    component.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
                                 },
                            }
                        },
@@ -123,10 +123,15 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var node = this.refs.chartNode.getDOMNode();
             $(node).highcharts().addSeries(series);
         },
+        get_point: function(index, series) {
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            return chart.series[series].points[index];
+        },
         update_tooltip: function(index, series, e) {
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();
-            var point = chart.series[series].points[index];
+            var point = this.get_point(index, series);
             chart.tooltip.refresh(point);
             chart.xAxis[0].drawCrosshair(e, point);
             chart.yAxis[0].drawCrosshair(e, point);
@@ -142,8 +147,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.refs.amplitude_graph.update_tooltip(index, series, e);
             this.refs.phase_graph.update_tooltip(index, series, e);
         },
-        handle_click: function(frequency) {
+        handle_click: function(frequency, index, series) {
             sweeper.set_frequency_on_select(frequency);
+            var amplitude_graph_point = this.refs.amplitude_graph.get_point(index, series);
+            pid.set_setpoint(amplitude_graph_point.y / 2);
         },
         render: function() {
             return (
