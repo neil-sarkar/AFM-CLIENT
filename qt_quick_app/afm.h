@@ -32,6 +32,7 @@ class AFM : public AFMObject
         void callback_set_dac_table(QByteArray buffer);
         void callback_generate_force_curve(QByteArray buffer);
         Q_INVOKABLE void cmd_generate_force_curve();
+        Q_INVOKABLE void read_all_ADCs();
 
     signals:
         void command_generated(CommandNode*);

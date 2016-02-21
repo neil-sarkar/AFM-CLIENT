@@ -73,6 +73,7 @@
 								<ADCController name="Z Piezo" qt_object={adc_5}/>
 								<ADCController name="Phase" qt_object={adc_0}/>
 							</div>
+							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
 						</div>
 					</div>
 				);

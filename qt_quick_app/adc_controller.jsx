@@ -19,7 +19,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 		},
 		render: function() {
 			return (
-					<div className="adc-controller">{this.props.name + ": " + this.bits_to_volts(this.state.value)} <span className="adc-read-button" onClick={this.props.qt_object.read}>(Read)</span></div>
+					<div className="adc-controller">{this.props.name + ": " + this.bits_to_volts(this.state.value)}</div>
 				);
 		}
 	});

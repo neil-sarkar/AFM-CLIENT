@@ -36,6 +36,13 @@ void AFM::init() {
     scanner->init();
 }
 
+void AFM::read_all_ADCs() {
+    qDebug() << "Reading all ADCs";
+    QHash<int, AFMObject*>::iterator i;
+    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
+        static_cast<ADC*>(i.value())->read();
+}
+
 AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
