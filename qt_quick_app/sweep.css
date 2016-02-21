@@ -205,7 +205,7 @@
     margin-right: 2%;
 }
 
-.motor-control-button {
+.settings-drawer-button {
     background: black;
     color: white;
     padding: 6px;
@@ -225,4 +225,8 @@
 .adc-controller {
     margin-bottom: 2%;
     margin-right: 5%;
+}
+
+.pid-enable-button {
+    left: 30%;
 }

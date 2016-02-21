@@ -68,11 +68,12 @@ define(["react"], function(React) {
 			});
 		},
 		render: function() {
-			if (this.state.enabled) {
-				return <span>Enabled</span>
-			} else {
-				return <span>Disabled</span>
-			}
+			return (
+				<div>
+					<div> Status: {this.state.enabled ? "Enabled" : "Disabled"}</div>
+					<button className="pid-enable-button settings-drawer-button" style={{position: 'relative'}} onClick={this.state.enabled ? pid.set_disabled : pid.set_enabled}>{this.state.enabled ? "Disable" : "Enable"}</button>
+				</div>
+			);
 		}
 	});
 	var PIDControl = React.createClass({
@@ -82,7 +83,8 @@ define(["react"], function(React) {
 					<NumberInput name="Proportional" min={0} max={10000} step={0.001} notify_signal={pid.proportional_changed} get_value={pid.proportional} set_value={pid.set_proportional} />
 					<NumberInput name="Integral" min={0} max={10000} step={0.001} notify_signal={pid.integral_changed} get_value={pid.integral} set_value={pid.set_integral} />
 					<NumberInput name="Setpoint" min={0} max={2.5} step={0.0001} notify_signal={pid.setpoint_changed} get_value={pid.setpoint} set_value={pid.set_setpoint} />
-					<span>Status: <PIDEnabledSignal/></span>
+					<PIDEnabledSignal/>
+
 				</div>
 			);
 		}

@@ -106,8 +106,8 @@ define(["react"], function(React) {
 			return (
 				<div className="motor-control">
 					<SpeedSlider />
-					<span className="motor-control-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
-					<span className="motor-control-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
+					<span className="settings-drawer-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
+					<span className="settings-drawer-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
 				</div>
 			);
 		}

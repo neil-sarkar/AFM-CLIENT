@@ -1,10 +1,11 @@
 #include "sweeper.h"
 #include "adc.h"
 #include "constants.h"
+#include "pid.h"
 #include <QPointF>
 #include "QFinalState"
 
-Sweeper::Sweeper() {
+Sweeper::Sweeper(PID* pid_) {
     // to be loaded from a settings file
     m_num_repetitions = 3;
     m_repetitions_counter = 0;
@@ -15,6 +16,7 @@ Sweeper::Sweeper() {
     m_boundaries.append(500);
     m_step_sizes.append(1);
     m_boundaries.append(50);
+    pid = pid_;
 }
 
 void Sweeper::init() {
@@ -36,7 +38,7 @@ void Sweeper::init() {
     QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_machine()));
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
-    QObject::connect(finish, SIGNAL(entered()), this, SLOT(set_stable_frequency()));
+    QObject::connect(finish, SIGNAL(entered()), this, SLOT(finish_sweep()));
 
     m_state_machine.addState(initialize_machine);
     m_state_machine.addState(sweep);
@@ -123,6 +125,11 @@ void Sweeper::cmd_frequency_sweep() {
     emit command_generated(node);
 }
 
+void Sweeper::finish_sweep() {
+    set_stable_frequency();
+    pid->set_setpoint(m_max_amplitude / 2);
+}
+
 void Sweeper::set_stable_frequency() {
     dds->set_step_size(0);
     dds->set_start_frequency(m_current_resonant_frequency);
@@ -135,7 +142,6 @@ Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-
 int Sweeper::find_peak() {
     double max = 0;
     int max_index = -1;
@@ -146,7 +152,8 @@ int Sweeper::find_peak() {
         }
     }
     m_current_resonant_frequency = max_index;
-    qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << max;
+    m_max_amplitude = max;
+    qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << m_max_amplitude;
     emit peak_detection_done();
     return 0;
 }
