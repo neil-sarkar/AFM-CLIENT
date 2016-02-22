@@ -75,7 +75,8 @@
 							</div>
 							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
 							<br />
-							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={serial_port.reset_mcu}>Reset AFM</button>
+							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
+							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.cmd_get_resistances}>Reistances</button>
 						</div>
 					</div>
 				);

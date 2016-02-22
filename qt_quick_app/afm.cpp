@@ -48,7 +48,11 @@ void AFM::cmd_get_resistances() {
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
-    // x1 x2 y1 y2 zoffset
+    static_cast<ADC*>(ADC_collection[ADC::X_1])->update_value(bytes_to_word(return_bytes.at(0), return_bytes.at(1)));
+    static_cast<ADC*>(ADC_collection[ADC::X_2])->update_value(bytes_to_word(return_bytes.at(2), return_bytes.at(3)));
+    static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(bytes_to_word(return_bytes.at(4), return_bytes.at(5)));
+    static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(bytes_to_word(return_bytes.at(6), return_bytes.at(7)));
+    static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(bytes_to_word(return_bytes.at(8), return_bytes.at(9)));
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
@@ -86,7 +90,6 @@ void AFM::cmd_set_dac_table(int block_number) {
 }
 
 void AFM::cmd_generate_force_curve() {
-    qDebug() << "CALLED";
     emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&AFM::callback_generate_force_curve)));
 }
 

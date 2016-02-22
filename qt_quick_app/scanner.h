@@ -11,11 +11,15 @@
 class Scanner : public AFMObject
 {
     Q_OBJECT
+    Q_PROPERTY(quint8 m_num_averages READ num_averages WRITE set_num_averages NOTIFY num_averages_changed)
 public:
     explicit Scanner(PID*, AFMObject* dac);
     void init();
     PID* pid;
     DAC* fine_z;
+
+    Q_INVOKABLE quint8 num_averages();
+    Q_INVOKABLE void set_num_averages(int num_averages);
 
 signals:
     void scanner_initialization_done();
@@ -25,6 +29,9 @@ signals:
     void new_forward_offset_data(QVariantList); // eventually make it convert the data struct into json
     void new_reverse_offset_data(QVariantList);
     void started_scan_state_machine();
+
+    // property changes
+    void num_averages_changed(int);
 
 public slots:
     // Scan state machine methods
@@ -43,13 +50,14 @@ private:
     quint16 m_num_points;
     quint8 m_ratio;
     quint8 m_dwell_time;
-
+    quint8 m_num_averages;
 
     int m_num_points_received;
     void cmd_set_signal_generator();
     void cmd_start_scan();
     void cmd_step_scan();
     void cmd_set_dwell_time();
+    void cmd_set_num_averages();
     void callback_step_scan(QByteArray payload);
     bool is_scanning_forward();
     callback_return_type bind(void (Scanner::*method)(QByteArray));

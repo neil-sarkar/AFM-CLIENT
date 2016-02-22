@@ -34,11 +34,12 @@ class AFM : public AFMObject
         Q_INVOKABLE void cmd_generate_force_curve();
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
-        void callback_get_resistances(QByteArray return_bytes);
+        Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
 
     signals:
         void command_generated(CommandNode*);
         void dac_table_set();
+        void trigger_mcu_reset();
 
     public slots:
         void init();

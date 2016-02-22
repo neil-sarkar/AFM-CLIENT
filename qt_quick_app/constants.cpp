@@ -39,6 +39,7 @@ const QString Stage_Set_Pulse_Step = "Stage_Set_Pulse_Step";
 const QString Stage_Set_Pulse_Width = "Stage_Set_Pulse_Width";
 const QString Scanner_Set_Dwell_Time = "Scanner_Set_Dwell_Time";
 const QString AFM_Get_Resistances = "AFM_Get_Resistances";
+const QString Scanner_Set_Num_Averages = "Scanner_Set_Num_Averages";
 
 
 const char Message_Delimiter = 0x0A;

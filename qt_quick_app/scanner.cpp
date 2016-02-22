@@ -138,6 +138,25 @@ void Scanner::end_scan_state_machine() {
     forward_data->print();
 }
 
+quint8 Scanner::num_averages() {
+    return m_num_averages;
+}
+
+void Scanner::set_num_averages(int num_averages) {
+    if (m_num_averages != num_averages) {
+        m_num_averages = num_averages;
+        qDebug() << "Changing num averages to " << m_num_averages;
+        emit num_averages_changed(static_cast<int>(m_num_averages));
+        cmd_set_num_averages();
+    }
+}
+
+void Scanner::cmd_set_num_averages() {
+    QByteArray payload;
+    payload += m_num_averages;
+    emit command_generated(new CommandNode(command_hash[Scanner_Set_Num_Averages], payload));
+}
+
 void Scanner::cmd_set_signal_generator() {
     QByteArray payload;
     payload += m_ratio;

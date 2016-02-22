@@ -11,6 +11,9 @@ define(["react", "console", "underscore"], function(React, console, _) {
                     component.send_value_to_backend();
                 }
             });
+            $(element_id).focusout(function() {
+                component.send_value_to_backend();
+            });
         },
         getInitialState: function() {
             return {
@@ -56,11 +59,10 @@ define(["react", "console", "underscore"], function(React, console, _) {
             });
         },
         validate_input_and_format: function(num) {
-            console.log(num);
-            num = this.round(num).toFixed(this.rounding_factor());
+            num = this.round(num);
             num = num > this.props.max ? this.props.max : num;
             num = num < this.props.min ? this.props.min : num;
-            return num;
+            return num.toFixed(this.rounding_factor());
         },
         send_value_to_backend: function() {
             var that = this;

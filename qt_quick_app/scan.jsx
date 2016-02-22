@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
+define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], function(React, ScanViewer, InlineScanControls) {
 	var Scan = React.createClass({
 		getInitialState: function() {
 			return {
@@ -69,6 +69,7 @@ define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 						</div>
 						<button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
 						<button className="action-button" onClick={this.clear_scan}>Clear</button>
+						<InlineScanControls />
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 						</div>
