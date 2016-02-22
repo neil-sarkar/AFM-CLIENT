@@ -33,11 +33,13 @@ define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 		componentDidMount: function() {
 			scanner.all_data_received.connect(this.set_scan_complete);
 		},
+		// this whole tristate scanning button really should just be done with a dictionary
 		start_or_resume_scanning: function() {
 			this.setState({
 				scanning: true,
 			}, function(){
 				if (this.state.starting_fresh_scan) {
+					this.refs.scan_viewer.clear();
 					scanner.start_state_machine();
 				} else {
 					scanner.resume_state_machine();
@@ -47,13 +49,11 @@ define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 				});
 			});
 		},
-		start_or_resume: function() {
-		},
 		render: function() {
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
-						<ScanViewer establishDataConnection={scanner.new_forward_offset_data.connect} newScan={scanner.started_scan_state_machine.connect}/>
+						<ScanViewer ref="scan_viewer" establishDataConnection={scanner.new_forward_offset_data.connect} newScan={scanner.started_scan_state_machine.connect}/>
 						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">

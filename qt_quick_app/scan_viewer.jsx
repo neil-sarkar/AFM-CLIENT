@@ -38,6 +38,10 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         handle_tooltip_select: function(series_index) {
             this.refs.line_profile.select_series_to_display(series_index);
         },
+        clear: function() {
+            this.refs.heatmap.erase_data();
+            this.refs.line_profile.erase_data();
+        },
         render: function() {
             return (
                 <div>
