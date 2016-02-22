@@ -30,25 +30,26 @@ void Scanner::init() {
     cmd_start_scan();
 
     // set up state machine framework
-    QState* initialize_machine = new QState();
-    QState* set_signal_generator = new QState();
-    QState* receive_data = new QState();
+    QState* running_state = new QState();
+    QState* initialize_machine = new QState(running_state);
+    QState* set_signal_generator = new QState(running_state);
+    QState* receive_data = new QState(running_state);
     QFinalState* finish = new QFinalState();
 
     initialize_machine->addTransition(this, SIGNAL(scanner_initialization_done()), set_signal_generator);
     set_signal_generator->addTransition(this, SIGNAL(set_signal_generator_done()), receive_data);
     receive_data->addTransition(this, SIGNAL(all_data_received()), finish);
+    running_state->addTransition(this, SIGNAL(reset()), finish);
 
     QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_scan_state_machine()));
     QObject::connect(set_signal_generator, SIGNAL(entered()), this, SLOT(set_signal_generator()));
     QObject::connect(receive_data, SIGNAL(entered()), this, SLOT(receive_data()));
     QObject::connect(finish, SIGNAL(entered()), this, SLOT(end_scan_state_machine()));
 
-    m_state_machine.addState(initialize_machine);
-    m_state_machine.addState(set_signal_generator);
-    m_state_machine.addState(receive_data);
+    m_state_machine.addState(running_state);
+    running_state->setInitialState(initialize_machine);
     m_state_machine.addState(finish);
-    m_state_machine.setInitialState(initialize_machine);
+    m_state_machine.setInitialState(running_state);
 }
 
 void Scanner::emit_dummy_data() {
@@ -71,7 +72,8 @@ void Scanner::start_state_machine() {
 
 void Scanner::initialize_scan_state_machine() {
     // Old code used to set PGAs here, but we really don't need to - they should already have been set
-
+    qDebug() << "Initializing";
+    m_should_pause = false;
     emit scanner_initialization_done();
     forward_data = new ScanData(m_num_lines, m_num_points, m_ratio);
     reverse_data = new ScanData(m_num_lines, m_num_points, m_ratio);
@@ -88,7 +90,6 @@ void Scanner::receive_data() {
     if (m_should_pause) {
         return;
     }
-
     if (!(forward_data->is_full() && reverse_data->is_full())) {
          cmd_step_scan();
     }
@@ -132,6 +133,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
 }
 
 void Scanner::end_scan_state_machine() {
+    m_should_pause = false;
     qDebug() << "scanning done" << m_num_points_received;
     forward_data->print();
 }

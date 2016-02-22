@@ -21,6 +21,7 @@ signals:
     void scanner_initialization_done();
     void set_signal_generator_done();
     void all_data_received();
+    void reset();
     void new_forward_offset_data(QVariantList); // eventually make it convert the data struct into json
     void new_reverse_offset_data(QVariantList);
     void started_scan_state_machine();
