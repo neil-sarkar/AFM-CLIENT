@@ -15,7 +15,7 @@ define(["jquery", "react", "dom", "heatmap", "console"], function($, React, Reac
                 chart: {
                     type: 'heatmap',
                     height: 400,
-                    width: 400
+                    width: 400,
                 },
                 title: {
                     text: self.props.chart_name,
@@ -23,12 +23,12 @@ define(["jquery", "react", "dom", "heatmap", "console"], function($, React, Reac
 
                 xAxis: {
                     min: 0,
-                    max: 127
+                    max: 256
                 },
 
                 yAxis: {
                     min: 0,
-                    max: 127,
+                    max: 256,
                 },
                 colorAxis: {
                     stops: [

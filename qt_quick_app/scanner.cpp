@@ -127,10 +127,10 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;
     }
-    if (scanning_forward && forward_data->size() % m_num_columns == 0) {
-        emit new_forward_offset_data(forward_data->package_data_for_ui(m_num_columns));
-    } else if (!scanning_forward && reverse_data->size() % m_num_columns == 0) {
-        emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_num_columns));
+    if (scanning_forward && forward_data->size() % m_send_back_count == 0) {
+        emit new_forward_offset_data(forward_data->package_data_for_ui(m_send_back_count));
+    } else if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
+        emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_send_back_count));
     }
     receive_data();
 }
@@ -167,7 +167,7 @@ quint8 Scanner::send_back_count() {
 void Scanner::set_send_back_count(int send_back_count) {
     if (m_send_back_count != send_back_count) {
         m_send_back_count = send_back_count;
-        qDebug() << "Changing num averages to " << m_send_back_count;
+        qDebug() << "Changing send back count to " << m_send_back_count;
         emit send_back_count_changed(static_cast<int>(m_send_back_count));
         cmd_set_send_back_count();
     }
@@ -180,9 +180,10 @@ quint16 Scanner::num_rows() {
 void Scanner::set_num_rows(int num_rows) {
     if (m_num_rows != num_rows) {
         m_num_rows = num_rows;
-        qDebug() << "Changing num averages to " << m_num_rows;
+        qDebug() << "Changing num rows to " << m_num_rows;
         emit num_rows_changed(static_cast<int>(m_num_rows));
         cmd_set_signal_generator();
+        set_send_back_count(m_num_rows);
     }
 }
 
@@ -193,7 +194,7 @@ quint16 Scanner::num_columns() {
 void Scanner::set_num_columns(int num_columns) {
     if (m_num_columns != num_columns) {
         m_num_columns = num_columns;
-        qDebug() << "Changing num averages to " << m_num_columns;
+        qDebug() << "Changing num columns to " << m_num_columns;
         emit num_columns_changed(static_cast<int>(m_num_columns));
         cmd_set_signal_generator();
     }
