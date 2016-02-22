@@ -1,9 +1,8 @@
 define(["react", "console", "underscore"], function(React, console, _) {
     var NumberInput = React.createClass({
         componentDidMount: function() {
-            this.props.qt_object.value_changed.connect(this.update_value_from_backend_change);
+            this.props.notify_signal.connect(this.update_value_from_backend_change);
             var element_id = ('#' + this.compressed_name());
-            console.log(element_id);
             var component = this;
             $(element_id).keydown(function(e){
                 var key = e.which;
@@ -15,7 +14,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         },
         getInitialState: function() {
             return {
-                value: this.validate_input_and_format(this.props.qt_object.value)   
+                value: this.validate_input_and_format(this.props.get_value)
             };
         },
         getDefaultProps: function() {
@@ -23,7 +22,6 @@ define(["react", "console", "underscore"], function(React, console, _) {
                 min: 0,
                 max: 100,
                 step: 1,
-                value_type: window.performance.now(),
             };
         },
         compressed_name: function() {
@@ -58,6 +56,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
             });
         },
         validate_input_and_format: function(num) {
+            console.log(num);
             num = this.round(num).toFixed(this.rounding_factor());
             num = num > this.props.max ? this.props.max : num;
             num = num < this.props.min ? this.props.min : num;
@@ -70,7 +69,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
                 that.setState({
                     value: new_value
                 });
-                that.props.qt_object.value = parseFloat(new_value);
+                that.props.set_value(parseFloat(new_value));
             }, 100); // this is in a settimeout to order to let the input value actually change
         },
         render: function() {

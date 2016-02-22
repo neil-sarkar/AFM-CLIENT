@@ -14,9 +14,9 @@ class DAC : public AFMObject
 
 public:
     explicit DAC(qint8 id);
-    void set_value(double value, bool cmd = true);
-    void set_id(qint8 id); // Convenience function for tests - once initialized, the id should not change.
-    double value();
+    Q_INVOKABLE void set_value(double value, bool cmd = true);
+    Q_INVOKABLE double value();
+    void set_id(qint8 id); // Convenience function for tests - once initialized, the id should not change
     qint8 id();
     Q_INVOKABLE void init();
     Q_INVOKABLE void cmd_read_value();

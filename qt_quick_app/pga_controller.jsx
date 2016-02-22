@@ -3,7 +3,9 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 		render: function() {
 			return <NumberInput value_type="pga"
 								name={this.props.name} 
-								qt_object={this.props.qt_object} 
+								notify_signal={this.props.qt_object.value_changed}
+								get_value={this.props.qt_object.value}
+								set_value={this.props.qt_object.set_value}
 								min={0}
 								max={100}
 								step={0.1} />

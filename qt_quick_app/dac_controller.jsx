@@ -15,7 +15,14 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 		return (
 				<div>
 					{slider}
-					<NumberInput value_type="dac" name={this.props.name} qt_object={this.props.qt_object}  min={0} max={3.3} step={0.001} /> 
+					<NumberInput value_type="dac" 
+								name={this.props.name} 
+								notify_signal={this.props.qt_object.value_changed}
+								get_value={this.props.qt_object.value}
+								set_value={this.props.qt_object.set_value}
+								min={0} 
+								max={3.3} 
+								step={0.001} /> 
 				</div>
 			);
 	}

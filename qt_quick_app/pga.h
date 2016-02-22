@@ -11,8 +11,8 @@ class PGA : public AFMObject
     Q_PROPERTY(double value READ value WRITE set_value NOTIFY value_changed)
 public:
     explicit PGA(qint8 id);
-    void set_value(double value);
-    double value();
+    Q_INVOKABLE void set_value(double value);
+    Q_INVOKABLE double value();
     void init();
 
     static const int X_1;
