@@ -14,6 +14,9 @@ define(["react", "console", "underscore"], function(React, console, _) {
             $(element_id).focusout(function() {
                 component.send_value_to_backend();
             });
+            this.setState({
+                value: this.validate_input_and_format(this.props.get_value)
+            });
         },
         getInitialState: function() {
             return {

@@ -1,46 +1,47 @@
 message	in use	Calling Object	Specific Property	Action	Board Version	# Actuators	decimal_id	id	ASCII equiv	Applicable	Direction	Send byte length	Send payload	Reply msg length	Status Byte	Receiver reply payload	Remark
-ADC_Read	1	ADC		read			99	63	c		1	3	(ADC#)	5	N	3 bytes (ADC channel #, ADC val byte 1, ADC val byte 2)	
+ADC_Read	1	ADC		read			99	63	c		1	3	(ADC#)	5	N	3 bytes (ADC channel #, ADC val byte 1, ADC val byte 2)
 AFM_Begin_Auto_Approach	1	AFM	auto approach	begin			154	9a		PCB3	1	4	Setpoint byte 1, Setpoint byte 2	2	N		MCU will start transmitting AFM_AUTOAPPR_STATUS
-AFM_Calibrate	1	AFM		calibrate			111	6F	o		1	5	(‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)	5	N	Vmax*4 bytes - [actuator_direct_adc_measurement byte 1, actuator_direct_adc_measurement byte 2, actuator_indirect_adc_measurement byte 1, actuator_indirect_adc_measurement byte 2]*4096 values (ADC measurements per DAC level)	
-AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	4002			
-AFM_Get_Auto_Approach_Status	1	AFM	auto approach status	get			156	9c		PCB3	1	2	None	5	N	3 Bytes: (Current state; Current coase Z offset measurement byte 1; Current coase Z offset measurement byte 2)	
-AFM_PCBMOT_STAGE_DIR_FWD_SELECT	0						108	6C	l		1	2		3	Y	Stat Byte	
-AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT	0						107	6B	k		1	2		3	Y	Stat Byte	
+AFM_Calibrate	1	AFM		calibrate			111	6F	o		1	5	(‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)	5	N	Vmax*4 bytes - [actuator_direct_adc_measurement byte 1, actuator_direct_adc_measurement byte 2, actuator_indirect_adc_measurement byte 1, actuator_indirect_adc_measurement byte 2]*4096 values (ADC measurements per DAC level)
+AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	4002
+AFM_Get_Auto_Approach_Status	1	AFM	auto approach status	get			156	9c		PCB3	1	2	None	5	N	3 Bytes: (Current state; Current coase Z offset measurement byte 1; Current coase Z offset measurement byte 2)
+AFM_PCBMOT_STAGE_DIR_FWD_SELECT	0						108	6C	l		1	2		3	Y	Stat Byte
+AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT	0						107	6B	k		1	2		3	Y	Stat Byte
 AFM_Read_Signal_Phase_Offset	1	AFM	Signal Phase Offset	read			101	65	e		1	2		8	N	6 bytes (ADC Amplitude byte1, ADC Amplitude byte2, DAC Z Offset byte1, DAC Z Offset byte2, ADC PHASE byte1, ADC PHASE byte2)	read DAC8 and ADC5 and Phase
-AFM_Set_Auto_Approach	0	AFM	auto approach	Set			118	76	v		1	6	(setpoint byte1, setpoint byte2, tolerance byte1, tolerance byte2)	3	Y	1 or 3 byte (‘o’, Zcoarse byte1, Zcoarse byte2) OR (‘f’)	
-AFM_Set_Dac_Table	1	AFM	DAC Table	set			83	53	S	4ACT	1	514	Send 16 messages of 256 bytes (256=PAGE_SIZE/2) in length to load the 4096*2byte 1D DAC Table grid array.	3	Y	Stat Byte	
-AFM_Set_Pga	0	AFM	PGA	set			42	2A	*		1	4	(channel_enum, attenuation value)	3	Y	Stat Byte	
-AFM_Set_Raster_Step	0	AFM	raster step	set			102	66	f		1	6	(val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2)	2	N	Nothing	
-AFM_Set_Scan_Parameters	1	AFM	scan parameters	set			64	40	@	2ACT	1	12	11 bytes (‘@’, vmin_line byte 1, vmin_line byte2, vmin_scan byte 1, vmin_scan byte 2, vmax byte 1, vmax byte 2, numpts byte 1, numpts byte 2, numlines byte 1, numlines byte 2)	3	Y	Stat Byte	
-AFM_Set_Signal_Generation	1	AFM	signal generation	set			80	50	P	4ACT	1	7	5 bytes (ratio enum byte, numpoints byte #1, numpoints byte #2, numlines byte#1, numlines byte#2)	2	N	Nothing	
-AFM_Start_Frequency_Sweep_AD5932	1	AFM	Frequency Sweep	start	AD5932		114	72	r	PCB2	1	2		6	N	NumPts*4 bytes (Amp1 byte 1, Amp1 byte 2, Phase1 byte 1, Phase1 byte 2, etc…)	
-AFM_Start_Frequency_Sweep_AD9837	1	AFM	Frequency Sweep	start	AD9837		113	71	q	PCB3	1	2		-1	N	NumPts*4 bytes (val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2, etc…) amp and phase	
-AFM_Start_Scan	1	AFM	scan	start		4	81	51	Q	4ACT	1	2		2	N	Nothing	
-AFM_Step_Scan	1	AFM	scan	step		4	82	52	R	4ACT	1	2		50	N	8 points of 6 bytes each: (z_amp_adc byte 1, z_amp_adc byte 2, z_offset_adc byte 1, z_offset_adc byte 2,  z_phase_adc byte 1, z_phase_adc byte 2))	
-AFM_Stop_Auto_Approach	1	AFM	auto approach	stop			155	9b		PCB3	1	2	None	2	N		
-DAC_Read	1	DAC		read			98	62	b		1	3	(DAC#)	5	N	3 bytes (DAC#, DAC val byte 1, DAC val byte 2)	
-DAC_Set_Max_Value	1	DAC	Max Value	set			38	26	&		1	5	(DAC#, val byte 1, val byte 2)	4	Y	2 byes (DAC channel #, status byte)	
-DAC_Write	1	DAC		write			97	61	a		1	5	(DAC#, val byte 1, val byte 2)	3	Y	1 byte ("o" marks completed)	
-DDS_Set_AD5932	0	DDS		set	AD5932		117	75	u	PCB2	1	8	(startf byte1, startf byte2, increment byte1, increment byte2, numpts byte1, numpts byte2)	2	N	Nothing	
-DDS_Set_AD9837	1	DDS		set	AD9837		110	6E	n	PCB3	1	10	(Fstart LSB low, Fstart LSB high, Fstart MSB low, Fstart MSB high, increment LSB, increment MSB, numpts LSB, numpts MSB)	2	N	Nothing	Send data to set for dds AD9837 
-Motor_Run_Continuous	1	Motor	Continuous	run			51	33	3		1	2	None	2	N		
-Motor_Set_Direction	1	Motor	Direction	set			54	36	6		1	3	Enum: Forward/Lower platform "f" 0x66, Backward/raise platform "b" 0x62	2	N		
-Motor_Set_Microstep	1	Motor	microstep	set			48	30	0		1	3	microsteps byte Enum: 0: full steps, 1: 2 microsteps, 2: 4 microsteps, 3: 8; 4: 16; 5: 32 microsteps	2	N		
-Motor_Set_Single_Step	1	Motor	single step	set			49	31	1		1	2	None	2	N		
-Motor_Set_Speed	1	Motor	Speed	set			50	32	2		1	4	(Speed byte1, Speed byte2). Very slow 0x0000 (DEC0) to Very fast 0x66BC (DEC26300)	2	N		
-Motor_Set_State_Asleep	1	Motor	State Asleep	set			52	34	4		1	2	None	2	N		
-Motor_Set_State_Awake	1	Motor	State Awake	set			53	35	5		1	2	None	2	N		
-Motor_Stop_Continuous	1	Motor	Continuous	stop			55	37	7		1	2	None	2	N		
-PGA_Set	1	PGA		set			84	54	T	PCB3	1	4	2 bytes (channel, value 8bit )	2	N		
-PID_Disable	1	PID		disable			104	68	h		1	2		2	N	Nothing	
-PID_Enable	1	PID		enable			103	67	g		1	2		2	N	Nothing	
-PID_Set_Derivative	1	PID	derivative	set			100	64	d		1	6		2	N	Nothing	
-PID_Set_Integral	1	PID	integral	set			105	69	i		1	6		2	N	Nothing	
-PID_Set_Proportional	1	PID	proportional	set			112	70	p		1	6		2	N	Nothing	
-PID_Set_Setpoint	1	PID	setpoint	set			115	73	s		1	4	(val byte 1, val byte 2)	2	N	Nothing	
-Serial_Worker_Raise_Invalid_Command	0	Serial Worker	Invalid Command	raise			241	F1			2	3	An invalid message ID received. 	0	N	No Reply Needed	MCU sends this ID when it receives a command it does not recognize. Check firmware/client version. 
-Stage_Set_Pulse_Step	0	Stage	Pulse Step	set			109	6D	m		1	2		3	Y	Stat Byte	
+AFM_Set_Auto_Approach	0	AFM	auto approach	Set			118	76	v		1	6	(setpoint byte1, setpoint byte2, tolerance byte1, tolerance byte2)	3	Y	1 or 3 byte (‘o’, Zcoarse byte1, Zcoarse byte2) OR (‘f’)
+AFM_Set_Dac_Table	1	AFM	DAC Table	set			83	53	S	4ACT	1	514	Send 16 messages of 256 bytes (256=PAGE_SIZE/2) in length to load the 4096*2byte 1D DAC Table grid array.	3	Y	Stat Byte
+AFM_Set_Pga	0	AFM	PGA	set			42	2A	*		1	4	(channel_enum, attenuation value)	3	Y	Stat Byte
+AFM_Set_Raster_Step	0	AFM	raster step	set			102	66	f		1	6	(val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2)	2	N	Nothing
+AFM_Set_Scan_Parameters	1	AFM	scan parameters	set			64	40	@	2ACT	1	12	11 bytes (‘@’, vmin_line byte 1, vmin_line byte2, vmin_scan byte 1, vmin_scan byte 2, vmax byte 1, vmax byte 2, numpts byte 1, numpts byte 2, numlines byte 1, numlines byte 2)	3	Y	Stat Byte
+AFM_Set_Signal_Generation	1	AFM	signal generation	set			80	50	P	4ACT	1	7	5 bytes (ratio enum byte, numpoints byte #1, numpoints byte #2, numlines byte#1, numlines byte#2)	2	N	Nothing
+AFM_Start_Frequency_Sweep_AD5932	1	AFM	Frequency Sweep	start	AD5932		114	72	r	PCB2	1	2		6	N	NumPts*4 bytes (Amp1 byte 1, Amp1 byte 2, Phase1 byte 1, Phase1 byte 2, etc…)
+AFM_Start_Frequency_Sweep_AD9837	1	AFM	Frequency Sweep	start	AD9837		113	71	q	PCB3	1	2		-1	N	NumPts*4 bytes (val1 byte 1, val1 byte 2, val2 byte 1, val2 byte 2, etc…) amp and phase
+AFM_Start_Scan	1	AFM	scan	start		4	81	51	Q	4ACT	1	2		2	N	Nothing
+AFM_Step_Scan	1	AFM	scan	step		4	82	52	R	4ACT	1	2		50	N	8 points of 6 bytes each: (z_amp_adc byte 1, z_amp_adc byte 2, z_offset_adc byte 1, z_offset_adc byte 2,  z_phase_adc byte 1, z_phase_adc byte 2))
+AFM_Stop_Auto_Approach	1	AFM	auto approach	stop			155	9b		PCB3	1	2	None	2	N
+DAC_Read	1	DAC		read			98	62	b		1	3	(DAC#)	5	N	3 bytes (DAC#, DAC val byte 1, DAC val byte 2)
+DAC_Set_Max_Value	1	DAC	Max Value	set			38	26	&		1	5	(DAC#, val byte 1, val byte 2)	4	Y	2 byes (DAC channel #, status byte)
+DAC_Write	1	DAC		write			97	61	a		1	5	(DAC#, val byte 1, val byte 2)	3	Y	1 byte ("o" marks completed)
+DDS_Set_AD5932	0	DDS		set	AD5932		117	75	u	PCB2	1	8	(startf byte1, startf byte2, increment byte1, increment byte2, numpts byte1, numpts byte2)	2	N	Nothing
+DDS_Set_AD9837	1	DDS		set	AD9837		110	6E	n	PCB3	1	10	(Fstart LSB low, Fstart LSB high, Fstart MSB low, Fstart MSB high, increment LSB, increment MSB, numpts LSB, numpts MSB)	2	N	Nothing	Send data to set for dds AD9837
+Motor_Run_Continuous	1	Motor	Continuous	run			51	33	3		1	2	None	2	N
+Motor_Set_Direction	1	Motor	Direction	set			54	36	6		1	3	Enum: Forward/Lower platform "f" 0x66, Backward/raise platform "b" 0x62	2	N
+Motor_Set_Microstep	1	Motor	microstep	set			48	30	0		1	3	microsteps byte Enum: 0: full steps, 1: 2 microsteps, 2: 4 microsteps, 3: 8; 4: 16; 5: 32 microsteps	2	N
+Motor_Set_Single_Step	1	Motor	single step	set			49	31	1		1	2	None	2	N
+Motor_Set_Speed	1	Motor	Speed	set			50	32	2		1	4	(Speed byte1, Speed byte2). Very slow 0x0000 (DEC0) to Very fast 0x66BC (DEC26300)	2	N
+Motor_Set_State_Asleep	1	Motor	State Asleep	set			52	34	4		1	2	None	2	N
+Motor_Set_State_Awake	1	Motor	State Awake	set			53	35	5		1	2	None	2	N
+Motor_Stop_Continuous	1	Motor	Continuous	stop			55	37	7		1	2	None	2	N
+PGA_Set	1	PGA		set			84	54	T	PCB3	1	4	2 bytes (channel, value 8bit )	2	N
+PID_Disable	1	PID		disable			104	68	h		1	2		2	N	Nothing
+PID_Enable	1	PID		enable			103	67	g		1	2		2	N	Nothing
+PID_Set_Derivative	1	PID	derivative	set			100	64	d		1	6		2	N	Nothing
+PID_Set_Integral	1	PID	integral	set			105	69	i		1	6		2	N	Nothing
+PID_Set_Proportional	1	PID	proportional	set			112	70	p		1	6		2	N	Nothing
+PID_Set_Setpoint	1	PID	setpoint	set			115	73	s		1	4	(val byte 1, val byte 2)	2	N	Nothing
+Serial_Worker_Raise_Invalid_Command	0	Serial Worker	Invalid Command	raise			241	F1			2	3	An invalid message ID received. 	0	N	No Reply Needed	MCU sends this ID when it receives a command it does not recognize. Check firmware/client version.
+Stage_Set_Pulse_Step	0	Stage	Pulse Step	set			109	6D	m		1	2		3	Y	Stat Byte
 Stage_Set_Pulse_Width	0	Stage	Pulse Width	set			106	6A	j		1	3	(val)	3	Y	Stat Byte	Pulse Width
-Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None	
-AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset	
-Scanner_Set_Num_Averages	1	Scanner	num averages	set			121	79	y		1	3	(u8)	2			
+Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None
+AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
+Scanner_Set_Num_Averages	1	Scanner	num averages	set			121	79	y		1	3	(u8)	2
+Scanner_Set_Send_Back_Count	1	Scanner	send back count	set			90	5A	Z		1	3	u8	2

@@ -4,15 +4,15 @@
 
 ScanData::ScanData(int num_points, int num_lines, int ratio)
 {
-    m_num_points = num_points;
-    m_num_lines = num_lines;
+    m_num_columns = num_points;
+    m_num_rows = num_lines;
     m_ratio = ratio;
     m_x_index = -1;
     m_y_index = -1;
 }
 
 int ScanData::max_size() {
-    return m_num_lines * m_num_points;
+    return m_num_rows * m_num_columns;
 }
 
 bool ScanData::is_full() {
@@ -25,7 +25,7 @@ int ScanData::size() {
 
 bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     assert(!is_full());
-    m_x_index = (m_x_index + 1) % m_num_points;
+    m_x_index = (m_x_index + 1) % m_num_columns;
     if (m_x_index == 0)
         m_y_index++;
     DataPoint point;

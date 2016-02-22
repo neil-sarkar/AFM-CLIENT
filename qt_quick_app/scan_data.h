@@ -22,8 +22,8 @@ signals:
 public slots:
 
 private:
-    int m_num_points;
-    int m_num_lines;
+    int m_num_columns;
+    int m_num_rows;
     int m_ratio;
     int m_x_index;
     int m_y_index;
