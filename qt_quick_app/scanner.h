@@ -34,6 +34,7 @@ public slots:
     Q_INVOKABLE void start_state_machine();
     Q_INVOKABLE void pause_state_machine();
     Q_INVOKABLE void resume_state_machine();
+    Q_INVOKABLE void emit_dummy_data();
 
 private:
     QStateMachine m_state_machine;

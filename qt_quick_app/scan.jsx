@@ -1,5 +1,11 @@
 define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 	var Scan = React.createClass({
+		getInitialState: function() {
+			return {
+				scanning: false, 
+				starting_fresh_scan: true
+			};
+		},
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {
 				$('#scan-wrapper').hide();
@@ -7,12 +13,41 @@ define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 				$('#scan-wrapper').show();
 			}
 		},
-		shouldComponentUpdate :function() {
-			return false;
-		},
 		popout: function() {
 			console.log("popout");
 			main_window.createWindow();
+		},
+		pause_scanning: function() {
+			this.setState({
+				scanning: false,
+			}, function(){
+				scanner.pause_state_machine();
+			});
+		},
+		set_scan_complete: function() {
+			this.setState({
+				scanning: false,
+				starting_fresh_scan: true,
+			});
+		},
+		componentDidMount: function() {
+			scanner.all_data_received.connect(this.set_scan_complete);
+		},
+		start_or_resume_scanning: function() {
+			this.setState({
+				scanning: true,
+			}, function(){
+				if (this.state.starting_fresh_scan) {
+					scanner.start_state_machine();
+				} else {
+					scanner.resume_state_machine();
+				}
+				this.setState({
+					starting_fresh_scan: false
+				});
+			});
+		},
+		start_or_resume: function() {
 		},
 		render: function() {
 			return (
@@ -26,9 +61,7 @@ define(["react", "jsx!pages/scan_viewer"], function(React, ScanViewer) {
 						<div className="step-description">
 						Scanning is so cool.
 						</div>
-						<button className="action-button" onClick={scanner.start_state_machine}>Scan</button>
-						<button className="action-button" onClick={scanner.pause_state_machine}>Pause</button>
-						<button className="action-button" onClick={scanner.resume_state_machine}>Resume</button>
+						<button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 						</div>

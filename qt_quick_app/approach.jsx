@@ -50,6 +50,15 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 				$('#approach-wrapper').show();
 			}
 		},
+		start_approaching : function() {
+			approacher.cmd_start_auto_approach();
+		},
+		stop_approaching: function() {
+			approacher.cmd_stop_auto_approach();
+			this.setState({
+				approach_in_progress: false
+			});
+		},
 		render: function() {
 			return (
 				<div className="wrapper" id="approach-wrapper">
@@ -66,7 +75,7 @@ define(["react", "jsx!pages/approach_graph"], function(React, Graph) {
 							Press the "Approach" button to begin a raising the sample towards the AFM chip.
 							The approach is complete once the amplitude value reaches the desired setpoint.
 						</div>
-						<button className="action-button" onClick={this.state.approach_in_progress ? approacher.cmd_stop_auto_approach : approacher.cmd_start_auto_approach}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+						<button className="action-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

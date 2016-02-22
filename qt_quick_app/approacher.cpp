@@ -12,12 +12,15 @@ Approacher::Approacher(PID* pid, AFMObject* adc)
 
 void Approacher::init() {}
 
-void Approacher::cmd_start_auto_approach() {
+void Approacher::emit_dummy_data() {
     int j = 0;
     for (int i = 0; i < 10; i++) {
         emit new_data(j, 0.8);
         j = (j+1) % 10;
     }
+}
+
+void Approacher::cmd_start_auto_approach() {
     quint16 scaled_setpoint = (m_pid->setpoint())/ADC::SCALE_FACTOR;
     QByteArray payload;
     payload += (scaled_setpoint & 0xFF);

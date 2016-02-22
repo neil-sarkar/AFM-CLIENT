@@ -23,7 +23,7 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
                 self.refs.heatmap.asyncAddPoint(x, y, z);
             }, 0);
             setTimeout(function() {
-                self.refs.line_profile.asyncAddPoint(y, z);
+                self.refs.line_profile.asyncAddPoint(x, z);
             }, 0);
         },
         prompt_redraw: function() {

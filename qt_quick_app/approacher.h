@@ -13,6 +13,7 @@ class Approacher : public AFMObject
 public:
     explicit Approacher(PID*, AFMObject*);
     void init();
+    Q_INVOKABLE void emit_dummy_data();
     Q_INVOKABLE void cmd_start_auto_approach();
     Q_INVOKABLE void cmd_stop_auto_approach();
     int state();

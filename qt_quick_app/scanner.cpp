@@ -5,8 +5,8 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_num_lines = 128;
-    m_num_points = 128;
+    m_num_lines = 16;
+    m_num_points = 16;
     m_ratio = 4;
     m_dwell_time = 2;
     pid = pid_;
@@ -47,10 +47,11 @@ void Scanner::init() {
     m_state_machine.addState(initialize_machine);
     m_state_machine.addState(set_signal_generator);
     m_state_machine.addState(receive_data);
+    m_state_machine.addState(finish);
     m_state_machine.setInitialState(initialize_machine);
 }
 
-void Scanner::start_state_machine() {
+void Scanner::emit_dummy_data() {
     emit started_scan_state_machine();
     for (int i = 0; i < 10; i++) {
         QVariantList data;
@@ -62,6 +63,9 @@ void Scanner::start_state_machine() {
         emit new_forward_offset_data(data);
     }
     return;
+}
+
+void Scanner::start_state_machine() {
     m_state_machine.start();
 }
 
