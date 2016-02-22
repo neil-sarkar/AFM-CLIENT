@@ -28,7 +28,8 @@ define(["react", "console", "underscore"], function(React, console, _) {
             };
         },
         compressed_name: function() {
-             return (this.props.value_type + "_" + this.props.name).replace(/ /g,'');
+             return (this.props.value_type + "_" + this.props.name).replace(/[^a-zA-Z0-9-:_]/gi, '');
+             // SHOULD TEST  accordance with http://xahlee.info/js/html_allowed_chars_in_attribute.html
         },
         calculate_num_decimal_places: function(num) { // http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
           var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);

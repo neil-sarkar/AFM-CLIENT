@@ -12,6 +12,7 @@ class Scanner : public AFMObject
 {
     Q_OBJECT
     Q_PROPERTY(quint8 m_num_averages READ num_averages WRITE set_num_averages NOTIFY num_averages_changed)
+    Q_PROPERTY(quint8 m_dwell_time READ dwell_time WRITE set_dwell_time NOTIFY dwell_time_changed)
 public:
     explicit Scanner(PID*, AFMObject* dac);
     void init();
@@ -20,6 +21,8 @@ public:
 
     Q_INVOKABLE quint8 num_averages();
     Q_INVOKABLE void set_num_averages(int num_averages);
+    Q_INVOKABLE quint8 dwell_time();
+    Q_INVOKABLE void set_dwell_time(int dwell_time);
 
 signals:
     void scanner_initialization_done();
@@ -32,6 +35,7 @@ signals:
 
     // property changes
     void num_averages_changed(int);
+    void dwell_time_changed(int);
 
 public slots:
     // Scan state machine methods

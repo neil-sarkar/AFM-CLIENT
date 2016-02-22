@@ -157,6 +157,19 @@ void Scanner::cmd_set_num_averages() {
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Num_Averages], payload));
 }
 
+quint8 Scanner::dwell_time() {
+    return m_dwell_time;
+}
+
+void Scanner::set_dwell_time(int dwell_time) {
+    if (m_dwell_time != dwell_time) {
+        m_dwell_time = dwell_time;
+        qDebug() << "Changing dwell time to " << m_dwell_time;
+        emit dwell_time_changed(static_cast<int>(m_dwell_time));
+        cmd_set_dwell_time();
+    }
+}
+
 void Scanner::cmd_set_signal_generator() {
     QByteArray payload;
     payload += m_ratio;
