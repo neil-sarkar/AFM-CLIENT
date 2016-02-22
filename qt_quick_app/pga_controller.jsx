@@ -5,7 +5,7 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 								qt_object={this.props.qt_object} 
 								min={0}
 								max={100}
-								step={1} />
+								step={0.1} />
 		}	
 	});
 	return PGAController;

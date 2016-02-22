@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, NumberInput, Slider) {
+define(["react", "jsx!pages/slider"], function(React, Slider) {
 
 	var ADCController = React.createClass({
 		componentDidMount: function() {

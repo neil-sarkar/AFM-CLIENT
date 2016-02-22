@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/number_input", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid"], function($, React, Slider, NumberInput, PGAController, DACController, ADCController, MotorControl, PIDControl) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer

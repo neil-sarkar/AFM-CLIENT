@@ -8,7 +8,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 	render: function() {
 		var slider;
 		if (this.props.slider) {
-			slider = <Slider name={this.props.name} qt_object={this.props.qt_object} />;
+			slider = <Slider name={this.props.name} qt_object={this.props.qt_object} min={0} max={3.3} step={0.001} />;
 		} else {
 			slider = false;
 		}
