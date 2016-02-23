@@ -37,9 +37,7 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     port->setPortName(port_name);
     port->setBaudRate(baud_rate);
     if (port->open(QIODevice::ReadWrite)) {
-        emit connected(); // this connects to the flushing of the buffers
-        // super important, because the UI creation will try to call a bunch of setters
-
+        emit connected();
         port_scan_timer->stop();
         is_connected = true;
         initialize_reading();
@@ -51,6 +49,8 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
 
 void SerialPort::reset_mcu() {
     qDebug() << "Resetting MCU";
+    emit resetting_mcu(); // this connects to the flushing of the buffers
+    // super important, because the UI creation will try to call a bunch of setters
     write_byte('M');
     write_byte('A');
     write_byte('B');

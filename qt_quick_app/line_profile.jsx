@@ -38,23 +38,23 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.state.chart.series[this.state.chart.series.length - 1].addPoint([y, z], false, false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
-        	var self = this;
-        	setTimeout(function() {self.handleNewData(data);}, 0);
+            var self = this;
+            setTimeout(function() {self.handleNewData(data);}, 0);
         },
         handleNewData: function(data) {
-			var self = this;
-			if (self.state.chart.length)
-				var prev_series_index = this.state.chart.series.length - 1;
-        	this.addSeries(); // create a new series
-        	var new_series_index = this.state.chart.series.length - 1;
-        	for (var i = 0; i < data.length; i += 3) {
-        		console.log("adding points");
-        	    self.asyncAddPoint(new_series_index, i, data);
-        	}
-        	setTimeout(function() {
-    			self.state.chart.series[self.state.chart.series.length - 2].hide();
-        	    self.state.chart.redraw(false);
-        	}, 0);
+            var self = this;
+            if (self.state.chart.length)
+                var prev_series_index = this.state.chart.series.length - 1;
+            this.addSeries(); // create a new series
+            var new_series_index = this.state.chart.series.length - 1;
+            for (var i = 0; i < data.length; i += 3) {
+                console.log("adding points");
+                self.asyncAddPoint(new_series_index, i, data);
+            }
+            setTimeout(function() {
+                self.state.chart.series[self.state.chart.series.length - 2].hide();
+                self.state.chart.redraw(false);
+            }, 0);
         },
         addSeries: function() {
             var series = {
@@ -86,12 +86,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     }
                 },
             };
-        	this.state.chart.addSeries(series);
+            this.state.chart.addSeries(series);
         },
         erase_data: function(){
             while (this.state.chart.series.length) {
                 this.state.chart.series[0].remove(false);
             }
+            this.clear_plotlines();
             this.state.chart.redraw();
         },
         redraw: function() {
@@ -105,6 +106,29 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         print_series: function() {
             console.log(this.state.chart.series);
         },
+        clear_plotlines: function() {
+            while (this.state.chart.yAxis[0].plotLinesAndBands.length) {
+                this.state.chart.yAxis[0].removePlotLine('upper');
+                this.state.chart.yAxis[0].removePlotLine('lower');
+            }
+        },
+        draw_outlier_plotlines: function(lower, upper) {
+            this.clear_plotlines();
+            this.state.chart.yAxis[0].addPlotLine({
+                value: lower,
+                color: 'red',
+                dashStyle: 'dash',
+                width: 2,
+                id: 'upper'
+            });
+            this.state.chart.yAxis[0].addPlotLine({
+                value: upper,
+                color: 'red',
+                dashStyle: 'dash',
+                width: 2,
+                id: 'upper'
+            });
+        },
         componentDidMount: function() {
             this.renderChart();
             // this.props.establishDataConnection(this.handleNewDataWrapper);
@@ -112,7 +136,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var node = this.refs.lineProfileNode.getDOMNode();
             var chart = $(node).highcharts();
             this.setState({
-            	chart: chart,
+                chart: chart,
             });
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },

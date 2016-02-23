@@ -5,7 +5,6 @@
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
-    m_ratio = 4;
     pid = pid_;
     scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
@@ -52,6 +51,7 @@ void Scanner::init() {
     set_num_columns(16);
     set_num_rows(16);
     set_rms_threshold(1.5);
+    set_ratio(4);
     cmd_set_signal_generator();
     cmd_start_scan();
 }
@@ -230,6 +230,19 @@ void Scanner::set_dwell_time(int dwell_time) {
         qDebug() << "Changing dwell time to " << m_dwell_time;
         emit dwell_time_changed(static_cast<int>(m_dwell_time));
         cmd_set_dwell_time();
+    }
+}
+
+int Scanner::ratio() {
+    return m_ratio;
+}
+
+void Scanner::set_ratio(int ratio) {
+    if (m_ratio != ratio) {
+        m_ratio = ratio;
+        qDebug() << "Changing ratio to " << m_ratio;
+        emit ratio_changed(m_ratio);
+        cmd_set_signal_generator();
     }
 }
 

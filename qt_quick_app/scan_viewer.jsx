@@ -1,17 +1,35 @@
 define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pages/scan_heatmap"], function(React, ReactDOM, heatmap, console, LineProfile, ScanHeatMap) {
     var ScanViewer = React.createClass({
+        getInitialState: function() {
+            return {
+                sum: 0, // sum of all data being plotted
+                num_points: 0, // total number of points plotted
+                sum_of_squares: 0
+                // together, we find the average
+            };
+        },
         componentDidMount: function() {
             this.props.establishDataConnection(this.handle_new_data_wrapper);
         },
         handle_new_data_wrapper: function(data) {
             var self = this;
-            setTimeout(function(){ self.handle_new_data(data); }, 0);            
+            setTimeout(function(){ self.handle_new_data(data); }, 0);
         },
         handle_new_data: function(data) {
             var self = this;
+            var sum = 0;
+            var sum_of_squares = 0;
             for (var i = 0; i < data.length; i += 3) {
+                sum += data[i+2];
+                sum_of_squares += Math.pow(data[i+2], 2);
                 self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
             }
+            console.log(sum_of_squares);
+            this.setState({
+                sum: this.state.sum + sum,
+                num_points: this.state.num_points + (data.length / 3),
+                sum_of_squares: this.state.sum_of_squares + sum_of_squares
+            });
             this.prompt_redraw();
             this.refs.line_profile.print_series();
         },
@@ -41,9 +59,23 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         clear: function() {
             this.refs.heatmap.erase_data();
             this.refs.line_profile.erase_data();
+            this.setState({
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            });
         },
         eliminate_outliers: function() {
-            this.refs.heatmap.eliminate_outliers();
+            if (this.state.num_points == 0)
+                return;
+            
+            var rms = Math.sqrt(this.state.sum_of_squares / this.state.num_points);
+            var mean = this.state.sum / this.state.num_points;
+            var rms_multiplier = scanner.rms_threshold();
+            var min = mean - rms_multiplier * rms;
+            var max = mean + rms_multiplier * rms;
+            this.refs.heatmap.eliminate_outliers(min, max);
+            this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         render: function() {
             return (

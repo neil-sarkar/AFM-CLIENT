@@ -72,10 +72,12 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
             this.state.chart.series[0].addPoint([x, y, z], false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
+            console.log("wrapper entered", data[0]);
             var self = this;
             setTimeout(function(){ self.handleNewData(data); }, 0);
         },
         handleNewData: function(data) {
+            console.log("handling new data", data[0]);
             var self = this;
             var add_point = this.state.chart.series[0].addPoint;
             for (var i = 0; i < data.length; i += 3) {
@@ -93,22 +95,13 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
         redraw: function() {
             this.state.chart.redraw();
         },
-        eliminate_outliers: function() {
-            console.log("called");
-            var array = this.state.chart.series[0].data;
-            var sum_of_squares = array.reduce(function(s,x) {return (s + x.value*x.value);}, 0);
-            var rms = Math.sqrt(sum_of_squares / array.length);
-            var mean = _.reduce(array, function(memo, num) {
-                            return memo + num.value;
-                        }, 0) / (array.length === 0 ? 1 : array.length);
+        eliminate_outliers: function(min_cutoff, max_cuttoff) {
             this.state.chart.addSeries({
                 borderWidth: 0,
                 data: [],
                 turboThreshold: Number.MAX_VALUE // #3404, remove after 4.0.5 release
             });
-            var rms_threshold = scanner.rms_threshold();
-            var min_cutoff = mean - rms_threshold * rms;
-            var max_cuttoff = mean + rms_threshold * rms;
+            var array = this.state.chart.series[0].data;
             var sample_min = Number.POSITIVE_INFINITY; // these will store the absolute mins and maxes post proces
             var sample_max = Number.NEGATIVE_INFINITY;
             for (var i = 0; i < array.length; i++ ) {
@@ -116,7 +109,6 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
                 var x = array[i].x;
                 var y = array[i].y;
                 var curr_value = array[i].value;
-                console.log("mean", mean, "value", curr_value, "rms thresh", rms_threshold, "rms", rms);
                 if (curr_value > max_cuttoff) {
                     curr_value = max_cuttoff;
                 } else if (curr_value < min_cutoff) {

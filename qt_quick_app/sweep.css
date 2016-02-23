@@ -22,6 +22,12 @@
 .action-button:hover {
     background-color: black;
     color: white;
+    cursor: pointer;
+}
+
+.action-button:disabled {
+    border: solid silver 2px;
+    color: silver;
 }
 
 .wrapper  {
@@ -235,3 +241,4 @@
     left: 25%;
     width: 50%;
 }
+

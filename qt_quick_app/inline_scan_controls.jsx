@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
+define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React, NumberInput, Dropdown) {
 	var InlineScanControls = React.createClass({
 		render: function() {
 			return (
@@ -51,6 +51,7 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 								notify_signal={scanner.rms_threshold_changed} 
 								get_value={scanner.rms_threshold} 
 								set_value={scanner.set_rms_threshold} />
+					<Dropdown options_list={["1", "2"]}/>
 				</div>
 			)
 		}

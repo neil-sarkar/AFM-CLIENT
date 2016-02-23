@@ -22,6 +22,7 @@ Q_OBJECT
         void disconnected(); // emitted when afm is first disconnected
         void message_sent(CommandNode*); // emitted after a full command has been sent
         void byte_received(char);
+        void resetting_mcu();
 
     public slots:
         void on_ready_read();

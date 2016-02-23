@@ -136,6 +136,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             chart.xAxis[0].drawCrosshair(e, point);
             chart.yAxis[0].drawCrosshair(e, point);
         },
+        clear: function() {
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            while (chart.series.length)
+                chart.series[0].remove(false);
+            chart.redraw();
+        },
         render: function() {
             return (
                 React.DOM.div({className: "chart", ref: "chartNode"})
@@ -143,6 +150,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         }
     });
     var SweepGraphs = React.createClass({
+        clear: function() {
+            this.refs.amplitude_graph.clear();
+            this.refs.pahse_graph.clear();
+        },
         emit_tooltip: function(index, series, e) {
             this.refs.amplitude_graph.update_tooltip(index, series, e);
             this.refs.phase_graph.update_tooltip(index, series, e);

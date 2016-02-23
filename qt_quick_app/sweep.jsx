@@ -7,15 +7,22 @@
 				$('#sweep-wrapper').show();
 			}
 		},
-		shouldComponentUpdate :function() {
+		shouldComponentUpdate : function() {
 			return false;
+		},
+		start_sweep: function() {
+			this.refs.graph.clear();
+			scanner.reset();
+			setTimeout(function() {
+				scanner.start_state_machine();	
+			}, 200);
 		},
 		render: function() {
 			console.log('rendering');
 			return (
 				<div className="wrapper" id="sweep-wrapper">
 					<div className="left-flexbox">
-						<Graphs/>
+						<Graphs ref='graphs'/>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Frequency Sweep</div>

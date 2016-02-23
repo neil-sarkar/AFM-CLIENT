@@ -46,7 +46,6 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph"], function
 			this.setState({
 				approach_in_progress: (approacher_state !== 0)
 			});
-			console.log(this.state.status);
 		},
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep == false) {
@@ -55,8 +54,10 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph"], function
 				this.refs.approach_graph.stop_streaming();
 			} else {
 				$('#approach-wrapper').show();
-				this.refs.z_fine_graph.start_streaming();
-				this.refs.approach_graph.start_streaming();
+				if (!this.state.approach_in_progress) {
+					this.refs.z_fine_graph.start_streaming();
+					this.refs.approach_graph.start_streaming();	
+				}
 			}
 		},
 		start_approaching : function() {
