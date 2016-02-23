@@ -23,12 +23,14 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
 
                 xAxis: {
                     min: 1,
-                    max: 256
+                    max: 256,
+                    endOnTick: false
                 },
 
                 yAxis: {
                     min: 1,
                     max: 256,
+                    endOnTick: false
                 },
                 colorAxis: {
                     stops: [
@@ -105,22 +107,26 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
                 turboThreshold: Number.MAX_VALUE // #3404, remove after 4.0.5 release
             });
             var rms_threshold = scanner.rms_threshold();
-            var min = mean - rms_threshold * rms;
-            var max = mean + rms_threshold * rms;
+            var min_cutoff = mean - rms_threshold * rms;
+            var max_cuttoff = mean + rms_threshold * rms;
+            var sample_min = Number.POSITIVE_INFINITY; // these will store the absolute mins and maxes post proces
+            var sample_max = Number.NEGATIVE_INFINITY;
             for (var i = 0; i < array.length; i++ ) {
                 // COPY x y and z values for the point
                 var x = array[i].x;
                 var y = array[i].y;
                 var curr_value = array[i].value;
                 console.log("mean", mean, "value", curr_value, "rms thresh", rms_threshold, "rms", rms);
-                if (curr_value > max) {
-                    curr_value = max;
-                } else if (curr_value < min) {
-                    curr_value = min;
+                if (curr_value > max_cuttoff) {
+                    curr_value = max_cuttoff;
+                } else if (curr_value < min_cutoff) {
+                    curr_value = min_cutoff;
                 }
+                sample_min = Math.min(sample_min, curr_value);
+                sample_max = Math.max(sample_max, curr_value);
                 this.state.chart.series[this.state.chart.series.length - 1].addPoint({x: x, y: y, value: curr_value}, false, false);
             }
-            this.state.chart.colorAxis[0].setExtremes(min, max);
+            this.state.chart.colorAxis[0].setExtremes(sample_min, sample_max);
             console.log(this.state.chart.xAxis[0]);
             this.state.chart.redraw();
             for (var j = 0; j < this.state.chart.series.length - 1; j++)
