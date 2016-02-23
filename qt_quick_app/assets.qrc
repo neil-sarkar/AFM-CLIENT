@@ -90,6 +90,7 @@
         <file>line_profile.jsx</file>
         <file>scan_viewer.jsx</file>
         <file>inline_scan_controls.jsx</file>
+        <file>z_fine_graph.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

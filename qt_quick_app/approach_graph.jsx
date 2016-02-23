@@ -22,6 +22,11 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                         text: 'Amplitude (V)'
                     }
                 },
+                line: {
+                    marker: {
+                        enabled: false
+                    }
+                },
                 legend: {
                     enabled: false
                 },
@@ -64,8 +69,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             // might be worth refactoring the signal
             var node = this.refs.chartNode.getDOMNode();
             var point = [(new Date()).getTime(), approach_adc_read];
-            $(node).highcharts().series[0].addPoint(point);
+            var num_points_displayed = $(node).highcharts().series[0].data.length;
+            $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
+
         update_plotline: function(value) {
             while (this.state.chart.yAxis[0].plotLinesAndBands.length) {
                 this.state.chart.yAxis[0].removePlotLine('setpoint');
@@ -78,6 +85,28 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 width: 2,
                 id: 'setpoint'
             });
+        },
+        start_streaming: function() {
+            adc_5.value_changed.connect(this.handle_adc_value_changed);
+            adc_stream_interval_id = setInterval(function() {
+                adc_5.read();
+            }, 500);
+        },
+        stop_streaming: function() {
+            try {
+                adc_5.value_changed.disconnect(this.handle_adc_value_changed);
+            } catch (err) {
+                console.log(err);
+            }
+            if (typeof adc_stream_interval_id !== 'undefined') {
+                clearInterval(adc_stream_interval_id);
+            }
+        },
+        handle_adc_value_changed: function(adc_value) {
+            var node = this.refs.chartNode.getDOMNode();
+            var point = [(new Date()).getTime(), adc_value / 4095 * 2.5];
+            var num_points_displayed = $(node).highcharts().series[0].data.length;
+            $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
         componentDidMount: function() {
             this.renderChart();
@@ -97,5 +126,5 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    return <ApproachGraph establishDataConnection={approacher.new_data.connect}/>;
+    return ApproachGraph;
 });

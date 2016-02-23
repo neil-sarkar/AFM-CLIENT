@@ -55,6 +55,9 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 			this.refs.scan_viewer.clear();
 			this.set_scan_complete();
 		},
+		eliminate_outliers: function() {
+			this.refs.scan_viewer.eliminate_outliers();
+		},
 		render: function() {
 			return (
 				<div className="wrapper" id="scan-wrapper">
@@ -69,6 +72,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 						</div>
 						<button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
 						<button className="action-button" onClick={this.clear_scan}>Clear</button>
+						<button className="action-button" onClick={this.eliminate_outliers}>Clean</button>
 						<InlineScanControls />
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>

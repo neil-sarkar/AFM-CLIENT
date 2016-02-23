@@ -42,6 +42,9 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             this.refs.heatmap.erase_data();
             this.refs.line_profile.erase_data();
         },
+        eliminate_outliers: function() {
+            this.refs.heatmap.eliminate_outliers();
+        },
         render: function() {
             return (
                 <div>

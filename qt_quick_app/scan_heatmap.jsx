@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "heatmap", "console"], function($, React, ReactDOM, heatmap, console) {
+define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function($, React, ReactDOM, heatmap, console, _) {
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
         renderChart: function() {
             Highcharts.setOptions({
@@ -80,6 +80,26 @@ define(["jquery", "react", "dom", "heatmap", "console"], function($, React, Reac
         },
         redraw: function() {
             this.state.chart.redraw();
+        },
+        eliminate_outliers: function() {
+            console.log("called");
+            var array = this.state.chart.series[0].data;
+            var mean = _.reduce(array, function(memo, num) {
+                            return memo + num.value;
+                        }, 0) / (array.length === 0 ? 1 : array.length);
+
+            var dev = array.map(function(itm){return (itm.value - mean)*(itm.value - mean);});
+            var std_dev = Math.sqrt(dev.reduce(function(a, b){return a+b;})/array.length);
+            console.log(mean, std_dev);
+            for (var i = 0; i < array.length; i++ ) {
+                var curr_value = this.state.chart.series[0].data[i].value;
+                if (curr_value > mean + 2 * std_dev)
+                    this.state.chart.series[0].data[i].update({value: mean + 2 * std_dev}, false, false);
+                else if (curr_value < mean - 2 * std_dev)
+                    this.state.chart.series[0].data[i].update({value: mean - 2 * std_dev}, false, false);
+            }
+            this.state.chart.redraw();
+            console.log("done");
         },
         componentDidMount: function() {
             this.renderChart();

@@ -60,7 +60,6 @@ void ReceiveWorker::process_working_response() {
     qDebug() << "Now processing" << response_tag << response_id << working_response;
     assert (command_queue.isEmpty() == false);
     CommandNode* node = command_queue.dequeue();
-//    num_commands_received += 1;
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
@@ -71,9 +70,9 @@ void ReceiveWorker::process_working_response() {
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
     if (tag != node->tag) {
         qDebug() << "tag mismatch " << tag << node->tag;
-        assert (tag == node->tag);
+        // assert (tag == node->tag);
     }
-    assert (id  == node->id);
+    // assert (id  == node->id);
 
     if (node->num_receive_bytes == Set_Receive_Bytes_Error) {
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
@@ -83,7 +82,7 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
         qDebug() << length << node->num_receive_bytes << node->id;
     }
 
-    assert (length == node->num_receive_bytes);
+    // assert (length == node->num_receive_bytes);
 }
 
 void ReceiveWorker::handle_asynchronous_message() {
@@ -134,7 +133,7 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
         delete node;
     }
 
-    assert(stop_command_had_been_queued);
+    // assert(stop_command_had_been_queued);
     qDebug() << "Command queue flushed - new count" << command_queue.count();
 }
 
