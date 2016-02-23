@@ -43,6 +43,14 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 								notify_signal={scanner.dwell_time_changed} 
 								get_value={scanner.dwell_time} 
 								set_value={scanner.set_dwell_time} />
+					<NumberInput value_type="scan" 
+								name="Remove outliers farther than N RMS"
+								min={0}
+								max={100}
+								step={0.01} 
+								notify_signal={scanner.rms_threshold_changed} 
+								get_value={scanner.rms_threshold} 
+								set_value={scanner.set_rms_threshold} />
 				</div>
 			)
 		}

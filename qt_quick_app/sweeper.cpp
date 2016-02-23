@@ -72,6 +72,7 @@ void Sweeper::emit_dummy_data() {
 }
 
 void Sweeper::start_state_machine() {
+    init();
     m_state_machine.start();
 }
 

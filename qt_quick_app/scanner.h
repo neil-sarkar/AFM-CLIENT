@@ -16,6 +16,7 @@ class Scanner : public AFMObject
     Q_PROPERTY(quint8 m_send_back_count READ send_back_count WRITE set_send_back_count NOTIFY send_back_count_changed)
     Q_PROPERTY(quint16 m_num_rows READ num_rows WRITE set_num_rows NOTIFY num_rows_changed)
     Q_PROPERTY(quint16 m_num_columns READ num_columns WRITE set_num_columns NOTIFY num_columns_changed)
+    Q_PROPERTY(double m_rms_threshold READ rms_threshold WRITE set_rms_threshold NOTIFY rms_threshold_changed)
 public:
     explicit Scanner(PID*, AFMObject* dac);
     void init();
@@ -32,6 +33,8 @@ public:
     Q_INVOKABLE void set_num_rows(int num_rows);
     Q_INVOKABLE quint16 num_columns();
     Q_INVOKABLE void set_num_columns(int num_columns);
+    Q_INVOKABLE double rms_threshold();
+    Q_INVOKABLE void set_rms_threshold(double rms_threshold);
 
 signals:
     void scanner_initialization_done();
@@ -48,6 +51,7 @@ signals:
     void send_back_count_changed(int);
     void num_rows_changed(int);
     void num_columns_changed(int);
+    void rms_threshold_changed(double);
 
 public slots:
     // Scan state machine methods
@@ -68,6 +72,7 @@ private:
     quint8 m_dwell_time;
     quint8 m_num_averages;
     quint8 m_send_back_count;
+    double m_rms_threshold;
 
     int m_num_columns_received;
     void cmd_set_signal_generator();

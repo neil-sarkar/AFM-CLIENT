@@ -22,12 +22,12 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
                 },
 
                 xAxis: {
-                    min: 0,
+                    min: 1,
                     max: 256
                 },
 
                 yAxis: {
-                    min: 0,
+                    min: 1,
                     max: 256,
                 },
                 colorAxis: {
@@ -36,6 +36,14 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
                         [0.5, '#fffbbc'],
                         [0.9, '#c4463a']
                     ],
+                },
+                legend: {
+                    align: 'right',
+                    layout: 'vertical',
+                    margin: 0,
+                    verticalAlign: 'top',
+                    y: 25,
+                    symbolHeight: 280
                 },
                 plotOptions: {
                     heatmap: {
@@ -76,6 +84,8 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
             }, 0);
         },
         erase_data: function() {
+            while (this.state.chart.series.length - 1)
+                this.state.chart.series[0].remove(false);
             this.state.chart.series[0].setData([]);
         },
         redraw: function() {
@@ -84,26 +94,50 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
         eliminate_outliers: function() {
             console.log("called");
             var array = this.state.chart.series[0].data;
+            var sum_of_squares = array.reduce(function(s,x) {return (s + x.value*x.value);}, 0);
+            var rms = Math.sqrt(sum_of_squares / array.length);
             var mean = _.reduce(array, function(memo, num) {
                             return memo + num.value;
                         }, 0) / (array.length === 0 ? 1 : array.length);
-
-            var dev = array.map(function(itm){return (itm.value - mean)*(itm.value - mean);});
-            var std_dev = Math.sqrt(dev.reduce(function(a, b){return a+b;})/array.length);
-            console.log(mean, std_dev);
+            this.state.chart.addSeries({
+                borderWidth: 0,
+                data: [],
+                turboThreshold: Number.MAX_VALUE // #3404, remove after 4.0.5 release
+            });
+            var rms_threshold = scanner.rms_threshold();
+            var min = mean - rms_threshold * rms;
+            var max = mean + rms_threshold * rms;
             for (var i = 0; i < array.length; i++ ) {
-                var curr_value = this.state.chart.series[0].data[i].value;
-                if (curr_value > mean + 2 * std_dev)
-                    this.state.chart.series[0].data[i].update({value: mean + 2 * std_dev}, false, false);
-                else if (curr_value < mean - 2 * std_dev)
-                    this.state.chart.series[0].data[i].update({value: mean - 2 * std_dev}, false, false);
+                // COPY x y and z values for the point
+                var x = array[i].x;
+                var y = array[i].y;
+                var curr_value = array[i].value;
+                console.log("mean", mean, "value", curr_value, "rms thresh", rms_threshold, "rms", rms);
+                if (curr_value > max) {
+                    curr_value = max;
+                } else if (curr_value < min) {
+                    curr_value = min;
+                }
+                this.state.chart.series[this.state.chart.series.length - 1].addPoint({x: x, y: y, value: curr_value}, false, false);
             }
+            this.state.chart.colorAxis[0].setExtremes(min, max);
+            console.log(this.state.chart.xAxis[0]);
             this.state.chart.redraw();
+            for (var j = 0; j < this.state.chart.series.length - 1; j++)
+                this.state.chart.series[j].hide();
+
             console.log("done");
+        },
+        change_num_rows: function(max_value) {
+            this.state.chart.yAxis[0].setExtremes(1, max_value);
+        },
+        change_num_columns: function(max_value) {
+            this.state.chart.xAxis[0].setExtremes(1, max_value);
         },
         componentDidMount: function() {
             this.renderChart();
-            // this.props.establishDataConnection(this.handleNewDataWrapper);
+            scanner.num_rows_changed.connect(this.change_num_rows);
+            scanner.num_columns_changed.connect(this.change_num_columns);
             // this.props.newScan(this.erase_data);
             var node = this.refs.chartNode.getDOMNode();
             var chart = $(node).highcharts();

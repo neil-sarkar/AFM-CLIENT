@@ -51,6 +51,7 @@ void Scanner::init() {
     set_dwell_time(2);
     set_num_columns(16);
     set_num_rows(16);
+    set_rms_threshold(1.5);
     cmd_set_signal_generator();
     cmd_start_scan();
 }
@@ -199,6 +200,19 @@ void Scanner::set_num_columns(int num_columns) {
         cmd_set_signal_generator();
     }
 }
+
+double Scanner::rms_threshold() {
+    return m_rms_threshold;
+}
+
+void Scanner::set_rms_threshold(double rms_threshold) {
+    if (m_rms_threshold != rms_threshold) {
+        m_rms_threshold = rms_threshold;
+        qDebug() << "Changing RMS threshold to " << m_rms_threshold;
+        emit rms_threshold_changed(m_rms_threshold);
+    }
+}
+
 
 void Scanner::cmd_set_send_back_count() {
     QByteArray payload;
