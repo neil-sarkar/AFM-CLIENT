@@ -24,9 +24,10 @@ void Sweeper::init() {
     dds->init();
 
     // set up framework
-    QState* initialize_machine = new QState();
-    QState* sweep = new QState();
-    QState* detect_peak = new QState();
+    QState* running_state = new QState();
+    QState* initialize_machine = new QState(running_state);
+    QState* sweep = new QState(running_state);
+    QState* detect_peak = new QState(running_state);
     QFinalState* finish = new QFinalState();
 
     initialize_machine->addTransition(this, SIGNAL(initialization_done()), sweep);
@@ -34,18 +35,17 @@ void Sweeper::init() {
     sweep->addTransition(this, SIGNAL(machine_finished()), finish);
     detect_peak->addTransition(this, SIGNAL(peak_detection_done()), sweep);
     detect_peak->addTransition(this, SIGNAL(peak_detection_failed()), finish);
+    running_state->addTransition(this, SIGNAL(reset()), finish);
 
     QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_machine()));
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
     QObject::connect(finish, SIGNAL(entered()), this, SLOT(finish_sweep()));
 
-    m_state_machine.addState(initialize_machine);
-    m_state_machine.addState(sweep);
-    m_state_machine.addState(detect_peak);
+    m_state_machine.addState(running_state);
     m_state_machine.addState(finish);
-
-    m_state_machine.setInitialState(initialize_machine);
+    running_state->setInitialState(initialize_machine);
+    m_state_machine.setInitialState(running_state);
 }
 
 Sweeper::data_model Sweeper::amplitude_data() {

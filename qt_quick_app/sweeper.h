@@ -33,6 +33,7 @@ signals:
     void machine_finished();
     void new_amplitude_data(QVariantList);
     void new_phase_data(QVariantList);
+    void reset();
 
 public slots:
     void frequency_sweep();
