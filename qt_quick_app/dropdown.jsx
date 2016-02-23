@@ -13,9 +13,9 @@ define(["react", "console", "underscore"], function(React, console, _) {
         },
         handle_item_click: function(index) {
             this.setState({
-                text: this.props.options_list[index]
+                text: this.props.options_list[index].text
             });
-            
+            this.props.selection_method(this.props.options_list[index].cmd_number);
         },
         render: function() {
             console.log(this.props.options_list);
@@ -26,7 +26,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
                       {this.props.options_list.map(function(option, i) {
                         var boundClick = this.handle_item_click.bind(this, i);
                         return (
-                          <DropdownOption onClick={boundClick} key={i} title={option} ref={'option' + i} />
+                          <DropdownOption onClick={boundClick} key={i} title={option.text} ref={'option' + i} />
                         );
                       }, this)}
                     </div>

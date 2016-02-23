@@ -51,7 +51,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 								notify_signal={scanner.rms_threshold_changed} 
 								get_value={scanner.rms_threshold} 
 								set_value={scanner.set_rms_threshold} />
-					<Dropdown options_list={["1", "2"]}/>
+					<Dropdown options_list={[{text: "0:1", cmd_number: 1}, {text: "1:1", cmd_number: 2}, {text: "3:1", cmd_number: 4}, {text: "7:1", cmd_number: 8}]} selection_method={scanner.set_ratio}/>
 				</div>
 			)
 		}
