@@ -41,6 +41,9 @@ public:
     Q_INVOKABLE void set_ratio(int ratio);
     Q_INVOKABLE void save_raw_data();
 
+    void set_settings();
+    void update_settings(QString, QVariant);
+
 signals:
     void scanner_initialization_done();
     void set_signal_generator_done();
@@ -96,6 +99,8 @@ private:
 
     ScanData* forward_data;
     ScanData* reverse_data;
+
+    static const QString settings_group_name;
 };
 
 #endif // SCANNER_H

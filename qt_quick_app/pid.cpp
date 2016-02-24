@@ -86,7 +86,6 @@ void PID::update_settings(QString key, QVariant value) {
 
 void PID::set_settings() {
     settings.beginGroup(settings_group_name);
-    qDebug() << "set?" <<settings.contains("proportional");
     set_proportional(settings.contains("proportional") ? settings.value("proportional").toFloat() : 0.1);
     set_integral(settings.contains("integral") ? settings.value("integral").toFloat() : 200);
     set_derivative(settings.contains("derivative") ? settings.value("derivative").toFloat() : 0);

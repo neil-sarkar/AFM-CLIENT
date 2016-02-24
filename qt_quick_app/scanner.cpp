@@ -23,6 +23,24 @@ void Scanner::resume_state_machine() {
     receive_data();
 }
 
+void Scanner::update_settings(QString key, QVariant value) {
+    settings.beginGroup(settings_group_name);
+    settings.setValue(key, value);
+    settings.endGroup();
+}
+
+void Scanner::set_settings() {
+    settings.beginGroup(settings_group_name);
+    set_num_averages(settings.contains("num_averages") ? settings.value("num_averages").toInt() : 5);
+    set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 16);
+    set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 2);
+    set_num_columns(settings.contains("num_columns") ? settings.value("num_columns").toInt() : 16);
+    set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
+    set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
+    set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
+    settings.endGroup();
+}
+
 void Scanner::init() {
     // set up state machine framework
     QState* running_state = new QState();
@@ -46,15 +64,7 @@ void Scanner::init() {
     m_state_machine.addState(finish);
     m_state_machine.setInitialState(running_state);
 
-    // we tend to set values through their setters so
-    // that their NOTIFY signals get called and the UI updates
-    set_num_averages(5);
-    set_send_back_count(8);
-    set_dwell_time(2);
-    set_num_columns(16);
-    set_num_rows(16);
-    set_rms_threshold(1.5);
-    set_ratio(4);
+    set_settings();
     cmd_set_signal_generator();
     cmd_start_scan();
 }
@@ -154,6 +164,7 @@ void Scanner::set_num_averages(int num_averages) {
         m_num_averages = num_averages;
         qDebug() << "Changing num averages to " << m_num_averages;
         emit num_averages_changed(static_cast<int>(m_num_averages));
+        update_settings("num_averages", QVariant(m_num_averages));
         cmd_set_num_averages();
     }
 }
@@ -173,6 +184,7 @@ void Scanner::set_send_back_count(int send_back_count) {
         m_send_back_count = send_back_count;
         qDebug() << "Changing send back count to " << m_send_back_count;
         emit send_back_count_changed(static_cast<int>(m_send_back_count));
+        update_settings("send_back_count", QVariant(m_send_back_count));
         cmd_set_send_back_count();
     }
 }
@@ -186,8 +198,9 @@ void Scanner::set_num_rows(int num_rows) {
         m_num_rows = num_rows;
         qDebug() << "Changing num rows to " << m_num_rows;
         emit num_rows_changed(static_cast<int>(m_num_rows));
-        cmd_set_signal_generator();
+        update_settings("num_rows", QVariant(m_num_rows));
         set_send_back_count(m_num_rows);
+        cmd_set_signal_generator();
     }
 }
 
@@ -200,6 +213,7 @@ void Scanner::set_num_columns(int num_columns) {
         m_num_columns = num_columns;
         qDebug() << "Changing num columns to " << m_num_columns;
         emit num_columns_changed(static_cast<int>(m_num_columns));
+        update_settings("num_columns", QVariant(m_num_columns));
         cmd_set_signal_generator();
     }
 }
@@ -212,10 +226,10 @@ void Scanner::set_rms_threshold(double rms_threshold) {
     if (m_rms_threshold != rms_threshold) {
         m_rms_threshold = rms_threshold;
         qDebug() << "Changing RMS threshold to " << m_rms_threshold;
+        update_settings("rms_threshold", QVariant(m_rms_threshold));
         emit rms_threshold_changed(m_rms_threshold);
     }
 }
-
 
 void Scanner::cmd_set_send_back_count() {
     QByteArray payload;
@@ -232,6 +246,7 @@ void Scanner::set_dwell_time(int dwell_time) {
         m_dwell_time = dwell_time;
         qDebug() << "Changing dwell time to " << m_dwell_time;
         emit dwell_time_changed(static_cast<int>(m_dwell_time));
+        update_settings("dwell_time", QVariant(m_dwell_time));
         cmd_set_dwell_time();
     }
 }
@@ -245,6 +260,7 @@ void Scanner::set_ratio(int ratio) {
         m_ratio = ratio;
         qDebug() << "Changing ratio to " << m_ratio;
         emit ratio_changed(m_ratio);
+        update_settings("ratio", QVariant(m_ratio));
         cmd_set_signal_generator();
     }
 }
@@ -290,3 +306,5 @@ void Scanner::save_raw_data() {
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
+
+const QString Scanner::settings_group_name = "scanner";
