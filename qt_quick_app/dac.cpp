@@ -9,9 +9,26 @@ void DAC::set_value(double value, bool cmd) {
     m_value = value;
     emit value_changed(m_value);
     qDebug() << "Changing DAC " <<  m_id << "value to " << m_value << cmd;
+    update_settings();
     if (cmd) {
         cmd_set_value();
     }
+}
+
+void DAC::update_settings() {
+    settings.beginGroup(group_name);
+    settings.setValue(QString::number(m_id), m_value);
+    settings.endGroup();
+}
+
+void DAC::set_settings() {
+    settings.beginGroup(group_name);
+    QVariant settings_value = settings.value(QString::number(m_id));
+    if (settings_value == QVariant::Invalid)
+        set_value(0);
+    else
+        set_value(settings_value.toDouble());
+    settings.endGroup();
 }
 
 void DAC::init() {
@@ -21,7 +38,7 @@ void DAC::init() {
     q.push_back((RESOLUTION & 0x0F00) >> 8);
     CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], q); // Set the maximum value of the DAC - make its own method
     emit command_generated(node);
-    cmd_set_value(); // set the DAC to the value m_value
+    set_settings();
 }
 
 double DAC::value() {
@@ -85,7 +102,11 @@ const int DAC::Y_2 = 9;
 const int DAC::X_1 = 10;
 const int DAC::X_2 = 11;
 
+const QString DAC::group_name = "dac";
+
 const quint16 DAC::RESOLUTION = 4095;
 const double DAC::MAX_VOLTAGE = 3.3;
 const double DAC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
+
+
 

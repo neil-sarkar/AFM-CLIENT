@@ -5,7 +5,6 @@
 
 PGA::PGA(qint8 id) {
     m_id = id;
-    m_value = default_value(id); // attenuation amount (%)
 }
 
 void PGA::set_value(double value) {
@@ -13,8 +12,25 @@ void PGA::set_value(double value) {
         m_value = value;
         qDebug() << "Setting PGA " << m_id << "value to " << value;
         emit value_changed(m_value);
+        update_settings();
         cmd_set_value();
     }
+}
+
+void PGA::update_settings() {
+    settings.beginGroup(group_name);
+    settings.setValue(QString::number(m_id), m_value);
+    settings.endGroup();
+}
+
+void PGA::set_settings() {
+    settings.beginGroup(group_name);
+    QVariant settings_value = settings.value(QString::number(m_id));
+    if (settings_value == QVariant::Invalid)
+        set_value(default_value(m_id));
+    else
+        set_value(settings_value.toDouble());
+    settings.endGroup();
 }
 
 double PGA::value() {
@@ -22,7 +38,7 @@ double PGA::value() {
 }
 
 void PGA::init() {
-    cmd_set_value();
+    set_settings();
 }
 
 void PGA::cmd_set_value() {
@@ -44,6 +60,8 @@ const int PGA::Z_Fine = 5;
 const int PGA::DDS_Amplitude = 6;
 const int PGA::Z_Coarse = 7;
 const int PGA::Leveling = 8;
+
+const QString PGA::group_name = "pga";
 
 
 int PGA::default_value(int id) {
@@ -67,4 +85,5 @@ int PGA::default_value(int id) {
     }
     return 0;
 }
+
 

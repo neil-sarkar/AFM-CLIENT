@@ -21,7 +21,8 @@ public:
     Q_INVOKABLE void init();
     Q_INVOKABLE void cmd_read_value();
     Q_INVOKABLE void cmd_set_value();
-
+    void set_settings();
+    void update_settings();
 
     static const int Buffered_1;
     static const int Buffered_2;
@@ -52,6 +53,7 @@ private:
     void callback_read_value(QByteArray);
     callback_return_type bind(void (DAC::*method)(QByteArray));
     typedef void (DAC::*callback_type)(QByteArray);
+    static const QString group_name;
 
 };
 

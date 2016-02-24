@@ -14,6 +14,8 @@ public:
     Q_INVOKABLE void set_value(double value);
     Q_INVOKABLE double value();
     void init();
+    void set_settings();
+    void update_settings();
 
     static const int X_1;
     static const int X_2;
@@ -35,6 +37,7 @@ private:
     double m_value;
     void cmd_set_value();
     qint8 value_to_pga();
+    static const QString group_name;
 
 };
 
