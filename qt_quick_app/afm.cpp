@@ -96,4 +96,15 @@ void AFM::cmd_generate_force_curve() {
 void AFM::callback_generate_force_curve(QByteArray return_bytes) {
 }
 
+void AFM::restore_defaults() {
+    QHash<int, AFMObject*>::iterator i;
+    settings.clear();
+    scanner->set_settings();
+    scanner->pid->set_settings();
+    for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
+        i.value()->set_settings();
+    for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
+        i.value()->set_settings();
+}
+
 const int AFM::DAC_Table_Block_Size = 256;

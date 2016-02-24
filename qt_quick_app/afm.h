@@ -35,6 +35,7 @@ class AFM : public AFMObject
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
         Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
+        Q_INVOKABLE void restore_defaults();
 
     signals:
         void command_generated(CommandNode*);

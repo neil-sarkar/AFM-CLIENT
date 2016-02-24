@@ -237,8 +237,7 @@
     left: 30%;
 }
 
-.reset-afm-button {
+.reset-afm-button, .get-resistances-button, .restore-defaults-button {
     left: 25%;
     width: 50%;
 }
-
