@@ -152,7 +152,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
     var SweepGraphs = React.createClass({
         clear: function() {
             this.refs.amplitude_graph.clear();
-            this.refs.pahse_graph.clear();
+            this.refs.phase_graph.clear();
         },
         emit_tooltip: function(index, series, e) {
             this.refs.amplitude_graph.update_tooltip(index, series, e);

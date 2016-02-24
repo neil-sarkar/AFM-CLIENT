@@ -24,9 +24,9 @@ public:
     Q_INVOKABLE void cmd_set();
 
 signals:
-    void start_frequency_changed();
-    void step_size_changed();
-    void end_frequency_changed();
+    void start_frequency_changed(int);
+    void step_size_changed(int);
+    void end_frequency_changed(int);
 
 public slots:
 

@@ -10,6 +10,11 @@ Sweeper::Sweeper(PID* pid_) {
     m_repetitions_counter = 0;
     pid = pid_;
 }
+
+void Sweeper::set_settings() {
+
+}
+
 void Sweeper::init() {
     // init DDS
     dds->init();
@@ -75,6 +80,8 @@ void Sweeper::start_manual_sweep() {
 
 void Sweeper::start_auto_sweep() {
     if (!m_state_machine.isRunning()) {
+        m_step_sizes.clear();
+        m_boundaries.clear();
         m_step_sizes.append(100);
         m_boundaries.append((dds->end_frequency() - dds->start_frequency())/2);
         m_step_sizes.append(10);
@@ -97,6 +104,7 @@ void Sweeper::frequency_sweep() {
         emit machine_finished();
         return;
     }
+    qDebug() << m_current_resonant_frequency << m_boundaries[m_repetitions_counter];
     dds->set_start_frequency(m_current_resonant_frequency - m_boundaries[m_repetitions_counter]);
     dds->set_end_frequency(m_current_resonant_frequency + m_boundaries[m_repetitions_counter]);
     dds->set_step_size(m_step_sizes[m_repetitions_counter]);
@@ -176,98 +184,42 @@ void Sweeper::set_frequency_on_select(int frequency) {
     set_stable_frequency();
 }
 
-//int Sweeper::find_peak() {
-//    // https://github.com/xuphys/peakdetect/blob/master/peakdetect.c
-//    // http://billauer.co.il/peakdet.html
-//    QVector<double> data;
-//    for (int i = 0; i < m_amplitude_data.size(); i++)
-//        data.append(m_amplitude_data[i].y());
+void Sweeper::set_start_frequency(quint32 start_frequency) {
+    if (m_start_frequency != start_frequency) {
+        m_start_frequency = start_frequency;
+        qDebug() << "Changing Sweeper start frequency to" << m_start_frequency;
+        emit start_frequency_changed(static_cast<int>(m_start_frequency));
+        if (m_start_frequency > m_end_frequency)
+            set_end_frequency(m_start_frequency);
+    }
+}
 
-//    qDebug() << m_amplitude_data;
-//    int data_count = data.size();
-//    int emi_peaks[500];
-//    int num_emi_peaks[500];
-//    int max_emi_peaks = 500;
-//    int absop_peaks[500];
-//    int num_absop_peaks[500];
-//    int max_absop_peaks = 500;
-//    double delta = 1e-6;
-//    int emi_first = 0;
+void Sweeper::set_end_frequency(quint32 end_frequency) {
+    if (m_end_frequency != end_frequency) {
+        m_end_frequency = end_frequency;
+        qDebug() << "Changing Sweeper end frequency to" << m_end_frequency;
+        emit end_frequency_changed(static_cast<int>(m_end_frequency));
+        if (m_end_frequency < m_start_frequency)
+            set_start_frequency(m_end_frequency);
+    }
+}
 
-//    int     i;
-//    double  mx;
-//    double  mn;
-//    int     mx_pos = 0;
-//    int     mn_pos = 0;
-//    int     is_detecting_emi = emi_first;
+void Sweeper::set_step_size(quint16 step_size) {
+    if (m_step_size != step_size) {
+        m_step_size = step_size;
+        qDebug() << "Changing Sweeper step size to" << m_step_size;
+        emit step_size_changed(static_cast<int>(m_step_size));
+    }
+}
 
+quint32 Sweeper::start_frequency() {
+    return m_start_frequency;
+}
 
-//    mx = data[0];
-//    mn = data[0];
+quint16 Sweeper::step_size() {
+    return m_step_size;
+}
 
-//    *num_emi_peaks = 0;
-//    *num_absop_peaks = 0;
-
-//    for(i = 1; i < data_count; ++i)
-//    {
-//        if(data[i] > mx)
-//        {
-//            mx_pos = i;
-//            mx = data[i];
-//        }
-//        if(data[i] < mn)
-//        {
-//            mn_pos = i;
-//            mn = data[i];
-//        }
-
-//        if(is_detecting_emi &&
-//                data[i] < mx - delta)
-//        {
-//            if(*num_emi_peaks >= max_emi_peaks) /* not enough spaces */ {
-//                emit peak_detection_failed();
-//                return 1;
-//            }
-
-//            emi_peaks[*num_emi_peaks] = mx_pos;
-//            ++ (*num_emi_peaks);
-
-//            is_detecting_emi = 0;
-
-//            i = mx_pos - 1;
-
-//            mn = data[mx_pos];
-//            mn_pos = mx_pos;
-//        }
-//        else if((!is_detecting_emi) &&
-//                data[i] > mn + delta)
-//        {
-//            if(*num_absop_peaks >= max_absop_peaks) {
-//                emit peak_detection_failed();
-//                return 2;
-//            }
-
-//            absop_peaks[*num_absop_peaks] = mn_pos;
-//            ++ (*num_absop_peaks);
-
-//            is_detecting_emi = 1;
-
-//            i = mn_pos - 1;
-
-//            mx = data[mn_pos];
-//            mx_pos = mn_pos;
-//        }
-//    }
-//    double max = 0;
-//    int max_index = -1;
-//    for (int i = 0; i < *num_emi_peaks; i++) {
-//        if (data[emi_peaks[i]] > max) {
-//            max = data[emi_peaks[i]];
-//            max_index = emi_peaks[i];
-//        }
-//    }
-//    qDebug() << "Max amplitude found" << max <<"Volts at" << m_amplitude_data[max_index].x() << "Hz";
-//    m_current_resonant_frequency = m_amplitude_data[max_index].x();
-//    emit peak_detection_done();
-//    return 0;
-//}
+quint32 Sweeper::end_frequency() {
+    return m_end_frequency;
+}

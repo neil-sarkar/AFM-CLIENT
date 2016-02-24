@@ -11,6 +11,9 @@
 class Sweeper : public AFMObject
 {
     Q_OBJECT
+    Q_PROPERTY(quint32 m_start_frequency READ start_frequency WRITE set_start_frequency NOTIFY start_frequency_changed)
+    Q_PROPERTY(quint32 m_end_frequency READ end_frequency WRITE set_end_frequency NOTIFY end_frequency_changed)
+    Q_PROPERTY(quint16 m_step_size READ step_size WRITE set_step_size NOTIFY step_size_changed)
 public:
     typedef QVector<QPointF> data_model;
     typedef void (Sweeper::*callback_type)(QByteArray);
@@ -23,8 +26,17 @@ public:
     Q_INVOKABLE void start_manual_sweep();
     Q_INVOKABLE void set_frequency_on_select(int);
     Q_INVOKABLE void emit_dummy_data();
+    Q_INVOKABLE void set_start_frequency(quint32 start_frequency);
+    Q_INVOKABLE void set_step_size(quint16 step_size);
+    Q_INVOKABLE void set_end_frequency(quint32 end_frequency);
+    Q_INVOKABLE quint32 start_frequency();
+    Q_INVOKABLE quint16 step_size();
+    Q_INVOKABLE quint32 end_frequency();
+
     DDS* dds;
     PID* pid;
+    void set_settings();
+
 
 signals:
     void initialization_done();
@@ -35,6 +47,9 @@ signals:
     void new_amplitude_data(QVariantList);
     void new_phase_data(QVariantList);
     void reset();
+    void start_frequency_changed(int);
+    void step_size_changed(int);
+    void end_frequency_changed(int);
 
 public slots:
     void frequency_sweep();
@@ -53,6 +68,9 @@ private:
     double m_max_amplitude;
     QList<quint16> m_step_sizes;
     QList<quint32> m_boundaries; // how much +/- should we put on the max found in the previous state
+    quint32 m_start_frequency;
+    quint32 m_end_frequency;
+    quint16 m_step_size;
 
     void cmd_frequency_sweep();
     callback_return_type bind(callback_type method);
