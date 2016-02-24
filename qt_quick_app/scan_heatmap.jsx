@@ -34,16 +34,17 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
                 },
                 colorAxis: {
                     stops: [
-                        [0, '#3060cf'],
-                        [0.5, '#fffbbc'],
-                        [0.9, '#c4463a']
+                        [0, '#000000'],
+                        [0.33, "#581C00"],
+                        [0.66, "#bc8000"],
+                        [1, '#FcFc80']
                     ],
                 },
                 legend: {
                     align: 'right',
                     layout: 'vertical',
                     margin: 0,
-                    verticalAlign: 'top',
+                    verticalAlign: 'middle',
                     y: 25,
                     symbolHeight: 280
                 },
