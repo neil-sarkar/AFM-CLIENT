@@ -42,6 +42,7 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("dds"), m_afm->sweeper->dds);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);

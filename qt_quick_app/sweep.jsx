@@ -30,9 +30,9 @@
 							Press the "Sweep" button to begin a frequency sweep. When the graphs are populated, you may select
 							a frequency to drive the cantilever. By default, the resonant frequency is chosen.
 						</div>
-						<button className="action-button" onClick={sweeper.start_state_machine}>Auto Sweep</button>
-						<button className="action-button" onClick={sweeper.start_state_machine}>Manual Sweep</button>
-						<InlineSweepControls>
+						<button className="action-button" onClick={sweeper.start_auto_sweep}>Auto Sweep</button>
+						<button className="action-button" onClick={sweeper.start_manual_sweep}>Manual Sweep</button>
+						<InlineSweepControls/>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
 						</div>

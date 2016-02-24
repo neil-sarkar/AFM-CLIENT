@@ -20,6 +20,7 @@ public:
     data_model amplitude_data();
     data_model phase_data();
     Q_INVOKABLE void start_auto_sweep();
+    Q_INVOKABLE void start_manual_sweep();
     Q_INVOKABLE void set_frequency_on_select(int);
     Q_INVOKABLE void emit_dummy_data();
     DDS* dds;
@@ -48,7 +49,6 @@ private:
 
     int m_repetitions_counter;
     int m_num_repetitions;
-    quint32 m_starting_center_frequency;
     quint32 m_current_resonant_frequency;
     double m_max_amplitude;
     QList<quint16> m_step_sizes;

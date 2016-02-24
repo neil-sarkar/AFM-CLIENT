@@ -7,22 +7,9 @@
 
 Sweeper::Sweeper(PID* pid_) {
     // to be loaded from a settings file
-    m_num_repetitions = 3;
     m_repetitions_counter = 0;
-    m_starting_center_frequency = 8000;
-    m_step_sizes.append(100);
-    m_boundaries.append(5000);
-    m_step_sizes.append(10);
-    m_boundaries.append(500);
-    m_step_sizes.append(1);
-    m_boundaries.append(50);
     pid = pid_;
 }
-
-void Sweeper::start_manual_sweep() {
-    
-}
-
 void Sweeper::init() {
     // init DDS
     dds->init();
@@ -75,14 +62,33 @@ void Sweeper::emit_dummy_data() {
     }
 }
 
-void Sweeper::start_state_machine() {
-    init();
-    m_state_machine.start();
+void Sweeper::start_manual_sweep() {
+    if (!m_state_machine.isRunning()) {
+        m_step_sizes.clear();
+        m_boundaries.clear();
+        m_step_sizes.append(dds->step_size());
+        m_boundaries.append((dds->end_frequency() - dds->start_frequency())/2);
+        m_num_repetitions = 1;
+        m_state_machine.start();
+    }
+}
+
+void Sweeper::start_auto_sweep() {
+    if (!m_state_machine.isRunning()) {
+        m_step_sizes.append(100);
+        m_boundaries.append((dds->end_frequency() - dds->start_frequency())/2);
+        m_step_sizes.append(10);
+        m_boundaries.append(500);
+        m_step_sizes.append(1);
+        m_boundaries.append(50);
+        m_num_repetitions = 3;
+        m_state_machine.start();
+    }
 }
 
 void Sweeper::initialize_machine() {
     m_repetitions_counter = 0;
-    m_current_resonant_frequency = m_starting_center_frequency;
+    m_current_resonant_frequency = (dds->end_frequency() + dds->start_frequency())/2;
     emit initialization_done();
 }
 
