@@ -37,7 +37,7 @@ private:
     double m_value;
     void cmd_set_value();
     qint8 value_to_pga();
-    static const QString group_name;
+    static const QString settings_group_name;
 
 };
 

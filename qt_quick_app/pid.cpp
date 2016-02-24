@@ -2,11 +2,6 @@
 #include "constants.h"
 
 PID::PID() {
-    m_proportional = .1;
-    m_integral = 200;
-    m_derivative = 0;
-    m_setpoint = 0.7;
-    m_enabled = 0;
 }
 
 float PID::proportional() {
@@ -34,6 +29,7 @@ void PID::set_proportional(float proportional) {
         m_proportional = proportional;
         qDebug() << "Setting proportional to" << m_proportional;
         emit proportional_changed(m_proportional);
+        update_settings("proportional", QVariant(m_proportional));
         cmd_set_proportional();
     }
 }
@@ -43,6 +39,7 @@ void PID::set_integral(float integral) {
         m_integral = integral;
         qDebug() << "Setting integral to" << m_integral;
         emit integral_changed(m_integral);
+        update_settings("integral", QVariant(m_integral));
         cmd_set_integral();
     }
 }
@@ -52,7 +49,18 @@ void PID::set_derivative(float derivative) {
         m_derivative = derivative;
         qDebug() << "Setting derivative to" << m_derivative;
         emit derivative_changed(m_derivative);
+        update_settings("derivative", QVariant(m_derivative));
         cmd_set_derivative();
+    }
+}
+
+void PID::set_setpoint(float setpoint) {
+    if (m_setpoint != setpoint) {
+        m_setpoint = setpoint;
+        qDebug() << "Setting set_point to" << m_setpoint;
+        emit setpoint_changed(m_setpoint);
+        update_settings("setpoint", QVariant(m_setpoint));
+        cmd_set_setpoint();
     }
 }
 
@@ -69,21 +77,26 @@ void PID::set_disabled() {
     set_enabled(false);
 }
 
-void PID::set_setpoint(float setpoint) {
-    if (m_setpoint != setpoint) {
-        m_setpoint = setpoint;
-        qDebug() << "Setting set_point to" << m_setpoint;
-        emit setpoint_changed(m_setpoint);
-        cmd_set_setpoint();
-    }
+
+void PID::update_settings(QString key, QVariant value) {
+    settings.beginGroup(settings_group_name);
+    settings.setValue(key, value);
+    settings.endGroup();
+}
+
+void PID::set_settings() {
+    settings.beginGroup(settings_group_name);
+    qDebug() << "set?" <<settings.contains("proportional");
+    set_proportional(settings.contains("proportional") ? settings.value("proportional").toFloat() : 0.1);
+    set_integral(settings.contains("integral") ? settings.value("integral").toFloat() : 200);
+    set_derivative(settings.contains("derivative") ? settings.value("derivative").toFloat() : 0);
+    set_setpoint(settings.contains("setpoint") ? settings.value("setpoint").toFloat() : 0.7);
+    settings.endGroup();
 }
 
 void PID::init() {
-    cmd_disable();
-    cmd_set_proportional();
-    cmd_set_integral();
-    cmd_set_derivative();
-    cmd_set_setpoint();
+    set_disabled();
+    set_settings();
 }
 
 void PID::cmd_set_proportional() {
@@ -122,3 +135,5 @@ void PID::cmd_enable() {
 void PID::cmd_disable() {
     emit command_generated(new CommandNode(command_hash[PID_Disable]));
 }
+
+const QString PID::settings_group_name = "pid";

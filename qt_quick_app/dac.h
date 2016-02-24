@@ -53,7 +53,7 @@ private:
     void callback_read_value(QByteArray);
     callback_return_type bind(void (DAC::*method)(QByteArray));
     typedef void (DAC::*callback_type)(QByteArray);
-    static const QString group_name;
+    static const QString settings_group_name;
 
 };
 

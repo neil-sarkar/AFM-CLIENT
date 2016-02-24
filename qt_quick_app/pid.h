@@ -28,6 +28,9 @@ public:
     void init();
     Q_INVOKABLE void set_enabled(bool e = true);
     Q_INVOKABLE void set_disabled();
+    void set_settings();
+    void update_settings(QString, QVariant);
+
 
 signals:
     void proportional_changed(float);
@@ -53,6 +56,7 @@ private:
     static constexpr double MAX_VOLTAGE = 2.5; // redundant - from ADC
     static constexpr int RESOLUTION = 4095;
     static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
+    static const QString settings_group_name;
 };
 
 #endif // PID_H

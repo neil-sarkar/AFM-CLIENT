@@ -10,7 +10,9 @@ Approacher::Approacher(PID* pid, AFMObject* adc)
     m_state = 0;
 }
 
-void Approacher::init() {}
+void Approacher::init() {
+    m_pid->init();
+}
 
 void Approacher::emit_dummy_data() {
     int j = 0;

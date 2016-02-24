@@ -18,13 +18,13 @@ void PGA::set_value(double value) {
 }
 
 void PGA::update_settings() {
-    settings.beginGroup(group_name);
+    settings.beginGroup(settings_group_name);
     settings.setValue(QString::number(m_id), m_value);
     settings.endGroup();
 }
 
 void PGA::set_settings() {
-    settings.beginGroup(group_name);
+    settings.beginGroup(settings_group_name);
     QVariant settings_value = settings.value(QString::number(m_id));
     if (settings_value == QVariant::Invalid)
         set_value(default_value(m_id));
@@ -61,7 +61,7 @@ const int PGA::DDS_Amplitude = 6;
 const int PGA::Z_Coarse = 7;
 const int PGA::Leveling = 8;
 
-const QString PGA::group_name = "pga";
+const QString PGA::settings_group_name = "pga";
 
 
 int PGA::default_value(int id) {

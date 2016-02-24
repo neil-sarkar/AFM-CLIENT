@@ -16,18 +16,15 @@ void DAC::set_value(double value, bool cmd) {
 }
 
 void DAC::update_settings() {
-    settings.beginGroup(group_name);
+    settings.beginGroup(settings_group_name);
     settings.setValue(QString::number(m_id), m_value);
     settings.endGroup();
 }
 
 void DAC::set_settings() {
-    settings.beginGroup(group_name);
+    settings.beginGroup(settings_group_name);
     QVariant settings_value = settings.value(QString::number(m_id));
-    if (settings_value == QVariant::Invalid)
-        set_value(0);
-    else
-        set_value(settings_value.toDouble());
+    set_value(settings_value != QVariant::Invalid ? settings_value.toDouble() : 0); // 0 is default value
     settings.endGroup();
 }
 
@@ -102,11 +99,8 @@ const int DAC::Y_2 = 9;
 const int DAC::X_1 = 10;
 const int DAC::X_2 = 11;
 
-const QString DAC::group_name = "dac";
+const QString DAC::settings_group_name = "dac";
 
 const quint16 DAC::RESOLUTION = 4095;
 const double DAC::MAX_VOLTAGE = 3.3;
 const double DAC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
-
-
-
