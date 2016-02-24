@@ -19,7 +19,7 @@ public:
     void init();
     data_model amplitude_data();
     data_model phase_data();
-    Q_INVOKABLE void start_state_machine();
+    Q_INVOKABLE void start_auto_sweep();
     Q_INVOKABLE void set_frequency_on_select(int);
     Q_INVOKABLE void emit_dummy_data();
     DDS* dds;

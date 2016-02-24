@@ -8,9 +8,9 @@
 class DDS : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(quint32 start_frequency READ start_frequency() WRITE set_start_frequency() NOTIFY start_frequency_changed())
-    Q_PROPERTY(quint16 step_size READ step_size() WRITE set_step_size() NOTIFY step_size_changed())
-    Q_PROPERTY(quint32 end_frequency READ end_frequency() WRITE set_end_frequency() NOTIFY end_frequency_changed())
+    Q_PROPERTY(quint32 start_frequency READ start_frequency WRITE set_start_frequency NOTIFY start_frequency_changed)
+    Q_PROPERTY(quint16 step_size READ step_size WRITE set_step_size NOTIFY step_size_changed)
+    Q_PROPERTY(quint32 end_frequency READ end_frequency WRITE set_end_frequency NOTIFY end_frequency_changed)
 public:
     explicit DDS();
     void init();

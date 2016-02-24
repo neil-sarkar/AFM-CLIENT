@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/js" lang="js">
+    <qresource lang="js" prefix="/js">
         <file>home.js</file>
         <file>console.js</file>
         <file>sweep.js</file>
@@ -9,12 +9,12 @@
         <file>JSXTransformer.js</file>
         <file>text.js</file>
     </qresource>
-    <qresource prefix="/css" lang="css">
+    <qresource lang="css" prefix="/css">
         <file>home.css</file>
         <file>fonts.css</file>
         <file>sweep.css</file>
     </qresource>
-    <qresource prefix="/html" lang="html">
+    <qresource lang="html" prefix="/html">
         <file>home.html</file>
         <file>sweep.html</file>
         <file>main.html</file>
@@ -92,6 +92,7 @@
         <file>inline_scan_controls.jsx</file>
         <file>z_fine_graph.jsx</file>
         <file>dropdown.jsx</file>
+        <file>inline_sweep_controls.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
