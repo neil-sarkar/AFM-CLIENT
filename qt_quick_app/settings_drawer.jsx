@@ -27,6 +27,11 @@
 				}
 			});
 
+			// listen for the return of a get resistances
+			afm.new_resistance_values.connect(this.display_get_resistances_result);
+		},
+		display_get_resistances_result: function(x1, x2, y1, y2, z) {
+			console.log(x1, x2, y1, y2, z);
 		},
 		render: function() {
 			var self = this;
@@ -74,6 +79,14 @@
 								<ADCController name="Phase" qt_object={adc_0}/>
 							</div>
 							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
+							<p className="setting-section-name">Resistances (Ohm)</p>
+							<div className="settings-container">
+								<ADCController name="X1" qt_object={adc_3} resistance={true}/>
+								<ADCController name="X2" qt_object={adc_7} resistance={true}/>
+								<ADCController name="Y1" qt_object={adc_6} resistance={true}/>
+								<ADCController name="Y2" qt_object={adc_8} resistance={true}/>
+								<ADCController name="Z" qt_object={adc_2} resistance={true}/>
+							</div>
 							<br />
 							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
 							<button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Reistances</button>

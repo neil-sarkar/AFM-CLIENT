@@ -48,11 +48,19 @@ void AFM::cmd_get_resistances() {
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
-    static_cast<ADC*>(ADC_collection[ADC::X_1])->update_value(bytes_to_word(return_bytes.at(0), return_bytes.at(1)));
-    static_cast<ADC*>(ADC_collection[ADC::X_2])->update_value(bytes_to_word(return_bytes.at(2), return_bytes.at(3)));
-    static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(bytes_to_word(return_bytes.at(4), return_bytes.at(5)));
-    static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(bytes_to_word(return_bytes.at(6), return_bytes.at(7)));
-    static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(bytes_to_word(return_bytes.at(8), return_bytes.at(9)));
+    double x_1_voltage = bytes_to_word(return_bytes.at(0), return_bytes.at(1));
+    double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3));
+    double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5));
+    double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7));
+    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9));
+    static_cast<ADC*>(ADC_collection[ADC::X_1])->update_value(x_1_voltage);
+    static_cast<ADC*>(ADC_collection[ADC::X_2])->update_value(x_2_voltage);
+    static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(y_1_voltage);
+    static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(y_2_voltage);
+    static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(z_voltage);
+    QHash<int, AFMObject*>::iterator i;
+    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
+        static_cast<ADC*>(i.value())->read();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {

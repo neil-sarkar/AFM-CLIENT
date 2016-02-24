@@ -23,7 +23,6 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
     m_serial_port = serial_port;
     // Signal is emitted before frame loads any web content:
     QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
-
     QUrl startURL = QUrl("qrc:/html/main.html");
     m_welcome_page.mainFrame()->load(startURL);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -85,3 +84,8 @@ QWebView* MainWindow::createWindow()
 
     return webView;
 }
+
+void CustomPage::javaScriptAlert(QWebFrame *frame, const QString &msg) {
+    qDebug() << "here";
+}
+

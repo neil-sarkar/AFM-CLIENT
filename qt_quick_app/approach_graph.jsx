@@ -104,7 +104,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         handle_adc_value_changed: function(adc_value) {
             var node = this.refs.chartNode.getDOMNode();
-            var point = [(new Date()).getTime(), adc_value / 4095 * 2.5];
+            var point = [(new Date()).getTime(), adc_value];
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },

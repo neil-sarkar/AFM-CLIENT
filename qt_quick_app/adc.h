@@ -30,6 +30,7 @@ public:
 
 signals:
     void value_changed(double);
+    void new_resistance_value(double);
 
 public slots:
 
@@ -40,6 +41,7 @@ private:
     callback_return_type bind(void (ADC::*method)(QByteArray));
     typedef void (ADC::*callback_type)(QByteArray);
     void cmd_read();
+    double voltage_resistance_equation(double);
 };
 
 #endif // ADC_H

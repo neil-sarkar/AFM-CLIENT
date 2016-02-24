@@ -7,6 +7,13 @@
 #include <QWebElementCollection>
 #include <QNetworkDiskCache>
 
+class CustomPage: public QWebPage
+{
+    Q_OBJECT
+    void javaScriptAlert(QWebFrame * frame, const QString & msg); // doesn't work
+};
+
+
 class MainWindow : public QWebView
 {
 Q_OBJECT
@@ -24,10 +31,9 @@ private slots:
 private:
     QNetworkAccessManager * m_network;
     QNetworkDiskCache * m_cache;
-    QWebPage m_welcome_page;
-    QWebPage m_sweep_page;
+    CustomPage m_welcome_page;
+    CustomPage m_sweep_page;
     AFM* m_afm;
     SerialPort* m_serial_port;
 };
-
 #endif // MAINWINDOW_H

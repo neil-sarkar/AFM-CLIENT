@@ -41,6 +41,7 @@ class AFM : public AFMObject
         void command_generated(CommandNode*);
         void dac_table_set();
         void trigger_mcu_reset();
+        void new_resistance_values(double, double, double, double, double);
 
     public slots:
         void init();
@@ -52,6 +53,7 @@ class AFM : public AFMObject
         typedef void (AFM::*callback_type)(QByteArray);
         void cmd_set_dac_table(int block_number);
         int dac_table_page_count;
+        double voltage_resistance_equation(double);
 };
 
 #endif // AFM_H
