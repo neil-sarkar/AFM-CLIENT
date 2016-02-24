@@ -16,6 +16,7 @@ public:
     void print();
     int max_size();
     QVariantList package_data_for_ui(int num_points);
+    QList<DataPoint> data;
 
 signals:
 
@@ -29,7 +30,6 @@ private:
     int m_y_index;
     double m_delta_x;
     double m_delta_y;
-    QVector<DataPoint> data;
 };
 
 

@@ -125,7 +125,7 @@ define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function(
             for (var j = 0; j < this.state.chart.series.length - 1; j++)
                 this.state.chart.series[j].hide();
 
-            console.log("done");
+            console.log("Done removing outliers");
         },
         change_num_rows: function(max_value) {
             this.state.chart.yAxis[0].setExtremes(1, max_value);

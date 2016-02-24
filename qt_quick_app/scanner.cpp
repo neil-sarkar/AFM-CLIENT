@@ -1,7 +1,10 @@
 #include "scanner.h"
 #include "QFinalState"
 #include <QHistoryState>
+#include <QTemporaryFile>
+#include <QTextStream>
 #include "constants.h"
+
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
@@ -266,6 +269,23 @@ void Scanner::cmd_set_dwell_time() {
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Dwell_Time], payload));
 }
 
+void Scanner::save_raw_data() {
+    QTemporaryFile file;
+    file.setAutoRemove(false);
+    if (file.open()) {
+        QTextStream out(&file);   // we will serialize the data into the file
+        for (int i = 0; i < forward_data->size(); i++) {
+            out << QString::number(forward_data->data[i].x);
+            out << " ";
+            out << QString::number(forward_data->data[i].y);
+            out << " ";
+            out << QString::number(forward_data->data[i].z_phase);
+            out << "\n";
+        }
+        qDebug() << file.fileName();
+       // file.fileName() returns the unique file name
+    }
+}
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);

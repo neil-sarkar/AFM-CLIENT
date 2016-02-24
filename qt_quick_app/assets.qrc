@@ -96,6 +96,8 @@
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
         <file>boost.js</file>
+        <file>exporting.js</file>
+        <file>offline-exporting.js</file>
     </qresource>
     <qresource prefix="/static">
         <file>command_spec.tsv</file>

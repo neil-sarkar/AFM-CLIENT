@@ -18,6 +18,7 @@ class Scanner : public AFMObject
     Q_PROPERTY(quint16 m_num_columns READ num_columns WRITE set_num_columns NOTIFY num_columns_changed)
     Q_PROPERTY(double m_rms_threshold READ rms_threshold WRITE set_rms_threshold NOTIFY rms_threshold_changed)
     Q_PROPERTY(int m_ratio READ ratio WRITE set_ratio NOTIFY ratio_changed)
+
 public:
     explicit Scanner(PID*, AFMObject* dac);
     void init();
@@ -38,6 +39,7 @@ public:
     Q_INVOKABLE void set_rms_threshold(double rms_threshold);
     Q_INVOKABLE int ratio();
     Q_INVOKABLE void set_ratio(int ratio);
+    Q_INVOKABLE void save_raw_data();
 
 signals:
     void scanner_initialization_done();

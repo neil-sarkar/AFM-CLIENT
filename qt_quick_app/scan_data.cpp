@@ -19,7 +19,7 @@ bool ScanData::is_full() {
     return (data.size() == max_size());
 }
 
-int ScanData::size() {
+int ScanData::size() { //
     return data.size();
 }
 

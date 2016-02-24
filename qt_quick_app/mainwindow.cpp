@@ -27,6 +27,16 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
     QUrl startURL = QUrl("qrc:/html/main.html");
     m_welcome_page.mainFrame()->load(startURL);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
+
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, true);
+
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
 }
 
 void MainWindow::addJSObject() {
