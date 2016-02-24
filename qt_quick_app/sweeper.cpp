@@ -12,7 +12,17 @@ Sweeper::Sweeper(PID* pid_) {
 }
 
 void Sweeper::set_settings() {
+    settings.beginGroup(settings_group_name);
+    set_start_frequency(settings.contains("start_frequency") ? settings.value("start_frequency").toInt() : 4000, false);
+    set_end_frequency(settings.contains("end_frequency") ? settings.value("end_frequency").toInt() : 10000, false);
+    set_step_size(settings.contains("step_size") ? settings.value("step_size").toInt() : 100);
+    settings.endGroup();
+}
 
+void Sweeper::update_settings(QString key, QVariant value) {
+    settings.beginGroup(settings_group_name);
+    settings.setValue(key, value);
+    settings.endGroup();
 }
 
 void Sweeper::init() {
@@ -42,6 +52,8 @@ void Sweeper::init() {
     m_state_machine.addState(finish);
     running_state->setInitialState(initialize_machine);
     m_state_machine.setInitialState(running_state);
+
+    set_settings();
 }
 
 Sweeper::data_model Sweeper::amplitude_data() {
@@ -184,23 +196,27 @@ void Sweeper::set_frequency_on_select(int frequency) {
     set_stable_frequency();
 }
 
-void Sweeper::set_start_frequency(quint32 start_frequency) {
+void Sweeper::set_start_frequency(quint32 start_frequency, bool enforce_validity) {
     if (m_start_frequency != start_frequency) {
         m_start_frequency = start_frequency;
         qDebug() << "Changing Sweeper start frequency to" << m_start_frequency;
         emit start_frequency_changed(static_cast<int>(m_start_frequency));
-        if (m_start_frequency > m_end_frequency)
+        update_settings("start_frequency", QVariant(m_start_frequency));
+        if (enforce_validity && m_start_frequency > m_end_frequency) {
             set_end_frequency(m_start_frequency);
+        }
     }
 }
 
-void Sweeper::set_end_frequency(quint32 end_frequency) {
+void Sweeper::set_end_frequency(quint32 end_frequency, bool enforce_validity) {
     if (m_end_frequency != end_frequency) {
         m_end_frequency = end_frequency;
         qDebug() << "Changing Sweeper end frequency to" << m_end_frequency;
         emit end_frequency_changed(static_cast<int>(m_end_frequency));
-        if (m_end_frequency < m_start_frequency)
+        update_settings("end_frequency", QVariant(m_end_frequency));
+        if (enforce_validity && m_end_frequency < m_start_frequency) {
             set_start_frequency(m_end_frequency);
+        }
     }
 }
 
@@ -209,6 +225,7 @@ void Sweeper::set_step_size(quint16 step_size) {
         m_step_size = step_size;
         qDebug() << "Changing Sweeper step size to" << m_step_size;
         emit step_size_changed(static_cast<int>(m_step_size));
+        update_settings("step_size", QVariant(m_step_size));
     }
 }
 
@@ -223,3 +240,5 @@ quint16 Sweeper::step_size() {
 quint32 Sweeper::end_frequency() {
     return m_end_frequency;
 }
+
+const QString Sweeper::settings_group_name;

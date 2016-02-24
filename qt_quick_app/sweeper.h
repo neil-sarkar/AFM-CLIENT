@@ -26,9 +26,9 @@ public:
     Q_INVOKABLE void start_manual_sweep();
     Q_INVOKABLE void set_frequency_on_select(int);
     Q_INVOKABLE void emit_dummy_data();
-    Q_INVOKABLE void set_start_frequency(quint32 start_frequency);
+    Q_INVOKABLE void set_start_frequency(quint32 start_frequency, bool enforce_validity = true);
     Q_INVOKABLE void set_step_size(quint16 step_size);
-    Q_INVOKABLE void set_end_frequency(quint32 end_frequency);
+    Q_INVOKABLE void set_end_frequency(quint32 end_frequency, bool enforce_validity = true);
     Q_INVOKABLE quint32 start_frequency();
     Q_INVOKABLE quint16 step_size();
     Q_INVOKABLE quint32 end_frequency();
@@ -36,6 +36,7 @@ public:
     DDS* dds;
     PID* pid;
     void set_settings();
+    void update_settings(QString, QVariant); // maybe move update_settings into afm_object and pass settings_group_name, key, value
 
 
 signals:
@@ -76,7 +77,7 @@ private:
     callback_return_type bind(callback_type method);
     void callback_cmd_frequency_sweep(QByteArray return_bytes);
     void set_stable_frequency();
-
+    static const QString settings_group_name;
 };
 
 #endif // SWEEPER_H
