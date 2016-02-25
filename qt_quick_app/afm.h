@@ -42,6 +42,10 @@ class AFM : public AFMObject
         void dac_table_set();
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
+        void new_approaching_amplitude_data(QVariantList);
+        void new_approaching_phase_data(QVariantList);
+        void new_retracting_amplitude_data(QVariantList);
+        void new_retracting_phase_data(QVariantList);
 
     public slots:
         void init();

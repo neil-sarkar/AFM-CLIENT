@@ -1,176 +1,125 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
-    var SweepGraph = React.createClass({
+    var ForceCurve = React.createClass({
         renderChart: function() {
-            var component = this;
             var node = this.refs.chartNode.getDOMNode();
-            var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
-            var dataSeries = this.state.model;
-            var series = this.generate_initial_series();
-            console.log("rendering chart", series);
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
                     plotBackgroundColor: '#EFEFEF',
-                    height: 300,
+                    height: 800,
                     type: 'line',
                     zoomType: 'x',
                 },
                 title: {
-                    text: component.props.title
+                    text: "Force Curve"
                 },
                 tooltip: { crosshairs: [true, true] },
                 xAxis: {
                     type: 'linear',
-                    title: { text: "Frequency (Hz)" },
-                    events: {
-                        afterSetExtremes: function (event) {
-                            var xMin = event.min;
-                            var xMax = event.max;
-
-                            for (var i = 0; i < siblings.length; i += 1) {
-                                var chart = $(siblings[i]).highcharts();
-                                var ex = chart.xAxis[0].getExtremes();
-                                if (ex.min != xMin || ex.max != xMax)
-                                        chart.xAxis[0].setExtremes(xMin, xMax, true, false);
-                            }
-                        }
-                    },
                 },
-                yAxis: {
-                    title: {
-                        text: 'Amplitude (V)'
-                    },
+                yAxis: [{ // Primary yAxis
+                        title: {
+                            text: 'Amplitude',
+                        },
+                    }, { // Secondary yAxis
+                        title: {
+                            text: 'Phase',
+                        },
+                }],
+                line: {
+                    marker: {
+                        enabled: false
+                    }
                 },
                 legend: {
                     enabled: false
                 },
-                series: series,
-                plotOptions: {
-                    series: {
-                        point: {
-                            events: {
-                                mouseOver: function (e) {
-                                    // sync the tooltips of all sibling graphs
-                                    var index = this.index;
-                                    var series = this.series._i;
-                                    component.props.emit_tooltip(index, series, e);
-                                },
-                                click: function(e) {
-                                    component.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
-                                },
-                           }
-                       },
-                    }
-                }
+                series: [],
             });
         });
         },
-        generate_initial_series : function() {
-            var series_skeleton = {
+        add_series: function() {
+            return {
+                type: "line",
+                data: [],
             };
-            var series = [];
-            for (var i = 0; i < this.state.model; i += 1) {
-                    var series_with_data = series_skeleton;
-                    series_with_data.data = this.state.model[i];
-                    series.push(series_with_data);
+        },
+        handleNewData: function() {
+            // we don't use the appraoch state here...we use it in a separate dialog
+            // might be worth refactoring the signal
+            var node = this.refs.chartNode.getDOMNode();
+            var point = [(new Date()).getTime(), approach_adc_read];
+            var num_points_displayed = $(node).highcharts().series[0].data.length;
+            $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
+        },
+        handle_new_approaching_amplitude_data: function(data) {
+            var new_series = this.add_series();
+            new_series.name = "Approaching amplitude";
+            new_series.yAxis = 0;
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            chart.addSeries(new_series);
+            for (var i = 0; i < data.length; i += 2) {
+                chart.series[chart.series.length - 1].addPoint([data[i], data[i+1]], false);
             }
-            return series;
         },
-        componentWillReceiveProps: function(nextProps) {
-        // we can use this method to see if the component is receiving props
-            this.renderChart();
+        handle_new_approaching_phase_data: function(data) {
+            var new_series = this.add_series();
+            new_series.name = "Approaching phase";
+            new_series.yAxis = 1;
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            chart.addSeries(new_series);
+            for (var i = 0; i < data.length; i += 2) {
+                chart.series[chart.series.length - 1].addPoint([data[i], data[i+1]], false);
+            }
         },
-        getInitialState: function() {
-            return {
-                model: []
-            };
+        handle_new_retracting_amplitude_data: function(data) {
+            var new_series = this.add_series();
+            new_series.name = "Retracting amplitude";
+            new_series.yAxis = 0;
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            chart.addSeries(new_series);
+            for (var i = 0; i < data.length; i += 2) {
+                chart.series[chart.series.length - 1].addPoint([data[i], data[i+1]], false);
+            }
         },
-        getDefaultProps: function() {
-            return {
-                zoom_buffer: 300,
-            };
-        },
-        shouldComponentUpdate: function(nextProps, nextState) {
-            return nextProps.model.length > 0; // should we update the component?
+        handle_new_retracting_phase_data: function(data) {
+            var new_series = this.add_series();
+            new_series.name = "Retracting phase";
+            new_series.yAxis = 1;
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            chart.addSeries(new_series);
+            for (var i = 0; i < data.length; i += 2) {
+                chart.series[chart.series.length - 1].addPoint([data[i], data[i+1]], false);
+            }
+            chart.redraw(false, false);
         },
         componentDidMount: function() {
             this.renderChart();
-            this.props.establishDataConnection(this.handleNewData);
+            afm.new_approaching_amplitude_data.connect(this.handle_new_approaching_amplitude_data);
+            afm.new_approaching_phase_data.connect(this.handle_new_approaching_phase_data);
+            afm.new_retracting_amplitude_data.connect(this.handle_new_retracting_amplitude_data);
+            afm.new_retracting_phase_data.connect(this.handle_new_retracting_phase_data);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
-        componentDidUpdate: function() {
-            this.renderChart(); // after the component props are updated, render the chart into the DOM node
-        },
-        handleNewData: function(data) {
-            var two_dimensional_data = [];
-            var min_x = 100000;
-            var max_x = 0;
-            for (i = 0; i < data.length; i += 2) {
-                min_x = data[i] < min_x  ? data[i] : min_x;
-                max_x = data[i] > max_x  ? data[i] : max_x;
-                two_dimensional_data.push([data[i], data[i+1]]);
-            }
-            this.addSeries(two_dimensional_data);
-            this.state.model.push([]);
-            (this.state.model[this.state.model.length - 1]).push(two_dimensional_data);
-            var node = this.refs.chartNode.getDOMNode();
-            $(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);
-        },
-        addSeries: function(data) {
-                var series = {
-                    data: data,
-                };
-            var node = this.refs.chartNode.getDOMNode();
-            $(node).highcharts().addSeries(series);
-        },
-        get_point: function(index, series) {
-            var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts();
-            return chart.series[series].points[index];
-        },
-        update_tooltip: function(index, series, e) {
-            var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts();
-            var point = this.get_point(index, series);
-            chart.tooltip.refresh(point);
-            chart.xAxis[0].drawCrosshair(e, point);
-            chart.yAxis[0].drawCrosshair(e, point);
-        },
-        clear: function() {
-            var node = this.refs.chartNode.getDOMNode();
-            var chart = $(node).highcharts();
-            while (chart.series.length)
-                chart.series[0].remove(false);
-            chart.redraw();
-        },
         render: function() {
-            return (
-                React.DOM.div({className: "chart", ref: "chartNode"})
-            );
+            return (React.DOM.div({className: "chart", ref: "chartNode"}));
         }
     });
-    var SweepGraphs = React.createClass({
-        clear: function() {
-            this.refs.amplitude_graph.clear();
-            this.refs.phase_graph.clear();
-        },
-        emit_tooltip: function(index, series, e) {
-            this.refs.amplitude_graph.update_tooltip(index, series, e);
-            this.refs.phase_graph.update_tooltip(index, series, e);
-        },
-        handle_click: function(frequency, index, series) {
-            sweeper.set_frequency_on_select(frequency);
-            var amplitude_graph_point = this.refs.amplitude_graph.get_point(index, series);
-            pid.set_setpoint(amplitude_graph_point.y / 2);
-        },
+    
+    var ForceCurveViewer = React.createClass({
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <ForceCurve />
+                    <button className="action-button" onClick={afm.cmd_generate_force_curve}>Generate</button>
                 </div>
-            );
+            )
         }
     });
-    ReactDOM.render(<SweepGraphs />, document.getElementById('content'));
+
+    ReactDOM.render(<ForceCurveViewer />, document.getElementById('content'));
 });
