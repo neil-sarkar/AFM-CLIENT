@@ -51,7 +51,6 @@ define(["react", "console", "underscore"], function(React, console, _) {
             return Math.round(value * Math.pow(10, this.rounding_factor())) / Math.pow(10, this.rounding_factor());
         },
         update_value_from_backend_change: function(value) {
-            console.log(value);
             var that = this;
             this.setState({
                 value: that.validate_input_and_format(value)

@@ -10,6 +10,11 @@
 		shouldComponentUpdate : function() {
 			return false;
 		},
+		manual_sweep: function() {
+			setTimeout(function() {
+				sweeper.start_manual_sweep();
+			}, 200);
+		},
 		auto_sweep: function() {
 			setTimeout(function() {
 				sweeper.start_auto_sweep();
@@ -33,8 +38,8 @@
 							Click and drag on the graphs to zoom in and out.
 						</div>
 						<button className="action-button" onClick={this.auto_sweep}>Auto Sweep</button>
-						<button className="action-button" onClick={sweeper.start_manual_sweep}>Manual Sweep</button>
-						<button className="action-button" onClick={sweeper.clear}>Clear</button>
+						<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
+						<button className="action-button" onClick={this.clear}>Clear</button>
 						<InlineSweepControls/>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

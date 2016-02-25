@@ -24,7 +24,6 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
                 sum_of_squares += Math.pow(data[i+2], 2);
                 self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
             }
-            console.log(sum_of_squares);
             this.setState({
                 sum: this.state.sum + sum,
                 num_points: this.state.num_points + (data.length / 3),
