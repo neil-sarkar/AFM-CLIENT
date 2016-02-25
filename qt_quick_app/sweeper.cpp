@@ -5,6 +5,7 @@
 #include <QPointF>
 #include "QFinalState"
 #include <QtGlobal>
+#include <QTimer>
 
 Sweeper::Sweeper(PID* pid_) : MinStepSize(1) {
     // to be loaded from a settings file
@@ -87,8 +88,9 @@ void Sweeper::start_manual_sweep() {
         m_step_sizes.append(m_step_size);
         m_boundaries.append((m_end_frequency - m_start_frequency) / 2);
         m_num_repetitions = 1;
-        m_state_machine.start();
     }
+    m_state_machine.start(); // doesn't run if the state machine is running, but will print an error. 
+    // Good to keep this outside of the if statement for debugging.
 }
 
 void Sweeper::start_auto_sweep() {
@@ -105,8 +107,8 @@ void Sweeper::start_auto_sweep() {
         m_step_sizes.append(m_step_size / 8);
         m_boundaries.append(boundary / 8);
         m_num_repetitions = 3;
-        m_state_machine.start();
     }
+    m_state_machine.start();
 }
 
 void Sweeper::initialize_machine() {
@@ -125,7 +127,7 @@ void Sweeper::frequency_sweep() {
     dds->set_step_size(m_step_sizes[m_repetitions_counter]);
     qDebug() << "Sweeping with: start = " << dds->start_frequency() << " end = " << dds->end_frequency() << " and step size = " << dds->step_size();
     dds->cmd_set();
-    cmd_frequency_sweep();
+    QTimer::singleShot(50, this, SLOT(cmd_frequency_sweep())); // I think we want to give time for the DDS to settle
 }
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {

@@ -13,7 +13,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 			return (
 				<div>
 					<NumberInput value_type="sweep"
-								name="Start frequency"
+								name="Start frequency (Hz)"
 								min={0}
 								max={100000}
 								step={1}
@@ -21,7 +21,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 								get_value={sweeper.start_frequency}
 								set_value={sweeper.set_start_frequency} />
 					<NumberInput value_type="sweep"
-								name="Stop frequency"
+								name="Stop frequency (Hz)"
 								min={0}
 								max={100000}
 								step={1}
@@ -29,7 +29,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 								get_value={sweeper.end_frequency}
 								set_value={sweeper.set_end_frequency} />
 					<NumberInput value_type="sweep" 
-								name="Step size"
+								name="Step size (Hz)"
 								min={1}
 								max={300}
 								step={1}

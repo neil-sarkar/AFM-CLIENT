@@ -93,6 +93,7 @@
         <file>z_fine_graph.jsx</file>
         <file>dropdown.jsx</file>
         <file>inline_sweep_controls.jsx</file>
+        <file>dds_controller.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid", "jsx!pages/dds_controller"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl, DDSControl) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -42,17 +42,6 @@
 							<MotorControl />
 							<p className="setting-section-name">PID Control</p>
 							<PIDControl />
-							<p className="setting-section-name">PGAs (/100%)</p>
-							<div className="settings-container">
-								<PGAController name="X1" qt_object={pga_1}/>
-								<PGAController name="X2" qt_object={pga_2}/>
-								<PGAController name="Y1" qt_object={pga_3}/>
-								<PGAController name="Y2" qt_object={pga_4}/>
-								<PGAController name="Z Fine" qt_object={pga_5}/>
-								<PGAController name="Z Coarse" qt_object={pga_7}/>
-								<PGAController name="DDS" qt_object={pga_6}/>
-								<PGAController name="Leveling" qt_object={pga_8}/>
-							</div>
 							<p className="setting-section-name">DACs (/3.3V)</p>
 							<div className="settings-container">
 								<DACController name="Buffered 1" qt_object={dac_0}/>
@@ -67,6 +56,17 @@
 								<DACController name="Y2" qt_object={dac_9}/>
 								<DACController name="Z Fine" qt_object={dac_6} slider={true}/>
 								<DACController name="Z Coarse" qt_object={dac_8} slider={true}/>
+							</div>
+							<p className="setting-section-name">PGAs (/100%)</p>
+							<div className="settings-container">
+								<PGAController name="X1" qt_object={pga_1}/>
+								<PGAController name="X2" qt_object={pga_2}/>
+								<PGAController name="Y1" qt_object={pga_3}/>
+								<PGAController name="Y2" qt_object={pga_4}/>
+								<PGAController name="Z Fine" qt_object={pga_5}/>
+								<PGAController name="Z Coarse" qt_object={pga_7}/>
+								<PGAController name="DDS" qt_object={pga_6}/>
+								<PGAController name="Leveling" qt_object={pga_8}/>
 							</div>
 							<p className="setting-section-name">ADCs (/2.5V)</p>
 							<div className="settings-container">
@@ -87,6 +87,8 @@
 								<ADCController name="Y2" qt_object={adc_8} resistance={true}/>
 								<ADCController name="Z" qt_object={adc_2} resistance={true}/>
 							</div>
+							<p className="setting-section-name">DDS (Hz)</p>
+							<DDSControl />
 							<br />
 							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
 							<button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Reistances</button>

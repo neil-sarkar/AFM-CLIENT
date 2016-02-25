@@ -22,6 +22,8 @@ public:
     quint32 end_frequency();
     quint16 num_steps();
     Q_INVOKABLE void cmd_set();
+    void update_settings(QString, QVariant);
+    void set_settings();
 
 signals:
     void start_frequency_changed(int);
@@ -35,6 +37,7 @@ private:
     quint16 m_step_size;
     quint32 m_end_frequency;
     const double SCALE_FACTOR = double (qPow(2.0, 28) / (5.0*qPow(10,6)));
+    static const QString settings_group_name;
 };
 
 #endif // DDS_H

@@ -59,6 +59,8 @@ public slots:
     void initialize_machine();
     void finish_sweep();
 
+    void cmd_frequency_sweep();
+
 private:
     data_model m_amplitude_data;
     data_model m_phase_data;
@@ -74,7 +76,6 @@ private:
     quint32 m_end_frequency;
     quint16 m_step_size;
 
-    void cmd_frequency_sweep();
     callback_return_type bind(callback_type method);
     void callback_cmd_frequency_sweep(QByteArray return_bytes);
     void set_stable_frequency();
