@@ -15,16 +15,22 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
     m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/imageanalyzer");
     m_cache->setMaximumCacheSize(1000000); //set the cache to 10megs
     m_network->setCache(m_cache);
-    m_welcome_page.settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
-    m_welcome_page.settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
     setPage(&m_welcome_page);
     page()->setNetworkAccessManager(m_network);
+
     m_afm = afm;
     m_serial_port = serial_port;
     // Signal is emitted before frame loads any web content:
     QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
     QUrl startURL = QUrl("qrc:/html/main.html");
     m_welcome_page.mainFrame()->load(startURL);
+    set_global_web_settings();
+}
+
+void MainWindow::set_global_web_settings() {
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanOpenWindows, true);
+
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
@@ -36,6 +42,12 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
     QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
+}
+
+MainWindow::MainWindow(CustomPage* custom_page) {
+    setPage(custom_page);
+    set_global_web_settings();
+    QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
 }
 
 void MainWindow::addJSObject() {
@@ -61,6 +73,7 @@ void MainWindow::addJSObject() {
         QString name = "adc_" + QString::number(i.key());
         page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
+    qDebug() << "here";
 }
 
 void MainWindow::log_cpp(QString text) {
@@ -75,12 +88,18 @@ void MainWindow::load_home_page() {
     setPage(&m_welcome_page);
 }
 
-QWebView* MainWindow::createWindow()
-{
-    QWebView *webView = new QWebView;
-    QWebPage *newWeb = new QWebPage(webView);
+void MainWindow::pop_out_force_curve_page() {
+    qDebug() << "Opening force curve page";
+    createWindow(&m_force_curve_page);
+}
+
+QWebView* MainWindow::createWindow(CustomPage* page) {
+    MainWindow *webView= new MainWindow(page);
+    webView->m_afm = m_afm;
+    webView->m_serial_port = m_serial_port;
+    QUrl force_curve_URL = QUrl("qrc:/html/force_curve.html");
+    webView->page()->mainFrame()->load(force_curve_URL);
     webView->setAttribute(Qt::WA_DeleteOnClose, true);
-    webView->setPage(newWeb);
     webView->show();
 
     return webView;
@@ -92,13 +111,13 @@ CustomPage::CustomPage() {
 }
 
 void CustomPage::javaScriptAlert(QWebFrame *frame, const QString &msg) {
-    qDebug() << "here";
+    qDebug() << "js alert";
 }
 
 void CustomPage::handle(QNetworkReply* msg) {
-    qDebug() << "here!";
+    qDebug() << "handling unsupported content";
 }
 
 void CustomPage::downloadRequestedHandler(const QNetworkRequest & request) {
-    qDebug() << "download "; // request.url has the image of interest from the download buttons of highcharts.
+    qDebug() << "download requested"; // request.url has the image of interest from the download buttons of highcharts.
 }

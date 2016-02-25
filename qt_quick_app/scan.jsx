@@ -15,7 +15,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 		},
 		popout: function() {
 			console.log("popout");
-			main_window.createWindow();
+			main_window.pop_out_force_curve_page();
 		},
 		pause_scanning: function() {
 			this.setState({

@@ -18,6 +18,7 @@
         <file>home.html</file>
         <file>sweep.html</file>
         <file>main.html</file>
+        <file>force_curve.html</file>
     </qresource>
     <qresource prefix="/images">
         <file>icspi_logo_chopped.jpg</file>
@@ -94,6 +95,7 @@
         <file>dropdown.jsx</file>
         <file>inline_sweep_controls.jsx</file>
         <file>dds_controller.jsx</file>
+        <file>force_curve.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

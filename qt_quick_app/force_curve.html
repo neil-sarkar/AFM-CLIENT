@@ -1,0 +1,19 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>openAFM</title>
+  <link rel="stylesheet" type="text/css" href="qrc:/css/fonts.css">
+  <link rel="stylesheet" type="text/css" href="qrc:/css/sweep.css">
+</head>
+<body>
+	<div id="content"></div>
+
+</body>
+<script type="text/javascript" data-main="qrc:/js/common.js" src="qrc:/js/lib/require.js"></script>
+<script type="text/javascript">
+        require(["common"], function() {
+                require(['react', 'jsx!pages/force_curve'], function(){
+                })
+    });
+</script>
+</html>
