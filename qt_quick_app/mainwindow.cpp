@@ -5,11 +5,11 @@
 #include <QNetworkDiskCache>
 #include <QStandardPaths>
 #include <QWebSettings>
+#include <QNetworkRequest>
 
 MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
-
     m_network = new QNetworkAccessManager(this);
     m_cache = new QNetworkDiskCache(this);
     m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/imageanalyzer");
@@ -86,7 +86,19 @@ QWebView* MainWindow::createWindow()
     return webView;
 }
 
+CustomPage::CustomPage() {
+    QObject::connect(this, SIGNAL(downloadRequested(const QNetworkRequest&)), this, SLOT(downloadRequestedHandler(const QNetworkRequest&)));
+    QObject::connect(this, SIGNAL(unsupportedContent(QNetworkReply*)), this, SLOT(handle(QNetworkReply*)));
+}
+
 void CustomPage::javaScriptAlert(QWebFrame *frame, const QString &msg) {
     qDebug() << "here";
 }
 
+void CustomPage::handle(QNetworkReply* msg) {
+    qDebug() << "here!";
+}
+
+void CustomPage::downloadRequestedHandler(const QNetworkRequest & request) {
+    qDebug() << "download "; // request.url has the image of interest from the download buttons of highcharts.
+}

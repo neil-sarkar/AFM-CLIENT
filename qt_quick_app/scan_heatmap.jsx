@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "heatmap", "console", "underscore"], function($, React, ReactDOM, heatmap, console, _) {
+define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "console", "underscore"], function($, React, ReactDOM, heatmap, exporting, offline_exporting, console, _) {
     var ScanHeatMap = React.createClass({ // http://jsfiddle.net/gh/get/jquery/1.9.1/highslide-software/highcharts.com/tree/master/samples/maps/demo/heatmap/
         renderChart: function() {
             Highcharts.setOptions({

@@ -10,7 +10,12 @@
 class CustomPage: public QWebPage
 {
     Q_OBJECT
+public:
+    CustomPage();
     void javaScriptAlert(QWebFrame * frame, const QString & msg); // doesn't work
+public slots:
+        void downloadRequestedHandler(const QNetworkRequest & request);
+        void handle(QNetworkReply* msg);
 };
 
 
