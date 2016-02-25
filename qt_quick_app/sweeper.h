@@ -54,7 +54,7 @@ signals:
 
 public slots:
     void frequency_sweep();
-    int find_peak();
+    void find_peak();
     void initialize_machine();
     void finish_sweep();
 

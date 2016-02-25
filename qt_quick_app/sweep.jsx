@@ -11,10 +11,12 @@
 			return false;
 		},
 		auto_sweep: function() {
-			this.refs.graphs.clear();
 			setTimeout(function() {
 				sweeper.start_auto_sweep();
 			}, 200);
+		},
+		clear: function() {
+			this.refs.graphs.clear();
 		},
 		render: function() {
 			console.log('rendering');
@@ -28,9 +30,11 @@
 						<div className="step-description">
 							Press the "Sweep" button to begin a frequency sweep. When the graphs are populated, you may select
 							a frequency to drive the cantilever. By default, the resonant frequency is chosen.
+							Click and drag on the graphs to zoom in and out.
 						</div>
 						<button className="action-button" onClick={this.auto_sweep}>Auto Sweep</button>
 						<button className="action-button" onClick={sweeper.start_manual_sweep}>Manual Sweep</button>
+						<button className="action-button" onClick={sweeper.clear}>Clear</button>
 						<InlineSweepControls/>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

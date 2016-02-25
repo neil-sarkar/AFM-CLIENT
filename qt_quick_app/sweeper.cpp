@@ -83,8 +83,8 @@ void Sweeper::start_manual_sweep() {
     if (!m_state_machine.isRunning()) {
         m_step_sizes.clear();
         m_boundaries.clear();
-        m_step_sizes.append(dds->step_size());
-        m_boundaries.append((dds->end_frequency() - dds->start_frequency())/2);
+        m_step_sizes.append(m_step_size);
+        m_boundaries.append((m_end_frequency - m_start_frequency) / 2);
         m_num_repetitions = 1;
         m_state_machine.start();
     }
@@ -94,12 +94,15 @@ void Sweeper::start_auto_sweep() {
     if (!m_state_machine.isRunning()) {
         m_step_sizes.clear();
         m_boundaries.clear();
-        m_step_sizes.append(100);
-        m_boundaries.append((dds->end_frequency() - dds->start_frequency())/2);
-        m_step_sizes.append(10);
-        m_boundaries.append(500);
-        m_step_sizes.append(1);
-        m_boundaries.append(50);
+        m_step_sizes.append(m_step_size);
+        quint32 boundary = (m_end_frequency - m_start_frequency) / 2;
+        m_boundaries.append(boundary);
+
+        // these are hard coded in for "auto" mode - maybe we should break this out into a user panel to change
+        m_step_sizes.append(m_step_size / 4);
+        m_boundaries.append(boundary / 4);
+        m_step_sizes.append(m_step_size / 8);
+        m_boundaries.append(boundary / 8);
         m_num_repetitions = 3;
         m_state_machine.start();
     }
@@ -107,7 +110,7 @@ void Sweeper::start_auto_sweep() {
 
 void Sweeper::initialize_machine() {
     m_repetitions_counter = 0;
-    m_current_resonant_frequency = (dds->end_frequency() + dds->start_frequency())/2;
+    m_current_resonant_frequency = (m_end_frequency + m_start_frequency)/2;
     emit initialization_done();
 }
 
@@ -116,19 +119,17 @@ void Sweeper::frequency_sweep() {
         emit machine_finished();
         return;
     }
-    qDebug() << m_current_resonant_frequency << m_boundaries[m_repetitions_counter];
     dds->set_start_frequency(m_current_resonant_frequency - m_boundaries[m_repetitions_counter]);
     dds->set_end_frequency(m_current_resonant_frequency + m_boundaries[m_repetitions_counter]);
     dds->set_step_size(m_step_sizes[m_repetitions_counter]);
-    qDebug() << "Math" << m_current_resonant_frequency << m_boundaries;
-    qDebug() << "LOWER" << dds->start_frequency() << "UPPER" << dds->end_frequency();
+    qDebug() << "Sweeping with: start = " << dds->start_frequency() << " end = " << dds->end_frequency() << " and step size = " << dds->step_size();
     dds->cmd_set();
     cmd_frequency_sweep();
 }
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     quint32 current_frequency;
-    m_amplitude_data.clear(); // remove any past data
+    m_amplitude_data.clear(); // remove any past data from previous sweep iterations
     m_phase_data.clear();
     for (int i = 0; i < return_bytes.size(); i += 4) {
         current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
@@ -175,7 +176,7 @@ Sweeper::callback_return_type Sweeper::bind(Sweeper::callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-int Sweeper::find_peak() {
+void Sweeper::find_peak() {
     double max = 0;
     int max_index = -1;
     for (int i = 0; i < m_amplitude_data.size(); i++) {
@@ -188,7 +189,6 @@ int Sweeper::find_peak() {
     m_max_amplitude = max;
     qDebug() << "Found resonance at" << m_current_resonant_frequency << "Amplitude" << m_max_amplitude;
     emit peak_detection_done();
-    return 0;
 }
 
 void Sweeper::set_frequency_on_select(int frequency) {
@@ -205,6 +205,9 @@ void Sweeper::set_start_frequency(quint32 start_frequency, bool enforce_validity
         if (enforce_validity && m_start_frequency > m_end_frequency) {
             set_end_frequency(m_start_frequency);
         }
+        if (enforce_validity && m_end_frequency  - m_start_frequency < m_step_size) {
+            set_step_size((m_end_frequency - m_start_frequency)/4);
+        }
     }
 }
 
@@ -216,6 +219,9 @@ void Sweeper::set_end_frequency(quint32 end_frequency, bool enforce_validity) {
         update_settings("end_frequency", QVariant(m_end_frequency));
         if (enforce_validity && m_end_frequency < m_start_frequency) {
             set_start_frequency(m_end_frequency);
+        }
+        if (enforce_validity && m_end_frequency - m_start_frequency < m_step_size) {
+            set_step_size((m_end_frequency - m_start_frequency)/4);
         }
     }
 }

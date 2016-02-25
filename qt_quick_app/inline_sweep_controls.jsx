@@ -20,8 +20,8 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 								get_value={sweeper.end_frequency}
 								set_value={sweeper.set_end_frequency} />
 					<NumberInput value_type="sweep" 
-								name="Number of Steps"
-								min={0}
+								name="Step size"
+								min={0.01}
 								max={300}
 								step={0.01}  // does this even have 0.01 resolution?
 								notify_signal={sweeper.step_size_changed}
