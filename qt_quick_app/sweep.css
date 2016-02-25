@@ -241,3 +241,7 @@
     left: 25%;
     width: 50%;
 }
+
+.dropdown-option {
+    padding-left: 2%;
+}
