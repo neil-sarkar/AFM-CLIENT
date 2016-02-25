@@ -51,6 +51,7 @@ signals:
     void start_frequency_changed(int);
     void step_size_changed(int);
     void end_frequency_changed(int);
+    void num_steps_changed(double);
 
 public slots:
     void frequency_sweep();
@@ -77,7 +78,9 @@ private:
     callback_return_type bind(callback_type method);
     void callback_cmd_frequency_sweep(QByteArray return_bytes);
     void set_stable_frequency();
+    double calculate_num_steps();
     static const QString settings_group_name;
+    const quint16 MinStepSize;
 };
 
 #endif // SWEEPER_H

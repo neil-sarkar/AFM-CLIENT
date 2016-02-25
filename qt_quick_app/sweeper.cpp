@@ -4,8 +4,9 @@
 #include "pid.h"
 #include <QPointF>
 #include "QFinalState"
+#include <QtGlobal>
 
-Sweeper::Sweeper(PID* pid_) {
+Sweeper::Sweeper(PID* pid_) : MinStepSize(1) {
     // to be loaded from a settings file
     m_repetitions_counter = 0;
     pid = pid_;
@@ -208,6 +209,7 @@ void Sweeper::set_start_frequency(quint32 start_frequency, bool enforce_validity
         if (enforce_validity && m_end_frequency  - m_start_frequency < m_step_size) {
             set_step_size((m_end_frequency - m_start_frequency)/4);
         }
+        emit num_steps_changed(calculate_num_steps());
     }
 }
 
@@ -223,16 +225,25 @@ void Sweeper::set_end_frequency(quint32 end_frequency, bool enforce_validity) {
         if (enforce_validity && m_end_frequency - m_start_frequency < m_step_size) {
             set_step_size((m_end_frequency - m_start_frequency)/4);
         }
+        emit num_steps_changed(calculate_num_steps());
     }
 }
 
 void Sweeper::set_step_size(quint16 step_size) {
     if (m_step_size != step_size) {
-        m_step_size = step_size;
+        m_step_size = qMax(step_size, MinStepSize); // min step size is 1
         qDebug() << "Changing Sweeper step size to" << m_step_size;
         emit step_size_changed(static_cast<int>(m_step_size));
         update_settings("step_size", QVariant(m_step_size));
+        if (m_end_frequency - m_start_frequency < m_step_size) {
+            set_end_frequency(m_start_frequency + step_size * 2);
+        }
+        emit num_steps_changed(calculate_num_steps());
     }
+}
+
+double Sweeper::calculate_num_steps() {
+    return double(m_end_frequency - m_start_frequency) / m_step_size;
 }
 
 quint32 Sweeper::start_frequency() {
@@ -247,4 +258,4 @@ quint32 Sweeper::end_frequency() {
     return m_end_frequency;
 }
 
-const QString Sweeper::settings_group_name;
+const QString Sweeper::settings_group_name = "sweeper";
