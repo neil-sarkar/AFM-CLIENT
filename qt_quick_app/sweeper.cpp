@@ -83,11 +83,13 @@ void Sweeper::emit_dummy_data() {
 
 void Sweeper::start_manual_sweep() {
     if (!m_state_machine.isRunning()) {
+        emit reset();
         m_step_sizes.clear();
         m_boundaries.clear();
         m_step_sizes.append(m_step_size);
         m_boundaries.append((m_end_frequency - m_start_frequency) / 2);
         m_num_repetitions = 1;
+
     }
     m_state_machine.start(); // doesn't run if the state machine is running, but will print an error. 
     // Good to keep this outside of the if statement for debugging.
@@ -95,6 +97,7 @@ void Sweeper::start_manual_sweep() {
 
 void Sweeper::start_auto_sweep() {
     if (!m_state_machine.isRunning()) {
+        emit reset();
         m_step_sizes.clear();
         m_boundaries.clear();
         m_step_sizes.append(m_step_size);

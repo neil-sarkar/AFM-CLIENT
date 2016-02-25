@@ -92,10 +92,9 @@ void Scanner::initialize_scan_state_machine() {
     qDebug() << "Initializing";
     m_should_pause = false;
     emit scanner_initialization_done();
-    forward_data = new ScanData(m_num_rows, m_num_columns, m_ratio);
-    reverse_data = new ScanData(m_num_rows, m_num_columns, m_ratio);
+    forward_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
+    reverse_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
 }
-
 
 void Scanner::set_signal_generator() {
     cmd_set_signal_generator();
@@ -305,6 +304,34 @@ void Scanner::save_raw_data() {
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
+}
+
+int Scanner::get_delta_x_from_ratio() {
+    // should enum the scan ratios
+    switch (m_ratio) {
+        case 1:
+            return 1;
+        case 2:
+            return 1;
+        case 3:
+            return 3;
+        case 4:
+            return 7;
+    }
+}
+
+int Scanner::get_delta_y_from_ratio() {
+    // should enum the scan ratios
+    switch (m_ratio) {
+        case 1:
+            return 0;
+        case 2:
+            return 1;
+        case 3:
+            return 1;
+        case 4:
+            return 1;
+    }
 }
 
 const QString Scanner::settings_group_name = "scanner";

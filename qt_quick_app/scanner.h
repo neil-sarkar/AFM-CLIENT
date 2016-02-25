@@ -92,6 +92,8 @@ private:
     void cmd_set_send_back_count();
     void callback_step_scan(QByteArray payload);
     bool is_scanning_forward();
+    int get_delta_x_from_ratio();
+    int get_delta_y_from_ratio();
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
     bool scanning_forward;

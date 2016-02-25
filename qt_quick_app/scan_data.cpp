@@ -2,11 +2,13 @@
 #include "assert.h"
 #include "QDebug"
 
-ScanData::ScanData(int num_points, int num_lines, int ratio)
+ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y)
 {
     m_num_columns = num_points;
     m_num_rows = num_lines;
     m_ratio = ratio;
+    m_delta_x = delta_x;
+    m_delta_y = delta_y;
     m_x_index = -1;
     m_y_index = -1;
 }
@@ -27,7 +29,7 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     assert(!is_full());
     m_x_index = (m_x_index + 1) % m_num_columns;
     if (m_x_index == 0)
-        m_y_index++;
+        m_y_index += 1;
     DataPoint point;
     point.x = m_x_index;
     point.y = m_y_index;
