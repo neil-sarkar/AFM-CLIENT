@@ -6,12 +6,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             };
         },
         renderChart: function() {
-            var node = this.refs.lineProfileNode.getDOMNode();
+            var node = this.refs.lineProfileNode;
             jQuery(function ($) {
                 $(node).highcharts({
                     chart: {
                         plotBackgroundColor: '#EFEFEF',
-                        height: 300,
+                        height: 200,
                         type: 'line',
                         zoomType: 'x',
                     },
@@ -133,7 +133,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.renderChart();
             // this.props.establishDataConnection(this.handleNewDataWrapper);
             // this.props.newScan(this.erase_data);
-            var node = this.refs.lineProfileNode.getDOMNode();
+            var node = this.refs.lineProfileNode;
             var chart = $(node).highcharts();
             this.setState({
                 chart: chart,

@@ -130,7 +130,7 @@ void Sweeper::frequency_sweep() {
     dds->set_step_size(m_step_sizes[m_repetitions_counter]);
     qDebug() << "Sweeping with: start = " << dds->start_frequency() << " end = " << dds->end_frequency() << " and step size = " << dds->step_size();
     dds->cmd_set();
-    QTimer::singleShot(0, this, SLOT(cmd_frequency_sweep())); // I think we want to give time for the DDS to settle
+    cmd_frequency_sweep(); // should we delay this to allow dds to settle?
 }
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {

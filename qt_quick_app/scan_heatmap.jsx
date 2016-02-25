@@ -8,14 +8,14 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                     }
                 }
             });
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var self = this;
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
                     type: 'heatmap',
                     height: 400,
-                    width: 400,
+                    width: 475,
                 },
                 title: {
                     text: self.props.chart_name,
@@ -138,7 +138,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
             // this.props.newScan(this.erase_data);
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             this.setState({
                 chart: chart

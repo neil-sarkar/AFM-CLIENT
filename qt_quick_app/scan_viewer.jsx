@@ -64,10 +64,17 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
                 sum_of_squares: 0
             });
         },
+        hide: function() {
+            $(this.refs.heatmap).hide();
+            $(this.refs.line_profile).hide();
+        },
+        show: function() {
+            $(this.refs.heatmap).show();
+            $(this.refs.line_profile).show();
+        },
         eliminate_outliers: function() {
-            if (this.state.num_points == 0)
+            if (this.state.num_points === 0)
                 return;
-            
             var rms = Math.sqrt(this.state.sum_of_squares / this.state.num_points);
             var mean = this.state.sum / this.state.num_points;
             var rms_multiplier = scanner.rms_threshold();
@@ -78,9 +85,9 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         },
         render: function() {
             return (
-                <div>
-                    <ScanHeatMap ref="heatmap" chart_name="Forward Offset" handle_tooltip_select={this.handle_tooltip_select}/>
-                    <LineProfile ref="line_profile" chart_name="Forward Offset"/>
+                <div className="scan-viewer" id={this.props.id_test}>
+                    <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select}/>
+                    <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>
             );
         }

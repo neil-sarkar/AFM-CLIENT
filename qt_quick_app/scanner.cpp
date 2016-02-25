@@ -133,10 +133,11 @@ void Scanner::callback_step_scan(QByteArray payload) {
         double z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
         double z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
         double z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
-        if (scanning_forward)
+        if (scanning_forward) {
             forward_data->append(z_amplitude, z_offset, z_phase);
-        else
+        } else {
             reverse_data->append(z_amplitude, z_offset, z_phase);
+        }
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;
     }
