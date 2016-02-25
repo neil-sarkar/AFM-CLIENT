@@ -237,7 +237,7 @@
     left: 30%;
 }
 
-.reset-afm-button, .get-resistances-button, .restore-defaults-button {
+.reset-afm-button, .get-resistances-button, .restore-defaults-button, .force-curve-button {
     left: 25%;
     width: 50%;
 }

@@ -6,7 +6,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             $(node).highcharts({
                 chart: {
                     plotBackgroundColor: '#EFEFEF',
-                    height: 800,
+                    height: 500,
                     type: 'line',
                     zoomType: 'x',
                 },
@@ -25,6 +25,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                         title: {
                             text: 'Phase',
                         },
+                        opposite: true
                 }],
                 line: {
                     marker: {
@@ -32,7 +33,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     }
                 },
                 legend: {
-                    enabled: false
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    borderWidth: 0,
+                    floating: true,
+                    y: 36,
+                    x: 53
                 },
                 series: [],
             });
@@ -97,6 +104,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
             chart.redraw(false, false);
         },
+        clear: function() {
+            var node = this.refs.chartNode.getDOMNode();
+            var chart = $(node).highcharts();
+            while (chart.series.length)
+                chart.series[0].remove(false);
+            chart.redraw();
+        },
         componentDidMount: function() {
             this.renderChart();
             afm.new_approaching_amplitude_data.connect(this.handle_new_approaching_amplitude_data);
@@ -111,11 +125,15 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
     });
     
     var ForceCurveViewer = React.createClass({
+        clear: function() {
+            this.refs.chart.clear();
+        },
         render: function() {
             return (
                 <div>
-                    <ForceCurve />
+                    <ForceCurve ref="chart"/>
                     <button className="action-button" onClick={afm.cmd_generate_force_curve}>Generate</button>
+                    <button className="action-button" onClick={this.clear}>Clear</button>
                 </div>
             )
         }

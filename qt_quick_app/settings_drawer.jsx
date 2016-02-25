@@ -92,6 +92,7 @@
 							<br />
 							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
 							<button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Reistances</button>
+							<button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
 							<button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
 						</div>
 					</div>
