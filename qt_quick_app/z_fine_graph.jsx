@@ -1,7 +1,7 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
     var ZFineGraph = React.createClass({
         renderChart: function() {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
@@ -65,14 +65,14 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         });
         },
         handleNewData: function(dac_value) {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var point = [(new Date()).getTime(), dac_value];
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
         componentDidMount: function() {
             this.renderChart();
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             this.setState({
                 chart: $(node).highcharts()
             });

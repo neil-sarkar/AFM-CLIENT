@@ -1,7 +1,7 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
     var ApproachGraph = React.createClass({
         renderChart: function() {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
@@ -67,7 +67,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         handleNewData: function(approach_state, approach_adc_read) {
             // we don't use the appraoch state here...we use it in a separate dialog
             // might be worth refactoring the signal
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var point = [(new Date()).getTime(), approach_adc_read];
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
@@ -103,14 +103,14 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
         },
         handle_adc_value_changed: function(adc_value) {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var point = [(new Date()).getTime(), adc_value];
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
         componentDidMount: function() {
             this.renderChart();
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             this.setState({
                 chart: $(node).highcharts()
             });
@@ -119,7 +119,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
             var that = this;
             setTimeout(function() {
-                that.update_plotline(pid.setpoint());
+                that.update_plotline(pid.setpoint);
             }, 1000);
         },
         render: function() {
