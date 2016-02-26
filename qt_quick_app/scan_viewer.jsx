@@ -17,16 +17,21 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             setTimeout(function(){ self.handle_new_data(data); }, 0);
         },
         handle_new_data: function(data) {
-            var self = this;
-            for (var i = 0; i < data.length; i += 3) {
-                self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
-            }
-            if (this.state.visible === true)
+            if (this.state.visible === true) {
+                var self = this;
+                for (var i = 0; i < data.length; i += 3) {
+                    self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
+                }
                 this.prompt_redraw();
+            }
         },
         set_visible:function(bool) {
+            var that = this;
             this.setState({
                 visible: bool
+            }, function() {
+                if (bool)
+                    that.prompt_redraw();
             });
         },
         dispatch_data: function(x, y, z, new_series) {
@@ -63,13 +68,9 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         },
         hide: function() {
             $('#' + this.props.dom_id).hide();
-            // $(this.refs.heatmap).hide();
-            // $(this.refs.line_profile).hide();
         },
         show: function() {
             $('#' + this.props.dom_id).show();
-            // $(this.refs.heatmap).show();
-            // $(this.refs.line_profile).show();
         },
         eliminate_outliers: function() {
             if (this.state.num_points === 0)
@@ -87,7 +88,7 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             if (this.state.visible)
                 style = {display: "block"};
             else
-                style= {display: "none  "};
+                style= {display: "none"};
 
             return (
                 <div className="scan-viewer" id={this.props.dom_id} style={style}>

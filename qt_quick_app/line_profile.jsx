@@ -35,7 +35,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             });
         },
         asyncAddPoint: function(y, z) {
-            this.state.chart.series[this.state.chart.series.length - 1].addPoint([y, z], false, false); // add point WITHOUT redrawing or animating
+            this.state.chart.series[this.state.chart.series.length - 1].addPoint([y, z], false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
             var self = this;
