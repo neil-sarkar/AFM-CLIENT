@@ -1,4 +1,4 @@
-define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pages/scan_heatmap"], function(React, ReactDOM, heatmap, console, LineProfile, ScanHeatMap) {
+define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_heatmap"], function(React, ReactDOM, heatmap, LineProfile, ScanHeatMap) {
     var ScanViewer = React.createClass({
         getInitialState: function() {
             return {
@@ -36,13 +36,25 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
                 visible: bool
             }, function() {
                 if (bool) {
-                    for (var i = 0; i < this.state.buffer.length; i += 3) {
-                        this.dispatch_data(this.state.buffer[i], this.state.buffer[i+1], this.state.buffer[i+2], (i === 0));
+                    var num_data_per_line = 128 * 3;
+                    var num_lines = this.state.buffer.length / num_data_per_line;
+                    console.log(that.state.buffer);
+                    for (var j = 0; j < num_lines; j++) {
+                        setTimeout(function() {
+                            var offset = j * num_lines;
+                            for (var i = 0; i < num_data_per_line; i += 3) {
+                                var x = that.state.buffer[i + offset];
+                                var y = that.state.buffer[i+1 + offset];
+                                var z = that.state.buffer[i+2 + offset];
+                                that.dispatch_data(x, y, z, (i === 0));
+                            }
+                            that.prompt_redraw();
+                        }, j*10);
                     }
-                    that.prompt_redraw();
-                    this.setState({
-                        buffer: []
-                    });
+                    
+                    // this.setState({
+                    //     buffer: []
+                    // });
                 }
             });
         },
