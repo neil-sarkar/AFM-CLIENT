@@ -5,6 +5,7 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 sum: 0, // sum of all data being plotted
                 num_points: 0, // total number of points plotted
                 sum_of_squares: 0,
+                num_lines: 0,
                 visible: false,
                 buffer: []
                 // together, we find the average
@@ -29,6 +30,26 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                     buffer: this.state.buffer.concat(data)
                 });
             }
+            if (this.state.num_lines % 6 == this.props.order_num && !this.state.visible) {
+                console.log("Processing buffer for", this.props.order_num);
+                this.process_buffer();
+                console.log(this.state.buffer.length);
+            }
+
+            this.setState({
+                num_lines: this.state.num_lines + 1
+            });
+        },
+        process_buffer : function() {
+            for (var i = 0; i < this.state.buffer.length; i += 3) {
+                var x = this.state.buffer[i];
+                var y = this.state.buffer[i+1];
+                var z = this.state.buffer[i+2];
+                this.dispatch_data(x, y, z, (i % (128 * 3) === 0));
+            }
+            this.setState({
+                buffer: []
+            });
         },
         set_visible:function(bool) {
             var that = this;
@@ -36,25 +57,7 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 visible: bool
             }, function() {
                 if (bool) {
-                    var num_data_per_line = 128 * 3;
-                    var num_lines = this.state.buffer.length / num_data_per_line;
-                    console.log(that.state.buffer);
-                    for (var j = 0; j < num_lines; j++) {
-                        setTimeout(function() {
-                            var offset = j * num_lines;
-                            for (var i = 0; i < num_data_per_line; i += 3) {
-                                var x = that.state.buffer[i + offset];
-                                var y = that.state.buffer[i+1 + offset];
-                                var z = that.state.buffer[i+2 + offset];
-                                that.dispatch_data(x, y, z, (i === 0));
-                            }
-                            that.prompt_redraw();
-                        }, j*10);
-                    }
-                    
-                    // this.setState({
-                    //     buffer: []
-                    // });
+                    that.process_buffer();
                 }
             });
         },

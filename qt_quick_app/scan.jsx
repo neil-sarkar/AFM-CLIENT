@@ -97,7 +97,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 						<div className="scan-viewer-container">
                           {this.props.scan_views.map(function(option, i) {
                             return (
-                              <ScanViewer key={i} dom_id={option.id} name={option.title} ref={'view' + i} data_source={option.data_connection}/>
+                              <ScanViewer key={i} order_num={i} dom_id={option.id} name={option.title} ref={'view' + i} data_source={option.data_connection}/>
                             );
                           })}
                         </div>
