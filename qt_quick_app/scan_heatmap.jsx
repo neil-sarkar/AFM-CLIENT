@@ -161,6 +161,9 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                 this.state.chart.series[0].remove(false);
             this.state.chart.series[0].setData([]);
         },
+        set_data: function(data) {
+            this.state.chart.series[0].setData(data);
+        },
         redraw: function() {
             this.state.chart.redraw(false);
         },

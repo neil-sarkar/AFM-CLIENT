@@ -30,12 +30,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 			});
 		},
 		componentDidMount: function() {
-			scanner.all_data_received.connect(this.set_scan_complete);
-			$("#reverse").hide();
-			$('#background0').hide();
-			$('#background1').hide();
-			$('#background2').hide();
-			$('#background3').hide();
+			scanner.all_data_received.connect(this.set_scan_complete);	
 		},
 		// this whole tristate scanning button really should just be done with a dictionary
 		start_or_resume_scanning: function() {
@@ -43,10 +38,6 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 				scanning: true,
 			}, function(){
 				if (this.state.starting_fresh_scan) {
-					this.refs.view0.clear();
-					this.refs.view1.clear();
-					this.refs.view2.clear();
-					this.refs.view3.clear();
 					scanner.start_state_machine();
 				} else {
 					scanner.resume_state_machine();
@@ -74,12 +65,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 			this.refs.forward_offset_scan_viewer.eliminate_outliers();
 		},
 		handle_view_selector_click: function(index) {
-			for (var i = 0; i < this.props.scan_views.length; i += 1) {
-				if (i == index)
-					continue;
-				this.refs["view" + i].set_visible(false);
-			}
-			this.refs["view" + index].set_visible(true);
+			this.refs.scan_viewer.switch_view(index);
 		},
 		render: function() {
 			 // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)
@@ -94,13 +80,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
                           	 	);
                           	}, this)}
                         </div>
-						<div className="scan-viewer-container">
-                          {this.props.scan_views.map(function(option, i) {
-                            return (
-                              <ScanViewer key={i} order_num={i} dom_id={option.id} name={option.title} ref={'view' + i} data_source={option.data_connection}/>
-                            );
-                          })}
-                        </div>
+                        <ScanViewer ref="scan_viewer" order_num={0}/>
 						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">

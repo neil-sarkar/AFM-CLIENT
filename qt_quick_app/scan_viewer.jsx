@@ -6,13 +6,52 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 num_points: 0, // total number of points plotted
                 sum_of_squares: 0,
                 num_lines: 0,
-                visible: false,
-                buffer: []
-                // together, we find the average
+                visible: true,
+                buffer: [],
+                fwd: [],
+                rev: []
             };
         },
         componentDidMount: function() {
-            this.props.data_source.connect(this.handle_new_data_wrapper);
+            // this.props.data_source.connect(this.handle_new_data_wrapper);
+            scanner.new_forward_offset_data.connect(this.add_fwd_data);
+            scanner.new_reverse_offset_data.connect(this.add_rev_data);
+        },
+        add_fwd_data: function(data) {
+            prepared_data = [];
+            for (var i = 0; i < data.length; i += 3)
+                prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
+
+            this.setState({
+                fwd: this.state.fwd.concat(prepared_data)
+            }, function() {
+                if (this.state.view === 0)
+                    this.refs.heatmap.set_data(this.state.fwd); // maybe put these on separate series?
+            });
+        },
+        add_rev_data: function(data) {
+            prepared_data = [];
+            for (var i = 0; i < data.length; i += 3)
+                prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
+
+            this.setState({
+                rev: this.state.rev.concat(prepared_data)
+            }, function() {
+                if (this.state.view == 1)
+                    this.refs.heatmap.set_data(this.state.rev);
+            });
+        },
+        switch_view: function(i) {
+            if (this.state.view != i) {
+                this.setState({
+                    view: i
+                });
+                this.refs.heatmap.set_data([]);
+                if (i === 0)
+                    this.refs.heatmap.set_data(this.state.fwd);
+                else
+                    this.refs.heatmap.set_data(this.state.rev);
+            }
         },
         handle_new_data_wrapper: function(data) {
             var self = this;
