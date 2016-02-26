@@ -31,9 +31,7 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 });
             }
             if (this.state.num_lines % 6 == this.props.order_num && !this.state.visible) {
-                console.log("Processing buffer for", this.props.order_num);
                 this.process_buffer();
-                console.log(this.state.buffer.length);
             }
 
             this.setState({
