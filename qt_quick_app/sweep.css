@@ -245,3 +245,11 @@
 .dropdown-option {
     padding-left: 2%;
 }
+
+.scan-view-selector-container {
+    position:absolute;
+}
+
+.view-selector-button {
+    cursor:pointer;
+}

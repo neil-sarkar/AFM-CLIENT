@@ -8,25 +8,31 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 num_lines: 0,
                 visible: true,
                 buffer: [],
-                fwd: [],
-                rev: []
+                fwd_offset: [],
+                rev_offset: [],
+                fwd_amplitude: [],
+                rev_amplitude: [],
             };
         },
         componentDidMount: function() {
             // this.props.data_source.connect(this.handle_new_data_wrapper);
             scanner.new_forward_offset_data.connect(this.add_fwd_data);
             scanner.new_reverse_offset_data.connect(this.add_rev_data);
+            scanner.new_forward_offset_data.connect(this.add_fwd_amp_data);
+            scanner.new_reverse_offset_data.connect(this.add_rev_amp_data);
         },
         add_fwd_data: function(data) {
+            console.log("called");
             prepared_data = [];
             for (var i = 0; i < data.length; i += 3)
                 prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
 
             this.setState({
-                fwd: this.state.fwd.concat(prepared_data)
+                fwd_offset: this.state.fwd_offset.concat(prepared_data)
             }, function() {
+                console.log(this.state.view, this.state.fwd_offset.length);
                 if (this.state.view === 0)
-                    this.refs.heatmap.set_data(this.state.fwd); // maybe put these on separate series?
+                    this.refs.heatmap.set_data(this.state.fwd_offset); // maybe put these on separate series?
             });
         },
         add_rev_data: function(data) {
@@ -35,10 +41,34 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
 
             this.setState({
-                rev: this.state.rev.concat(prepared_data)
+                rev_offset: this.state.rev_offset.concat(prepared_data)
             }, function() {
                 if (this.state.view == 1)
-                    this.refs.heatmap.set_data(this.state.rev);
+                    this.refs.heatmap.set_data(this.state.rev_offset);
+            });
+        },
+        add_fwd_amp_data: function(data) {
+            prepared_data = [];
+            for (var i = 0; i < data.length; i += 3)
+                prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
+
+            this.setState({
+                fwd_amplitude: this.state.fwd_amplitude.concat(prepared_data)
+            }, function() {
+                if (this.state.view === 2)
+                    this.refs.heatmap.set_data(this.state.fwd_amplitude); // maybe put these on separate series?
+            });
+        },
+        add_rev_amp_data: function(data) {
+            prepared_data = [];
+            for (var i = 0; i < data.length; i += 3)
+                prepared_data.push({x: data[i], y: data[i+1], value: data[i+2]});
+
+            this.setState({
+                rev_amplitude: this.state.rev_amplitude.concat(prepared_data)
+            }, function() {
+                if (this.state.view == 3)
+                    this.refs.heatmap.set_data(this.state.rev_amplitude);
             });
         },
         switch_view: function(i) {
@@ -48,9 +78,13 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 });
                 this.refs.heatmap.set_data([]);
                 if (i === 0)
-                    this.refs.heatmap.set_data(this.state.fwd);
-                else
-                    this.refs.heatmap.set_data(this.state.rev);
+                    this.refs.heatmap.set_data(this.state.fwd_offset);
+                else if (i == 1)
+                    this.refs.heatmap.set_data(this.state.rev_offset);
+                else if (i == 2)
+                    this.refs.heatmap.set_data(this.state.fwd_amplitude);
+                else if (i == 3)
+                    this.refs.heatmap.set_data(this.state.rev_amplitude);
             }
         },
         handle_new_data_wrapper: function(data) {
@@ -148,14 +182,8 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         render: function() {
-            var style = {};
-            if (this.state.visible)
-                style = {display: "block"};
-            else
-                style= {display: "none"};
-
             return (
-                <div className="scan-viewer" id={this.props.dom_id} style={style}>
+                <div className="scan-viewer" id={this.props.dom_id}>
                     <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
                     <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>

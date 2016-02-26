@@ -76,7 +76,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
                           	{this.props.scan_views.map(function(option, i) {
                           	var boundClick = this.handle_view_selector_click.bind(this, i);
                           	return (
-                          	 	<p ref={'view_selector' + option.dom_id} onClick={boundClick}> {option.title}</p>
+                          	 	<p className="view-selector-button" ref={'view_selector' + option.dom_id} onClick={boundClick}> {option.title}</p>
                           	 	);
                           	}, this)}
                         </div>
