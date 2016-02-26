@@ -6,6 +6,7 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
                 num_points: 0, // total number of points plotted
                 sum_of_squares: 0,
                 visible: false,
+                buffer: []
                 // together, we find the average
             };
         },
@@ -17,12 +18,16 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             setTimeout(function(){ self.handle_new_data(data); }, 0);
         },
         handle_new_data: function(data) {
+            var self = this;
             if (this.state.visible === true) {
-                var self = this;
                 for (var i = 0; i < data.length; i += 3) {
                     self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
                 }
                 this.prompt_redraw();
+            } else {
+                this.setState({
+                    buffer: this.state.buffer.concat(data)
+                });
             }
         },
         set_visible:function(bool) {
@@ -30,8 +35,15 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             this.setState({
                 visible: bool
             }, function() {
-                if (bool)
+                if (bool) {
+                    for (var i = 0; i < this.state.buffer.length; i += 3) {
+                        this.dispatch_data(this.state.buffer[i], this.state.buffer[i+1], this.state.buffer[i+2], (i === 0));
+                    }
                     that.prompt_redraw();
+                    this.setState({
+                        buffer: []
+                    });
+                }
             });
         },
         dispatch_data: function(x, y, z, new_series) {
