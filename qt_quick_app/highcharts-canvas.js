@@ -56,7 +56,7 @@ define([], function() {
 	                }
 	            });
 
-	            this.canvasToSVG();
+	            // this.canvasToSVG();
 
 	        } else {
 	            this.chart.showLoading('Your browser doesn\'t support HTML5 canvas, <br>please use a modern browser');
