@@ -70,7 +70,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
         });
         },
         asyncAddPoint: function(x, y, z) {
-            this.state.chart.series[0].addPoint([x, y, z], false); // add point WITHOUT redrawing or animating
+            this.state.chart.series[0].addPoint([x, y, z], false, false, false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
             var self = this;
@@ -92,7 +92,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             this.state.chart.series[0].setData([]);
         },
         redraw: function() {
-            this.state.chart.redraw();
+            this.state.chart.redraw(false);
         },
         eliminate_outliers: function(min_cutoff, max_cuttoff) {
             this.state.chart.addSeries({
@@ -118,7 +118,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                 this.state.chart.series[this.state.chart.series.length - 1].addPoint({x: x, y: y, value: curr_value}, false, false);
             }
             this.state.chart.colorAxis[0].setExtremes(sample_min, sample_max);
-            this.state.chart.redraw();
+            this.state.chart.redraw(false);
             for (var j = 0; j < this.state.chart.series.length - 1; j++)
                 this.state.chart.series[j].hide();
 

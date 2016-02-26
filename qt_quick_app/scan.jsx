@@ -70,21 +70,16 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 			// so data doesn't get rendered 
 			// (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
 		},
-		show_forward: function() {
-			$('.scan-viewer').hide();
-			$('#forward').show();
-		},
-		show_reverse: function() {
-			$('.scan-viewer').hide();
-			$('#reverse').show();	
-		},
-		eliminate_outliers: function() {	
+		eliminate_outliers: function() {
 			this.refs.forward_offset_scan_viewer.eliminate_outliers();
 		},
 		handle_view_selector_click: function(index) {
-			$('.scan-viewer').hide();
-			$('#' + this.props.scan_views[index].id).show();
-			//show by id thorugh index
+			for (var i = 0; i < this.props.scan_views.length; i += 1) {
+				if (i == index)
+					continue;
+				this.refs["view" + i].set_visible(false);
+			}
+			this.refs["view" + index].set_visible(true);
 		},
 		render: function() {
 			 // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)

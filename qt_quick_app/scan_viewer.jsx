@@ -4,7 +4,8 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             return {
                 sum: 0, // sum of all data being plotted
                 num_points: 0, // total number of points plotted
-                sum_of_squares: 0
+                sum_of_squares: 0,
+                visible: false,
                 // together, we find the average
             };
         },
@@ -17,21 +18,16 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         },
         handle_new_data: function(data) {
             var self = this;
-            var sum = 0;
-            var sum_of_squares = 0;
-            console.log("starting to handle new data", data.length);
             for (var i = 0; i < data.length; i += 3) {
-                sum += data[i+2];
-                sum_of_squares += Math.pow(data[i+2], 2);
                 self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
             }
-            console.log("ending to handle new data", data.length);
+            if (this.state.visible === true)
+                this.prompt_redraw();
+        },
+        set_visible:function(bool) {
             this.setState({
-                sum: this.state.sum + sum,
-                num_points: this.state.num_points + (data.length / 3),
-                sum_of_squares: this.state.sum_of_squares + sum_of_squares
+                visible: bool
             });
-            this.prompt_redraw();
         },
         dispatch_data: function(x, y, z, new_series) {
             var self = this;
@@ -66,12 +62,14 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             });
         },
         hide: function() {
-            $(this.refs.heatmap).hide();
-            $(this.refs.line_profile).hide();
+            $('#' + this.props.dom_id).hide();
+            // $(this.refs.heatmap).hide();
+            // $(this.refs.line_profile).hide();
         },
         show: function() {
-            $(this.refs.heatmap).show();
-            $(this.refs.line_profile).show();
+            $('#' + this.props.dom_id).show();
+            // $(this.refs.heatmap).show();
+            // $(this.refs.line_profile).show();
         },
         eliminate_outliers: function() {
             if (this.state.num_points === 0)
@@ -85,9 +83,15 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         render: function() {
+            var style = {};
+            if (this.state.visible)
+                style = {display: "block"};
+            else
+                style= {display: "none  "};
+
             return (
-                <div className="scan-viewer" id={this.props.dom_id}>
-                    <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select}/>
+                <div className="scan-viewer" id={this.props.dom_id} style={style}>
+                    <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
                     <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>
             );
