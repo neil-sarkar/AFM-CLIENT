@@ -6,7 +6,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
             var dataSeries = this.state.model;
             var series = this.generate_initial_series();
-            console.log("rendering chart", series);
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {

@@ -21,7 +21,6 @@ define(["react", "console", "underscore"], function(React, console, _) {
             this.setState({text: this.props.options_list[value].text});
         },
         render: function() {
-            console.log(this.props.options_list);
             return (
                 <div className="dropdown">
                     <p style={{display: "inline"}}> Scan ratio: </p>

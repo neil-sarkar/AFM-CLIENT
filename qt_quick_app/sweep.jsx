@@ -24,7 +24,6 @@
 			this.refs.graphs.clear();
 		},
 		render: function() {
-			console.log('rendering');
 			return (
 				<div className="wrapper" id="sweep-wrapper">
 					<div className="left-flexbox">

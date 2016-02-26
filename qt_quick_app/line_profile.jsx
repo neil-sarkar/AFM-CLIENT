@@ -48,7 +48,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.addSeries(); // create a new series
             var new_series_index = this.state.chart.series.length - 1;
             for (var i = 0; i < data.length; i += 3) {
-                console.log("adding points");
                 self.asyncAddPoint(new_series_index, i, data);
             }
             setTimeout(function() {
@@ -104,7 +103,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.state.chart.series[series_index].show();
         },
         print_series: function() {
-            console.log(this.state.chart.series);
+            console.log("deprecated method");
         },
         clear_plotlines: function() {
             while (this.state.chart.yAxis[0].plotLinesAndBands.length) {

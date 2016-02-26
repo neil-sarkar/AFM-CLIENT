@@ -8,7 +8,6 @@
 		},
 		render: function() {
 			var steps = [];
-			console.log(this.props.step_list);
 			for (var step in this.props.step_list) {
 				steps.push(<ProgressBarStep key={step} name={this.props.step_list[step]} this_step={step} go_to_step={this.props.go_to_step}/>);
 			}

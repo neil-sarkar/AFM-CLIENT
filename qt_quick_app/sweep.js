@@ -75,7 +75,6 @@ define(["jquery", "highcharts"], function($, highcharts) {
     }
 
     function update_chart(chart, data, name) {
-        console.log("updating chart");
         var two_dimensional_data = [];
         var min_x = 100000;
         var max_x = 0;

@@ -21,7 +21,7 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
                             set_value={dds.set_end_frequency} />
                 <NumberInput value_type="sweep" 
                             name="Step size (Hz)"
-                            min={1}
+                            min={0}
                             max={300}
                             step={1}
                             notify_signal={dds.step_size_changed}

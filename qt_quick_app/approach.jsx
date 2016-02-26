@@ -25,14 +25,14 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph"], function
 
 			// hacky way to allow force curve to take precedence and not have the 
 			// streaming commands be queued while the force curve is going
-			window.onblur = function() {
-				this.refs.z_fine_graph.stop_streaming();
-				this.refs.approach_graph.stop_streaming();
-			}.bind(this);
-			window.onfocus = function() {
-				this.refs.z_fine_graph.start_streaming();
-				this.refs.approach_graph.start_streaming();
-			}.bind(this);
+			// window.onblur = function() {
+			// 	this.refs.z_fine_graph.stop_streaming();
+			// 	this.refs.approach_graph.stop_streaming();
+			// }.bind(this);
+			// window.onfocus = function() {
+			// 	this.refs.z_fine_graph.start_streaming();
+			// 	this.refs.approach_graph.start_streaming();
+			// }.bind(this);
 		},
 		handleNewData: function(approacher_state, approacher_adc_read) {
 			approacher_state = parseInt(approacher_state);

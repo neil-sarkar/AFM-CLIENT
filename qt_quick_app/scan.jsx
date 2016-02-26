@@ -43,7 +43,10 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 				scanning: true,
 			}, function(){
 				if (this.state.starting_fresh_scan) {
-					this.refs.forward_offset_scan_viewer.clear();
+					this.refs.view0.clear();
+					this.refs.view1.clear();
+					this.refs.view2.clear();
+					this.refs.view3.clear();
 					scanner.start_state_machine();
 				} else {
 					scanner.resume_state_machine();
@@ -58,10 +61,12 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 			scanner.reset();
 			var that = this;
 			setTimeout(function() {
-				that.refs.forward_offset_scan_viewer.clear();
-				that.refs.reverse_offset_scan_viewer.clear();
+				that.refs.view0.clear();
+				that.refs.view1.clear();
+				that.refs.view2.clear();
+				that.refs.view3.clear();
 				that.set_scan_complete();
-			}, 200); // give time for the scnaner to actually pause 
+			}, 100); // give time for the scnaner to actually pause 
 			// so data doesn't get rendered 
 			// (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
 		},
@@ -76,43 +81,31 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
 		eliminate_outliers: function() {	
 			this.refs.forward_offset_scan_viewer.eliminate_outliers();
 		},
+		handle_view_selector_click: function(index) {
+			$('.scan-viewer').hide();
+			$('#' + this.props.scan_views[index].id).show();
+			//show by id thorugh index
+		},
 		render: function() {
 			 // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)
 			return (
 				<div className="wrapper" id="scan-wrapper">
 					<div className="left-flexbox">
-						<span onClick={this.show_forward}>forward</span>
-						<span onClick={this.show_reverse}>reverse</span>
-						<ScanViewer id_test="forward" 
-									ref="forward_offset_scan_viewer" 
-									establishDataConnection={scanner.new_forward_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Forward" />
-						<ScanViewer id_test="reverse" 
-									ref="reverse_offset_scan_viewer" 
-									establishDataConnection={scanner.new_reverse_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Reverse"/>
-						<ScanViewer id_test="background0" 
-									ref="forward_offset_scan_viewer" 
-									establishDataConnection={scanner.new_forward_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Forward" />
-						<ScanViewer id_test="background1" 
-									ref="reverse_offset_scan_viewer" 
-									establishDataConnection={scanner.new_reverse_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Reverse"/>
-						<ScanViewer id_test="background2" 
-									ref="forward_offset_scan_viewer" 
-									establishDataConnection={scanner.new_forward_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Forward" />
-						<ScanViewer id_test="background3" 
-									ref="reverse_offset_scan_viewer" 
-									establishDataConnection={scanner.new_reverse_offset_data.connect} 
-									newScan={scanner.started_scan_state_machine.connect}
-									name="Reverse"/>
+						<div className="scan-view-selector-container">
+                          	{this.props.scan_views.map(function(option, i) {
+                          	var boundClick = this.handle_view_selector_click.bind(this, i);
+                          	return (
+                          	 	<p ref={'view_selector' + option.dom_id} onClick={boundClick}> {option.title}</p>
+                          	 	);
+                          	}, this)}
+                        </div>
+						<div className="scan-viewer-container">
+                          {this.props.scan_views.map(function(option, i) {
+                            return (
+                              <ScanViewer key={i} dom_id={option.id} name={option.title} ref={'view' + i} data_source={option.data_connection}/>
+                            );
+                          })}
+                        </div>
 						<button className="action-button" onClick={this.popout}>Popout</button>
 					</div>
 					<div className="right-flexbox">

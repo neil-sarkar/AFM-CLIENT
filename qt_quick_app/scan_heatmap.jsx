@@ -73,12 +73,10 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             this.state.chart.series[0].addPoint([x, y, z], false); // add point WITHOUT redrawing or animating
         },
         handleNewDataWrapper: function(data) {
-            console.log("wrapper entered", data[0]);
             var self = this;
             setTimeout(function(){ self.handleNewData(data); }, 0);
         },
         handleNewData: function(data) {
-            console.log("handling new data", data[0]);
             var self = this;
             var add_point = this.state.chart.series[0].addPoint;
             for (var i = 0; i < data.length; i += 3) {
@@ -120,7 +118,6 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                 this.state.chart.series[this.state.chart.series.length - 1].addPoint({x: x, y: y, value: curr_value}, false, false);
             }
             this.state.chart.colorAxis[0].setExtremes(sample_min, sample_max);
-            console.log(this.state.chart.xAxis[0]);
             this.state.chart.redraw();
             for (var j = 0; j < this.state.chart.series.length - 1; j++)
                 this.state.chart.series[j].hide();

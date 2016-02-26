@@ -70,9 +70,9 @@ void ReceiveWorker::process_working_response() {
 void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
     if (tag != node->tag) {
         qDebug() << "tag mismatch " << tag << node->tag;
-        // assert (tag == node->tag);
+        assert (tag == node->tag);
     }
-    // assert (id  == node->id);
+    assert (id  == node->id);
 
     if (node->num_receive_bytes == Set_Receive_Bytes_Error) {
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
@@ -82,7 +82,7 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
         qDebug() << length << node->num_receive_bytes << node->id;
     }
 
-    // assert (length == node->num_receive_bytes);
+    assert (length == node->num_receive_bytes);
 }
 
 void ReceiveWorker::handle_asynchronous_message() {

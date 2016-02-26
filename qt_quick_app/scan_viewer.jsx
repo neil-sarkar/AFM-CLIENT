@@ -9,7 +9,7 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             };
         },
         componentDidMount: function() {
-            this.props.establishDataConnection(this.handle_new_data_wrapper);
+            this.props.data_source.connect(this.handle_new_data_wrapper);
         },
         handle_new_data_wrapper: function(data) {
             var self = this;
@@ -19,18 +19,19 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
             var self = this;
             var sum = 0;
             var sum_of_squares = 0;
+            console.log("starting to handle new data", data.length);
             for (var i = 0; i < data.length; i += 3) {
                 sum += data[i+2];
                 sum_of_squares += Math.pow(data[i+2], 2);
                 self.dispatch_data(data[i], data[i+1], data[i+2], (i === 0));
             }
+            console.log("ending to handle new data", data.length);
             this.setState({
                 sum: this.state.sum + sum,
                 num_points: this.state.num_points + (data.length / 3),
                 sum_of_squares: this.state.sum_of_squares + sum_of_squares
             });
             this.prompt_redraw();
-            this.refs.line_profile.print_series();
         },
         dispatch_data: function(x, y, z, new_series) {
             var self = this;
@@ -85,7 +86,7 @@ define(["react", "dom", "heatmap", "console", "jsx!pages/line_profile", "jsx!pag
         },
         render: function() {
             return (
-                <div className="scan-viewer" id={this.props.id_test}>
+                <div className="scan-viewer" id={this.props.dom_id}>
                     <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select}/>
                     <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>

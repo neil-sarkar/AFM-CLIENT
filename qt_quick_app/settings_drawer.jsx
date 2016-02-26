@@ -26,12 +26,6 @@
 					$("#settings-drawer-wrapper").css('visibility', 'hidden');
 				}
 			});
-
-			// listen for the return of a get resistances
-			afm.new_resistance_values.connect(this.display_get_resistances_result);
-		},
-		display_get_resistances_result: function(x1, x2, y1, y2, z) {
-			console.log(x1, x2, y1, y2, z);
 		},
 		render: function() {
 			var self = this;
