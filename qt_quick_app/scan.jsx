@@ -28,6 +28,20 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
             data: [],
             line_profile_data: [],
         },
+        {
+            name: "Foward Error",
+            order: 4,
+            data_source: scanner.new_forward_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
+        {
+            name: "Reverse Error",
+            order: 5,
+            data_source: scanner.new_reverse_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
     ];
     var Scan = React.createClass({
         getInitialState: function() {
