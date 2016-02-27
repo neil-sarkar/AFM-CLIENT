@@ -85,6 +85,9 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                     height: 400,
                     width: 475,
                 },
+                title: {
+                    text: "",
+                },
                 xAxis: {
                     min: 1,
                     max: 256,
@@ -107,8 +110,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                     align: 'right',
                     layout: 'vertical',
                     margin: 0,
-                    verticalAlign: 'middle',
-                    y: 25,
+                    verticalAlign: 'top',
                     symbolHeight: 280
                 },
                 plotOptions: {

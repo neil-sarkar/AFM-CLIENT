@@ -63,7 +63,17 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
         render: function() {
             return (
                 <div className="scan-viewer">
-                    <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
+                    <div>
+                        <div className="scan-view-selector-container">
+                            {["scan_views", "lol"].map(function(view, i) {
+                            // var boundClick = this.handle_view_selector_click.bind(this, i);
+                            return (
+                                <p className="view-selector-button" ref={'view_selector' + view}>{view}</p>
+                                );
+                            }, this)}
+                        </div>
+                        <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
+                    </div>
                     <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>
             );

@@ -135,8 +135,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         componentDidMount: function() {
             this.renderChart();
-            // this.props.establishDataConnection(this.handleNewDataWrapper);
-            // this.props.newScan(this.erase_data);
             var node = this.refs.lineProfileNode;
             var chart = $(node).highcharts();
             this.setState({

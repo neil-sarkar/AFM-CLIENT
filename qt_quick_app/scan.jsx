@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], function(React, ScanViewer, InlineScanControls) {
+define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, ScanHeatMap, LineProfile, InlineScanControls) {
     var scan_views = [
         {
             name: "Foward Offset",
@@ -104,7 +104,8 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
             }
         },
         push_data_to_view: function(heatmap_data, line_profile_data) {
-            this.refs.scan_viewer.receive_data(heatmap_data, line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
+            this.refs.heatmap.set_data(heatmap_data);
+            this.refs.line_profile_data.set_data(line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
         },
         // this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -134,7 +135,8 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = [];
                 }
-                this.refs.scan_viewer.clear();
+                this.refs.line_profile_data.erase_data();
+                this.refs.heatmap.erase_data();
                 this.set_scan_complete();
             }.bind(this), 100); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
@@ -151,21 +153,26 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
                 this.push_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
             });
         },
+        handle_tooltip_select: function(series_index) {
+            this.refs.line_profile.select_series_to_display(series_index);
+        },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
-             console.log("rerender", this.state.current_view);
             return (
                 <div className="wrapper" id="scan-wrapper">
                     <div className="left-flexbox">
-                        <div className="scan-view-selector-container">
-                            {scan_views.map(function(view, i) {
-                            var boundClick = this.handle_view_selector_click.bind(this, i);
-                            return (
-                                <p className="view-selector-button" ref={'view_selector' + view.order} onClick={boundClick}>{view.name}</p>
-                                );
-                            }, this)}
+                        <div className="top-row">
+                            <div className="scan-view-selector-container">
+                                {scan_views.map(function(view, i) {
+                                var boundClick = this.handle_view_selector_click.bind(this, i);
+                                return (
+                                    <p className="view-selector-button" onClick={boundClick}>{view.name}</p>
+                                    );
+                                }, this)}
+                            </div>
+                            <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
                         </div>
-                        <ScanViewer ref="scan_viewer" name={scan_views[this.state.current_view].name}/>
+                        <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>
                     <div className="right-flexbox">
                         <div className="step-name">Scan</div>

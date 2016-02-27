@@ -59,6 +59,18 @@
     padding: 2%;
 }
 
+
+.top-row {
+    display: -webkit-flex;
+    -webkit-flex: 1;
+    -webkit-flex-flow: row;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+    -webkit-align-content: center;
+    -webkit-align-self: center;
+    margin: auto;
+}
+
 .step-name {
     font-family: "Roboto-Thin";
     font-size: 300%;
@@ -247,7 +259,7 @@
 }
 
 .scan-view-selector-container {
-    position:absolute;
+    -webkit-align-self: flex-start;
 }
 
 .view-selector-button {
