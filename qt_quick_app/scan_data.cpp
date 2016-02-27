@@ -41,7 +41,7 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     return true;
 }
 
-QVariantList ScanData::package_data_for_ui(int num_points) {
+QVariantList ScanData::package_data_for_ui(int num_points, bool is_offset) {
     // data comes back as a series of x y z, and then tacks on the average z
     QVariantList latest_data;
     double sum = 0;
@@ -50,7 +50,25 @@ QVariantList ScanData::package_data_for_ui(int num_points) {
         DataPoint point = data[size() - i - 1];
         latest_data.append(point.x);
         latest_data.append(point.y);
-        latest_data.append(point.z_offset);
+        latest_data.append(is_offset ? point.z_offset : point.z_phase);
+        sum += point.z_offset;
+    }
+    double average = sum / num_points;
+    for (int i = 2; i < num_points * 3; i += 3) {
+        latest_data[i] = (latest_data[i]).toDouble() - average;
+    }
+    return latest_data;
+}
+
+QVariantList ScanData::package_error_signal_for_ui(int num_points, int setpoint) {
+    QVariantList latest_data;
+    double sum = 0;
+    num_points = std::min(num_points, size());
+    for (int i = 0 ; i < num_points; i++) {
+        DataPoint point = data[size() - i - 1];
+        latest_data.append(point.x);
+        latest_data.append(point.y);
+        latest_data.append(point.z_amplitude - setpoint);
         sum += point.z_offset;
     }
     double average = sum / num_points;

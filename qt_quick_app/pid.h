@@ -31,6 +31,9 @@ public:
     void set_settings();
     void update_settings(QString, QVariant);
 
+    static constexpr double MAX_VOLTAGE = 2.5; // redundant - from ADC
+    static constexpr int RESOLUTION = 4095;
+    static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 
 signals:
     void proportional_changed(float);
@@ -53,9 +56,6 @@ private:
     void cmd_set_setpoint();
     void cmd_enable();
     void cmd_disable();
-    static constexpr double MAX_VOLTAGE = 2.5; // redundant - from ADC
-    static constexpr int RESOLUTION = 4095;
-    static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
     static const QString settings_group_name;
 };
 

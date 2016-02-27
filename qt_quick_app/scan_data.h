@@ -15,7 +15,8 @@ public:
     int size();
     void print();
     int max_size();
-    QVariantList package_data_for_ui(int num_points);
+    QVariantList package_data_for_ui(int num_points, bool is_offset);
+    QVariantList package_error_signal_for_ui(int num_points, int setpoint); // setpoint is int here because we convert it to bits
     QList<DataPoint> data;
 
 signals:
