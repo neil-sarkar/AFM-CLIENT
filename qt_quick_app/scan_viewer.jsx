@@ -49,12 +49,6 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 sum_of_squares: 0
             });
         },
-        hide: function() {
-            $('#' + this.props.dom_id).hide();
-        },
-        show: function() {
-            $('#' + this.props.dom_id).show();
-        },
         eliminate_outliers: function() {
             if (this.state.num_points === 0)
                 return;
@@ -68,7 +62,7 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
         },
         render: function() {
             return (
-                <div className="scan-viewer" id={this.props.dom_id}>
+                <div className="scan-viewer">
                     <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
                     <LineProfile ref="line_profile" chart_name={this.props.name}/>
                 </div>

@@ -85,9 +85,6 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                     height: 400,
                     width: 475,
                 },
-                title: {
-                    text: self.props.chart_name,
-                },
                 xAxis: {
                     min: 1,
                     max: 256,

@@ -35,6 +35,7 @@ public:
     static constexpr int RESOLUTION = 4095;
     static constexpr double SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 
+
 signals:
     void proportional_changed(float);
     void integral_changed(float);

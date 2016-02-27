@@ -2,42 +2,54 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
     var scan_views = [
         {
             name: "Foward Offset",
-            order: 0,
+            uid: 0,
+            direction: "forward",
+            data_couple: 1,
             data_source: scanner.new_forward_offset_data,
             data: [],
             line_profile_data: [],
         },
         {
             name: "Reverse Offset",
-            order: 1,
+            uid: 1,
+            direction: "reverse",
+            data_couple: 0,
             data_source: scanner.new_reverse_offset_data,
             data: [],
             line_profile_data: [],
         },
         {
             name: "Foward Phase",
-            order: 2,
+            uid: 2,
+            direction: "forward",
+            data_couple: 3,
             data_source: scanner.new_forward_phase_data,
             data: [],
             line_profile_data: [],
         },
         {
             name: "Reverse Phase",
-            order: 3,
+            uid: 3,
+            direction: "reverse",
+            data_couple: 2,
             data_source: scanner.new_reverse_phase_data,
             data: [],
             line_profile_data: [],
         },
         {
             name: "Foward Error",
-            order: 4,
+            uid: 4,
+            direction: "forward",
+            data_couple: 5,
             data_source: scanner.new_forward_error_data,
             data: [],
             line_profile_data: [],
         },
         {
             name: "Reverse Error",
-            order: 5,
+            uid: 5,
+            direction: "reverse",
+            data_couple: 4,
             data_source: scanner.new_reverse_error_data,
             data: [],
             line_profile_data: [],
@@ -141,6 +153,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
+             console.log("rerender", this.state.current_view);
             return (
                 <div className="wrapper" id="scan-wrapper">
                     <div className="left-flexbox">
@@ -152,7 +165,7 @@ define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], fun
                                 );
                             }, this)}
                         </div>
-                        <ScanViewer ref="scan_viewer" order={scan_views[this.state.current_view].order} order={scan_views[this.state.current_view].name} order={scan_views[this.state.current_view].order}/>
+                        <ScanViewer ref="scan_viewer" name={scan_views[this.state.current_view].name}/>
                     </div>
                     <div className="right-flexbox">
                         <div className="step-name">Scan</div>
