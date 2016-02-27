@@ -157,11 +157,13 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             }, 0);
         },
         erase_data: function() {
-            while (this.state.chart.series.length - 1)
-                this.state.chart.series[0].remove(false);
-            this.state.chart.series[0].setData([]);
+            while (this.state.chart.series.length) {
+                this.state.chart.series[0].remove(true);
+            }
         },
         set_data: function(data) {
+            if (!this.state.chart.series.length)
+                this.state.chart.addSeries({borderWidth: 0, data:[], turboThreshold: Number.MAX_VALUE});
             this.state.chart.series[0].setData(data);
         },
         redraw: function() {

@@ -1,105 +1,162 @@
 define(["react", "jsx!pages/scan_viewer", "jsx!pages/inline_scan_controls"], function(React, ScanViewer, InlineScanControls) {
-	var Scan = React.createClass({
-		getInitialState: function() {
-			return {
-				scanning: false, 
-				starting_fresh_scan: true
-			};
-		},
-		componentWillReceiveProps : function(nextProps) {
-			if (nextProps.showStep == false) {
-				$('#scan-wrapper').hide();
-			} else {
-				$('#scan-wrapper').show();
-			}
-		},
-		popout: function() {
-			main_window.pop_out_force_curve_page();
-		},
-		pause_scanning: function() {
-			this.setState({
-				scanning: false,
-			}, function(){
-				scanner.pause_state_machine();
-			});
-		},
-		set_scan_complete: function() {
-			this.setState({
-				scanning: false,
-				starting_fresh_scan: true,
-			});
-		},
-		componentDidMount: function() {
-			scanner.all_data_received.connect(this.set_scan_complete);	
-		},
-		// this whole tristate scanning button really should just be done with a dictionary
-		start_or_resume_scanning: function() {
-			this.setState({
-				scanning: true,
-			}, function(){
-				if (this.state.starting_fresh_scan) {
-					scanner.start_state_machine();
-				} else {
-					scanner.resume_state_machine();
-				}
-				this.setState({
-					starting_fresh_scan: false
-				});
-			});
-		},
-		clear_scan: function() {
-			this.pause_scanning();
-			scanner.reset();
-			var that = this;
-			setTimeout(function() {
-				that.refs.view0.clear();
-				that.refs.view1.clear();
-				that.refs.view2.clear();
-				that.refs.view3.clear();
-				that.set_scan_complete();
-			}, 100); // give time for the scnaner to actually pause 
-			// so data doesn't get rendered 
-			// (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
-		},
-		eliminate_outliers: function() {
-			this.refs.forward_offset_scan_viewer.eliminate_outliers();
-		},
-		handle_view_selector_click: function(index) {
-			this.refs.scan_viewer.switch_view(index);
-		},
-		render: function() {
-			 // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)
-			return (
-				<div className="wrapper" id="scan-wrapper">
-					<div className="left-flexbox">
-						<div className="scan-view-selector-container">
-                          	{this.props.scan_views.map(function(option, i) {
-                          	var boundClick = this.handle_view_selector_click.bind(this, i);
-                          	return (
-                          	 	<p className="view-selector-button" ref={'view_selector' + option.dom_id} onClick={boundClick}> {option.title}</p>
-                          	 	);
-                          	}, this)}
+    var scan_views = [
+        {
+            name: "Foward Offset",
+            order: 0,
+            data_source: scanner.new_forward_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
+        {
+            name: "Reverse Offset",
+            order: 1,
+            data_source: scanner.new_reverse_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
+        {
+            name: "Foward Amplitude",
+            order: 2,
+            data_source: scanner.new_forward_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
+        {
+            name: "Reverse Amplitude",
+            order: 3,
+            data_source: scanner.new_reverse_offset_data,
+            data: [],
+            line_profile_data: [],
+        },
+    ];
+    var Scan = React.createClass({
+        getInitialState: function() {
+            return {
+                scanning: false,
+                starting_fresh_scan: true,
+                current_view: 0,
+                current_line: 0,
+                num_rows: 0,
+                num_columns: 0,
+                send_back_count: 0
+            };
+        },
+        componentWillReceiveProps : function(nextProps) {
+            if (nextProps.showStep === false) {
+                $('#scan-wrapper').hide();
+            } else {
+                $('#scan-wrapper').show();
+            }
+        },
+        pause_scanning: function() {
+            this.setState({
+                scanning: false,
+            }, function(){
+                scanner.pause_state_machine();
+            });
+        },
+        set_scan_complete: function() {
+            this.setState({
+                scanning: false,
+                starting_fresh_scan: true,
+            });
+        },
+        componentDidMount: function() {
+            scanner.all_data_received.connect(this.set_scan_complete);
+            for (var i = 0; i < scan_views.length; i++) {
+                var bound_method = this.prepare_new_data.bind(this, i);
+                scan_views[i].data_source.connect(bound_method);
+            }
+        },
+        prepare_new_data: function (view_index, data) {
+            for (var i = 0; i < data.length; i += 3) {
+                scan_views[view_index].data.push({x: data[i], y: data[i+1], value: data[i+2]});
+                scan_views[view_index].line_profile_data.push({x: data[i], y: data[i+2]});
+            }
+            if (this.state.current_view == view_index) {
+                this.push_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data);
+            }
+        },
+        push_data_to_view: function(heatmap_data, line_profile_data) {
+            this.refs.scan_viewer.receive_data(heatmap_data, line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
+        },
+        // this whole tristate scanning button really should just be done with a dictionary
+        start_or_resume_scanning: function() {
+            this.setState({
+                num_rows: scanner.num_rows(),
+                num_columns: scanner.num_columns(),
+                send_back_count: scanner.send_back_count().charCodeAt() // js interprets the quint8 as a char
+            });
+            this.setState({
+                scanning: true,
+            }, function(){
+                if (this.state.starting_fresh_scan) {
+                    scanner.start_state_machine();
+                } else {
+                    scanner.resume_state_machine();
+                }
+                this.setState({
+                    starting_fresh_scan: false
+                });
+            });
+        },
+        clear_scan: function() {
+            this.pause_scanning();
+            scanner.reset();
+            this.push_data_to_view([], []);
+            setTimeout(function() {
+                for (var i = 0; i < scan_views.length; i++) {
+                    scan_views[i].data = [];
+                }
+                this.refs.scan_viewer.clear();
+                this.set_scan_complete();
+            }.bind(this), 100); // give time for the scnaner to actually pause 
+            // so data doesn't get rendered 
+            // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
+        },
+        eliminate_outliers: function() {
+            this.refs.forward_offset_scan_viewer.eliminate_outliers();
+        },
+        handle_view_selector_click: function(index) {
+            this.setState({
+                current_view: index
+            }, function () {
+                this.push_data_to_view([], []);
+                this.push_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
+            });
+        },
+        render: function() {
+             // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
+            return (
+                <div className="wrapper" id="scan-wrapper">
+                    <div className="left-flexbox">
+                        <div className="scan-view-selector-container">
+                            {scan_views.map(function(view, i) {
+                            var boundClick = this.handle_view_selector_click.bind(this, i);
+                            return (
+                                <p className="view-selector-button" ref={'view_selector' + view.order} onClick={boundClick}>{view.name}</p>
+                                );
+                            }, this)}
                         </div>
-                        <ScanViewer ref="scan_viewer" order_num={0}/>
-						<button className="action-button" onClick={this.popout}>Popout</button>
-					</div>
-					<div className="right-flexbox">
-						<div className="step-name">Scan</div>
-						<div className="step-description">
-						Scanning is so cool.
-						</div>
-						<button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
-						<button className="action-button" onClick={this.clear_scan}>Clear</button>
-						<button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
-						<button className="action-button" onClick={scanner.save_raw_data} disabled={this.state.scanning}>Download Data</button>
-						<InlineScanControls />
-						<div className="nav-buttons-wrapper">
-							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
-						</div>
-					</div>
-				</div>
-				)
-		},
-	});
-	return Scan;
+                        <ScanViewer ref="scan_viewer" order={scan_views[this.state.current_view].order} order={scan_views[this.state.current_view].name} order={scan_views[this.state.current_view].order}/>
+                    </div>
+                    <div className="right-flexbox">
+                        <div className="step-name">Scan</div>
+                        <div className="step-description">
+                        Scanning is so cool.
+                        </div>
+                        <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
+                        <button className="action-button" onClick={this.clear_scan}>Clear</button>
+                        <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
+                        <button className="action-button" onClick={scanner.save_raw_data} disabled={this.state.scanning}>Download Data</button>
+                        <InlineScanControls />
+                        <div className="nav-buttons-wrapper">
+                            <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+                        </div>
+                    </div>
+                </div>
+                )
+        },
+    });
+    return Scan;
 });
