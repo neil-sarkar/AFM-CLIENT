@@ -123,10 +123,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 id: 'upper'
             });
         },
-        set_data: function(data) {
-            if (!this.state.chart.series.length)
+        set_data: function(data1, data2) {
+            while (this.state.chart.series.length < 2)
                 this.addSeries();
-            this.state.chart.series[0].setData(data.reverse());
+            while (this.state.chart.series.length > 2)
+                this.state.chart.series[0].remove();
+            this.state.chart.series[0].setData(data1.reverse());
+            this.state.chart.series[1].setData(data2.reverse());
         },
         componentDidMount: function() {
             this.renderChart();

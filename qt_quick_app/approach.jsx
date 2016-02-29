@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph"], function(React, ApproachGraph, ZFineGraph) {
+define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls"], function(React, ApproachGraph, ZFineGraph, InlineApproachControls) {
 	var status_map = {
 		0: "Motor idle",
 		1: "Motor waking up",
@@ -105,6 +105,7 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph"], function
 							The approach is complete once the amplitude value reaches the desired setpoint.
 						</div>
 						<button className="action-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+						<InlineApproachControls />
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

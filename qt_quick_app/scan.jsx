@@ -121,12 +121,12 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 scan_views[view_index].num_points += 1;
             }
             if (this.state.current_view == view_index) {
-                this.push_most_recent_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data);
+                this.push_most_recent_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data, scan_views[scan_views[view_index].data_couple].line_profile_data);
             }
         },
-        push_most_recent_data_to_view: function(heatmap_data, line_profile_data) {
+        push_most_recent_data_to_view: function(heatmap_data, line_profile_data1, line_profile_data2) {
             this.refs.heatmap.set_data(heatmap_data);
-            this.refs.line_profile.set_data(line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
+            this.refs.line_profile.set_data(line_profile_data1.slice(Math.max(line_profile_data1.length - this.state.send_back_count, 0)), line_profile_data2.slice(Math.max(line_profile_data2.length - this.state.send_back_count, 0)));
         },
         // this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -154,10 +154,13 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 scan_views[i].line_profile_data = [];
             }
         },
+        push_empty_view: function (argument) {
+            this.push_most_recent_data_to_view([], [], []);
+        },
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
-            this.push_most_recent_data_to_view([], []);
+            this.push_empty_view();
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = [];
@@ -186,12 +189,16 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 current_view: index
             }, function () {
                 this.refs.line_profile.clear_plotlines();
-                this.push_most_recent_data_to_view([], []);
-                this.push_most_recent_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
+                this.push_empty_view();
+                this.push_most_recent_data_to_view(scan_views[index].data, scan_views[index].line_profile_data, this.get_data_couple(index).line_profile_data);
             });
         },
+        get_data_couple: function(index) {
+            return scan_views[scan_views[index].data_couple]
+        },
         handle_tooltip_select: function(y_value) {
-            this.refs.line_profile.set_data(scan_views[this.state.current_view].line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns));
+            this.refs.line_profile.set_data(scan_views[this.state.current_view].line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns), 
+                this.get_data_couple(this.state.current_view).line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns));
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
