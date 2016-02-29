@@ -100,10 +100,10 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 scan_views[view_index].line_profile_data.push({x: data[i], y: data[i+2]});
             }
             if (this.state.current_view == view_index) {
-                this.push_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data);
+                this.push_most_recent_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data);
             }
         },
-        push_data_to_view: function(heatmap_data, line_profile_data) {
+        push_most_recent_data_to_view: function(heatmap_data, line_profile_data) {
             this.refs.heatmap.set_data(heatmap_data);
             this.refs.line_profile.set_data(line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
         },
@@ -130,7 +130,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
-            this.push_data_to_view([], []);
+            this.push_most_recent_data_to_view([], []);
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = [];
@@ -149,8 +149,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.setState({
                 current_view: index
             }, function () {
-                this.push_data_to_view([], []);
-                this.push_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
+                this.push_most_recent_data_to_view([], []);
+                this.push_most_recent_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
             });
         },
         handle_tooltip_select: function(y_value) {

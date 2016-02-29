@@ -18,7 +18,8 @@ define(["react", "console", "underscore"], function(React, console, _) {
             $(this.refs.dropdown_content).toggle();
         },
         update_value_from_backend_change: function(value) {
-            this.setState({text: this.props.options_list[value].text});
+            var option = $.grep(this.props.options_list, function(e){ return e.cmd_number == value; })[0];
+            this.setState({text: option.text});
         },
         render: function() {
             return (
