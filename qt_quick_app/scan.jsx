@@ -8,6 +8,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_forward_offset_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
         {
             name: "Reverse Offset",
@@ -17,6 +20,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_reverse_offset_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
         {
             name: "Foward Phase",
@@ -26,6 +32,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_forward_phase_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
         {
             name: "Reverse Phase",
@@ -35,6 +44,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_reverse_phase_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
         {
             name: "Foward Error",
@@ -44,6 +56,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_forward_error_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
         {
             name: "Reverse Error",
@@ -53,6 +68,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             data_source: scanner.new_reverse_error_data,
             data: [],
             line_profile_data: [],
+            sum: 0,
+            num_points: 0,
+            sum_of_squares: 0,
         },
     ];
     var Scan = React.createClass({
@@ -98,6 +116,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             for (var i = 0; i < data.length; i += 3) {
                 scan_views[view_index].data.push({x: data[i], y: data[i+1], value: data[i+2]});
                 scan_views[view_index].line_profile_data.push({x: data[i], y: data[i+2]});
+                scan_views[view_index].sum += data[i + 2];
+                scan_views[view_index].sum_of_squares += Math.pow(data[i + 2], 2);
+                scan_views[view_index].num_points += 1;
             }
             if (this.state.current_view == view_index) {
                 this.push_most_recent_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data);
@@ -150,7 +171,15 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.reset_data_buffers();
         },
         eliminate_outliers: function() {
-            this.refs.forward_offset_scan_viewer.eliminate_outliers();
+            current_view_obj = scan_views[this.state.current_view];
+            var current_data = current_view_obj.data;
+            var rms = Math.sqrt(current_view_obj.sum_of_squares / current_view_obj.num_points);
+            var mean = current_view_obj.sum / current_view_obj.num_points;
+            var rms_multiplier = scanner.rms_threshold();
+            var min = mean - rms_multiplier * rms;
+            var max = mean + rms_multiplier * rms;
+            this.refs.heatmap.eliminate_outliers(min, max);
+            this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         handle_view_selector_click: function(index) {
             this.setState({
