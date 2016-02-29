@@ -1,76 +1,30 @@
 define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, ScanHeatMap, LineProfile, InlineScanControls) {
-    var null_view = {
-            forward_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            },
-            reverse_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            }
-        }
-    var scan_views = [
-        {
-            name: "Offset",
-            data_source: scanner.new_offset_data,
-            forward_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            },
-            reverse_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            }
-        },
-        {
-            name: "Phase",
-            data_source: scanner.new_phase_data,
-            forward_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            },
-            reverse_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            }
-        },
-        {
-            name: "Error",
-            data_source: scanner.new_error_data,
-            forward_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            },
-            reverse_data: {
-                heatmap: [],
-                profile: [],
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            }
-        },
-    ];
+    function DataContainer() {
+        this.heatmap = [];
+        this.profile = [];
+        this.sum = 0;
+        this.num_points = 0;
+        this.sum_of_squares = 0;
+    };
+    
+    function ScanView(name, data_source) {
+        this.name = name;
+        this.data_source = data_source;
+        this.forward_data = new DataContainer();
+        this.reverse_data = new DataContainer();
+    };
+
+    ScanView.prototype.clear_data = function () {
+        this.forward_data = new DataContainer();
+        this.reverse_data = new DataContainer();
+    };
+
+    var scan_views = [];
+    scan_views.push(new ScanView("Offset", scanner.new_offset_data));
+    scan_views.push(new ScanView("Phase", scanner.new_phase_data));
+    scan_views.push(new ScanView("Error", scanner.new_error_data));
+    var null_view = new ScanView("");
+
     var Scan = React.createClass({
         getInitialState: function() {
             return {
@@ -158,34 +112,23 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 });
             });
         },
-        reset_data_buffers: function () {
-            for (var i = 0; i < scan_views.length; i++) {
-                scan_views[i].data = [];
-                scan_views[i].line_profile_data = [];
-            }
-        },
-        push_empty_view: function (argument) {
-            this.push_data_to_view(null_view);
-        },
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
-            this.push_empty_view();
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
-                    scan_views[i].data = [];
+                    scan_views[i].clear_data();
                 }
                 this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
                 this.set_scan_complete();
-            }.bind(this), 100); // give time for the scnaner to actually pause 
+            }.bind(this), 30); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
-            this.reset_data_buffers();
         },
         eliminate_outliers: function() {
-            current_view_obj = scan_views[this.state.current_view];
-            var current_data = current_view_obj.data;
+            current_view_obj = this.state.current_view % 2 == 0 ? scan_views[this.state.current_view].forward_data : scan_views[this.state.current_view].reverse_data;
+            var current_data = current_view_obj.heatmap;
             var rms = Math.sqrt(current_view_obj.sum_of_squares / current_view_obj.num_points);
             var mean = current_view_obj.sum / current_view_obj.num_points;
             var rms_multiplier = scanner.rms_threshold();
@@ -199,17 +142,16 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 current_view: index
             }, function () {
                 this.refs.line_profile.clear_plotlines();
-                this.push_empty_view();
-                console.log(scan_views[Math.floor(index/2)]);
+                this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
             });
         },
-        get_data_couple: function(index) {
-            return scan_views[scan_views[index].data_couple]
+        get_specific_row_profile: function(data, y_value) {
+            return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns)
         },
         handle_tooltip_select: function(y_value) {
-            this.refs.line_profile.set_data(scan_views[this.state.current_view].line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns), 
-                this.get_data_couple(this.state.current_view).line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns));
+            var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
+            this.refs.line_profile.set_data(this.get_specific_row_profile(current_data_set.forward_data.profile, y_value), this.get_specific_row_profile(current_data_set.reverse_data.profile, y_value));
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
