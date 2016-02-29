@@ -92,8 +92,8 @@ void Scanner::initialize_scan_state_machine() {
     qDebug() << "Initializing";
     m_should_pause = false;
     emit scanner_initialization_done();
-    forward_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    reverse_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
+    forward_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), true);
+    reverse_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), false);
 }
 
 void Scanner::set_signal_generator() {
@@ -138,17 +138,19 @@ void Scanner::callback_step_scan(QByteArray payload) {
         } else {
             reverse_data->append(z_amplitude, z_offset, z_phase);
         }
+        if (scanning_forward && forward_data->size() % m_send_back_count == 0) {
+            qDebug() << "Emitting data" << forward_data->size() << m_send_back_count;
+            emit new_forward_offset_data(forward_data->package_data_for_ui(m_send_back_count, true));
+            emit new_forward_phase_data(forward_data->package_data_for_ui(m_send_back_count, false));
+            emit new_forward_error_data(forward_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
+        } else if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
+            qDebug() << "Emitting reverse data" << reverse_data->size() << m_send_back_count;
+            emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_send_back_count, true));
+            emit new_reverse_phase_data(reverse_data->package_data_for_ui(m_send_back_count, false));
+            emit new_reverse_error_data(reverse_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
+        }
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;
-    }
-    if (scanning_forward && forward_data->size() % m_send_back_count == 0) {
-        emit new_forward_offset_data(forward_data->package_data_for_ui(m_send_back_count, true));
-        emit new_forward_phase_data(forward_data->package_data_for_ui(m_send_back_count, false));
-        emit new_forward_error_data(forward_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
-    } else if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
-        emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_send_back_count, true));
-        emit new_reverse_phase_data(reverse_data->package_data_for_ui(m_send_back_count, false));
-        emit new_reverse_error_data(reverse_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
     }
     receive_data();
 }

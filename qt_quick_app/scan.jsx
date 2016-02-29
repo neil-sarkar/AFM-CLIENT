@@ -146,6 +146,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.refs.forward_offset_scan_viewer.eliminate_outliers();
         },
         handle_view_selector_click: function(index) {
+            console.log(index);
+            console.log(scan_views[index].data);
             this.setState({
                 current_view: index
             }, function () {

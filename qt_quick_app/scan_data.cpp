@@ -2,7 +2,7 @@
 #include "assert.h"
 #include "QDebug"
 
-ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y)
+ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y, bool is_forward)
 {
     m_num_columns = num_points;
     m_num_rows = num_lines;
@@ -11,6 +11,7 @@ ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int de
     m_delta_y = delta_y;
     m_x_index = -1;
     m_y_index = -1;
+    m_is_forward = is_forward;
 }
 
 int ScanData::max_size() {
@@ -31,7 +32,7 @@ bool ScanData::append(double z_amplitude, double z_offset, double z_phase) {
     if (m_x_index == 0)
         m_y_index += 1;
     DataPoint point;
-    point.x = m_x_index;
+    point.x = m_is_forward ? m_x_index : m_num_columns - m_x_index - 1;
     point.y = m_y_index;
     point.z_offset = z_offset;
     point.z_amplitude = z_amplitude;
@@ -57,7 +58,16 @@ QVariantList ScanData::package_data_for_ui(int num_points, bool is_offset) {
     for (int i = 2; i < num_points * 3; i += 3) {
         latest_data[i] = (latest_data[i]).toDouble() - average;
     }
-    return latest_data;
+    if (m_is_forward)
+        return latest_data;
+    
+    QVariantList latest_data_reversed; // could do this reversing in place with the averaging operation
+    for (int i = num_points * 3; i > 0; i -= 3) {
+        latest_data_reversed.append(latest_data[i - 3]);
+        latest_data_reversed.append(latest_data[i - 2]);
+        latest_data_reversed.append(latest_data[i - 1]);
+    }
+    return latest_data_reversed;
 }
 
 QVariantList ScanData::package_error_signal_for_ui(int num_points, int setpoint) {
@@ -75,7 +85,16 @@ QVariantList ScanData::package_error_signal_for_ui(int num_points, int setpoint)
     for (int i = 2; i < num_points * 3; i += 3) {
         latest_data[i] = (latest_data[i]).toDouble() - average;
     }
-    return latest_data;
+    if (m_is_forward)
+        return latest_data;
+
+    QVariantList latest_data_reversed;
+    for (int i = num_points * 3; i > 0; i -= 3) {
+        latest_data_reversed.append(latest_data[i - 3]);
+        latest_data_reversed.append(latest_data[i - 2]);
+        latest_data_reversed.append(latest_data[i - 1]);
+    }
+    return latest_data_reversed;
 }
 
 void ScanData::print() {

@@ -9,7 +9,7 @@ class ScanData : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y);
+    explicit ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y, bool is_forward);
     bool append(double z_offset, double z_amplitude, double z_phase);
     bool is_full();
     int size();
@@ -31,6 +31,7 @@ private:
     int m_y_index;
     int m_delta_x;
     int m_delta_y;
+    bool m_is_forward;
 };
 
 
