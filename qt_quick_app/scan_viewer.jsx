@@ -28,26 +28,8 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
                 self.refs.line_profile.asyncAddPoint(x, z);
             }, 0);
         },
-        prompt_redraw: function() {
-            var self = this;
-            setTimeout(function() {
-                self.refs.heatmap.redraw();
-            }, 0);
-            setTimeout(function() {
-                self.refs.line_profile.redraw();
-            }, 0);
-        },
         handle_tooltip_select: function(series_index) {
             this.refs.line_profile.select_series_to_display(series_index);
-        },
-        clear: function() {
-            this.refs.heatmap.erase_data();
-            this.refs.line_profile.erase_data();
-            this.setState({
-                sum: 0,
-                num_points: 0,
-                sum_of_squares: 0
-            });
         },
         eliminate_outliers: function() {
             if (this.state.num_points === 0)

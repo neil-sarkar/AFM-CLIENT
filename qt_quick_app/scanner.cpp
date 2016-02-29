@@ -144,11 +144,11 @@ void Scanner::callback_step_scan(QByteArray payload) {
     if (scanning_forward && forward_data->size() % m_send_back_count == 0) {
         emit new_forward_offset_data(forward_data->package_data_for_ui(m_send_back_count, true));
         emit new_forward_phase_data(forward_data->package_data_for_ui(m_send_back_count, false));
-        emit new_forward_error_data(forward_data->package_data_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
+        emit new_forward_error_data(forward_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
     } else if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
         emit new_reverse_offset_data(reverse_data->package_data_for_ui(m_send_back_count, true));
         emit new_reverse_phase_data(reverse_data->package_data_for_ui(m_send_back_count, false));
-        emit new_reverse_error_data(reverse_data->package_data_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
+        emit new_reverse_error_data(reverse_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
     }
     receive_data();
 }

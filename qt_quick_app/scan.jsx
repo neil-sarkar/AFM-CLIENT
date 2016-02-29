@@ -105,7 +105,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
         },
         push_data_to_view: function(heatmap_data, line_profile_data) {
             this.refs.heatmap.set_data(heatmap_data);
-            this.refs.line_profile_data.set_data(line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
+            this.refs.line_profile.set_data(line_profile_data.slice(Math.max(line_profile_data.length - this.state.send_back_count, 0)));
         },
         // this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -135,7 +135,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = [];
                 }
-                this.refs.line_profile_data.erase_data();
+                this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
                 this.set_scan_complete();
             }.bind(this), 100); // give time for the scnaner to actually pause 
