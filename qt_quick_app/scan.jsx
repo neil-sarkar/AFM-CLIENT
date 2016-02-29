@@ -79,7 +79,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 scanning: false,
                 starting_fresh_scan: true,
                 current_view: 0,
-                current_line: 0,
+                current_line: 0,    
                 num_rows: 0,
                 num_columns: 0,
                 send_back_count: 0
@@ -178,13 +178,14 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             var rms_multiplier = scanner.rms_threshold();
             var min = mean - rms_multiplier * rms;
             var max = mean + rms_multiplier * rms;
-            this.refs.heatmap.eliminate_outliers(min, max);
+            this.refs.heatmap.eliminate_outliers(current_data, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         handle_view_selector_click: function(index) {
             this.setState({
                 current_view: index
             }, function () {
+                this.refs.line_profile.clear_plotlines();
                 this.push_most_recent_data_to_view([], []);
                 this.push_most_recent_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
             });

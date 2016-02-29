@@ -160,38 +160,26 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             if (!this.state.chart.series.length)
                 this.state.chart.addSeries({borderWidth: 0, data:[], turboThreshold: Number.MAX_VALUE});
             this.state.chart.series[0].setData(data);
+            this.state.chart.colorAxis[0].setExtremes(this.state.chart.colorAxis[0].getExtremes().dataMin, this.state.chart.colorAxis[0].getExtremes().dataMax);
         },
         redraw: function() {
             this.state.chart.redraw(false);
         },
-        eliminate_outliers: function(min_cutoff, max_cuttoff) {
-            this.state.chart.addSeries({
-                borderWidth: 0,
-                data: [],
-                turboThreshold: Number.MAX_VALUE // #3404, remove after 4.0.5 release
-            });
-            var array = this.state.chart.series[0].data;
-            var sample_min = Number.POSITIVE_INFINITY; // these will store the absolute mins and maxes post proces
-            var sample_max = Number.NEGATIVE_INFINITY;
-            for (var i = 0; i < array.length; i++ ) {
+        eliminate_outliers: function(data, min_cutoff, max_cuttoff) {
+            var modified_data = [];
+            for (var i = 0; i < data.length; i++) {
                 // COPY x y and z values for the point
-                var x = array[i].x;
-                var y = array[i].y;
-                var curr_value = array[i].value;
+                var x = data[i].x;
+                var y = data[i].y;
+                var curr_value = data[i].value;
                 if (curr_value > max_cuttoff) {
                     curr_value = max_cuttoff;
                 } else if (curr_value < min_cutoff) {
                     curr_value = min_cutoff;
                 }
-                sample_min = Math.min(sample_min, curr_value);
-                sample_max = Math.max(sample_max, curr_value);
-                this.state.chart.series[this.state.chart.series.length - 1].addPoint({x: x, y: y, value: curr_value}, false, false);
+                modified_data.push({x: x, y: y, value: curr_value});
             }
-            this.state.chart.colorAxis[0].setExtremes(sample_min, sample_max);
-            this.state.chart.redraw(false);
-            for (var j = 0; j < this.state.chart.series.length - 1; j++)
-                this.state.chart.series[j].hide();
-
+            this.set_data(modified_data);
             console.log("Done removing outliers");
         },
         change_num_rows: function(max_value) {
