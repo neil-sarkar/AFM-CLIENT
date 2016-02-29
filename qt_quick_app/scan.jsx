@@ -153,8 +153,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 this.push_data_to_view(scan_views[index].data, scan_views[index].line_profile_data);
             });
         },
-        handle_tooltip_select: function(series_index) {
-            this.refs.line_profile.select_series_to_display(series_index);
+        handle_tooltip_select: function(y_value) {
+            this.refs.line_profile.set_data(scan_views[this.state.current_view].line_profile_data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns));
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   

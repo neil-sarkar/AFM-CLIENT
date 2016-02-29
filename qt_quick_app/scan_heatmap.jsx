@@ -195,10 +195,10 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             console.log("Done removing outliers");
         },
         change_num_rows: function(max_value) {
-            this.state.chart.yAxis[0].setExtremes(1, max_value);
+            this.state.chart.yAxis[0].setExtremes(0, max_value);
         },
         change_num_columns: function(max_value) {
-            this.state.chart.xAxis[0].setExtremes(1, max_value);
+            this.state.chart.xAxis[0].setExtremes(0, max_value);
         },
         componentDidMount: function() {
             this.renderChart();
