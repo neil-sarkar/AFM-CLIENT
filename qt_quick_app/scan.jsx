@@ -1,76 +1,74 @@
 define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, ScanHeatMap, LineProfile, InlineScanControls) {
+    var null_view = {
+            forward_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            },
+            reverse_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            }
+        }
     var scan_views = [
         {
-            name: "Foward Offset",
-            uid: 0,
-            direction: "forward",
-            data_couple: 1,
-            data_source: scanner.new_forward_offset_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
+            name: "Offset",
+            data_source: scanner.new_offset_data,
+            forward_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            },
+            reverse_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            }
         },
         {
-            name: "Reverse Offset",
-            uid: 1,
-            direction: "reverse",
-            data_couple: 0,
-            data_source: scanner.new_reverse_offset_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
+            name: "Phase",
+            data_source: scanner.new_phase_data,
+            forward_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            },
+            reverse_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            }
         },
         {
-            name: "Foward Phase",
-            uid: 2,
-            direction: "forward",
-            data_couple: 3,
-            data_source: scanner.new_forward_phase_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
-        },
-        {
-            name: "Reverse Phase",
-            uid: 3,
-            direction: "reverse",
-            data_couple: 2,
-            data_source: scanner.new_reverse_phase_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
-        },
-        {
-            name: "Foward Error",
-            uid: 4,
-            direction: "forward",
-            data_couple: 5,
-            data_source: scanner.new_forward_error_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
-        },
-        {
-            name: "Reverse Error",
-            uid: 5,
-            direction: "reverse",
-            data_couple: 4,
-            data_source: scanner.new_reverse_error_data,
-            data: [],
-            line_profile_data: [],
-            sum: 0,
-            num_points: 0,
-            sum_of_squares: 0,
+            name: "Error",
+            data_source: scanner.new_error_data,
+            forward_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            },
+            reverse_data: {
+                heatmap: [],
+                profile: [],
+                sum: 0,
+                num_points: 0,
+                sum_of_squares: 0
+            }
         },
     ];
     var Scan = React.createClass({
@@ -112,21 +110,33 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 scan_views[i].data_source.connect(bound_method);
             }
         },
+        tally_new_data: function(obj, x, y, z) {
+            obj.heatmap.push({x: x, y: y, value: z});
+            obj.profile.push({x: x, y: z});
+            obj.sum += z;
+            obj.sum_of_squares += Math.pow(z, 2);
+            obj.num_points += 1;
+        },
         prepare_new_data: function (view_index, data) {
-            for (var i = 0; i < data.length; i += 3) {
-                scan_views[view_index].data.push({x: data[i], y: data[i+1], value: data[i+2]});
-                scan_views[view_index].line_profile_data.push({x: data[i], y: data[i+2]});
-                scan_views[view_index].sum += data[i + 2];
-                scan_views[view_index].sum_of_squares += Math.pow(data[i + 2], 2);
-                scan_views[view_index].num_points += 1;
+            for (var i = 0; i < data.length / 2; i += 3) {
+                this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
+                var j = data.length / 2 + i;
+                this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
-            if (this.state.current_view == view_index) {
-                this.push_most_recent_data_to_view(scan_views[view_index].data, scan_views[view_index].line_profile_data, scan_views[scan_views[view_index].data_couple].line_profile_data);
+            if (Math.floor(this.state.current_view / 2) == view_index) {
+                this.push_data_to_view(scan_views[view_index]); 
             }
         },
-        push_most_recent_data_to_view: function(heatmap_data, line_profile_data1, line_profile_data2) {
-            this.refs.heatmap.set_data(heatmap_data);
-            this.refs.line_profile.set_data(line_profile_data1.slice(Math.max(line_profile_data1.length - this.state.send_back_count, 0)), line_profile_data2.slice(Math.max(line_profile_data2.length - this.state.send_back_count, 0)));
+        limit_line_profile_data: function(data) {
+            return data.slice(Math.max(data.length - this.state.send_back_count, 0));
+        },
+        push_data_to_view: function(data_obj) {
+            if (this.state.current_view % 2 == 0) {
+                this.refs.heatmap.set_data(data_obj.forward_data.heatmap);    
+            } else {
+                this.refs.heatmap.set_data(data_obj.reverse_data.heatmap);
+            }
+            this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
         // this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -155,7 +165,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             }
         },
         push_empty_view: function (argument) {
-            this.push_most_recent_data_to_view([], [], []);
+            this.push_data_to_view(null_view);
         },
         clear_scan: function() {
             this.pause_scanning();
@@ -190,7 +200,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             }, function () {
                 this.refs.line_profile.clear_plotlines();
                 this.push_empty_view();
-                this.push_most_recent_data_to_view(scan_views[index].data, scan_views[index].line_profile_data, this.get_data_couple(index).line_profile_data);
+                console.log(scan_views[Math.floor(index/2)]);
+                this.push_data_to_view(scan_views[Math.floor(index/2)]);
             });
         },
         get_data_couple: function(index) {
@@ -208,9 +219,13 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                         <div className="top-row">
                             <div className="scan-view-selector-container">
                                 {scan_views.map(function(view, i) {
-                                var boundClick = this.handle_view_selector_click.bind(this, i);
+                                var forward_bound_click = this.handle_view_selector_click.bind(this, 2*i);
+                                var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
                                 return (
-                                    <p className="view-selector-button" onClick={boundClick}>{view.name}</p>
+                                    <div>
+                                        <p className="view-selector-button" onClick={forward_bound_click}>Forward {view.name}</p>
+                                        <p className="view-selector-button" onClick={reverse_bound_click}>Reverse {view.name}</p>
+                                    </div>
                                     );
                                 }, this)}
                             </div>
