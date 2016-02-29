@@ -127,6 +127,12 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 });
             });
         },
+        reset_data_buffers: function () {
+            for (var i = 0; i < scan_views.length; i++) {
+                scan_views[i].data = [];
+                scan_views[i].line_profile_data = [];
+            }
+        },
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
@@ -141,13 +147,12 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             }.bind(this), 100); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
+            this.reset_data_buffers();
         },
         eliminate_outliers: function() {
             this.refs.forward_offset_scan_viewer.eliminate_outliers();
         },
         handle_view_selector_click: function(index) {
-            console.log(index);
-            console.log(scan_views[index].data);
             this.setState({
                 current_view: index
             }, function () {
