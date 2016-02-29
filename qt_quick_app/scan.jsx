@@ -127,7 +127,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },
         eliminate_outliers: function() {
-            current_view_obj = this.state.current_view % 2 == 0 ? scan_views[this.state.current_view].forward_data : scan_views[this.state.current_view].reverse_data;
+            current_view_obj = this.state.current_view % 2 == 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
             var current_data = current_view_obj.heatmap;
             var rms = Math.sqrt(current_view_obj.sum_of_squares / current_view_obj.num_points);
             var mean = current_view_obj.sum / current_view_obj.num_points;
