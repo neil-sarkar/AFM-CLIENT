@@ -43,7 +43,9 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 				this.setState({
 					approach_complete: true
 				}, function() {
-					pid.set_enabled();
+					setTimeout(function() {
+						pid.set_enabled();
+					}, 300);
 				});
 				setTimeout(function() {
 					this.refs.z_fine_graph.start_streaming();

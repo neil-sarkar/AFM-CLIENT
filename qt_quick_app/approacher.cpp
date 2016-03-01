@@ -43,5 +43,4 @@ void Approacher::handle_auto_approach_info_message(QByteArray working_response) 
     m_state = working_response.at(0);
     m_adc->update_value(adc_value);
     emit new_data(m_state, adc_value);
-    qDebug() << static_cast<unsigned char>(working_response.at(0)) << "  " << adc_value;
 }

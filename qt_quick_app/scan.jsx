@@ -97,7 +97,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.setState({
                 num_rows: scanner.num_rows(),
                 num_columns: scanner.num_columns(),
-                send_back_count: scanner.send_back_count().charCodeAt() // js interprets the quint8 as a char
+                send_back_count: scanner.send_back_count()
             });
             this.setState({
                 scanning: true,
@@ -137,6 +137,9 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.refs.heatmap.eliminate_outliers(current_data, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
+        set_heatmap_name: function(name) {
+            console.log(name);
+        },
         handle_view_selector_click: function(index) {
             this.setState({
                 current_view: index
@@ -144,10 +147,11 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                 this.refs.line_profile.clear_plotlines();
                 this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
+                this.set_heatmap_name(scan_views[Math.floor(index/2)].name);
             });
         },
         get_specific_row_profile: function(data, y_value) {
-            return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns)
+            return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
         handle_tooltip_select: function(y_value) {
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
