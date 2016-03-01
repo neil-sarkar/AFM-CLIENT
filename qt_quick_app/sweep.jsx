@@ -36,9 +36,11 @@
 							a frequency to drive the cantilever. By default, the resonant frequency is chosen.
 							Click and drag on the graphs to zoom in and out.
 						</div>
-						<button className="action-button" onClick={this.auto_sweep}>Auto Sweep</button>
-						<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
-						<button className="action-button" onClick={this.clear}>Clear</button>
+						<div className="top-row">
+							<button className="action-button" onClick={this.auto_sweep}>Auto Sweep</button>
+							<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
+							<button className="action-button" onClick={this.clear}>Clear</button>
+						</div>
 						<InlineSweepControls/>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>

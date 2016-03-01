@@ -12,7 +12,11 @@
     border: solid black 2px;
     background-color: white;
     margin: 2.5% auto;
-    width: 25%;
+    width: 175px; 
+    /*width is absolute px value (not a percentage) bc flex boxes don't
+    just work with percentages.
+    potential workaround: http://jsfiddle.net/thirtydot/fPfvN/
+    */
     padding: 2%;
     -webkit-transition: color 0.2s ease-in;
     -webkit-transition: background-color 0.2s ease-in;
@@ -63,12 +67,11 @@
 .top-row {
     display: -webkit-flex;
     -webkit-flex: 1;
-    -webkit-flex-flow: row;
-    -webkit-justify-content: center;
-    -webkit-align-items: center;
-    -webkit-align-content: center;
+    -webkit-flex-flow: row wrap;
+    -webkit-justify-content: space-around;
     -webkit-align-self: center;
     margin: auto;
+    width: 100%;
 }
 
 .step-name {
@@ -268,4 +271,8 @@
 
 .save-directory {
     max-width: 90%;
+}
+
+.text-input {
+    border-bottom: 1px solid gray;
 }

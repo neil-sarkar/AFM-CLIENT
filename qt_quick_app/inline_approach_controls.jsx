@@ -6,7 +6,6 @@
                                         <MotorControl/>
                                         <PIDControl />
                                         <DACController name="Z Coarse" qt_object={dac_8}/>
-
                                 </div>
                         )
                 }
