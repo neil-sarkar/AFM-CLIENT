@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React, NumberInput, Dropdown) {
+define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text_input"], function(React, NumberInput, Dropdown, TextInput) {
 	var InlineScanControls = React.createClass({
 		render: function() {
 			return (
@@ -52,6 +52,10 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React
 								get_value={scanner.rms_threshold} 
 								set_value={scanner.set_rms_threshold} />
 					<Dropdown options_list={[{text: "0:1", cmd_number: 1}, {text: "1:1", cmd_number: 2}, {text: "3:1", cmd_number: 4}, {text: "7:1", cmd_number: 8}]} selection_method={scanner.set_ratio}/>
+					<TextInput name="File name base" 
+								notify_signal={scanner.base_file_name_changed}
+								get_value={scanner.base_file_name}
+								set_value={scanner.set_base_file_name} />
 				</div>
 			)
 		}

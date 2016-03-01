@@ -41,6 +41,7 @@ void Scanner::set_settings() {
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
     set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
+    set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
     settings.endGroup();
 }
 
@@ -363,6 +364,19 @@ void Scanner::set_save_folder(QString save_folder) {
         emit save_folder_changed(m_save_folder);
         update_settings("save_folder", QVariant(m_save_folder));
     }
+}
+
+
+QString Scanner::base_file_name() {
+    return m_base_file_name;
+}
+
+void Scanner::set_base_file_name(QString base_file_name) {
+    qDebug() << "setting base file name";
+    m_base_file_name = base_file_name;
+    qDebug() << "Setting base file name to " << m_base_file_name;
+    emit base_file_name_changed(m_base_file_name);
+    update_settings("base_file_name", QVariant(m_base_file_name));
 }
 
 const QString Scanner::settings_group_name = "scanner";

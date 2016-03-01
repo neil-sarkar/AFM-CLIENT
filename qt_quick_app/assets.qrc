@@ -98,6 +98,7 @@
         <file>force_curve.jsx</file>
         <file>inline_approach_controls.jsx</file>
         <file>save_folder.jsx</file>
+        <file>text_input.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
