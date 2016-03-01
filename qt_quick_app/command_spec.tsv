@@ -44,4 +44,4 @@ Stage_Set_Pulse_Width	0	Stage	Pulse Width	set			106	6A	j		1	3	(val)	3	Y	Stat Byt
 Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None
 AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
 Scanner_Set_Num_Averages	1	Scanner	num averages	set			121	79	y		1	3	(u8)	2
-Scanner_Set_Send_Back_Count	1	Scanner	send back count	set			90	5A	Z		1	3	u8	2
+Scanner_Set_Send_Back_Count	1	Scanner	send back count	set			90	5A	Z		1	4	u8	2

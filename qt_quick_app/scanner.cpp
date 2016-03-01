@@ -189,7 +189,7 @@ void Scanner::cmd_set_num_averages() {
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Num_Averages], payload));
 }
 
-quint8 Scanner::send_back_count() {
+quint16 Scanner::send_back_count() {
     return m_send_back_count;
 }
 
@@ -247,7 +247,8 @@ void Scanner::set_rms_threshold(double rms_threshold) {
 
 void Scanner::cmd_set_send_back_count() {
     QByteArray payload;
-    payload += m_send_back_count;
+    payload += (m_send_back_count & 0xFF);
+    payload += ((m_send_back_count & 0xFF00) >> 8);
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Send_Back_Count], payload));
 }
 
