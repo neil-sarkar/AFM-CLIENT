@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QFileDialog>
 #include <QCoreApplication>
+#include <QDir>
+#include <QDateTime>
 #include "constants.h"
 
 
@@ -298,21 +300,83 @@ void Scanner::cmd_set_dwell_time() {
 }
 
 void Scanner::save_raw_data() {
-    QTemporaryFile file;
-    file.setAutoRemove(false);
-    if (file.open()) {
-        QTextStream out(&file);   // we will serialize the data into the file
-        for (int i = 0; i < forward_data->size(); i++) {
-            out << QString::number(forward_data->data[i].x);
-            out << " ";
-            out << QString::number(forward_data->data[i].y);
-            out << " ";
-            out << QString::number(forward_data->data[i].z_phase);
-            out << "\n";
+    QString folder_path = m_save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
+    QDir().mkdir(folder_path);
+    QList<QString> specific_file_names;
+    QList<QString> full_paths;
+    specific_file_names << "offset forward" << "phase forward" << "error forward" << "offset reverse" << "phase reverse" << "error reverse";
+    for (int i = 0; i < specific_file_names.length(); i++) {
+        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i]);
+        if (file.open(QIODevice::WriteOnly)) {
+            qDebug() << "file created" << file.fileName();
+            full_paths.append(file.fileName());
+        } else {
+            qDebug() << "File failed to create file: " << specific_file_names[i];
         }
-        qDebug() << file.fileName();
-       // file.fileName() returns the unique file name
     }
+
+    if (!forward_data)
+        return;
+
+    for (int i = 0; i < forward_data->size(); i++) {
+        for (int j = 0; j < full_paths.length() / 2; j++) {
+            qDebug() << full_paths[j];
+            QFile file(full_paths[j]);
+            if (file.open(QIODevice::Append)) {
+                QTextStream out(&file);   // we will serialize the data into the file
+                out << QString::number(forward_data->data[i].x) << " ";
+                out << QString::number(forward_data->data[i].y) << " ";
+                switch(j) {
+                    case 0:
+                         out << QString::number(forward_data->data[i].z_offset);
+                        break;
+                    case 1:
+                        out << QString::number(forward_data->data[i].z_phase);
+                        break;
+                    case 2:
+                        out << QString::number(forward_data->data[i].z_amplitude - pid->setpoint());
+                }
+                out << "\n";
+            }
+        }
+    }
+
+    for (int i = 0; i < reverse_data->size(); i++) {
+        for (int j = full_paths.length() / 2; j < full_paths.length(); j++) {
+            qDebug() << full_paths[j];
+            QFile file(full_paths[j]);
+            if (file.open(QIODevice::Append)) {
+                QTextStream out(&file);   // we will serialize the data into the file
+                out << QString::number(reverse_data->data[i].x) << " ";
+                out << QString::number(reverse_data->data[i].y) << " ";
+                switch(j) {
+                    case 3:
+                         out << QString::number(reverse_data->data[i].z_offset);
+                        break;
+                    case 4:
+                        out << QString::number(reverse_data->data[i].z_phase);
+                        break;
+                    case 5:
+                        out << QString::number(reverse_data->data[i].z_amplitude - pid->setpoint());
+                }
+                out << "\n";
+            }
+        }
+    }
+
+
+//    QTemporaryFile file;
+//    file.setAutoRemove(false);
+//    if (file.open()) {
+//        QTextStream out(&file);   // we will serialize the data into the file
+//        for (int i = 0; i < forward_data->size(); i++) {
+//            out << QString::number(forward_data->data[i].x) << " ";
+//            out << QString::number(forward_data->data[i].y) << " ";
+//            out << QString::number(forward_data->data[i].z_phase) << "\n";
+//        }
+//        qDebug() << file.fileName();
+       // file.fileName() returns the unique file name
+//    }
 }
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
@@ -372,7 +436,6 @@ QString Scanner::base_file_name() {
 }
 
 void Scanner::set_base_file_name(QString base_file_name) {
-    qDebug() << "setting base file name";
     m_base_file_name = base_file_name;
     qDebug() << "Setting base file name to " << m_base_file_name;
     emit base_file_name_changed(m_base_file_name);
