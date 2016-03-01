@@ -10,12 +10,12 @@ class ScanData : public QObject
     Q_OBJECT
 public:
     explicit ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y, bool is_forward);
-    bool append(double z_offset, double z_amplitude, double z_phase);
+    bool append(int z_offset, int z_amplitude, int z_phase, int setpoint);
     bool is_full();
     int size();
     void print();
     int max_size();
-    QVariantList package_data_for_ui(int num_points, bool is_offset);
+    QVariantList package_data_for_ui(int num_points, int z_type);
     QVariantList package_error_signal_for_ui(int num_points, int setpoint); // setpoint is int here because we convert it to bits
     QList<DataPoint> data;
 

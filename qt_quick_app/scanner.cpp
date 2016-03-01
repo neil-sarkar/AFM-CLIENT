@@ -140,21 +140,21 @@ void Scanner::callback_step_scan(QByteArray payload) {
         double z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
         double z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         if (scanning_forward) {
-            forward_data->append(z_amplitude, z_offset, z_phase);
+            forward_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / PID::SCALE_FACTOR);
         } else {
-            reverse_data->append(z_amplitude, z_offset, z_phase);
+            reverse_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / PID::SCALE_FACTOR);
         }
         if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
-            QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, true);
-            offset_data.append(reverse_data->package_data_for_ui(m_send_back_count, true));
+            QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0);
+            offset_data.append(reverse_data->package_data_for_ui(m_send_back_count, 0));
             emit new_offset_data(offset_data);
             
-            QVariantList phase_data = forward_data->package_data_for_ui(m_send_back_count, false);
-            phase_data.append(reverse_data->package_data_for_ui(m_send_back_count, false));
+            QVariantList phase_data = forward_data->package_data_for_ui(m_send_back_count, 1);
+            phase_data.append(reverse_data->package_data_for_ui(m_send_back_count, 1));
             emit new_phase_data(phase_data);
 
-            QVariantList error_data = forward_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR);
-            error_data.append(reverse_data->package_error_signal_for_ui(m_send_back_count, pid->setpoint() * PID::SCALE_FACTOR));
+            QVariantList error_data = forward_data->package_data_for_ui(m_send_back_count, 2);
+            error_data.append(reverse_data->package_data_for_ui(m_send_back_count, 2));
             emit new_error_data(error_data);
         }
         scanning_forward = is_scanning_forward();
@@ -334,7 +334,7 @@ void Scanner::save_raw_data() {
                         out << QString::number(forward_data->data[i].z_phase);
                         break;
                     case 2:
-                        out << QString::number(forward_data->data[i].z_amplitude - pid->setpoint());
+                        out << QString::number(forward_data->data[i].z_error);
                 }
                 out << "\n";
             }
@@ -357,26 +357,12 @@ void Scanner::save_raw_data() {
                         out << QString::number(reverse_data->data[i].z_phase);
                         break;
                     case 5:
-                        out << QString::number(reverse_data->data[i].z_amplitude - pid->setpoint());
+                        out << QString::number(reverse_data->data[i].z_error);
                 }
                 out << "\n";
             }
         }
     }
-
-
-//    QTemporaryFile file;
-//    file.setAutoRemove(false);
-//    if (file.open()) {
-//        QTextStream out(&file);   // we will serialize the data into the file
-//        for (int i = 0; i < forward_data->size(); i++) {
-//            out << QString::number(forward_data->data[i].x) << " ";
-//            out << QString::number(forward_data->data[i].y) << " ";
-//            out << QString::number(forward_data->data[i].z_phase) << "\n";
-//        }
-//        qDebug() << file.fileName();
-       // file.fileName() returns the unique file name
-//    }
 }
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {

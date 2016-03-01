@@ -6,8 +6,8 @@ public:
     double x;
     double y;
     double z_offset;
-    double z_amplitude;
     double z_phase;
+    double z_error;
 };
 
 
