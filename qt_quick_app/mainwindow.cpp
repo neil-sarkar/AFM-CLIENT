@@ -6,8 +6,9 @@
 #include <QStandardPaths>
 #include <QWebSettings>
 #include <QNetworkRequest>
+#include "web_file_dialog.h"
 
-MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
+MainWindow::MainWindow(AFM* afm, SerialPort* serial_port, WebFileDialog* folder_picker)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
     m_network = new QNetworkAccessManager(this);
@@ -20,6 +21,7 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port)
 
     m_afm = afm;
     m_serial_port = serial_port;
+    m_folder_picker = folder_picker;
     // Signal is emitted before frame loads any web content:
     QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
     QUrl startURL = QUrl("qrc:/html/main.html");
@@ -60,6 +62,7 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("serial_port"), m_serial_port);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
     QHash<int, AFMObject*>::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
         QString name = "pga_" + QString::number(i.key());

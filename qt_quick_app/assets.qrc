@@ -97,6 +97,7 @@
         <file>dds_controller.jsx</file>
         <file>force_curve.jsx</file>
         <file>inline_approach_controls.jsx</file>
+        <file>save_folder.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

@@ -249,7 +249,7 @@
     left: 30%;
 }
 
-.reset-afm-button, .get-resistances-button, .restore-defaults-button, .force-curve-button {
+.reset-afm-button, .get-resistances-button, .restore-defaults-button, .force-curve-button, .folder-picker-button {
     left: 25%;
     width: 50%;
 }
@@ -264,4 +264,8 @@
 
 .view-selector-button {
     cursor:pointer;
+}
+
+.save-directory {
+    max-width: 90%;
 }

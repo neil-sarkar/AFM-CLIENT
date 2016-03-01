@@ -3,6 +3,8 @@
 #include <QHistoryState>
 #include <QTemporaryFile>
 #include <QTextStream>
+#include <QFileDialog>
+#include <QCoreApplication>
 #include "constants.h"
 
 
@@ -38,6 +40,7 @@ void Scanner::set_settings() {
     set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
+    set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
     settings.endGroup();
 }
 
@@ -340,6 +343,25 @@ int Scanner::get_delta_y_from_ratio() {
             return 1;
         case 4:
             return 1;
+    }
+}
+
+void Scanner::launch_folder_picker() {
+    QString path = QFileDialog::getExistingDirectory(0,"", m_save_folder);
+    if (!path.isEmpty())
+        set_save_folder(path);
+}
+
+QString Scanner::save_folder() {
+    return m_save_folder;
+}
+
+void Scanner::set_save_folder(QString save_folder) {
+    if (m_save_folder != save_folder) {
+        m_save_folder = save_folder;
+        qDebug() << "Setting save folder to " << m_save_folder;
+        emit save_folder_changed(m_save_folder);
+        update_settings("save_folder", QVariant(m_save_folder));
     }
 }
 

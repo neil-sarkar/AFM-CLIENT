@@ -18,6 +18,7 @@ class Scanner : public AFMObject
     Q_PROPERTY(quint16 m_num_columns READ num_columns WRITE set_num_columns NOTIFY num_columns_changed)
     Q_PROPERTY(double m_rms_threshold READ rms_threshold WRITE set_rms_threshold NOTIFY rms_threshold_changed)
     Q_PROPERTY(int m_ratio READ ratio WRITE set_ratio NOTIFY ratio_changed)
+    Q_PROPERTY(QString m_save_folder READ save_folder NOTIFY save_folder_changed)
 
 public:
     explicit Scanner(PID*, AFMObject* dac);
@@ -40,6 +41,8 @@ public:
     Q_INVOKABLE int ratio();
     Q_INVOKABLE void set_ratio(int ratio);
     Q_INVOKABLE void save_raw_data();
+    Q_INVOKABLE void launch_folder_picker();
+    Q_INVOKABLE QString save_folder();
 
     void set_settings();
     void update_settings(QString, QVariant);
@@ -62,6 +65,7 @@ signals:
     void num_columns_changed(int);
     void rms_threshold_changed(double);
     void ratio_changed(int);
+    void save_folder_changed(QString);
 
 public slots:
     // Scan state machine methods
@@ -95,10 +99,12 @@ private:
     bool is_scanning_forward();
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();
+    void set_save_folder(QString);
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
     bool scanning_forward;
     bool m_should_pause;
+    QString m_save_folder;
 
     ScanData* forward_data;
     ScanData* reverse_data;

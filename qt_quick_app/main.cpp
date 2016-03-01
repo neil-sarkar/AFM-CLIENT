@@ -18,6 +18,7 @@
 #include "afm.h"
 #include "command_node.h"
 #include "mainwindow.h"
+#include "web_file_dialog.h"
 #include <QWebView>
 #include <QDir>
 #include <QApplication>
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
-     MainWindow m(afm, serial_port);
+     MainWindow m(afm, serial_port, new WebFileDialog());
      m.show();
 
 

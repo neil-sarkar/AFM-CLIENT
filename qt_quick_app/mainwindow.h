@@ -3,9 +3,11 @@
 
 #include "afm.h"
 #include "serial_port.h"
+#include "web_file_dialog.h"
 #include <QWebView>
 #include <QWebElementCollection>
 #include <QNetworkDiskCache>
+
 
 class CustomPage: public QWebPage
 {
@@ -22,7 +24,7 @@ class MainWindow : public QWebView
 {
 Q_OBJECT
 public:
-    explicit MainWindow(AFM*, SerialPort*);
+    explicit MainWindow(AFM*, SerialPort*, WebFileDialog*);
     MainWindow(CustomPage*);
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
     Q_INVOKABLE void load_sweep_page();
@@ -42,5 +44,6 @@ private:
     CustomPage m_welcome_page;
     CustomPage m_sweep_page;
     CustomPage m_force_curve_page;
+    WebFileDialog* m_folder_picker;
 };
 #endif // MAINWINDOW_H

@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     scanner.cpp \
     scan_data.cpp \
     mainwindow.cpp \
-    safe_application.cpp
+    safe_application.cpp \
+    web_file_dialog.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -66,7 +67,8 @@ HEADERS += \
     scan_data.h \
     data_point.h \
     mainwindow.h \
-    safe_application.h
+    safe_application.h \
+    web_file_dialog.h
 
 DISTFILES += \
     test.html \

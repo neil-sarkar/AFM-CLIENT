@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/slider"], function(React, Slider) {
+define(["react"], function(React) {
 
 	var ADCController = React.createClass({
 		componentDidMount: function() {
