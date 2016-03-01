@@ -42,12 +42,13 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 			if (approacher_state == 9) {
 				this.setState({
 					approach_complete: true
+				}, function() {
+					pid.set_enabled();
 				});
-				var that = this;
 				setTimeout(function() {
-					that.refs.z_fine_graph.start_streaming();
-					that.refs.approach_graph.start_streaming();
-				}, 500);
+					this.refs.z_fine_graph.start_streaming();
+					this.refs.approach_graph.start_streaming();
+				}.bind(this), 500);
 			}
 			if (this.state.approach_complete && approacher_state == 1) {
 				this.setState({
@@ -75,6 +76,7 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 			this.refs.z_fine_graph.stop_streaming();
 			this.refs.approach_graph.stop_streaming();
 			approacher.cmd_start_auto_approach();
+			pid.set_disabled()
 		},
 		stop_approaching: function() {
 			approacher.cmd_stop_auto_approach();

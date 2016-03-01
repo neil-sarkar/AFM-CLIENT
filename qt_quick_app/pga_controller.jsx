@@ -7,7 +7,7 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 								get_value={this.props.qt_object.value}
 								set_value={this.props.qt_object.set_value}
 								min={0}
-								max={100}
+								max={140}
 								step={0.1} />
 		}	
 	});
