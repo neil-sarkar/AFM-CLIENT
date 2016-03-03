@@ -30,7 +30,6 @@ private:
     int iterate_tag();
     void validate_send_length(CommandNode* command_node);
     void mask_special_characters(CommandNode* command_node);
-    ThreadSafeQueue<CommandNode*> command_queue;
 };
 
 #endif // SENDWORKER_H

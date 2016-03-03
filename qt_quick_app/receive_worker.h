@@ -28,7 +28,6 @@ private slots:
     void flush();
 
 private:
-    ThreadSafeQueue<CommandNode*> command_queue;
     ThreadSafeQueue<char> response_byte_queue;
     QByteArray working_response;
     bool complete_message;

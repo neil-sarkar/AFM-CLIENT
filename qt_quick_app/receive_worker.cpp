@@ -11,8 +11,8 @@ ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 }
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
-    assert (command_queue.isFull() == false);
-    command_queue.enqueue(command_node);
+    assert (receive_command_queue.isFull() == false);
+    receive_command_queue.enqueue(command_node);
 }
 
 void ReceiveWorker::enqueue_response_byte(char byte) {
@@ -40,7 +40,7 @@ void ReceiveWorker::build_working_response() {
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
                 handle_asynchronous_message();
-            else if (command_queue.count()) {
+            else if (receive_command_queue.count()) {
                 process_working_response(); // could technically spin up a new thread for each response process
             }
             else
@@ -58,8 +58,8 @@ void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
     qDebug() << "Now processing" << response_tag << response_id << working_response;
-    assert (command_queue.isEmpty() == false);
-    CommandNode* node = command_queue.dequeue();
+    assert (receive_command_queue.isEmpty() == false);
+    CommandNode* node = receive_command_queue.dequeue();
     assert_return_integrity(node, response_tag, response_id, working_response.length());
     if (node->process_callback) {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
@@ -128,21 +128,21 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
     // Either way, to circumvent that for now, we have to flush all the commands that came
     // before the stop message, and just stop all execution
     bool stop_command_had_been_queued = false;
-    while (command_queue.count()) {
-        CommandNode* node = command_queue.dequeue();
+    while (receive_command_queue.count()) {
+        CommandNode* node = receive_command_queue.dequeue();
         if (node->id == Auto_Approach_Stopped_Character)
             stop_command_had_been_queued = true;
         delete node;
     }
 
     // assert(stop_command_had_been_queued);
-    qDebug() << "Command queue flushed - new count" << command_queue.count();
+    qDebug() << "Command queue flushed - new count" << receive_command_queue.count();
 }
 
 void ReceiveWorker::flush() {
-    qDebug() << "here" << command_queue.count();
-    while (command_queue.count())
-        delete command_queue.dequeue();
+    qDebug() << "here" << receive_command_queue.count();
+    while (receive_command_queue.count())
+        delete receive_command_queue.dequeue();
     while (response_byte_queue.count())
         response_byte_queue.dequeue();
 }

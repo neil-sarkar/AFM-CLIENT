@@ -2,8 +2,12 @@
 #define CONSTANTS_H
 
 #include "command_node.h"
+#include "thread_safe_queue.h"
 
 extern QHash<QString, CommandNode> command_hash;
+extern ThreadSafeQueue<CommandNode*> send_command_queue;
+extern ThreadSafeQueue<CommandNode*> receive_command_queue;
+
 extern const QString ADC_Read;
 extern const QString AFM_Begin_Auto_Approach;
 extern const QString AFM_Calibrate;
