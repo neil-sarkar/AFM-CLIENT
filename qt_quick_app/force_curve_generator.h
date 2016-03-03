@@ -9,6 +9,7 @@ class ForceCurveGenerator : public AFMObject
 public:
     ForceCurveGenerator();
     Q_INVOKABLE void cmd_generate_force_curve();
+//    Q_INVOKABLE void save_to_file();
     void init();
 
 signals:
@@ -18,9 +19,13 @@ signals:
     void new_retracting_phase_data(QVariantList);
 
 private:
+    QVariantList m_approaching_amplitude, m_approaching_phase, m_retracting_amplitude, m_retracting_phase;
     void callback_generate_force_curve(QByteArray return_bytes);
     typedef void (ForceCurveGenerator::*callback_type)(QByteArray);
     callback_return_type bind(callback_type method);
+    void clear_buffers();
+    const int Initial_Z;
+    const int Step_Size;
 };
 
 #endif // FORCECURVEGENERATOR_H
