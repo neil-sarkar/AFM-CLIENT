@@ -53,7 +53,6 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                             ctx.fillRect(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height);
                         }
                     });
-
                     this.canvasToSVG();
 
                 } else {
@@ -86,7 +85,7 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
                     width: 475,
                 },
                 title: {
-                    text: "",
+                    text: "Forward Offset", // default name
                 },
                 xAxis: {
                     min: 1,
@@ -134,22 +133,8 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
             });
         });
         },
-        asyncAddPoint: function(x, y, z) {
-            this.state.chart.series[0].addPoint([x, y, z], false, false, false); // add point WITHOUT redrawing or animating
-        },
-        handleNewDataWrapper: function(data) {
-            var self = this;
-            setTimeout(function(){ self.handleNewData(data); }, 0);
-        },
-        handleNewData: function(data) {
-            var self = this;
-            var add_point = this.state.chart.series[0].addPoint;
-            for (var i = 0; i < data.length; i += 3) {
-                self.asyncAddPoint(add_point, i, data);
-            }
-            setTimeout(function() {
-                self.state.chart.redraw(false);
-            }, 0);
+        set_name: function(name) {
+            this.state.chart.setTitle({text: name});
         },
         erase_data: function() {
             while (this.state.chart.series.length) {
@@ -187,6 +172,12 @@ define(["jquery", "react", "dom", "heatmap", "exporting", "exporting_offline", "
         },
         change_num_columns: function(max_value) {
             this.state.chart.xAxis[0].setExtremes(0, max_value);
+        },
+        show_loading: function() {
+            this.state.chart.showLoading("Loading data...");
+        },
+        hide_loading: function() {
+            this.state.chart.hideLoading();
         },
         componentDidMount: function() {
             this.renderChart();

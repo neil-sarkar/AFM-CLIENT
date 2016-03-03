@@ -85,8 +85,8 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             return data.slice(Math.max(data.length - this.state.send_back_count, 0));
         },
         push_data_to_view: function(data_obj) {
-            if (this.state.current_view % 2 == 0) {
-                this.refs.heatmap.set_data(data_obj.forward_data.heatmap);    
+            if (this.state.current_view % 2 === 0) {
+                this.refs.heatmap.set_data(data_obj.forward_data.heatmap);
             } else {
                 this.refs.heatmap.set_data(data_obj.reverse_data.heatmap);
             }
@@ -127,7 +127,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },
         eliminate_outliers: function() {
-            current_view_obj = this.state.current_view % 2 == 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
+            current_view_obj = this.state.current_view % 2 === 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
             var current_data = current_view_obj.heatmap;
             var rms = Math.sqrt(current_view_obj.sum_of_squares / current_view_obj.num_points);
             var mean = current_view_obj.sum / current_view_obj.num_points;
@@ -138,16 +138,18 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         set_heatmap_name: function(name) {
-            console.log(name);
+            this.refs.heatmap.set_name(name);
         },
         handle_view_selector_click: function(index) {
             this.setState({
                 current_view: index
             }, function () {
+                this.refs.heatmap.show_loading();
                 this.refs.line_profile.clear_plotlines();
-                this.push_data_to_view(null_view);
+                // this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
-                this.set_heatmap_name(scan_views[Math.floor(index/2)].name);
+                this.set_heatmap_name((index % 2 == 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(index / 2)].name);
+                this.refs.heatmap.hide_loading();
             });
         },
         get_specific_row_profile: function(data, y_value) {

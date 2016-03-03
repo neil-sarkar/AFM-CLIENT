@@ -102,9 +102,11 @@ void ReceiveWorker::handle_asynchronous_message() {
 
 bool ReceiveWorker::is_mcu_reset_message() {
     if (MCU_Reset_Message_Length == working_response.length()) {
-        for (int i = 0; i < MCU_Reset_Message_Length; i++)
+        for (int i = 0; i < MCU_Reset_Message_Length; i++) {
+            qDebug() << MCU_Reset_Message[i] << static_cast<unsigned char>(working_response[i]);
             if (MCU_Reset_Message[i] != static_cast<unsigned char>(working_response[i]))
                 return false;
+        }
         return true;
     }
     return false;

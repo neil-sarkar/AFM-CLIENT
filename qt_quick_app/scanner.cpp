@@ -78,14 +78,16 @@ void Scanner::init() {
 void Scanner::emit_dummy_data() {
     emit started_scan_state_machine();
     QVariantList data;
-    for (int i = 0; i < 128; i++) {
-        for (int j = 0; j < 128; j++) {
+    for (int i = 0; i < 256; i++) {
+        for (int j = 0; j < 256; j++) {
             data.append(i);
             data.append(j);
             data.append(i*j);
         }
     }
-//    emit new_forward_offset_data(data);
+    emit new_offset_data(data);
+    emit new_phase_data(data);
+    emit new_error_data(data);
     return;
 }
 
