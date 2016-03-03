@@ -15,7 +15,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 },
                 tooltip: { crosshairs: [true, true] },
                 xAxis: {
-                    type: 'datetime',
+                    labels: {
+                      enabled: false
+                    }
                 },
                 yAxis: {
                     title: {
@@ -68,7 +70,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             // we don't use the appraoch state here...we use it in a separate dialog
             // might be worth refactoring the signal
             var node = this.refs.chartNode;
-            var point = [(new Date()).getTime(), approach_adc_read];
+            var point = approach_adc_read;
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
@@ -90,7 +92,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             adc_5.value_changed.connect(this.handle_adc_value_changed);
             adc_stream_interval_id = setInterval(function() {
                 adc_5.read();
-            }, 500);
+            }, 300);
         },
         stop_streaming: function() {
             try {

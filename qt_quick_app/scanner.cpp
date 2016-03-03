@@ -136,11 +136,11 @@ bool Scanner::is_scanning_forward() {
 
 void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
-
+    double z_amplitude, z_offset, z_phase;
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back
-        double z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
-        double z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
-        double z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
+        z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
+        z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
+        z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         if (scanning_forward) {
             forward_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / PID::SCALE_FACTOR);
         } else {
@@ -162,6 +162,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;
     }
+//    fine_z->set_value(z_amplitude * DAC::SCALE_FACTOR, false);
     receive_data();
 }
 

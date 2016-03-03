@@ -12,6 +12,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     chart: {
                         plotBackgroundColor: '#EFEFEF',
                         height: 200,
+                        width: 600,
                         type: 'line',
                         zoomType: 'x',
                     },
@@ -28,7 +29,13 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                         },
                     },
                     legend: {
-                        enabled: false
+                        layout: 'vertical',
+                        align: 'left',
+                        verticalAlign: 'top',
+                        borderWidth: 0,
+                        floating: true,
+                        y: 36,
+                        x: 53
                     },
                     series: [],
                 });
@@ -55,9 +62,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 self.state.chart.redraw(false);
             }, 0);
         },
-        addSeries: function() {
+        addSeries: function(name) {
             var series = {
                 type: "line",
+                name: name
             };
             this.state.chart.addSeries(series);
         },
@@ -98,9 +106,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             });
         },
         set_data: function(forward_data, reverse_data) {
-            if (this.state.chart.series.length == 0) {
-                this.addSeries();
-                this.addSeries();
+            if (this.state.chart.series.length === 0) {
+                this.addSeries("Forward");
+                this.addSeries("Reverse");
             }
             this.state.chart.series[0].setData(forward_data.reverse());
             this.state.chart.series[1].setData(reverse_data.reverse());

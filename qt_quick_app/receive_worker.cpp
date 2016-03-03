@@ -126,7 +126,7 @@ void ReceiveWorker::handle_asynchronous_message() {
         handle_auto_approach_stopped_message();
     else if (static_cast<unsigned char>(working_response.at(1)) == 0xaa) {
         qDebug() << "BUFFER FULL";
-        assert(false);
+        assert(false); // not sure what we should do here. this could happen if we spam the reset button infinitely.
     } else
         qDebug() << "unknown message" << working_response;
 }

@@ -37,6 +37,10 @@ public:
     static const int X_1;
     static const int X_2;
 
+    static const quint16 RESOLUTION;
+    static const double MAX_VOLTAGE;
+    static const double SCALE_FACTOR;
+
 signals:
     void value_changed(double);
     void id_changed();
@@ -47,9 +51,6 @@ public slots:
 private:
     qint8 m_id;
     double m_value;
-    static const quint16 RESOLUTION;
-    static const double MAX_VOLTAGE;
-    static const double SCALE_FACTOR;
     void callback_read_value(QByteArray);
     callback_return_type bind(void (DAC::*method)(QByteArray));
     typedef void (DAC::*callback_type)(QByteArray);

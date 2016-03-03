@@ -13,10 +13,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 title: {
                     text: "Z Fine"
                 },
-                tooltip: { crosshairs: [true, true] },
                 xAxis: {
-                    type: 'datetime',
+                    labels: {
+                      enabled: false
+                    }
                 },
+                tooltip: { crosshairs: [true, true] },
                 yAxis: {
                     title: {
                         text: 'Amplitude (V)'
@@ -66,7 +68,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         handleNewData: function(dac_value) {
             var node = this.refs.chartNode;
-            var point = [(new Date()).getTime(), dac_value];
+            var point = dac_value;
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
         },
@@ -83,7 +85,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         start_streaming: function() {
             z_fine_interval_id = setInterval(function() {
                 dac_6.cmd_read_value();
-            }, 500);
+            }, 300);
         },
         stop_streaming:function() {
             if (typeof z_fine_interval_id !== 'undefined')
