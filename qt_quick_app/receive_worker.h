@@ -34,13 +34,15 @@ private:
     QByteArray working_response;
     bool complete_message;
     void process_working_response();
-    void handle_asynchronous_message();
     bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
     bool is_auto_approach_info();
     bool is_auto_approach_stopped_message();
+    bool is_response_valid(CommandNode* node, unsigned char tag, unsigned char id, int length);
     void handle_auto_approach_stopped_message();
     void handle_hardware_reset();
-    void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
+    void handle_asynchronous_message();
+    void handle_invalid_response();
+
     int num_commands_received;
     bool escape;
 

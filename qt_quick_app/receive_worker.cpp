@@ -23,7 +23,8 @@ void ReceiveWorker::enqueue_response_byte(char byte) {
 
 void ReceiveWorker::build_working_response() {
     // Relevant test cases: escape, newline | escape escape | escape newline newline | escape (char when unmasked returns escape) (another char) |
-    assert (!response_byte_queue.isEmpty());
+    if (response_byte_queue.isEmpty()) // this could happen when we have a hard MCU reset where we have pending signals trying to call this slot after the queue is emptied in another operation
+        return;
     quint8 byte = response_byte_queue.dequeue();
 
     if (byte == Escape_Character && !escape) {
@@ -38,13 +39,13 @@ void ReceiveWorker::build_working_response() {
     }
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
-            if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character)
+            if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character) {
                 handle_asynchronous_message();
-            else if (receive_command_queue.count()) {
-                process_working_response(); // could technically spin up a new thread for each response process
-            }
-            else
+            } else if (receive_command_queue.count()) {
+                process_working_response();
+            } else
                 qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
+
             working_response.clear();
             return;
         } else if (!working_response.length()) { // if we're starting a message with a newline, we ignore it because it doesn't tell us anything
@@ -60,9 +61,10 @@ void ReceiveWorker::process_working_response() {
     qDebug() << "Now processing" << response_tag << response_id << working_response;
     assert (receive_command_queue.isEmpty() == false);
     CommandNode* node = receive_command_queue.dequeue();
-    assert_return_integrity(node, response_tag, response_id, working_response.length());
-    if (node->process_callback) {
-        node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
+    if (!is_response_valid(node, response_tag, response_id, working_response.length())) {
+        handle_invalid_response();
+    } else if (node->process_callback) {
+            node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
     mutex.lock();
     port_writing_command = false;
@@ -71,22 +73,39 @@ void ReceiveWorker::process_working_response() {
     delete node;
 }
 
-void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length) {
+void ReceiveWorker::handle_invalid_response() {
+    qDebug() << "Invalid response received";
+    // one possible reason for an invalid response is that we had a hard reset button reset in the process
+    // iterate through receive_command_queue to see if that was the case
+    while (response_byte_queue.count()) {
+        if (static_cast<unsigned char>(response_byte_queue.dequeue()) == Special_Message_Character) {
+            qDebug() << "Special message character found; resetting";
+            handle_hardware_reset();
+        }
+    }
+}
+
+bool ReceiveWorker::is_response_valid(CommandNode* node, unsigned char tag, unsigned char id, int length) {
     if (tag != node->tag) {
         qDebug() << "tag mismatch " << tag << node->tag;
-        assert (tag == node->tag);
+        return false;
     }
-    assert (id  == node->id);
+
+    if (id != node->id) {
+        qDebug() << "id mismatch " << id<< node->id;
+        return false;
+    }
 
     if (node->num_receive_bytes == Set_Receive_Bytes_Error) {
         qDebug() << "User must set number of receive bytes at time of dynamic command creation";
+        return false;
     }
 
     if (length != node->num_receive_bytes) {
         qDebug() << length << node->num_receive_bytes << node->id;
+        return false;
     }
-
-    assert (length == node->num_receive_bytes);
+    return true;
 }
 
 void ReceiveWorker::handle_hardware_reset() {
@@ -151,7 +170,7 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
 }
 
 void ReceiveWorker::flush() {
-    qDebug() << "here" << receive_command_queue.count();
+    qDebug() << "Flushing receive queues" << receive_command_queue.count();
     while (receive_command_queue.count())
         delete receive_command_queue.dequeue();
     while (response_byte_queue.count())
