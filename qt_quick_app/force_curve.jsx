@@ -129,10 +129,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.refs.chart.clear();
         },
         save_data: function() {
-
+            afm.save_force_curve_data();
         },
         generate: function() {
-            console.log("clicked");
             force_curve_generator.cmd_generate_force_curve();
         },
         render: function() {

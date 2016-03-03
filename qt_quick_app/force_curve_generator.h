@@ -9,7 +9,7 @@ class ForceCurveGenerator : public AFMObject
 public:
     ForceCurveGenerator();
     Q_INVOKABLE void cmd_generate_force_curve();
-//    Q_INVOKABLE void save_to_file();
+    void save_raw_data(QString save_folder);
     void init();
 
 signals:

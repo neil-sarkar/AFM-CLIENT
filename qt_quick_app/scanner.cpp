@@ -42,7 +42,7 @@ void Scanner::set_settings() {
     set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
-    set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
+//    set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
     settings.endGroup();
 }
@@ -303,8 +303,8 @@ void Scanner::cmd_set_dwell_time() {
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Dwell_Time], payload));
 }
 
-void Scanner::save_raw_data() {
-    QString folder_path = m_save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
+void Scanner::save_raw_data(QString save_folder) {
+    QString folder_path = save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
     QDir().mkdir(folder_path);
     QList<QString> specific_file_names;
     QList<QString> full_paths;
@@ -400,26 +400,6 @@ int Scanner::get_delta_y_from_ratio() {
             return 1;
     }
 }
-
-void Scanner::launch_folder_picker() {
-    QString path = QFileDialog::getExistingDirectory(0,"", m_save_folder);
-    if (!path.isEmpty())
-        set_save_folder(path);
-}
-
-QString Scanner::save_folder() {
-    return m_save_folder;
-}
-
-void Scanner::set_save_folder(QString save_folder) {
-    if (m_save_folder != save_folder) {
-        m_save_folder = save_folder;
-        qDebug() << "Setting save folder to " << m_save_folder;
-        emit save_folder_changed(m_save_folder);
-        update_settings("save_folder", QVariant(m_save_folder));
-    }
-}
-
 
 QString Scanner::base_file_name() {
     return m_base_file_name;

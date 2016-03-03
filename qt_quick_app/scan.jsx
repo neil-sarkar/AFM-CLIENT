@@ -190,7 +190,7 @@ define(["react", "jsx!pages/scan_heatmap", "jsx!pages/line_profile", "jsx!pages/
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Clear</button>
                             <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
-                            <button className="action-button" onClick={scanner.save_raw_data} disabled={this.state.scanning}>Download Data</button>
+                            <button className="action-button" onClick={afm.save_scan_data} disabled={this.state.scanning}>Download Data</button>
                         </div>
                         <InlineScanControls />
                         <div className="nav-buttons-wrapper">

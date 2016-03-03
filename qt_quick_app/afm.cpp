@@ -7,6 +7,7 @@
 #include "serial_port.h"
 #include "assert.h"
 #include "force_curve_generator.h"
+#include <QFileDialog>
 #include <QStateMachine>
 #include <QFinalState>
 
@@ -111,5 +112,33 @@ void AFM::restore_defaults() {
     for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
         i.value()->set_settings();
 }
+
+void AFM::launch_folder_picker() {
+    QString path = QFileDialog::getExistingDirectory(0,"", m_save_folder);
+    if (!path.isEmpty())
+        set_save_folder(path);
+}
+
+QString AFM::save_folder() {
+    return m_save_folder;
+}
+
+void AFM::set_save_folder(QString save_folder) {
+    if (m_save_folder != save_folder) {
+        m_save_folder = save_folder;
+        qDebug() << "Setting save folder to " << m_save_folder;
+        emit save_folder_changed(m_save_folder);
+//        update_settings("save_folder", QVariant(m_save_folder));
+    }
+}
+
+void AFM::save_scan_data() {
+    scanner->save_raw_data(m_save_folder);
+}
+
+void AFM::save_force_curve_data() {
+    force_curve_generator->save_raw_data(m_save_folder);
+}
+
 
 const int AFM::DAC_Table_Block_Size = 256;
