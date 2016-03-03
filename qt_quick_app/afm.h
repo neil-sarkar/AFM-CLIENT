@@ -12,6 +12,7 @@
 #include "sweeper.h"
 #include "approacher.h"
 #include "scanner.h"
+#include "force_curve_generator.h"
 #include <QStateMachine>
 
 
@@ -19,7 +20,7 @@ class AFM : public AFMObject
 {
     Q_OBJECT
     public:
-        explicit AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, Sweeper* sweeper, Approacher* approacher, Scanner* scanner);
+        explicit AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator);
         QHash<int, AFMObject*> PGA_collection;
         QHash<int, AFMObject*> DAC_collection;
         QHash<int, AFMObject*> ADC_collection;
@@ -27,11 +28,10 @@ class AFM : public AFMObject
         Sweeper* sweeper;
         Approacher* approacher;
         Scanner* scanner;
+        ForceCurveGenerator* force_curve_generator;
 
         static const int DAC_Table_Block_Size;
         void callback_set_dac_table(QByteArray buffer);
-        void callback_generate_force_curve(QByteArray buffer);
-        Q_INVOKABLE void cmd_generate_force_curve();
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
         Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
@@ -42,10 +42,6 @@ class AFM : public AFMObject
         void dac_table_set();
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
-        void new_approaching_amplitude_data(QVariantList);
-        void new_approaching_phase_data(QVariantList);
-        void new_retracting_amplitude_data(QVariantList);
-        void new_retracting_phase_data(QVariantList);
 
     public slots:
         void init();
@@ -58,6 +54,8 @@ class AFM : public AFMObject
         void cmd_set_dac_table(int block_number);
         int dac_table_page_count;
         double voltage_resistance_equation(double);
+
+
 };
 
 #endif // AFM_H

@@ -6,10 +6,11 @@
 #include "constants.h"
 #include "serial_port.h"
 #include "assert.h"
+#include "force_curve_generator.h"
 #include <QStateMachine>
 #include <QFinalState>
 
-AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner) {
+AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
@@ -17,6 +18,7 @@ AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_colle
     this->sweeper = sweeper;
     this->approacher = approacher;
     this->scanner = scanner;
+    this->force_curve_generator = force_curve_generator;
     dac_table_page_count = 0;
 }
 
@@ -34,6 +36,7 @@ void AFM::init() {
     sweeper->init();
     approacher->init();
     scanner->init();
+    force_curve_generator->init();
 }
 
 void AFM::read_all_ADCs() {
@@ -96,35 +99,6 @@ void AFM::cmd_set_dac_table(int block_number) {
         payload += ((value & 0x0F00) >> 8);
     }
     emit command_generated(new CommandNode(command_hash[AFM_Set_Dac_Table], bind(&AFM::callback_set_dac_table), payload));
-}
-
-void AFM::cmd_generate_force_curve() {
-    emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&AFM::callback_generate_force_curve)));
-}
-
-void AFM::callback_generate_force_curve(QByteArray return_bytes) {
-    QVariantList approaching_amplitude, approaching_phase, retracting_amplitude, retracting_phase;
-    int initial_z = 2500;
-    int step_size = 5;
-    int half_resp_length = return_bytes.length() / 2;
-    for (int i = 0; i < half_resp_length; i += 4) {
-        QVariant z_value = double(initial_z - step_size * i/4) / 4095;
-        approaching_amplitude.append(z_value);
-        approaching_amplitude.append(bytes_to_word(return_bytes.at(i), return_bytes.at(i+1)) * ADC::SCALE_FACTOR);
-        approaching_phase.append(z_value);
-        approaching_phase.append(bytes_to_word(return_bytes.at(i+2), return_bytes.at(i+3)) * ADC::SCALE_FACTOR);
-
-        int j = half_resp_length + i;
-        z_value = double(step_size * i/4) / 4095;
-        retracting_amplitude.append(z_value);
-        retracting_amplitude.append(bytes_to_word(return_bytes.at(j), return_bytes.at(j+1)) * ADC::SCALE_FACTOR);
-        retracting_phase.append(z_value);
-        retracting_phase.append(bytes_to_word(return_bytes.at(j+2), return_bytes.at(j+3)) * ADC::SCALE_FACTOR);
-    }
-    emit new_approaching_amplitude_data(approaching_amplitude);
-    emit new_approaching_phase_data(approaching_phase);
-    emit new_retracting_amplitude_data(retracting_amplitude);
-    emit new_retracting_phase_data(retracting_phase);
 }
 
 void AFM::restore_defaults() {

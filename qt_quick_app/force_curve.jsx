@@ -113,10 +113,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         componentDidMount: function() {
             this.renderChart();
-            afm.new_approaching_amplitude_data.connect(this.handle_new_approaching_amplitude_data);
-            afm.new_approaching_phase_data.connect(this.handle_new_approaching_phase_data);
-            afm.new_retracting_amplitude_data.connect(this.handle_new_retracting_amplitude_data);
-            afm.new_retracting_phase_data.connect(this.handle_new_retracting_phase_data);
+            force_curve_generator.new_approaching_amplitude_data.connect(this.handle_new_approaching_amplitude_data);
+            force_curve_generator.new_approaching_phase_data.connect(this.handle_new_approaching_phase_data);
+            force_curve_generator.new_retracting_amplitude_data.connect(this.handle_new_retracting_amplitude_data);
+            force_curve_generator.new_retracting_phase_data.connect(this.handle_new_retracting_phase_data);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {
@@ -128,12 +128,20 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         clear: function() {
             this.refs.chart.clear();
         },
+        save_data: function() {
+
+        },
+        generate: function() {
+            console.log("clicked");
+            force_curve_generator.cmd_generate_force_curve();
+        },
         render: function() {
             return (
                 <div>
                     <ForceCurve ref="chart"/>
-                    <button className="action-button" onClick={afm.cmd_generate_force_curve}>Generate</button>
+                    <button className="action-button" onClick={this.generate}>Generate</button>
                     <button className="action-button" onClick={this.clear}>Clear</button>
+                    <button className="action-button" onClick={this.save_data}>Save</button>
                 </div>
             )
         }

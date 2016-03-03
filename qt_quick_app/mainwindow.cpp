@@ -63,6 +63,7 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("serial_port"), m_serial_port);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
+    page()->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
     QHash<int, AFMObject*>::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
         QString name = "pga_" + QString::number(i.key());

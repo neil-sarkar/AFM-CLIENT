@@ -1,4 +1,3 @@
-
 #include "builder.h"
 #include "afm.h"
 #include "dac.h"
@@ -12,6 +11,7 @@
 #include "constants.h"
 #include "approacher.h"
 #include "scanner.h"
+#include "force_curve_generator.h"
 #include <iostream>
 #include <iomanip>
 #include <QFinalState>
@@ -61,7 +61,8 @@ AFM* Builder::build_afm() {
     Approacher* approacher = new Approacher(pid, adc_collection[ADC::Z_Piezoresistor_Amplitude]);
     Sweeper* sweeper = new Sweeper(pid);
     sweeper->dds = new DDS();
-    return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner);
+    ForceCurveGenerator* force_curve_generator = new ForceCurveGenerator();
+    return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner, force_curve_generator);
 }
 
 
@@ -81,6 +82,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+    QObject::connect(afm->force_curve_generator, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     wire_hash_command_generated(afm->ADC_collection, send_worker);
     wire_hash_command_generated(afm->DAC_collection, send_worker);
     wire_hash_command_generated(afm->PGA_collection, send_worker);
