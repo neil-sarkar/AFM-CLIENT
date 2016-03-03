@@ -72,6 +72,7 @@ void AFM::set_dac_table() {
     // We can't simply queue up all of these commands because
     // that would be too many bytes for the MCU to handle at once
     // Therefore, we have to string together these commands only after one has completely executed
+    qDebug() << "Setting dac table";
     if (dac_table_page_count < 16) {
         cmd_set_dac_table(dac_table_page_count);
     } else {

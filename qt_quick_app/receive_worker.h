@@ -19,6 +19,7 @@ signals:
     void mcu_reset_message_received();
     void send_next_command();
     void auto_approach_info_received(QByteArray);
+    void prompt_dac_table_reset();
 
 public slots:
     void enqueue_command(CommandNode*);
@@ -38,6 +39,7 @@ private:
     bool is_auto_approach_info();
     bool is_auto_approach_stopped_message();
     void handle_auto_approach_stopped_message();
+    void handle_hardware_reset();
     void assert_return_integrity(CommandNode* node, unsigned char tag, unsigned char id, int length);
     int num_commands_received;
     bool escape;

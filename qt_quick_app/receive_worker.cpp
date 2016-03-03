@@ -64,6 +64,9 @@ void ReceiveWorker::process_working_response() {
     if (node->process_callback) {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
+    mutex.lock();
+    port_writing_command = false;
+    mutex.unlock();
     emit send_next_command();
     delete node;
 }
@@ -86,10 +89,18 @@ void ReceiveWorker::assert_return_integrity(CommandNode* node, unsigned char tag
     assert (length == node->num_receive_bytes);
 }
 
+void ReceiveWorker::handle_hardware_reset() {
+    mutex.lock();
+    port_writing_command = false;
+    mutex.unlock();
+    flush();
+    emit prompt_dac_table_reset();
+}
+
 void ReceiveWorker::handle_asynchronous_message() {
     qDebug() << "Received async message" << working_response;
     if (is_mcu_reset_message())
-        emit mcu_reset_message_received();
+        handle_hardware_reset();
     else if (is_auto_approach_info())
         emit auto_approach_info_received(working_response.right(working_response.length() - 2));
     else if (is_auto_approach_stopped_message())
@@ -104,7 +115,6 @@ void ReceiveWorker::handle_asynchronous_message() {
 bool ReceiveWorker::is_mcu_reset_message() {
     if (MCU_Reset_Message_Length == working_response.length()) {
         for (int i = 0; i < MCU_Reset_Message_Length; i++) {
-            qDebug() << MCU_Reset_Message[i] << static_cast<unsigned char>(working_response[i]);
             if (MCU_Reset_Message[i] != static_cast<unsigned char>(working_response[i]))
                 return false;
         }

@@ -114,8 +114,4 @@ void SerialPort::execute_command(CommandNode* command_node) {
 
     assert (result == 0);
     emit message_sent(command_node);
-
-    mutex.lock();
-    port_writing_command = false;
-    mutex.unlock();
 }
