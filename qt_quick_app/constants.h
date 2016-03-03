@@ -3,10 +3,13 @@
 
 #include "command_node.h"
 #include "thread_safe_queue.h"
+#include <QMutex>
 
 extern QHash<QString, CommandNode> command_hash;
 extern ThreadSafeQueue<CommandNode*> send_command_queue;
 extern ThreadSafeQueue<CommandNode*> receive_command_queue;
+extern bool port_writing_command;
+extern QMutex mutex;
 
 extern const QString ADC_Read;
 extern const QString AFM_Begin_Auto_Approach;

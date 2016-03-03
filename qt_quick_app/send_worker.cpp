@@ -6,18 +6,26 @@
 SendWorker::SendWorker(QObject *parent) : QObject(parent)
 {
     tag = -1;
-    QObject::connect(this, SIGNAL(command_received()), this, SLOT(dequeue_command()));
+    QObject::connect(this, SIGNAL(send_command_immediately()), this, SLOT(dequeue_command()) );
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {
     command_node->tag = iterate_tag(); // assign tag then increment
     assert (send_command_queue.isFull() == false);
     send_command_queue.enqueue(command_node);
-    emit command_received(); // emit this signal so that we're processing dequeue's in the send_workers event loop, not in the caller thread's event loop which would be blocking
+    if (send_command_queue.count() == 1 && receive_command_queue.count() == 0 && !port_writing_command) {
+        emit send_command_immediately();
+    }
 }
 
 void SendWorker::dequeue_command() {
-    assert(send_command_queue.isEmpty() == false);
+    if (!send_command_queue.count())
+        return;
+
+    mutex.lock();
+    port_writing_command = true;
+    mutex.unlock();
+
     CommandNode* command_node = send_command_queue.dequeue();
     populate_send_bytes(command_node);
     emit command_dequeued(command_node);

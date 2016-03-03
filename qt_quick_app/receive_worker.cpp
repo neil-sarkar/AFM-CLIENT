@@ -64,6 +64,7 @@ void ReceiveWorker::process_working_response() {
     if (node->process_callback) {
         node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
     }
+    emit send_next_command();
     delete node;
 }
 

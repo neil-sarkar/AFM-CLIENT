@@ -17,6 +17,7 @@ signals:
     void command_received();
     void response_byte_received();
     void mcu_reset_message_received();
+    void send_next_command();
     void auto_approach_info_received(QByteArray);
 
 public slots:

@@ -13,7 +13,7 @@ public:
     explicit SendWorker(QObject *parent = 0);
 
 signals:
-    void command_received();
+    void send_command_immediately();
     void command_dequeued(CommandNode*);
 
 private slots:
@@ -24,7 +24,6 @@ public slots:
     void flush();
 
 private:
-    QMutex mutex;
     int tag;
     void populate_send_bytes(CommandNode*);
     int iterate_tag();

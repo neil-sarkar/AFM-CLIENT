@@ -3,6 +3,8 @@
 QHash<QString, CommandNode> command_hash;
 ThreadSafeQueue<CommandNode*> send_command_queue;
 ThreadSafeQueue<CommandNode*> receive_command_queue;
+bool port_writing_command = false;
+QMutex mutex;
 
 const QString ADC_Read = "ADC_Read";
 const QString AFM_Begin_Auto_Approach = "AFM_Begin_Auto_Approach";

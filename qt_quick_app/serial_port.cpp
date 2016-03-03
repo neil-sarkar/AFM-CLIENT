@@ -113,6 +113,9 @@ void SerialPort::execute_command(CommandNode* command_node) {
     result += write_byte(Message_Delimiter); // delimit the message
 
     assert (result == 0);
-    qDebug() << ("sent message");
     emit message_sent(command_node);
+
+    mutex.lock();
+    port_writing_command = false;
+    mutex.unlock();
 }
