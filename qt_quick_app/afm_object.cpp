@@ -16,3 +16,9 @@ void AFMObject::set_settings() {
 quint16 AFMObject::bytes_to_word(quint8 low, quint8 high) {
     return ((high << 8) | low);
 }
+
+void AFMObject::update_settings(QString settings_group_name, QString settings_key, QVariant settings_value) {
+    settings.beginGroup(settings_group_name);
+    settings.setValue(settings_key, settings_value);
+    settings.endGroup();
+}

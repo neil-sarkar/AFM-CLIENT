@@ -68,7 +68,9 @@ class AFM : public AFMObject
         double voltage_resistance_equation(double);
         void set_save_folder(QString);
         bool is_initializing;
+        void set_settings();
         QString m_save_folder;
+        static const QString settings_group_name;
 
 };
 

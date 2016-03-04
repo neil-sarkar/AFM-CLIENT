@@ -25,6 +25,7 @@ AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_colle
 
 void AFM::init() {
     // This method calls the init methods of all the members
+    set_settings();
     is_initializing = true;
     QHash<int, AFMObject*>::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
@@ -68,9 +69,6 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
     static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(y_1_voltage);
     static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(y_2_voltage);
     static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(z_voltage);
-//    QHash<int, AFMObject*>::iterator i;
-//    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
-//        static_cast<ADC*>(i.value())->read();
 
     if (ADC::is_actuator_connected(z_voltage) && ADC::is_actuator_connected(x_1_voltage) && ADC::is_actuator_connected(y_1_voltage))
         emit chip_mounted_ok();
@@ -140,7 +138,7 @@ void AFM::set_save_folder(QString save_folder) {
         m_save_folder = save_folder;
         qDebug() << "Setting save folder to " << m_save_folder;
         emit save_folder_changed(m_save_folder);
-//        update_settings("save_folder", QVariant(m_save_folder));
+        update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
     }
 }
 
@@ -152,5 +150,11 @@ void AFM::save_force_curve_data() {
     force_curve_generator->save_raw_data(m_save_folder);
 }
 
+void AFM::set_settings() {
+    settings.beginGroup(settings_group_name);
+    set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
+    settings.endGroup();
+}
 
 const int AFM::DAC_Table_Block_Size = 256;
+const QString AFM::settings_group_name = "afm";
