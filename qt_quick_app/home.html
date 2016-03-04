@@ -1,15 +1,18 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="qrc:/css/fonts.css">
-    <link rel="stylesheet" type="text/css" href="qrc:/css/home.css">
+  <meta charset="utf-8">
+  <title>openAFM</title>
+  <link rel="stylesheet" type="text/css" href="qrc:/css/fonts.css">
+  <link rel="stylesheet" type="text/css" href="qrc:/css/home.css">
 </head>
-    <body>
-        <div class="home-wrapper">
-            <img id="home-image" src="qrc:/images/afm.jpeg"></img>
-            <div class="column-container">
-                <h1 id="welcome-text">Welcome to openAFM.</h1>
-                <button class="enter-button" id="enter-button" onclick="main_window.load_main_app_page()">ENTER</button>
-             </div>
-        </div>
-    </body>
+<body>
+    <div id="content"></div>
+</body>
+<script type="text/javascript" data-main="qrc:/js/common.js" src="qrc:/js/lib/require.js"></script>
+<script type="text/javascript">
+        require(["common"], function() {
+                require(['react', 'jsx!pages/home'], function(){
+                })
+        });
+</script>
 </html>

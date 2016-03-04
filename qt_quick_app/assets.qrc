@@ -1,10 +1,7 @@
 <RCC>
     <qresource prefix="/js" lang="js">
-        <file>home.js</file>
         <file>console.js</file>
-        <file>sweep.js</file>
         <file>common.js</file>
-        <file>synced_chart.js</file>
         <file>jsx.js</file>
         <file>JSXTransformer.js</file>
         <file>text.js</file>
@@ -99,6 +96,7 @@
         <file>inline_approach_controls.jsx</file>
         <file>save_folder.jsx</file>
         <file>text_input.jsx</file>
+        <file>home.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
