@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "afm.h"
-#include "serial_port.h"
 #include "web_file_dialog.h"
 #include <QWebView>
 #include <QWebElementCollection>
@@ -24,7 +23,7 @@ class MainWindow : public QWebView
 {
 Q_OBJECT
 public:
-    explicit MainWindow(AFM*, SerialPort*, WebFileDialog*);
+    explicit MainWindow(AFM*, WebFileDialog*);
     MainWindow(CustomPage*);
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
     Q_INVOKABLE void load_main_app_page();
@@ -32,7 +31,6 @@ public:
     Q_INVOKABLE QWebView* createWindow(CustomPage*);
     Q_INVOKABLE void pop_out_force_curve_page();
     AFM* m_afm;
-    SerialPort* m_serial_port;
 
 private slots:
     void addJSObject(CustomPage* page);
