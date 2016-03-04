@@ -67,7 +67,6 @@ void MainWindow::addJSObject() {
     page()->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("serial_port"), m_serial_port);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
     QHash<int, AFMObject*>::iterator i;

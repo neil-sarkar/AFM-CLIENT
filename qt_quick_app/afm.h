@@ -53,6 +53,7 @@ class AFM : public AFMObject
         void init_complete();
         void chip_mounted_ok();
         void setting_dac_table();
+        void disconnected();
 
     public slots:
         void init();
