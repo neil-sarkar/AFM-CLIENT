@@ -24,12 +24,16 @@ MainWindow::MainWindow(AFM* afm, SerialPort* serial_port, WebFileDialog* folder_
     m_serial_port = serial_port;
     m_folder_picker = folder_picker;
 
-    setPage(&m_welcome_page);
+    // commented out because we just call addJSObject manually now and pass in the appropriate page
+    // QObject::connect(m_main_app_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject())); // Signal is emitted before frame loads any web content:
+
+
     page()->setNetworkAccessManager(m_network);
-    // Signal is emitted before frame loads any web content:
-    QObject::connect(m_main_app_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
-    QObject::connect(m_welcome_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
+    addJSObject(&m_welcome_page);
+    addJSObject(&m_main_app_page);
     m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
+    m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
+    setPage(&m_welcome_page);
 
     set_global_web_settings();
 }
@@ -57,30 +61,30 @@ MainWindow::MainWindow(CustomPage* custom_page) {
     QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
 }
 
-void MainWindow::addJSObject() {
+void MainWindow::addJSObject(CustomPage* page) {
     // For this method to work without crashing the program, all initialization must be done first.
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("dds"), m_afm->sweeper->dds);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
-    page()->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("dds"), m_afm->sweeper->dds);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("approacher"), m_afm->approacher);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("scanner"), m_afm->scanner);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("motor"), m_afm->motor);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
+    page->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
     QHash<int, AFMObject*>::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
         QString name = "pga_" + QString::number(i.key());
-        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+        page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     for (i = m_afm->DAC_collection.begin(); i != m_afm->DAC_collection.end(); ++i) {
         QString name = "dac_" + QString::number(i.key());
-        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+        page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     for (i = m_afm->ADC_collection.begin(); i != m_afm->ADC_collection.end(); ++i) {
         QString name = "adc_" + QString::number(i.key());
-        page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
+        page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
 }
 

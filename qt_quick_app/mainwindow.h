@@ -35,7 +35,7 @@ public:
     SerialPort* m_serial_port;
 
 private slots:
-    void addJSObject();
+    void addJSObject(CustomPage* page);
 
 private:
     void set_global_web_settings();
