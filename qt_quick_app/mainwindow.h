@@ -27,7 +27,7 @@ public:
     explicit MainWindow(AFM*, SerialPort*, WebFileDialog*);
     MainWindow(CustomPage*);
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
-    Q_INVOKABLE void load_sweep_page();
+    Q_INVOKABLE void load_main_app_page();
     Q_INVOKABLE void load_home_page();
     Q_INVOKABLE QWebView* createWindow(CustomPage*);
     Q_INVOKABLE void pop_out_force_curve_page();
@@ -42,7 +42,7 @@ private:
     QNetworkAccessManager * m_network;
     QNetworkDiskCache * m_cache;
     CustomPage m_welcome_page;
-    CustomPage m_sweep_page;
+    CustomPage m_main_app_page;
     CustomPage m_force_curve_page;
     WebFileDialog* m_folder_picker;
 };

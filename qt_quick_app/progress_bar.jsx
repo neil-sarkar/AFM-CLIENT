@@ -13,6 +13,7 @@
 			}
             return (
             	<div>
+            		<div className="home-button" onClick={main_window.load_home_page}>Home</div>
             		<div className="progress-bar">{steps}</div>
             		<a id="nav-toggle" href="#"><span></span></a>
             	</div>

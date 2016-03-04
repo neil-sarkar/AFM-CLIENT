@@ -11,21 +11,26 @@
 MainWindow::MainWindow(AFM* afm, SerialPort* serial_port, WebFileDialog* folder_picker)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
+
+    // Not entirely sure if this setup is necessary, but it was in the only good webkit hybrid app example I could find
     m_network = new QNetworkAccessManager(this);
     m_cache = new QNetworkDiskCache(this);
     m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/imageanalyzer");
     m_cache->setMaximumCacheSize(1000000); //set the cache to 10megs
     m_network->setCache(m_cache);
-    setPage(&m_welcome_page);
-    page()->setNetworkAccessManager(m_network);
 
+    // Core objects we will expose to JavaScript
     m_afm = afm;
     m_serial_port = serial_port;
     m_folder_picker = folder_picker;
+
+    setPage(&m_welcome_page);
+    page()->setNetworkAccessManager(m_network);
     // Signal is emitted before frame loads any web content:
-    QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
-    QUrl startURL = QUrl("qrc:/html/main.html");
-    m_welcome_page.mainFrame()->load(startURL);
+    QObject::connect(m_main_app_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
+    QObject::connect(m_welcome_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
+    m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
+
     set_global_web_settings();
 }
 
@@ -84,8 +89,10 @@ void MainWindow::log_cpp(QString text) {
     qDebug() << text;
 }
 
-void MainWindow::load_sweep_page() {
-    setPage(&m_sweep_page);
+void MainWindow::load_main_app_page() {
+    if (m_main_app_page.mainFrame()->baseUrl().isEmpty())
+        m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
+    setPage(&m_main_app_page);
 }
 
 void MainWindow::load_home_page() {
@@ -101,8 +108,8 @@ QWebView* MainWindow::createWindow(CustomPage* page) {
     MainWindow *webView= new MainWindow(page);
     webView->m_afm = m_afm;
     webView->m_serial_port = m_serial_port;
-    QUrl force_curve_URL = QUrl("qrc:/html/force_curve.html");
-    webView->page()->mainFrame()->load(force_curve_URL);
+    if (page->mainFrame()->baseUrl().isEmpty())
+        webView->page()->mainFrame()->load(QUrl("qrc:/html/force_curve.html"));
     webView->setAttribute(Qt::WA_DeleteOnClose, true);
     webView->show();
     return webView;

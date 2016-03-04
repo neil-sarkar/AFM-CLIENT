@@ -276,3 +276,10 @@
 .text-input {
     border-bottom: 1px solid gray;
 }
+
+.home-button {
+    position: absolute;
+    left: 2%;
+    top: 2%;
+    cursor: pointer;
+}

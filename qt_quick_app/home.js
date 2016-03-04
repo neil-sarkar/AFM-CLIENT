@@ -1,8 +1,3 @@
 function next() {
-    main_window.load_sweep_page();
+    main_window.load_main_app_page();
 }
-
-$(window).on("load", function() {
-});
-
-
