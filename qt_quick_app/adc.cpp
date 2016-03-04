@@ -67,6 +67,6 @@ const double ADC::MAX_VOLTAGE = 2.5;
 const int ADC::RESOLUTION = 4095;
 const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 
-const int ADC::Min_Resistance = 100;
+const int ADC::Min_Resistance = 20;
 const int ADC::Max_Resistance = 500
         ;
