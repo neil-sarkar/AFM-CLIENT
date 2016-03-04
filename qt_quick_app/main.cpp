@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
     // Set up view
     QDesktopWidget dw;
     MainWindow m(afm, new WebFileDialog());
-    int x=dw.width()*1;
-    int y=dw.height()*1;
-    m.setFixedSize(x,y);
+    // int x=dw.width()*1;
+    // int y=dw.height()*1;
+    // m.setFixedSize(x,y);
     m.show();
 
     // Assign objects to threads

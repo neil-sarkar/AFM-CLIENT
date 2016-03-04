@@ -270,7 +270,8 @@
 }
 
 .save-directory {
-    max-width: 90%;
+    width: 90%;
+    word-wrap: break-word;
 }
 
 .text-input {
