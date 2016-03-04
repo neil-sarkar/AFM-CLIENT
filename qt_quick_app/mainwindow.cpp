@@ -53,6 +53,7 @@ MainWindow::MainWindow(CustomPage* custom_page) {
 }
 
 void MainWindow::addJSObject() {
+    // For this method to work without crashing the program, all initialization must be done first.
     page()->mainFrame()->addToJavaScriptWindowObject(QString("afm"), m_afm);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("main_window"), this);
     page()->mainFrame()->addToJavaScriptWindowObject(QString("sweeper"), m_afm->sweeper);
@@ -77,7 +78,6 @@ void MainWindow::addJSObject() {
         QString name = "adc_" + QString::number(i.key());
         page()->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
-    qDebug() << "here";
 }
 
 void MainWindow::log_cpp(QString text) {
@@ -105,7 +105,6 @@ QWebView* MainWindow::createWindow(CustomPage* page) {
     webView->page()->mainFrame()->load(force_curve_URL);
     webView->setAttribute(Qt::WA_DeleteOnClose, true);
     webView->show();
-
     return webView;
 }
 

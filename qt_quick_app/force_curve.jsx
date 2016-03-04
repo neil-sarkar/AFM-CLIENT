@@ -138,9 +138,11 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             return (
                 <div>
                     <ForceCurve ref="chart"/>
-                    <button className="action-button" onClick={this.generate}>Generate</button>
-                    <button className="action-button" onClick={this.clear}>Clear</button>
-                    <button className="action-button" onClick={this.save_data}>Save</button>
+                    <div className="top-row" style={{width: "50%"}}>
+                        <button className="action-button" onClick={this.generate}>Generate</button>
+                        <button className="action-button" onClick={this.clear}>Clear</button>
+                        <button className="action-button" onClick={this.save_data}>Save</button>
+                    </div>
                 </div>
             )
         }
