@@ -48,6 +48,11 @@ class AFM : public AFMObject
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
+        
+        // used for UI
+        void init_complete();
+        void chip_mounted_ok();
+        void setting_dac_table();
 
     public slots:
         void init();
@@ -61,8 +66,8 @@ class AFM : public AFMObject
         int dac_table_page_count;
         double voltage_resistance_equation(double);
         void set_save_folder(QString);
+        bool is_initializing;
         QString m_save_folder;
-
 
 };
 

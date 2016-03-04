@@ -36,13 +36,17 @@ void ADC::cmd_read() {
 }
 
 void ADC::callback_read(QByteArray return_bytes) {
-    update_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) / double(ADC::RESOLUTION) * ADC::MAX_VOLTAGE);
+    update_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * ADC::SCALE_FACTOR);
 }
 
 void ADC::init() {
     read();  
-} // no initialization required for ADC
+} // no hardware initialization required for ADC
 
+bool ADC::is_actuator_connected(double voltage) {
+    double resistance = voltage_resistance_equation(voltage);
+    return Min_Resistance < resistance && Max_Resistance > resistance;
+}
 
 ADC::callback_return_type ADC::bind(callback_type method) {
     // If keeping the instance alive by the time the command is called becomes an issue, use the trick showed in this post:
@@ -62,3 +66,7 @@ const int ADC::Phase = 0;
 const double ADC::MAX_VOLTAGE = 2.5;
 const int ADC::RESOLUTION = 4095;
 const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
+
+const int ADC::Min_Resistance = 100;
+const int ADC::Max_Resistance = 500
+        ;

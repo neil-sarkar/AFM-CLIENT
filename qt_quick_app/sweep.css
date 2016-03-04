@@ -283,3 +283,18 @@
     top: 2%;
     cursor: pointer;
 }
+
+.vertically-centered-column {
+    -webkit-align-content: center;
+    -webkit-align-self: center;
+    -webkit-align-items: center;
+}
+
+#home-image {
+    max-width: 80%;
+    max-height: 80%;
+}
+
+.home-wrapper {
+    height: 100%;
+}

@@ -25,6 +25,7 @@ AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_colle
 
 void AFM::init() {
     // This method calls the init methods of all the members
+    is_initializing = true;
     QHash<int, AFMObject*>::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
@@ -38,6 +39,7 @@ void AFM::init() {
     approacher->init();
     scanner->init();
     force_curve_generator->init();
+    cmd_get_resistances();
 }
 
 void AFM::read_all_ADCs() {
@@ -52,19 +54,28 @@ void AFM::cmd_get_resistances() {
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
-    double x_1_voltage = bytes_to_word(return_bytes.at(0), return_bytes.at(1));
-    double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3));
-    double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5));
-    double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7));
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9));
+    if (is_initializing) {
+        emit init_complete();
+        is_initializing = false;
+    }
+    double x_1_voltage = bytes_to_word(return_bytes.at(0), return_bytes.at(1)) * ADC::SCALE_FACTOR;
+    double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
+    double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
+    double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
+    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
     static_cast<ADC*>(ADC_collection[ADC::X_1])->update_value(x_1_voltage);
     static_cast<ADC*>(ADC_collection[ADC::X_2])->update_value(x_2_voltage);
     static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(y_1_voltage);
     static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(y_2_voltage);
     static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(z_voltage);
-    QHash<int, AFMObject*>::iterator i;
-    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
-        static_cast<ADC*>(i.value())->read();
+//    QHash<int, AFMObject*>::iterator i;
+//    for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
+//        static_cast<ADC*>(i.value())->read();
+
+    if (ADC::is_actuator_connected(z_voltage) && ADC::is_actuator_connected(x_1_voltage) && ADC::is_actuator_connected(y_1_voltage))
+        emit chip_mounted_ok();
+    else
+        cmd_get_resistances();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
@@ -76,6 +87,7 @@ void AFM::set_dac_table() {
     // We can't simply queue up all of these commands because
     // that would be too many bytes for the MCU to handle at once
     // Therefore, we have to string together these commands only after one has completely executed
+    emit setting_dac_table();
     qDebug() << "Setting dac table";
     if (dac_table_page_count < 16) {
         cmd_set_dac_table(dac_table_page_count);
