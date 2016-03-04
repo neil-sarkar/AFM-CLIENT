@@ -26,7 +26,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 },
                 line: {
                     marker: {
-                        enabled: false
+                        enabled: true
                     }
                 },
                 legend: {
