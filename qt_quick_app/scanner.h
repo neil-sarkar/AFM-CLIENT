@@ -44,7 +44,6 @@ public:
     Q_INVOKABLE void set_base_file_name(QString);
 
     void set_settings();
-    void update_settings(QString, QVariant);
     void save_raw_data(QString save_folder);
 
 signals:

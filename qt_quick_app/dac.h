@@ -22,7 +22,6 @@ public:
     Q_INVOKABLE void cmd_read_value();
     Q_INVOKABLE void cmd_set_value();
     void set_settings();
-    void update_settings();
 
     static const int Buffered_1;
     static const int Buffered_2;

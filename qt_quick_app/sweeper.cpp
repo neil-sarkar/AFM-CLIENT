@@ -21,12 +21,6 @@ void Sweeper::set_settings() {
     settings.endGroup();
 }
 
-void Sweeper::update_settings(QString key, QVariant value) {
-    settings.beginGroup(settings_group_name);
-    settings.setValue(key, value);
-    settings.endGroup();
-}
-
 void Sweeper::init() {
     // init DDS
     dds->init();
@@ -207,7 +201,7 @@ void Sweeper::set_start_frequency(quint32 start_frequency, bool enforce_validity
         m_start_frequency = start_frequency;
         qDebug() << "Changing Sweeper start frequency to" << m_start_frequency;
         emit start_frequency_changed(static_cast<int>(m_start_frequency));
-        update_settings("start_frequency", QVariant(m_start_frequency));
+        update_settings(settings_group_name, "start_frequency", QVariant(m_start_frequency));
         if (enforce_validity && m_start_frequency > m_end_frequency) {
             set_end_frequency(m_start_frequency);
         }
@@ -223,7 +217,7 @@ void Sweeper::set_end_frequency(quint32 end_frequency, bool enforce_validity) {
         m_end_frequency = end_frequency;
         qDebug() << "Changing Sweeper end frequency to" << m_end_frequency;
         emit end_frequency_changed(static_cast<int>(m_end_frequency));
-        update_settings("end_frequency", QVariant(m_end_frequency));
+        update_settings(settings_group_name, "end_frequency", QVariant(m_end_frequency));
         if (enforce_validity && m_end_frequency < m_start_frequency) {
             set_start_frequency(m_end_frequency);
         }
@@ -239,7 +233,7 @@ void Sweeper::set_step_size(quint16 step_size) {
         m_step_size = qMax(step_size, MinStepSize); // min step size is 1
         qDebug() << "Changing Sweeper step size to" << m_step_size;
         emit step_size_changed(static_cast<int>(m_step_size));
-        update_settings("step_size", QVariant(m_step_size));
+        update_settings(settings_group_name, "step_size", QVariant(m_step_size));
         if (m_end_frequency - m_start_frequency < m_step_size) {
             set_end_frequency(m_start_frequency + step_size * 2);
         }

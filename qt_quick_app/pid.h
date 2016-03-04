@@ -29,7 +29,6 @@ public:
     Q_INVOKABLE void set_enabled(bool e = true);
     Q_INVOKABLE void set_disabled();
     void set_settings();
-    void update_settings(QString, QVariant);
 
     static constexpr double MAX_VOLTAGE = 2.5; // redundant - from ADC
     static constexpr int RESOLUTION = 4095;

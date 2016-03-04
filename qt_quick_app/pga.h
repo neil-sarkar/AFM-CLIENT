@@ -15,7 +15,6 @@ public:
     Q_INVOKABLE double value();
     void init();
     void set_settings();
-    void update_settings();
 
     static const int X_1;
     static const int X_2;

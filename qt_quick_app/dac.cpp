@@ -9,16 +9,10 @@ void DAC::set_value(double value, bool cmd) {
     m_value = value;
     emit value_changed(m_value);
     qDebug() << "Changing DAC " <<  m_id << "value to " << m_value << cmd;
-    update_settings();
+    update_settings(settings_group_name, QString::number(m_id), QVariant(m_value));
     if (cmd) {
         cmd_set_value();
     }
-}
-
-void DAC::update_settings() {
-    settings.beginGroup(settings_group_name);
-    settings.setValue(QString::number(m_id), m_value);
-    settings.endGroup();
 }
 
 void DAC::set_settings() {

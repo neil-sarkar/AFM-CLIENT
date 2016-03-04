@@ -22,7 +22,6 @@ public:
     quint32 end_frequency();
     quint16 num_steps();
     Q_INVOKABLE void cmd_set();
-    void update_settings(QString, QVariant);
     void set_settings();
 
 signals:

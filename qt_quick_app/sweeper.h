@@ -36,8 +36,6 @@ public:
     DDS* dds;
     PID* pid;
     void set_settings();
-    void update_settings(QString, QVariant); // maybe move update_settings into afm_object and pass settings_group_name, key, value
-
 
 signals:
     void initialization_done();

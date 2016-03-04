@@ -12,15 +12,9 @@ void PGA::set_value(double value) {
         m_value = value;
         qDebug() << "Setting PGA " << m_id << "value to " << value;
         emit value_changed(m_value);
-        update_settings();
+        update_settings(settings_group_name, QString::number(m_id), QVariant(m_value));
         cmd_set_value();
     }
-}
-
-void PGA::update_settings() {
-    settings.beginGroup(settings_group_name);
-    settings.setValue(QString::number(m_id), m_value);
-    settings.endGroup();
 }
 
 void PGA::set_settings() {
