@@ -22,6 +22,7 @@
 #include <QWebView>
 #include <QDir>
 #include <QApplication>
+#include <QDesktopWidget>
 #include "safe_application.h"
 
 int main(int argc, char *argv[])
@@ -48,7 +49,11 @@ int main(int argc, char *argv[])
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
     // Set up view
+    QDesktopWidget dw;
     MainWindow m(afm, serial_port, new WebFileDialog());
+    int x=dw.width()*1;
+    int y=dw.height()*1;
+    m.setFixedSize(x,y);
     m.show();
 
     // Assign objects to threads

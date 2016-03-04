@@ -42,7 +42,6 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
         is_connected = true;
         initialize_reading();
         reset_mcu();
-
     }
     return is_connected;
 }
