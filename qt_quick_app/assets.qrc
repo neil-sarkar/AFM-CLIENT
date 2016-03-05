@@ -1,19 +1,18 @@
 <RCC>
-    <qresource prefix="/js" lang="js">
+    <qresource lang="js" prefix="/js">
         <file>console.js</file>
         <file>common.js</file>
         <file>jsx.js</file>
         <file>JSXTransformer.js</file>
         <file>text.js</file>
     </qresource>
-    <qresource prefix="/css" lang="css">
+    <qresource lang="css" prefix="/css">
         <file>home.css</file>
         <file>fonts.css</file>
-        <file>sweep.css</file>
+        <file>styles.css</file>
     </qresource>
-    <qresource prefix="/html" lang="html">
+    <qresource lang="html" prefix="/html">
         <file>home.html</file>
-        <file>sweep.html</file>
         <file>main.html</file>
         <file>force_curve.html</file>
     </qresource>
@@ -97,6 +96,7 @@
         <file>save_folder.jsx</file>
         <file>text_input.jsx</file>
         <file>home.jsx</file>
+        <file>heatmap_canvas.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

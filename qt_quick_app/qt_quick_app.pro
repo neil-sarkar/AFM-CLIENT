@@ -73,6 +73,4 @@ HEADERS += \
     force_curve_generator.h
 
 DISTFILES += \
-    test.html \
-    sweep.html \
-    styles.css
+    test.html
