@@ -36,7 +36,6 @@ void Scanner::set_settings() {
     set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
-//    set_save_folder(settings.contains("save_folder") ? settings.value("save_folder").toString() : QCoreApplication::applicationDirPath());
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
     settings.endGroup();
 }
@@ -72,20 +71,22 @@ void Scanner::init() {
 void Scanner::emit_dummy_data() {
     emit started_scan_state_machine();
     QVariantList data;
-    for (int i = 0; i < 256; i++) {
-        for (int j = 0; j < 256; j++) {
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 1; j++) {
             data.append(i);
             data.append(j);
             data.append(i*j);
         }
     }
     emit new_offset_data(data);
-    emit new_phase_data(data);
-    emit new_error_data(data);
+    // emit new_phase_data(data);
+    // emit new_error_data(data);
     return;
 }
 
 void Scanner::start_state_machine() {
+    emit emit_dummy_data();
+    return;
     m_state_machine.start();
 }
 

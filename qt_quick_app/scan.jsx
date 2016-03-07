@@ -177,7 +177,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     );
                                 }, this)}
                             </div>
-                            <ScanHeatMap ref="heatmap" chart_name={this.props.name} handle_tooltip_select={this.handle_tooltip_select} />
+                            <ScanHeatMap ref="heatmap" id="heatmap1" />
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>
