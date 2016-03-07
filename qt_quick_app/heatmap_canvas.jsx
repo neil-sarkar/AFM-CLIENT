@@ -112,9 +112,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 running_max: Math.max(new_data[useful_data.length], this.state.running_max),
                 running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
             }, function() {
-                setTimeout(function() {
-                    this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
-                }.bind(this), 0);
+                this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
             });
         },
         redraw_canvas: function(data, max, min) {
