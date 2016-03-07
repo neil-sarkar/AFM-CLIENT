@@ -12,13 +12,6 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
 
-    // Not entirely sure if this setup is necessary, but it was in the only good webkit hybrid app example I could find
-    m_network = new QNetworkAccessManager(this);
-    m_cache = new QNetworkDiskCache(this);
-    m_cache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/afm");
-    m_cache->setMaximumCacheSize(1000000); //set the cache to 10megs
-    m_network->setCache(m_cache);
-
     // Core objects we will expose to JavaScript
     m_afm = afm;
     m_folder_picker = folder_picker;
@@ -43,14 +36,7 @@ void MainWindow::set_global_web_settings() {
 
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, true);
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
-
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, true);
-
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, true);
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
 }
 
