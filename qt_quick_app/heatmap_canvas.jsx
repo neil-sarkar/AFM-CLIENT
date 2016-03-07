@@ -112,7 +112,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 running_max: Math.max(new_data[useful_data.length], this.state.running_max),
                 running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
             }, function() {
-                this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
+                setTimeout(function() {
+                    this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
+                }.bind(this), 0);
             });
         },
         redraw_canvas: function(data, max, min) {
@@ -120,14 +122,20 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var pixel_width = this.props.canvas_width/num_columns;
             var pixel_height = this.props.canvas_height/num_rows;
             var pixel_dimension = Math.min(pixel_width, pixel_height);
+            var range = max - min;
             for (var i = 0; i < data.length; i += 3) {
-                var color;
-                if (max == min)
-                    color = percent(0, myColours);
-                else
-                    color = percent((data[i+2] - min)/(max - min) * 100, myColours);
-                ctx.fillStyle = color.hex;
-                ctx.fillRect(data[i] * pixel_dimension, data[i+1] * pixel_dimension, pixel_dimension, pixel_dimension);
+                var x = data[i];
+                var y = data[i+1];
+                var z = data[i+2];
+                setTimeout(function(x, y, z) {
+                    var color;
+                    if (max == min)
+                        color = percent(0, myColours);
+                    else
+                        color = percent((z - min)/range * 100, myColours);
+                    ctx.fillStyle = color.hex;
+                    ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
+                }.bind(this, x, y, z), 0);
             }
         },
         add_points: function() {
