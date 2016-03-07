@@ -20,9 +20,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     };
 
     var scan_views = [];
-    scan_views.push(new ScanView("Offset", scanner.new_offset_data));
-    scan_views.push(new ScanView("Phase", scanner.new_phase_data));
-    scan_views.push(new ScanView("Error", scanner.new_error_data));
+    // scan_views.push(new ScanView("Offset", scanner.new_offset_data));
+    // scan_views.push(new ScanView("Phase", scanner.new_phase_data));
+    // scan_views.push(new ScanView("Error", scanner.new_error_data));
     var null_view = new ScanView("");
 
     var Scan = React.createClass({

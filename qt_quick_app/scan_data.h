@@ -31,6 +31,8 @@ private:
     int m_y_index;
     int m_delta_x;
     int m_delta_y;
+    int max;
+    int min;
     bool m_is_forward;
 };
 

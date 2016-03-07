@@ -1,6 +1,8 @@
 #include "scan_data.h"
 #include "assert.h"
+#include "adc.h"
 #include "QDebug"
+#include <QtGlobal>
 
 ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y, bool is_forward)
 {
@@ -67,20 +69,28 @@ QVariantList ScanData::package_data_for_ui(int num_points, int z_type) {
         }
     }
     double average = sum / num_points;
+    QVariant max = -1 * ADC::RESOLUTION;
+    QVariant min = ADC::RESOLUTION;
     for (int i = 2; i < num_points * 3; i += 3) {
         latest_data[i] = (latest_data[i]).toDouble() - average;
+        if (latest_data[i] > max)
+            max = latest_data[i];
+        if (latest_data[i] < min)
+            min = latest_data[i];
     }
 
-    if (m_is_forward)
-        return latest_data;
+    // if (m_is_forward)
+    latest_data.append(max);
+    latest_data.append(min);
+    return latest_data;
     
-    QVariantList latest_data_reversed; // could do this reversing in place with the averaging operation
-    for (int i = num_points * 3; i > 0; i -= 3) {
-        latest_data_reversed.append(latest_data[i - 3]);
-        latest_data_reversed.append(latest_data[i - 2]);
-        latest_data_reversed.append(latest_data[i - 1]);
-    }
-    return latest_data_reversed;
+    // QVariantList latest_data_reversed; // could do this reversing in place with the averaging operation
+    // for (int i = num_points * 3; i > 0; i -= 3) {
+    //     latest_data_reversed.append(latest_data[i - 3]);
+    //     latest_data_reversed.append(latest_data[i - 2]);
+    //     latest_data_reversed.append(latest_data[i - 1]);
+    // }
+    // return latest_data_reversed;
 }
 
 void ScanData::print() {

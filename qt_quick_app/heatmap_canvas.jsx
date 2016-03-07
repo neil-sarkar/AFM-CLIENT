@@ -65,13 +65,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 return col[i - 1].scale(1-factor).add(col[i].scale(factor));
             }
         }
-        // if (x < 50) {
-        //     factor = (50 - x) / 50;
-        //     return col[0].scale(factor).add(col[1].scale(1-factor));
-        // } else {
-        //     factor = (100 - x) / 50;
-        //     return col[2].scale(1-factor).add(col[1].scale(factor));
-        // }
     }
 
     // for some reason num_rows and num_columns don't work properly when in state variables...
@@ -109,37 +102,32 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             num_columns = new_num_columns;
         },
         handle_new_data: function(new_data) {
-            var num_points = this.state.num_points;  // keep these variables local because operating on 
-            // state actually works in its own queue, so it can't guarantee the values get set immediately,
-            // which we need when operating in a loop
-            var data = [];
-            var max = this.state.running_max;
-            var min = this.state.running_min;
-            for (var i = 0; i < new_data.length / 2; i += 3) {
-                num_points += 1;
-                data.push({x: new_data[i], y: new_data[i+1], z: new_data[i+2]});
-                max = Math.max(max, new_data[i+2]);
-                min = Math.min(min, new_data[i+2]);
-            }
+            var useful_data = new_data.slice(0, num_rows * 3);
+            var update_all = true;
+            if (this.state.running_max === new_data[useful_data.length] || this.state.running_min == new_data[useful_data.length + 1])
+                update_all = false;
             this.setState({
-                num_points: num_points,
-                data: this.state.data.concat(data),
-                running_max: max,
-                running_min: min,
+                num_points: this.state.num_points + useful_data.length,
+                data: this.state.data.concat(useful_data),
+                running_max: Math.max(new_data[useful_data.length], this.state.running_max),
+                running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
             }, function() {
-                this.redraw_canvas(this.state.data, this.state.running_max, this.state.running_min);
-            }.bind(this));
+                this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
+            });
         },
         redraw_canvas: function(data, max, min) {
             var ctx = this.get_context();
             var pixel_width = this.props.canvas_width/num_columns;
             var pixel_height = this.props.canvas_height/num_rows;
             var pixel_dimension = Math.min(pixel_width, pixel_height);
-            for (var i = 0; i < data.length; i += 1) {
-                var data_point = data[i];
-                var color = percent((data_point.z - min)/(max - min) * 100, myColours);
+            for (var i = 0; i < data.length; i += 3) {
+                var color;
+                if (max == min)
+                    color = percent(0, myColours);
+                else
+                    color = percent((data[i+2] - min)/(max - min) * 100, myColours);
                 ctx.fillStyle = color.hex;
-                ctx.fillRect(data_point.x * pixel_dimension, data_point.y * pixel_dimension, pixel_dimension, pixel_dimension);
+                ctx.fillRect(data[i] * pixel_dimension, data[i+1] * pixel_dimension, pixel_dimension, pixel_dimension);
             }
         },
         add_points: function() {
@@ -163,6 +151,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
                     <button className="action-button" onClick={this.add_points}>Add points</button>
+                    {this.state.num_points / num_rows / 3}
                 </div>
                     );
         }
