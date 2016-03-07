@@ -51,39 +51,47 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
 
     var myColours = [
         new Colour('#000000'), // Colour {hex: "#39BF26", r: 57, g: 191, b: 38, …}
-        new Colour('#808080'),  // Colour {hex: "#C7282E", r: 199, g: 40, b: 46, …}
-        new Colour('#ffffff'), // Colour {hex: "#C7C228", r: 199, g: 194, b: 40, …}
+        new Colour('#581C00'),  // Colour {hex: "#C7282E", r: 199, g: 40, b: 46, …}
+        new Colour('#bc8000'), // Colour {hex: "#C7C228", r: 199, g: 194, b: 40, …}
+        new Colour('#FcFc80'),
     ];
 
     function percent(x, col) {
-        var factor;
-        if (x < 50) {
-            factor = (50 - x) / 50;
-            return col[0].scale(factor).add(col[1].scale(1-factor));
-        } else {
-            factor = (100 - x) / 50;
-            return col[2].scale(1-factor).add(col[1].scale(factor));
+        var bucket_size = 100 / (col.length - 1);
+        for (var i = 1; i < col.length; i += 1) {
+            var value = bucket_size * i;
+            if (x <= value) {
+                var factor = (value - x) / bucket_size;
+                return col[i - 1].scale(1-factor).add(col[i].scale(factor));
+            }
         }
+        // if (x < 50) {
+        //     factor = (50 - x) / 50;
+        //     return col[0].scale(factor).add(col[1].scale(1-factor));
+        // } else {
+        //     factor = (100 - x) / 50;
+        //     return col[2].scale(1-factor).add(col[1].scale(factor));
+        // }
     }
 
+    // for some reason num_rows and num_columns don't work properly when in state variables...
+    // maybe should pass as props through scan.jsx
+    var num_rows = scanner.num_rows();
+    var num_columns = scanner.num_columns();
+
     var ScanHeatMap = React.createClass({
-        getDefaultProps: function() {
-            return {
-                min_value: 0,
-                max_value: 100,
-                zero_color: "#000000",
-                max_color: "#ffffff"
-            };
-        },
         getInitialState: function() {
             return {
-                moving_average: 0,
                 running_max: 0,
                 running_min: 0,
                 data: [],
                 num_points: 0,
-                num_rows: scanner.num_rows(),
-                num_columns: scanner.num_columns(),
+            };
+        },
+        getDefaultProps: function() {
+            return {
+                canvas_height: 256,
+                canvas_width: 256,
             };
         },
         get_context: function() {
@@ -91,24 +99,29 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         componentDidMount: function() {
             scanner.new_offset_data.connect(this.handle_new_data);
+            scanner.num_rows_changed.connect(this.change_num_rows);
+            scanner.num_columns_changed.connect(this.change_num_columns);
+        },
+        change_num_rows: function(new_num_rows) {
+            num_rows = new_num_rows;
+        },
+        change_num_columns: function(new_num_columns) {
+            num_columns = new_num_columns;
         },
         handle_new_data: function(new_data) {
             var num_points = this.state.num_points;  // keep these variables local because operating on 
             // state actually works in its own queue, so it can't guarantee the values get set immediately,
             // which we need when operating in a loop
-            var moving_average = this.state.moving_average;
             var data = [];
             var max = this.state.running_max;
             var min = this.state.running_min;
-            for (var i = 0; i < new_data.length; i += 3) {
+            for (var i = 0; i < new_data.length / 2; i += 3) {
                 num_points += 1;
                 data.push({x: new_data[i], y: new_data[i+1], z: new_data[i+2]});
-                moving_average = (moving_average * (num_points - 1) + new_data[i+2]) / num_points;
                 max = Math.max(max, new_data[i+2]);
                 min = Math.min(min, new_data[i+2]);
             }
             this.setState({
-                moving_average: moving_average,
                 num_points: num_points,
                 data: this.state.data.concat(data),
                 running_max: max,
@@ -119,35 +132,35 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         redraw_canvas: function(data, max, min) {
             var ctx = this.get_context();
+            var pixel_width = this.props.canvas_width/num_columns;
+            var pixel_height = this.props.canvas_height/num_rows;
+            var pixel_dimension = Math.min(pixel_width, pixel_height);
             for (var i = 0; i < data.length; i += 1) {
                 var data_point = data[i];
                 var color = percent((data_point.z - min)/(max - min) * 100, myColours);
                 ctx.fillStyle = color.hex;
-                ctx.fillRect(data_point.x, data_point.y, 1, 1);
+                ctx.fillRect(data_point.x * pixel_dimension, data_point.y * pixel_dimension, pixel_dimension, pixel_dimension);
             }
-        },
-        calculate_color_scale: function() {
-
         },
         add_points: function() {
             var dummy_data = [];
-            for (var i = 0; i < 256; i += 1)
-                for (var j = 0; j < 256; j += 1) {
+            for (var i = 0; i < this.props.canvas_height; i += 1)
+                for (var j = 0; j < this.props.canvas_width; j += 1) {
                     dummy_data.push(i);
                     dummy_data.push(j);
                     dummy_data.push(i*j);
                 }
             this.handle_new_data(dummy_data);
-            // var ctx = this.get_context();
-            // ctx.fillStyle = this.props.zero_color;
-            // for (var i = 0; i < 16; i += 1)
-            //     for (var j = 0; j < 16; j++)
-            //     ctx.fillRect(i*10, j*10, 10, 10);
+        },
+        erase_data: function() {
+            this.replaceState(this.getInitialState());
+            var ctx = this.get_context();
+            ctx.clearRect(0, 0, this.props.canvas_width, this.props.canvas_height);
         },
         render: function() {
             return (
                 <div>
-                    <canvas id={this.props.id} style={{border: "1px solid black"}} height="256" width="256">
+                    <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
                     <button className="action-button" onClick={this.add_points}>Add points</button>
                 </div>

@@ -85,8 +85,8 @@ void Scanner::emit_dummy_data() {
 }
 
 void Scanner::start_state_machine() {
-    emit emit_dummy_data();
-    return;
+    // emit emit_dummy_data();
+    // return;
     m_state_machine.start();
 }
 
