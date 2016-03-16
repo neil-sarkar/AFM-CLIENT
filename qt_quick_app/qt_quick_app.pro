@@ -10,7 +10,6 @@ CONFIG += c++11
 DESTDIR = $$PWD
 
 SOURCES += main.cpp \
-    receiver.cpp \
     serial_port.cpp \
     adc.cpp \
     motor.cpp \
@@ -44,7 +43,6 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    receiver.h \
     serial_port.h \
     serial_port_constants.h \
     adc.h \
