@@ -1,3 +1,20 @@
+# Technical Notes (March 2016)
+## Next steps
+- Prune all files for constants and put them in constants.h or constants.cpp (especially consider this for the settings
+- Determine if the AbstractCommandNode is indeed necessary or if it is a remnant of the previous architecture where the commandnode was a templated class
+
+
+
+
+
+
+
+
+
+
+
+
+
 # TECHNICAL NOTES for AFM SERIAL COMMUNICATION C++ APPLICATION
 
 Please also see Google Drive\ICSPI Corp_2\06 R&D\11 Software\Qt Client for GUI design documents.
