@@ -5,7 +5,6 @@
 #include <QQmlContext>
 #include <QObject>
 #include <QThread>
-#include "receiver.h"
 #include "serial_port.h"
 #include "adc.h"
 #include "motor.h"
@@ -49,11 +48,7 @@ int main(int argc, char *argv[])
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
     // Set up view
-    QDesktopWidget dw;
     MainWindow m(afm, new WebFileDialog());
-    // int x=dw.width()*1;
-    // int y=dw.height()*1;
-    // m.setFixedSize(x,y);
     m.show();
 
     // Assign objects to threads
