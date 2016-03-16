@@ -1,4 +1,0 @@
-#ifndef MOTOR_CONSTANTS_H
-#define MOTOR_CONSTANTS_H
-
-#endif // MOTOR_CONSTANTS_H

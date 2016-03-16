@@ -65,6 +65,12 @@ extern const int Message_Size_Minimum;
 extern const int Set_Receive_Bytes_Error;
 extern const int DAC_Table_Values[4096];
 
+// Serial port
+extern const QString AFM_Port_Name;
+extern const int AFM_Baud_Rate;
+extern const int AFM_Success;
+extern const int AFM_Fail;
+
 
 
 #endif // CONSTANTS_H

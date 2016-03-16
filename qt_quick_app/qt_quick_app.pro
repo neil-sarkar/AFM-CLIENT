@@ -44,13 +44,11 @@ include(deployment.pri)
 
 HEADERS += \
     serial_port.h \
-    serial_port_constants.h \
     adc.h \
     motor.h \
     afm.h \
     dac.h \
     command_node.h \
-    motor_constants.h \
     send_worker.h \
     thread_safe_queue.h \
     receive_worker.h \

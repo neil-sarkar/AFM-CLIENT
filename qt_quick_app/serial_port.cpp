@@ -27,8 +27,8 @@ bool SerialPort::auto_connect() {
     if (!connected_ports.size()) // if there are no ports available
         return false;
     for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports
-            if (connected_ports[i].manufacturer() == SerialPortConstants.AFM_PORT_NAME) // check if the port is the AFM
-            return open(connected_ports[i].portName(), SerialPortConstants.AFM_BAUD_RATE);
+            if (connected_ports[i].manufacturer() == AFM_Port_Name) // check if the port is the AFM
+            return open(connected_ports[i].portName(), AFM_Baud_Rate);
     return false;
 }
 
@@ -71,11 +71,11 @@ void SerialPort::close() {
 
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
     if (port->write(&byte, 1) == 1) { //        qDebug() << QString().sprintf("%2p",byte);
-        return SerialPortConstants.AFM_SUCCESS;
+        return AFM_Success;
     }
 
     qDebug() << "Failed to write byte " << byte;
-    return SerialPortConstants.AFM_FAIL;
+    return AFM_Fail;
 }
 
 void SerialPort::on_ready_read() {
