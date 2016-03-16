@@ -6,6 +6,8 @@
 SendWorker::SendWorker(QObject *parent) : QObject(parent)
 {
     tag = -1;
+
+    // TODO:: move this to builder
     QObject::connect(this, SIGNAL(send_command_immediately()), this, SLOT(dequeue_command()));
 }
 
@@ -22,6 +24,7 @@ void SendWorker::dequeue_command() {
     if (!send_command_queue.count())
         return;
 
+    // TODO: look into atomic bool in Qt
     mutex.lock();
     port_writing_command = true;
     mutex.unlock();

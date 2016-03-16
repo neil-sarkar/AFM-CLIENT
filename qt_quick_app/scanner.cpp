@@ -43,6 +43,8 @@ void Scanner::set_settings() {
 
 void Scanner::init() {
     // set up state machine framework
+
+    //TODO: add a waiting for data state
     QState* running_state = new QState();
     QState* initialize_machine = new QState(running_state);
     QState* set_signal_generator = new QState(running_state);
@@ -110,6 +112,7 @@ void Scanner::receive_data() {
     if (m_should_pause) {
         return;
     }
+
     if (!(forward_data->is_full() && reverse_data->is_full())) {
          cmd_step_scan();
     }

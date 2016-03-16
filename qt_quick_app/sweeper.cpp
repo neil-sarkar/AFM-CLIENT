@@ -25,7 +25,7 @@ void Sweeper::init() {
     // init DDS
     dds->init();
 
-    // set up framework
+    // set up state machine framework
     QState* running_state = new QState();
     QState* initialize_machine = new QState(running_state);
     QState* sweep = new QState(running_state);
@@ -39,6 +39,7 @@ void Sweeper::init() {
     detect_peak->addTransition(this, SIGNAL(peak_detection_failed()), finish);
     running_state->addTransition(this, SIGNAL(reset()), finish);
 
+    // each state corresponds to a instance xmethod here
     QObject::connect(initialize_machine, SIGNAL(entered()), this, SLOT(initialize_machine()));
     QObject::connect(sweep, SIGNAL(entered()), this, SLOT(frequency_sweep()));
     QObject::connect(detect_peak, SIGNAL(entered()), this, SLOT(find_peak()));
@@ -46,6 +47,7 @@ void Sweeper::init() {
 
     m_state_machine.addState(running_state);
     m_state_machine.addState(finish);
+
     running_state->setInitialState(initialize_machine);
     m_state_machine.setInitialState(running_state);
 

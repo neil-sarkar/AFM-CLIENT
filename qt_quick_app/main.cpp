@@ -22,11 +22,11 @@
 #include <QDir>
 #include <QApplication>
 #include <QDesktopWidget>
-#include "safe_application.h"
+#include "safe_application.h"`
 
 int main(int argc, char *argv[])
 {
-    SafeApplication app(argc, argv);
+    SafeApplication app(argc, argv); // init app
     QQmlApplicationEngine engine;
 
     // Thread declarations
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     builder->wire(afm, serial_port, send_worker, receive_worker);
     builder->generate_command_nodes();
 
-    // Thread connections (to abstract later)
+    // Thread connections
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
@@ -63,9 +63,9 @@ int main(int argc, char *argv[])
 
     // Cleanup
     engine.quit();
-    int r = app.exec();
+    int closed_event = app.exec();
     serial_thread->quit();
     receiver_thread->quit();
     sender_thread->quit();
-    return r;
+    return closed_event;
 }

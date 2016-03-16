@@ -7,6 +7,7 @@
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 {
     num_commands_received = 0;
+    // TODO: move to builder
     QObject::connect(this, SIGNAL(response_byte_received()), this, SLOT(build_working_response()));
 }
 
@@ -61,10 +62,10 @@ void ReceiveWorker::process_working_response() {
     qDebug() << "Now processing" << response_tag << response_id << working_response;
     assert (receive_command_queue.isEmpty() == false);
     CommandNode* node = receive_command_queue.dequeue();
-    if (!is_response_valid(node, response_tag, response_id, working_response.length())) {
+    if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct
         handle_invalid_response();
     } else if (node->process_callback) {
-            node->process_callback(working_response.right(working_response.length() - 2)); // maybe run in separate thread to avoid blocking
+            node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes)); // maybe run in separate thread to avoid blocking
     }
     mutex.lock();
     port_writing_command = false;

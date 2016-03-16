@@ -6,8 +6,7 @@
 #include <QDateTime>
 #include <QtMath>
 
-ForceCurveGenerator::ForceCurveGenerator() : Initial_Z(2500), Step_Size(5)
-{
+ForceCurveGenerator::ForceCurveGenerator() : Initial_Z(2500), Step_Size(5) {
 }
 
 void ForceCurveGenerator::init() {

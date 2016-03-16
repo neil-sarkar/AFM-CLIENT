@@ -5,6 +5,7 @@
 #include "thread_safe_queue.h"
 #include <QMutex>
 
+// TODO: move the queues out of the constants file
 extern QHash<QString, CommandNode> command_hash;
 extern ThreadSafeQueue<CommandNode*> send_command_queue;
 extern ThreadSafeQueue<CommandNode*> receive_command_queue;

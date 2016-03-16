@@ -2,7 +2,6 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QIODevice>
-#include <serial_port_constants.h>
 #include <QDebug>
 #include <QTimer>
 #include <QTextCodec>
@@ -111,6 +110,7 @@ void SerialPort::execute_command(CommandNode* command_node) {
         result += write_byte(payload_byte);
     result += write_byte(Message_Delimiter); // delimit the message
 
-    assert (result == 0);
+    // TODO:: throw graceful exception
+    assert (result == AFM_Success);
     emit message_sent(command_node);
 }
