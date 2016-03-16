@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QDateTime>
 #include "constants.h"
+#include "adc.h"
 
 
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
@@ -137,9 +138,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
         z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
         z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         if (scanning_forward) {
-            forward_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / PID::SCALE_FACTOR);
+            forward_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / ADC::SCALE_FACTOR);
         } else {
-            reverse_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / PID::SCALE_FACTOR);
+            reverse_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / ADC::SCALE_FACTOR);
         }
         if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
             QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0);

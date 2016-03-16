@@ -1,5 +1,6 @@
 #include "pid.h"
 #include "constants.h"
+#include "adc.h"
 
 PID::PID() {
 }
@@ -113,7 +114,7 @@ void PID::cmd_set_derivative() {
 }
 
 void PID::cmd_set_setpoint() {
-    quint16 setpoint = float(m_setpoint) / float(SCALE_FACTOR);
+    quint16 setpoint = float(m_setpoint) / float(ADC::SCALE_FACTOR);
     QByteArray payload;
     payload += (setpoint & 0xFF);
     payload += ((setpoint & 0xFF00) >> 8);
