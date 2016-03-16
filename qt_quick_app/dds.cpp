@@ -82,3 +82,5 @@ void DDS::cmd_set() {
 }
 
 const QString DDS::settings_group_name = "dds";
+
+const double DDS::SCALE_FACTOR = double (qPow(2.0, 28) / (5.0*qPow(10,6)));

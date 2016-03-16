@@ -35,7 +35,7 @@ private:
     quint32 m_start_frequency;
     quint16 m_step_size;
     quint32 m_end_frequency;
-    const double SCALE_FACTOR = double (qPow(2.0, 28) / (5.0*qPow(10,6)));
+    static const double SCALE_FACTOR;
     static const QString settings_group_name;
 };
 

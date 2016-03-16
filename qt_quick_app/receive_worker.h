@@ -11,7 +11,7 @@ class ReceiveWorker : public QObject
 public:
     explicit ReceiveWorker(QObject *parent = 0);
     static const unsigned char MCU_Reset_Message[5];
-    static const int MCU_Reset_Message_Length = 5;
+    static const int MCU_Reset_Message_Length;
 
 signals:
     void command_received();

@@ -34,14 +34,10 @@ public:
     Q_INVOKABLE void cmd_set_micro_step();
 
 signals:
-    // MODIFY signals for Q_PROPERTY macros
     void speed_changed();
     void direction_changed();
     void state_changed();
     void microstep_changed();
-
-    // Cross-Thread
-//    void command_generated(CommandNode*);
 
 public slots:
 

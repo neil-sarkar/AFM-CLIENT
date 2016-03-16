@@ -178,3 +178,4 @@ void ReceiveWorker::flush() {
 }
 
 const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};
+const int ReceiveWorker::MCU_Reset_Message_Length = 5;
