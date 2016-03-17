@@ -2,6 +2,7 @@
 #include "constants.h"
 #include <assert.h>
 #include <QDebug>
+#include "globals.h"
 
 SendWorker::SendWorker(QObject *parent) : QObject(parent)
 {

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 #include "command_node.h"
+#include "globals.h"
 #include <QSettings>
 
 class AFMObject : public QObject

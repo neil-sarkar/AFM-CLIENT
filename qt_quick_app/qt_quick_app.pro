@@ -31,7 +31,8 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     safe_application.cpp \
     web_file_dialog.cpp \
-    force_curve_generator.cpp
+    force_curve_generator.cpp \
+    globals.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -66,7 +67,8 @@ HEADERS += \
     mainwindow.h \
     safe_application.h \
     web_file_dialog.h \
-    force_curve_generator.h
+    force_curve_generator.h \
+    globals.h
 
 DISTFILES += \
     test.html

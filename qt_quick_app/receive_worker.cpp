@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "adc.h"
 #include <QtConcurrent>
+#include "globals.h"
 
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
 {
