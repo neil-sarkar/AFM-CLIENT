@@ -11,6 +11,7 @@ class SendWorker : public QObject
     Q_OBJECT
 public:
     explicit SendWorker(QObject *parent = 0);
+    ThreadSafeQueue<CommandNode*> send_command_queue;
 
 signals:
     void send_command_immediately();
