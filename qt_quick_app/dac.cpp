@@ -43,12 +43,7 @@ void DAC::cmd_read_value() {
 }
 
 void DAC::callback_read_value(QByteArray return_bytes) {
-    // comes back as DAC # (id), byte 1, byte 2
-//    qDebug() << "UPDATING VALUE";
-//    qDebug() << return_bytes;
-//    qDebug() << bytes_to_word(return_bytes.at(1), return_bytes.at(2));
     set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);
-//    qDebug() << m_value;
 }
 
 void DAC::cmd_set_value() {

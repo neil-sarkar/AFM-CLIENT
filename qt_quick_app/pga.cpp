@@ -19,11 +19,7 @@ void PGA::set_value(double value) {
 
 void PGA::set_settings() {
     settings.beginGroup(settings_group_name);
-    QVariant settings_value = settings.value(QString::number(m_id));
-    if (settings_value == QVariant::Invalid)
-        set_value(default_value(m_id));
-    else
-        set_value(settings_value.toDouble());
+    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : default_value(m_id));
     settings.endGroup();
 }
 
