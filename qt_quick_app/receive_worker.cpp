@@ -6,11 +6,7 @@
 #include "globals.h"
 
 ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
-{
-    num_commands_received = 0;
-    // TODO: move to builder
-    QObject::connect(this, SIGNAL(response_byte_received()), this, SLOT(build_working_response()));
-}
+{}
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
     assert (receive_command_queue.isFull() == false);

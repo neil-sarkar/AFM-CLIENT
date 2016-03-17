@@ -4,12 +4,8 @@
 #include <QDebug>
 #include "globals.h"
 
-SendWorker::SendWorker(QObject *parent) : QObject(parent)
-{
+SendWorker::SendWorker(QObject *parent) : QObject(parent) {
     tag = -1;
-
-    // TODO:: move this to builder
-    QObject::connect(this, SIGNAL(send_command_immediately()), this, SLOT(dequeue_command()));
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {

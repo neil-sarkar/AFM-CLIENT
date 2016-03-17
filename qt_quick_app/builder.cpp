@@ -101,6 +101,10 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(byte_received(char)), receive_worker, SLOT(enqueue_response_byte(char)), Qt::DirectConnection);
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
+
+    // Internal object connections
+    QObject::connect(receive_worker, SIGNAL(response_byte_received()), receive_worker, SLOT(build_working_response()));
+    QObject::connect(send_worker, SIGNAL(send_command_immediately()), send_worker, SLOT(dequeue_command()));
 }
 
 void Builder::generate_command_nodes() {

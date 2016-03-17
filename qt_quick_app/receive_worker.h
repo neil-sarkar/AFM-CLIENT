@@ -43,8 +43,6 @@ private:
     void handle_hardware_reset();
     void handle_asynchronous_message();
     void handle_invalid_response();
-
-    int num_commands_received;
     bool escape;
 
 
