@@ -27,7 +27,6 @@ public:
     int state();
     int microstep();
     void init();
-    void callback(QByteArray);
     Q_INVOKABLE void cmd_single_step();
     Q_INVOKABLE void run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();

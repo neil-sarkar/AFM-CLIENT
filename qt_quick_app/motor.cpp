@@ -66,22 +66,22 @@ void Motor::run_continuous() {
 }
 
 void Motor::cmd_run_continuous() {
-    emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous], this));
+    emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous]));
 }
 
 void Motor::cmd_stop_continuous() {
-    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous], this));
+    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous]));
 }
 
 void Motor::cmd_single_step() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step], this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step]));
 }
 
 void Motor::cmd_set_speed() {
-    QByteArray q;
-    q.push_back(qint8(m_speed)); // low byte
-    q.push_back(qint8(m_speed >> 8)); // high byte
-    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], bind(&Motor::callback), q);
+    QByteArray payload;
+    payload.push_back(qint8(m_speed)); // low byte
+    payload.push_back(qint8(m_speed >> 8)); // high byte
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Speed], payload);
     emit command_generated(node);
 }
 
@@ -92,26 +92,23 @@ void Motor::cmd_set_direction() {
     else
         payload += PayloadConstants.MotorRetract;
 
-    CommandNode* node = new CommandNode(command_hash[Motor_Set_Direction], this, payload);
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Direction], payload);
     emit command_generated(node);
 }
 
 void Motor::cmd_set_state_asleep() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep], bind(&Motor::callback)));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep]));
 }
 
 void Motor::cmd_set_state_awake() {
     qDebug() << "Setting state awake";
-    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Awake], this));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_State_Awake]));
 }
 
 void Motor::cmd_set_micro_step() {
-    QByteArray q;
-    q += m_microstep;
-    emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], this, q));
-}
-
-void Motor::callback(QByteArray payload) {
+    QByteArray payload;
+    payload += m_microstep;
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], payload));
 }
 
 Motor::callback_return_type Motor::bind(callback_type method) {
