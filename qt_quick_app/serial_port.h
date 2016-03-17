@@ -38,5 +38,10 @@ Q_OBJECT
         bool is_connected;
         QSerialPort* port;
 
+        static const QString AFM_Port_Name;
+        static const int AFM_Baud_Rate;
+        static const int AFM_Success;
+        static const int AFM_Fail;
+
 };
 #endif // SERIAL_PORT_H

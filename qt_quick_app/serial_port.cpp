@@ -114,3 +114,8 @@ void SerialPort::execute_command(CommandNode* command_node) {
     assert (result == AFM_Success);
     emit message_sent(command_node);
 }
+
+const QString SerialPort::AFM_Port_Name = "FTDI";
+const int SerialPort::AFM_Baud_Rate = 76800;
+const int SerialPort::AFM_Success = 0;
+const int SerialPort::AFM_Fail = -1;

@@ -1,9 +1,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
-
-#include "command_node.h"
-#include "thread_safe_queue.h"
-#include <QMutex>
+#include <QString>
 
 extern const QString ADC_Read;
 extern const QString AFM_Begin_Auto_Approach;
@@ -58,13 +55,5 @@ extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
 extern const int Set_Receive_Bytes_Error;
 extern const int DAC_Table_Values[4096];
-
-// Serial port
-extern const QString AFM_Port_Name;
-extern const int AFM_Baud_Rate;
-extern const int AFM_Success;
-extern const int AFM_Fail;
-
-
 
 #endif // CONSTANTS_H
