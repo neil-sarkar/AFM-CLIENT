@@ -17,8 +17,7 @@ void DAC::set_value(double value, bool cmd) {
 
 void DAC::set_settings() {
     settings.beginGroup(settings_group_name);
-    QVariant settings_value = settings.value(QString::number(m_id));
-    set_value(settings_value != QVariant::Invalid ? settings_value.toDouble() : 0); // 0 is default value
+    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : 0);
     settings.endGroup();
 }
 
