@@ -92,10 +92,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         push_data_to_view: function(data_obj) {
             if (this.state.current_view % 2 === 0) {
                 this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max);
-                console.log(data_obj.forward_data.heatmap, data_obj.forward_data.heatmap.length);
             } else {
                 this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max);
             }
+            console.log(data_obj.forward_data.heatmap.length, data_obj.reverse_data.heatmap.length);
             this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
         // this whole tristate scanning button really should just be done with a dictionary
@@ -146,17 +146,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         set_heatmap_name: function(name) {
-            this.refs.heatmap.set_name((this.state.current_view % 2 == 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(this.state.current_view / 2)].name);
+            this.refs.heatmap.set_name((this.state.current_view % 2 === 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(this.state.current_view / 2)].name);
         },
         handle_view_selector_click: function(index) {
             this.setState({
                 current_view: index
             }, function () {
                 this.refs.line_profile.clear_plotlines();
-                // this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
-                this.set_heatmap_name()
-                this.refs.heatmap.hide_loading();
+                this.set_heatmap_name();
             });
         },
         get_specific_row_profile: function(data, y_value) {
