@@ -91,7 +91,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             return document.getElementById(this.props.id).getContext("2d");
         },
         componentDidMount: function() {
-            scanner.new_offset_data.connect(this.handle_new_data);
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
         },
@@ -106,18 +105,49 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var update_all = true;
             if (this.state.running_max >= new_data[useful_data.length] && this.state.running_min <= new_data[useful_data.length + 1])
                 update_all = false;
-            console.log(update_all);
             this.setState({
                 num_points: this.state.num_points + useful_data.length,
                 data: this.state.data.concat(useful_data),
                 running_max: Math.max(new_data[useful_data.length], this.state.running_max),
                 running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
             }, function() {
-                console.log(update_all);
                 this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
             });
         },
-        redraw_canvas: function(data, max, min) {
+        receive_data: function(data, min, max) {
+            update_all = !(this.state.running_max >= max && this.state.running_min <= min);
+            this.setState({
+                num_points: this.state.num_points + data.length,
+                data: this.state.data.concat(data),
+                running_max: Math.max(max, this.state.running_max),
+                running_min: Math.min(min, this.state.running_min)
+            }, function() {
+                this.redraw_canvas_points(update_all ? this.state.data : data, this.state.running_max, this.state.running_min);
+            });
+        },
+        redraw_canvas_points: function(data, max, min) {
+            var ctx = this.get_context();
+            var pixel_width = this.props.canvas_width/num_columns;
+            var pixel_height = this.props.canvas_height/num_rows;
+            var pixel_dimension = Math.min(pixel_width, pixel_height);
+            var range = max - min;
+            for (var i = 0; i < data.length; i += 1) {
+                var x = data[i].x;
+                var y = data[i].y;
+                var z = data[i].value;
+                setTimeout(function(x, y, z) {
+                    var color;
+                    if (max == min)
+                        color = percent(0, myColours);
+                    else
+                        color = percent((z - min)/range * 100, myColours);
+                    ctx.fillStyle = color.hex;
+                    ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
+                }.bind(this, x, y, z), 0);
+            }
+        },
+        redraw_canvas: function(data) {
+            console.log("DATA LEN", data.length);
             var ctx = this.get_context();
             var pixel_width = this.props.canvas_width/num_columns;
             var pixel_height = this.props.canvas_height/num_rows;
@@ -147,7 +177,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     dummy_data.push(i*j);
                 }
             }
-            console.log("HERE!!!", dummy_data);
             this.handle_new_data(dummy_data);
         },
         erase_data: function() {
@@ -160,8 +189,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 <div>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
-                    <button className="action-button" onClick={this.add_points}>Add points</button>
-                    {this.state.num_points / num_rows / 3}
                 </div>
                     );
         }

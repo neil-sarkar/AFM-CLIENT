@@ -1,18 +1,20 @@
-define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, ScanHeatMap, LineProfile, InlineScanControls) {
+define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, HeatmapCanvas, LineProfile, InlineScanControls) {
     function DataContainer() {
         this.heatmap = [];
         this.profile = [];
         this.sum = 0;
         this.num_points = 0;
         this.sum_of_squares = 0;
-    };
+        this.min = Number.POSITIVE_INFINITY;
+        this.max = Number.NEGATIVE_INFINITY;
+    }
     
     function ScanView(name, data_source) {
         this.name = name;
         this.data_source = data_source;
         this.forward_data = new DataContainer();
         this.reverse_data = new DataContainer();
-    };
+    }
 
     ScanView.prototype.clear_data = function () {
         this.forward_data = new DataContainer();
@@ -20,10 +22,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     };
 
     var scan_views = [];
-    // scan_views.push(new ScanView("Offset", scanner.new_offset_data));
-    // scan_views.push(new ScanView("Phase", scanner.new_phase_data));
-    // scan_views.push(new ScanView("Error", scanner.new_error_data));
-    var null_view = new ScanView("");
+    scan_views.push(new ScanView("Offset", scanner.new_offset_data));
+    scan_views.push(new ScanView("Phase", scanner.new_phase_data));
+    scan_views.push(new ScanView("Error", scanner.new_error_data));
+    // var null_view = new ScanView("");
 
     var Scan = React.createClass({
         getInitialState: function() {
@@ -31,7 +33,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: false,
                 starting_fresh_scan: true,
                 current_view: 0,
-                current_line: 0,    
+                current_line: 0,
                 num_rows: 0,
                 num_columns: 0,
                 send_back_count: 0
@@ -70,15 +72,19 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
+            obj.min = Math.min(z, obj.min);
+            obj.max = Math.max(z, obj.max);
         },
         prepare_new_data: function (view_index, data) {
-            for (var i = 0; i < data.length / 2; i += 3) {
+            // data format: if there are 16 points in a row, you'll have (16 points * 3 coordinates + 1 max + 1 min) * 2 direction(forward, backward) == length 100
+            // data format: the coordinates are a flat array of x,y,z,x,y,z,x,y,z,x,y,z...
+            for (var i = 0; i < (data.length - 4) / 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
             if (Math.floor(this.state.current_view / 2) == view_index) {
-                this.push_data_to_view(scan_views[view_index]); 
+                this.push_data_to_view(scan_views[view_index]);
             }
         },
         limit_line_profile_data: function(data) {
@@ -86,9 +92,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         },
         push_data_to_view: function(data_obj) {
             if (this.state.current_view % 2 === 0) {
-                this.refs.heatmap.set_data(data_obj.forward_data.heatmap);
+                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max);
             } else {
-                this.refs.heatmap.set_data(data_obj.reverse_data.heatmap);
+                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max);
             }
             this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
@@ -144,7 +150,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.setState({
                 current_view: index
             }, function () {
-                this.refs.heatmap.show_loading();
                 this.refs.line_profile.clear_plotlines();
                 // this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
@@ -167,17 +172,17 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <div className="top-row">
                             <div className="scan-view-selector-container">
                                 {scan_views.map(function(view, i) {
-                                var forward_bound_click = this.handle_view_selector_click.bind(this, 2*i);
-                                var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
-                                return (
-                                    <div>
-                                        <p className="view-selector-button" onClick={forward_bound_click}>Forward {view.name}</p>
-                                        <p className="view-selector-button" onClick={reverse_bound_click}>Reverse {view.name}</p>
-                                    </div>
-                                    );
+                                    var forward_bound_click = this.handle_view_selector_click.bind(this, 2*i);
+                                    var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
+                                    return (
+                                        <div>
+                                            <p className="view-selector-button" onClick={forward_bound_click}>Forward {view.name}</p>
+                                            <p className="view-selector-button" onClick={reverse_bound_click}>Reverse {view.name}</p>
+                                        </div>
+                                        );
                                 }, this)}
                             </div>
-                            <ScanHeatMap ref="heatmap" id="heatmap1" />
+                            <HeatmapCanvas ref="heatmap" id="heatmap1"/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>

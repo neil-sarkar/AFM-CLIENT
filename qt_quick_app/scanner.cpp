@@ -144,7 +144,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             reverse_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / ADC::SCALE_FACTOR);
         }
         if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) {
-            QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0);
+            QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0); // TODO: ENUM the 0,1,2
             offset_data.append(reverse_data->package_data_for_ui(m_send_back_count, 0));
             emit new_offset_data(offset_data);
             
