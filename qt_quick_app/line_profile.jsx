@@ -111,7 +111,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 this.addSeries("Reverse");
             }
             this.state.chart.series[0].setData(forward_data.reverse());
-            this.state.chart.series[1].setData(reverse_data.reverse());
+            this.state.chart.series[1].setData(reverse_data);
         },
         componentDidMount: function() {
             this.renderChart();

@@ -189,6 +189,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 <div>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
+                    <br/>
+                    <p>{this.state.num_points}</p>
                 </div>
                     );
         }
