@@ -73,32 +73,34 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
-            obj.min = Math.min(z, obj.min);
-            obj.max = Math.max(z, obj.max);
         },
         prepare_new_data: function (view_index, data) {
-            for (var i = 0; i < data.length / 2; i += 3) {
+            view_index_num_points = scan_views[view_index].forward_data.num_points;
+            for (var i = 0; i < (data.length / 2) - 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
+            scan_views[view_index].forward_data.max = data[data.length/2 - 2];
+            scan_views[view_index].forward_data.min = data[data.length/2 - 1];
+            scan_views[view_index].reverse_data.max = data[data.length - 2];
+            scan_views[view_index].reverse_data.min = data[data.length - 1];
             if (Math.floor(this.state.current_view / 2) == view_index) {
-                this.push_data_to_view(scan_views[view_index]);
+                this.push_data_to_view(scan_views[view_index], scan_views[view_index].forward_data.num_points - view_index_num_points);
             }
         },
         limit_line_profile_data: function(data) {
             return data.slice(Math.max(data.length - this.state.send_back_count, 0));
         },
-        push_data_to_view: function(data_obj) {
+        push_data_to_view: function(data_obj, num_points_to_draw) {
             if (this.state.current_view % 2 === 0) {
-                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max);
+                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max, num_points_to_draw);
             } else {
-                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max);
+                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max, num_points_to_draw);
             }
-            console.log(data_obj.forward_data.heatmap.length, data_obj.reverse_data.heatmap.length);
             this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
-        // this whole tristate scanning button really should just be done with a dictionary
+        // TODO: this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
             this.setState({
                 num_rows: scanner.num_rows(),

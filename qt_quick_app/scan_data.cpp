@@ -40,7 +40,7 @@ bool ScanData::append(int z_amplitude, int z_offset, int z_phase, int setpoint) 
     point.z_phase = z_phase;
     point.z_error = setpoint - z_amplitude;
     data.append(point);
-    qDebug() << point.x << point.y;
+//    qDebug() << point.x << point.y;
     return true;
 }
 
@@ -69,19 +69,19 @@ QVariantList ScanData::package_data_for_ui(int num_points, int z_type) {
         }
     }
     double average = sum / num_points;
-    // QVariant max = -1 * ADC::RESOLUTION;
-    // QVariant min = ADC::RESOLUTION;
+    QVariant max = -1 * 10000000;
+    QVariant min = 10000000;
     for (int i = 2; i < num_points * 3; i += 3) {
         latest_data[i] = (latest_data[i]).toDouble() - average;
-        // if (latest_data[i] > max)
-        //     max = latest_data[i];
-        // if (latest_data[i] < min)
-        //     min = latest_data[i];
+        if (latest_data[i] > max)
+            max = latest_data[i];
+        if (latest_data[i] < min)
+            min = latest_data[i];
     }
 
     // if (m_is_forward)
-    // latest_data.append(max);
-    // latest_data.append(min);
+    latest_data.append(max);
+    latest_data.append(min);
     return latest_data;
     
     // QVariantList latest_data_reversed; // could do this reversing in place with the averaging operation
