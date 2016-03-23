@@ -74,8 +74,8 @@ void Scanner::init() {
 void Scanner::emit_dummy_data() {
     emit started_scan_state_machine();
     QVariantList data;
-    for (int i = 0; i < 16; i++) {
-        for (int j = 0; j < 1; j++) {
+    for (int i = 0; i < 256; i++) {
+        for (int j = 0; j < 256; j++) {
             data.append(i);
             data.append(j);
             data.append(i*j);
@@ -88,8 +88,6 @@ void Scanner::emit_dummy_data() {
 }
 
 void Scanner::start_state_machine() {
-    // emit emit_dummy_data();
-    // return;
     m_state_machine.start();
 }
 

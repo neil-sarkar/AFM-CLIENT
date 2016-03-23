@@ -104,14 +104,16 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         handle_new_data: function(new_data) {
             var useful_data = new_data.slice(0, num_rows * 3);
             var update_all = true;
-            if (this.state.running_max === new_data[useful_data.length] || this.state.running_min == new_data[useful_data.length + 1])
+            if (this.state.running_max >= new_data[useful_data.length] && this.state.running_min <= new_data[useful_data.length + 1])
                 update_all = false;
+            console.log(update_all);
             this.setState({
                 num_points: this.state.num_points + useful_data.length,
                 data: this.state.data.concat(useful_data),
                 running_max: Math.max(new_data[useful_data.length], this.state.running_max),
                 running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
             }, function() {
+                console.log(update_all);
                 this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
             });
         },
@@ -138,12 +140,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         add_points: function() {
             var dummy_data = [];
-            for (var i = 0; i < this.props.canvas_height; i += 1)
+            for (var i = 0; i < this.props.canvas_height; i += 1) {
                 for (var j = 0; j < this.props.canvas_width; j += 1) {
                     dummy_data.push(i);
                     dummy_data.push(j);
                     dummy_data.push(i*j);
                 }
+            }
+            console.log("HERE!!!", dummy_data);
             this.handle_new_data(dummy_data);
         },
         erase_data: function() {
