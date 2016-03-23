@@ -50,9 +50,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     }());
 
     var myColours = [
-        new Colour('#000000'), // Colour {hex: "#39BF26", r: 57, g: 191, b: 38, …}
-        new Colour('#581C00'),  // Colour {hex: "#C7282E", r: 199, g: 40, b: 46, …}
-        new Colour('#bc8000'), // Colour {hex: "#C7C228", r: 199, g: 194, b: 40, …}
+        new Colour('#000000'),
+        new Colour('#581C00'),
+        new Colour('#bc8000'),
         new Colour('#FcFc80'),
     ];
 
@@ -75,8 +75,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     var ScanHeatMap = React.createClass({
         getInitialState: function() {
             return {
-                running_max: 0,
-                running_min: 0,
+                running_max: Number.NEGATIVE_INFINITY,
+                running_min: Number.POSITIVE_INFINITY,
                 data: [],
                 num_points: 0,
             };
@@ -100,6 +100,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         change_num_columns: function(new_num_columns) {
             num_columns = new_num_columns;
         },
+        set_name: function(name) {
+            $('#heatmap-name').text(name);
+        },
         handle_new_data: function(new_data) {
             var useful_data = new_data.slice(0, num_rows * 3);
             var update_all = true;
@@ -116,9 +119,10 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         receive_data: function(data, min, max) {
             update_all = !(this.state.running_max >= max && this.state.running_min <= min);
+            // console.log(update_all, data, this.state.data, min, max);
             this.setState({
-                num_points: this.state.num_points + data.length,
-                data: this.state.data.concat(data),
+                num_points: data.length,
+                data: data,
                 running_max: Math.max(max, this.state.running_max),
                 running_min: Math.min(min, this.state.running_min)
             }, function() {
@@ -187,6 +191,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         render: function() {
             return (
                 <div>
+                    <p id="heatmap-name"></p>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
                     <br/>

@@ -65,6 +65,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var bound_method = this.prepare_new_data.bind(this, i);
                 scan_views[i].data_source.connect(bound_method);
             }
+            this.set_heatmap_name();
         },
         tally_new_data: function(obj, x, y, z) {
             obj.heatmap.push({x: x, y: y, value: z});
@@ -76,9 +77,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.max = Math.max(z, obj.max);
         },
         prepare_new_data: function (view_index, data) {
-            // data format: if there are 16 points in a row, you'll have (16 points * 3 coordinates + 1 max + 1 min) * 2 direction(forward, backward) == length 100
-            // data format: the coordinates are a flat array of x,y,z,x,y,z,x,y,z,x,y,z...
-            for (var i = 0; i < (data.length - 4) / 2; i += 3) {
+            for (var i = 0; i < data.length / 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
@@ -93,6 +92,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         push_data_to_view: function(data_obj) {
             if (this.state.current_view % 2 === 0) {
                 this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max);
+                console.log(data_obj.forward_data.heatmap, data_obj.forward_data.heatmap.length);
             } else {
                 this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max);
             }
@@ -124,6 +124,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].clear_data();
+                    console.log(scan_views[i].forward_data);
+                    console.log(scan_views[i].reverse_data);
                 }
                 this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
@@ -144,7 +146,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         set_heatmap_name: function(name) {
-            this.refs.heatmap.set_name(name);
+            this.refs.heatmap.set_name((this.state.current_view % 2 == 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(this.state.current_view / 2)].name);
         },
         handle_view_selector_click: function(index) {
             this.setState({
@@ -153,7 +155,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 this.refs.line_profile.clear_plotlines();
                 // this.push_data_to_view(null_view);
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
-                this.set_heatmap_name((index % 2 == 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(index / 2)].name);
+                this.set_heatmap_name()
                 this.refs.heatmap.hide_loading();
             });
         },
