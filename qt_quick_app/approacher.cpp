@@ -23,6 +23,7 @@ void Approacher::emit_dummy_data() {
 }
 
 void Approacher::cmd_start_auto_approach() {
+    qDebug() << "Starting auto approach";
     quint16 scaled_setpoint = (m_pid->setpoint())/ADC::SCALE_FACTOR;
     QByteArray payload;
     payload += (scaled_setpoint & 0xFF);

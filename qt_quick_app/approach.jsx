@@ -84,6 +84,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			$("button").prop("disabled", false);
 		},
 		start_approaching : function() {
+			console.log("CLICKED START");
 			this.prevent_dangerous_user_input();
 			this.refs.z_fine_graph.stop_streaming();
 			this.refs.approach_graph.stop_streaming();
