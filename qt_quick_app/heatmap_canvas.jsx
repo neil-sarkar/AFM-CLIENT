@@ -118,21 +118,17 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             });
         },
         receive_data: function(data, min, max, num_points_to_draw) {
-            console.log(num_points_to_draw);
             update_all = !(this.state.running_max >= max && this.state.running_min <= min);
-            console.log("starting state change", update_all, new Date().getMilliseconds(), this.state.num_points);
             this.setState({
                 num_points: data.length,
                 data: data,
                 running_max: Math.max(max, this.state.running_max),
                 running_min: Math.min(min, this.state.running_min)
             }, function() {
-                console.log("end state change", new Date().getMilliseconds());
                 this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
             });
         },
         redraw_canvas_points: function(data, max, min) {
-            console.log("Drawing", data.length, "points", new Date().getMilliseconds());
             var ctx = this.get_context();
             var pixel_width = this.props.canvas_width/num_columns;
             var pixel_height = this.props.canvas_height/num_rows;
@@ -152,10 +148,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
                 }.bind(this, x, y, z), 0);
             }
-            console.log("Finished drawing", new Date().getMilliseconds());
         },
         redraw_canvas: function(data) {
-            console.log("DATA LEN", data.length);
             var ctx = this.get_context();
             var pixel_width = this.props.canvas_width/num_columns;
             var pixel_height = this.props.canvas_height/num_rows;

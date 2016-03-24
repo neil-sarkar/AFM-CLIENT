@@ -9,6 +9,7 @@ requirejs.config({
         highcharts_canvas: 'pages/highcharts-canvas',
         boost: 'lib/modules/boost',
         heatmap: 'lib/modules/heatmap',
+        constants: 'lib/constants',
         exporting: 'lib/modules/exporting',
         exporting_offline: 'lib/modules/offline-exporting',
         underscore: 'lib/underscore',

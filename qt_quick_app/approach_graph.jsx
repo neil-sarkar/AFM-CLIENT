@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
+define(["jquery", "react", "dom", "highcharts", "console", "constants"], function($, React, ReactDOM, highcharts, console, Constants) {
     var ApproachGraph = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode;
@@ -8,59 +8,63 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     plotBackgroundColor: '#EFEFEF',
                     height: 300,
                     type: 'line',
-                    zoomType: 'x',
                 },
                 title: {
                     text: "Approach"
                 },
-                tooltip: { crosshairs: [true, true] },
+                tooltip: {
+                    // crosshairs: [true, true],
+                    formatter: function() {
+                        return '<b>'+ $(node).highcharts().series[0].name +'</b>: ' + this.point.y.toFixed(4);
+                    },
+                    enabled: false,
+                },
                 xAxis: {
                     labels: {
                       enabled: false
-                    }
+                    },
                 },
                 yAxis: {
                     title: {
-                        text: 'Amplitude (V)'
-                    }
-                },
-                line: {
-                    marker: {
-                        enabled: true
-                    }
+                        text: 'Amplitude'
+                    },
+                    minPadding: 20,
+                    minRange: 0.5,
                 },
                 legend: {
                     enabled: false
                 },
-                series: [ {
-                    name: "Z Piezoresistor Amplitude",
-                    type: "area",
-                    plotOptions: {
-                        area: {
-                            fillColor: {
-                                linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                },
-                                stops: [
-                                    [0, Highcharts.getOptions().colors[0]],
-                                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                ]
-                            },
-                            marker: {
-                                radius: 2
-                            },
-                            lineWidth: 1,
-                            states: {
-                                hover: {
-                                    lineWidth: 1
-                                }
-                            },
-                            threshold: null
+                plotOptions: {
+                    line: {
+                        marker: {
+                            enabled: false
                         }
                     }
+                },
+                series: [ {
+                    name: "Z Piezoresistor Amplitude",
+                    // type: "area",
+                    // plotOptions: {
+                    //     area: {
+                    //         fillColor: {
+                    //             linearGradient: {
+                    //                 x1: 0,
+                    //                 y1: 0,
+                    //                 x2: 0,
+                    //                 y2: 1
+                    //             },
+                    //             stops: [
+                    //                 [0, Highcharts.getOptions().colors[0]],
+                    //                 [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    //             ]
+                    //         },
+                    //         marker: {
+                    //             enabled: true,
+                    //         },
+                    //         lineWidth: 1,
+                    //         threshold: null
+                    //     }
+                    // }
                 }
                 ],
             });
@@ -72,7 +76,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var node = this.refs.chartNode;
             var point = approach_adc_read;
             var num_points_displayed = $(node).highcharts().series[0].data.length;
-            $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
+            this.shift_add_point(point, num_points_displayed);
         },
 
         update_plotline: function(value) {
@@ -92,7 +96,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             adc_5.value_changed.connect(this.handle_adc_value_changed);
             adc_stream_interval_id = setInterval(function() {
                 adc_5.read();
-            }, 300);
+            }, Constants.Approach_Poll_Rate);
         },
         stop_streaming: function() {
             try {
@@ -104,11 +108,16 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 clearInterval(adc_stream_interval_id);
             }
         },
+        shift_add_point: function(point, num_points_displayed) {
+            var node = this.refs.chartNode;
+            var chart = $(node).highcharts();
+            chart.series[0].addPoint(point, true, num_points_displayed > Constants.Approach_Num_Points_Displayed, false);
+        },
         handle_adc_value_changed: function(adc_value) {
             var node = this.refs.chartNode;
             var point = adc_value;
             var num_points_displayed = $(node).highcharts().series[0].data.length;
-            $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
+            this.shift_add_point(point, num_points_displayed);
         },
         componentDidMount: function() {
             this.renderChart();

@@ -132,7 +132,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
                 this.set_scan_complete();
-            }.bind(this), 30); // give time for the scnaner to actually pause 
+            }.bind(this), 100); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },
@@ -184,7 +184,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         );
                                 }, this)}
                             </div>
-                            <HeatmapCanvas ref="heatmap" id="heatmap1"/>
+                            <HeatmapCanvas ref="heatmap" id="heatmap1" />
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>
