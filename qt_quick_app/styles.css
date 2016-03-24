@@ -305,6 +305,11 @@
 }
 
 #approach-graph {
-    height: 50%;
+    height: 40%;
+    width: 90%;
+}
+
+#z-fine-graph {
+    height: 40%;
     width: 90%;
 }

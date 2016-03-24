@@ -7,6 +7,10 @@ define([], function() {
 
         Approach_Amplitude_Data_Color: "#0066cc",
         Approach_Amplitude_Strip_Line_Color: "gold",
+        Approach_Amplitude_Font_Size: 18,
+        
+        System_Font: "Roboto-Thin",
+
 
     };
     return Constants;
