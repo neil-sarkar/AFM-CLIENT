@@ -10,6 +10,7 @@ requirejs.config({
         boost: 'lib/modules/boost',
         heatmap: 'lib/modules/heatmap',
         constants: 'lib/constants',
+        canvasjs: 'lib/canvasjs',
         exporting: 'lib/modules/exporting',
         exporting_offline: 'lib/modules/offline-exporting',
         underscore: 'lib/underscore',

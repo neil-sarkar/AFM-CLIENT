@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls"], function(React, ApproachGraph, ZFineGraph, InlineApproachControls) {
+define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls", "jsx!pages/test_canvas_graph"], function(React, Constants, ApproachGraph, ZFineGraph, InlineApproachControls, TestCanvasGraph) {
 	var status_map = {
 		0: "Motor idle",
 		1: "Motor waking up",
@@ -48,7 +48,7 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 					}, 300);
 				});
 				setTimeout(function() {
-					this.refs.z_fine_graph.start_streaming();
+					// this.refs.z_fine_graph.start_streaming();
 					this.refs.approach_graph.start_streaming();
 				}.bind(this), 500);
 			}
@@ -62,23 +62,23 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 			});
 		},
 		componentWillReceiveProps : function(nextProps) {
-			if (nextProps.showStep == false) {
+			if (nextProps.showStep === false) {
 				$('#approach-wrapper').hide();
-				this.refs.z_fine_graph.stop_streaming();
+				// this.refs.z_fine_graph.stop_streaming();
 				this.refs.approach_graph.stop_streaming();
 			} else {
 				$('#approach-wrapper').show();
 				if (!this.state.approach_in_progress) {
-					this.refs.z_fine_graph.start_streaming();
-					this.refs.approach_graph.start_streaming();	
+					// this.refs.z_fine_graph.start_streaming();
+					this.refs.approach_graph.start_streaming();
 				}
 			}
 		},
 		start_approaching : function() {
-			this.refs.z_fine_graph.stop_streaming();
+			// this.refs.z_fine_graph.stop_streaming();
 			this.refs.approach_graph.stop_streaming();
+			pid.set_disabled();
 			approacher.cmd_start_auto_approach();
-			pid.set_disabled()
 		},
 		stop_approaching: function() {
 			approacher.cmd_stop_auto_approach();
@@ -87,7 +87,7 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 			});
 			var that = this;
 			setTimeout(function() {
-				that.refs.z_fine_graph.start_streaming();
+				// that.refs.z_fine_graph.start_streaming();
 				that.refs.approach_graph.start_streaming();
 			}, 500);
 		},
@@ -95,12 +95,11 @@ define(["react", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!page
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
-						<ApproachGraph ref="approach_graph" establishDataConnection={approacher.new_data.connect} />
+						<TestCanvasGraph ref="approach_graph" notify_signal={adc_5.value_changed} prompt_read={adc_5.read} num_points_displayed={Constants.Approach_Num_Points_Displayed}/>
 						<div className="approacher-status">
 							{status_map[this.state.status]}
 							{this.state.approach_complete && <div>Approach complete</div>}
 						</div>
-						<ZFineGraph ref="z_fine_graph" establishDataConnection={dac_6.value_changed.connect}/>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Sample Approach</div>
