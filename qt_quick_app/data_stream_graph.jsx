@@ -4,16 +4,8 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
     var x = 0;
     var stream_interval_id;
     var ApproachGraph = React.createClass({
-        add_data: function(value) {
-            x += 1;
-            if (data.length < this.props.num_points_displayed)
-                data.push({x: x, y: value});
-            else
-                data.shift({x: x, y: value});
-            
-            chart.render();
-        },
         init_chart: function() {
+            var self = this;
             chart = new CanvasJS.Chart(this.refs.chartNode, {
                 title: {
                     text: "Approach"
@@ -21,12 +13,39 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 data: [{
                     type: "line",
                     dataPoints: data
-                }]
+                }],
+                axisY: {
+                    stripLines: [
+                    {
+                        value: this.props.plotline_default,
+                        color: "red",
+                        lineDashType: "dash",
+                    }
+                    ]
+                },
+                axisX: {
+                    lineThickness: 0,
+                    tickThickness:0,
+                    valueFormatString: " ",
+                }
             });
+        },
+        add_data: function(value) {
+            if (data.length < this.props.num_points_displayed) {
+                data.push({x: x, y: value});
+            } else {
+                data.shift({x: x, y: value});
+            }
+            x += 1;
+            chart.render();
+        },
+        update_plotline: function(new_value) {
+            chart.options.axisY.stripLines[0].value = new_value;
         },
         componentDidMount: function() {
             this.init_chart();
-            this.props.notify_signal.connect(this.handle_new_data);
+            this.props.data_update_signal.connect(this.handle_new_data);
+            this.props.plotline_update_signal.connect(this.update_plotline);
         },
         start_streaming: function() {
             stream_interval_id = setInterval(function() {
@@ -34,11 +53,6 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             }.bind(this), Constants.Approach_Poll_Rate);
         },
         stop_streaming: function() {
-            // try {
-            //     this.props.notify_signal.disconnect(this.handle_new_data);
-            // } catch (err) {
-            //     console.log(err);
-            // }
             if (typeof stream_interval_id !== 'undefined') {
                 clearInterval(stream_interval_id);
             }

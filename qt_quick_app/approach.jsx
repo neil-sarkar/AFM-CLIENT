@@ -1,4 +1,4 @@
-define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls", "jsx!pages/test_canvas_graph"], function(React, Constants, ApproachGraph, ZFineGraph, InlineApproachControls, TestCanvasGraph) {
+define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls", "jsx!pages/data_stream_graph"], function(React, Constants, ApproachGraph, ZFineGraph, InlineApproachControls, DataStreamGraph) {
 	var status_map = {
 		0: "Motor idle",
 		1: "Motor waking up",
@@ -95,7 +95,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
-						<TestCanvasGraph ref="approach_graph" notify_signal={adc_5.value_changed} prompt_read={adc_5.read} num_points_displayed={Constants.Approach_Num_Points_Displayed}/>
+						<DataStreamGraph ref="approach_graph" data_update_signal={adc_5.value_changed} prompt_read={adc_5.read} num_points_displayed={Constants.Approach_Num_Points_Displayed} plotline_default={pid.setpoint} plotline_update_signal={pid.setpoint_changed}/>
 						<div className="approacher-status">
 							{status_map[this.state.status]}
 							{this.state.approach_complete && <div>Approach complete</div>}

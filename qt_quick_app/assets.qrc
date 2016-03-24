@@ -99,7 +99,7 @@
         <file>text_input.jsx</file>
         <file>home.jsx</file>
         <file>heatmap_canvas.jsx</file>
-        <file>test_canvas_graph.jsx</file>
+        <file>data_stream_graph.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>
