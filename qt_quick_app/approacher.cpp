@@ -28,9 +28,15 @@ void Approacher::cmd_start_auto_approach() {
     payload += (scaled_setpoint & 0xFF);
     payload += ((scaled_setpoint & 0xFF00) >> 8);
     emit command_generated(new CommandNode(command_hash[AFM_Begin_Auto_Approach], payload));
+    mutex.lock();  // TODO: look into atomic bools
+    is_approaching = true; // global that prevents any additional values
+    mutex.unlock();
 }
 
 void Approacher::cmd_stop_auto_approach() {
+    mutex.lock();  // TODO: look into atomic bools
+    is_approaching = false;
+    mutex.unlock();
     emit command_generated(new CommandNode(command_hash[AFM_Stop_Auto_Approach]));
 }
 
@@ -42,5 +48,10 @@ void Approacher::handle_auto_approach_info_message(QByteArray working_response) 
     double adc_value = double(quint16((quint8(working_response.at(2)) << 8)| quint8(working_response.at(1)))) * ADC::SCALE_FACTOR;
     m_state = working_response.at(0);
     m_adc->update_value(adc_value);
+    if (m_state == 9) {
+        mutex.lock();
+        is_approaching = false;
+        mutex.unlock();
+    }
     emit new_data(m_state, adc_value);
 }

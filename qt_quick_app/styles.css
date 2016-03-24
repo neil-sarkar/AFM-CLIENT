@@ -32,6 +32,7 @@
 .action-button:disabled {
     border: solid silver 2px;
     color: silver;
+    cursor: default;
 }
 
 .wrapper  {
@@ -237,6 +238,12 @@
     margin-right: 2%;
     text-align: center;
     cursor: pointer;
+}
+
+
+.settings-drawer-button:disabled {
+    background-color: gray;
+    cursor: default;
 }
 
 .motor-control {

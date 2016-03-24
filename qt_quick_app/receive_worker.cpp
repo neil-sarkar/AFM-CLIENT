@@ -125,8 +125,9 @@ void ReceiveWorker::handle_asynchronous_message() {
     else if (static_cast<unsigned char>(working_response.at(1)) == 0xaa) {
         qDebug() << "BUFFER FULL";
         assert(false); // not sure what we should do here. this could happen if we spam the reset button infinitely.
-    } else
+    } else {
         qDebug() << "unknown message" << working_response;
+    }
 }
 
 bool ReceiveWorker::is_mcu_reset_message() {
@@ -155,16 +156,16 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
     // I think the MCU auto approach routine is blocking - it would be better to trigger it on interrupt
     // Either way, to circumvent that for now, we have to flush all the commands that came
     // before the stop message, and just stop all execution
-    bool stop_command_had_been_queued = false;
     while (receive_command_queue.count()) {
         CommandNode* node = receive_command_queue.dequeue();
         if (node->id == Auto_Approach_Stopped_Character)
-            stop_command_had_been_queued = true;
-        delete node;
+            delete node;
     }
 
-    // assert(stop_command_had_been_queued);
     qDebug() << "Command queue flushed - new count" << receive_command_queue.count();
+    mutex.lock();  // TODO: look into atomic bools
+    is_approaching = false;
+    mutex.unlock();
 }
 
 void ReceiveWorker::flush() {

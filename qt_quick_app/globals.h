@@ -7,6 +7,7 @@
 
 extern QHash<QString, CommandNode> command_hash;
 extern bool port_writing_command;
+extern bool is_approaching;
 extern QMutex mutex;
 
 #endif // GLOBALS_H

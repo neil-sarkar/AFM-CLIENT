@@ -44,7 +44,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 				}, function() {
 					setTimeout(function() {
 						pid.set_enabled();
-					}, 300);
+						this.allow_dangerous_user_input();
+					}.bind(this), 300);
 				});
 				setTimeout(function() {
 					this.refs.z_fine_graph.start_streaming();
@@ -73,7 +74,17 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 				}
 			}
 		},
+		prevent_dangerous_user_input: function() {
+			$(":input").prop("disabled", true);
+			$("button").prop("disabled", true);
+			$("#pause-approach-button").prop("disabled", false);
+		},
+		allow_dangerous_user_input: function() {
+			$(":input").prop("disabled", false);
+			$("button").prop("disabled", false);
+		},
 		start_approaching : function() {
+			this.prevent_dangerous_user_input();
 			this.refs.z_fine_graph.stop_streaming();
 			this.refs.approach_graph.stop_streaming();
 			pid.set_disabled();
@@ -84,11 +95,11 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			this.setState({
 				approach_in_progress: false
 			});
-			var that = this;
 			setTimeout(function() {
-				that.refs.z_fine_graph.start_streaming();
-				that.refs.approach_graph.start_streaming();
-			}, 500);
+				this.refs.z_fine_graph.start_streaming();
+				this.refs.approach_graph.start_streaming();
+			}.bind(this), 250);
+			this.allow_dangerous_user_input();
 		},
 		render: function() {
 			return (
@@ -107,7 +118,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 							Press the "Approach" button to begin a raising the sample towards the AFM chip.
 							The approach is complete once the amplitude value reaches the desired setpoint.
 						</div>
-						<button className="action-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+						<button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
 						<InlineApproachControls />
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>

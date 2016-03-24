@@ -11,7 +11,10 @@ SendWorker::SendWorker(QObject *parent) : QObject(parent) {
 void SendWorker::enqueue_command(CommandNode* command_node) {
     command_node->tag = iterate_tag(); // assign tag then increment
     assert (send_command_queue.isFull() == false);
-    send_command_queue.enqueue(command_node);
+    mutex.lock();
+    if (!is_approaching)
+        send_command_queue.enqueue(command_node);
+    mutex.unlock();
     if (!port_writing_command) {
         dequeue_command();
     }
