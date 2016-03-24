@@ -1,117 +1,141 @@
 define(["react"], function(React) {
-	var SpeedSlider = React.createClass({
-		getInitialState: function() {
-			return {
-				slider_position: 1 // start at the slowest 
-			};
-		},
-		getDefaultProps: function() {
-			return {
-				min: 1,
-				max: 4,
-				step: 1,
-			};
-		},
-		update_value_from_slider_input: function(e) {
-			var slider_input = parseInt(e.target.value);
-			var speed;
-			var microsteps;
-			switch(slider_input) {
-				case 4:
-					speed = 26300;
-					microsteps = 1;
-					break;
-				case 3:
-					speed = 26300;
-					microsteps = 3;
-					break;
-				case 2:
-					speed = 23000;
-					microsteps = 3;
-					break;
-				case 1:
-					speed = 20000;
-					microsteps = 3;
-					break;
-			}
-			if (this.state.slider_position != slider_input) {
-				this.setState({
-					slider_position: slider_input
-				});
-				motor.speed = speed;
-				motor.microstep = microsteps;
-			}
-		},
-		render: function() {
-			return (
-				<div className="slider">
-					<label for="speed">Speed</label>
-					<input type="range" id="speed"
-										min={this.props.min} 
-										max={this.props.max} 
-										step={this.props.step} 
-										value={this.state.slider_position} 
-										onInput={this.update_value_from_slider_input}/>
-				</div>
-			);
-		}
-	});
-	var MotorControl = React.createClass({
-		getInitialState: function() {
-			return {
-				approach_button_pressed: false,
-				retract_button_pressed: false
-			}
-		},
-		componentDidMount: function() {
-			var self = this;
-			$('.approach-button, .retract-button').mousedown(function() {
-				if ($(this).hasClass('approach-button'))
-					self.setState({ approach_button_pressed: true });
-				else if ($(this).hasClass('retract-button'))
-					self.setState({ retract_button_pressed: true });		
-			});
-			$('.approach-button, .retract-button').mouseup(function() {
-				self.setState({
-					approach_button_pressed: false,
-					retract_button_pressed: false
+    motor_settings_map = {
+        4: {
+            speed: 26300,
+            microstep: 1,
+        },
+        3: {
+            speed: 26300,
+            microstep: 3,
+        },
+        2: {
+            speed: 23000,
+            microstep: 3,
+        },
+        1: {
+            speed: 20000,
+            microstep: 3,
+        },
+    };
 
-				})
-			});
-		},
-		approach: function() {
-			motor.direction = 1;
-			motor.state = 1;
-			motor.cmd_single_step();
-			var self = this;
-			setTimeout(function() {
-				if (self.state.approach_button_pressed)
-					motor.run_continuous();
-			}, 50);
-		},
-		retract: function() {
-			motor.direction = 0;
-			motor.state = 1;
-			motor.cmd_single_step();
-			var self = this;
-			setTimeout(function() {
-				if (self.state.retract_button_pressed)
-					motor.run_continuous();
-			}, 50);
-		},
-		stop_motor: function() {
-			motor.cmd_stop_continuous();
-		},
-		render: function() {
-			return (
-				<div className="motor-control">
-					<SpeedSlider />
-					<span className="settings-drawer-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
-					<span className="settings-drawer-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
-				</div>
-			);
-		}
-	});
-	return MotorControl;
+    var SpeedSlider = React.createClass({
+        getInitialState: function() {
+            return {
+                slider_position: 1,
+                speed: 20000,
+            };
+        },
+        getDefaultProps: function() {
+            return {
+                min: 1,
+                max: 4,
+                step: 1,
+            };
+        },
+        componentDidMount: function() {
+            motor.speed_changed.connect(this.update_value_from_backend_change);
+        },
+        update_value_from_slider_input: function(e) {
+            var slider_input = parseInt(e.target.value);
+            var speed = motor_settings_map[slider_input].speed;
+            var microstep = motor_settings_map[slider_input].microstep;
+            var slider_position = this.calculate_slider_position(speed, microstep);
+            this.setState({
+                speed: speed,
+                slider_position: slider_position,
+            }, function() {
+                motor.microstep = microstep;
+                motor.speed = speed;
+            });
+        },
+        update_value_from_backend_change: function(speed) {
+            slider_position = this.calculate_slider_position(speed, motor.microstep);
+            this.setState({
+                speed: speed,
+                slider_position: slider_position,
+            });
+        },
+        calculate_slider_position: function(speed, microstep) {
+            var i = 1;
+            for (var property in motor_settings_map) {
+                property = parseInt(property);
+                if (motor_settings_map.hasOwnProperty(property) && motor_settings_map[property].speed == speed && motor_settings_map[property].microstep == microstep) {
+                    return i;
+                }
+                i += 1;
+            }
+            return i;
+        },
+        render: function() {
+            return (
+                <div className="slider">
+                    <label for="speed">Speed</label>
+                    <input type="range" id="speed"
+                                        min={this.props.min} 
+                                        max={this.props.max} 
+                                        step={this.props.step} 
+                                        value={this.state.slider_position} 
+                                        onInput={this.update_value_from_slider_input}/>
+                </div>
+            );
+        }
+    });
+    var MotorControl = React.createClass({
+        getInitialState: function() {
+            return {
+                approach_button_pressed: false,
+                retract_button_pressed: false
+            }
+        },
+        componentDidMount: function() {
+            var self = this;
+            $('.approach-button, .retract-button').mousedown(function() {
+                if ($(this).hasClass('approach-button'))
+                    self.setState({ approach_button_pressed: true });
+                else if ($(this).hasClass('retract-button'))
+                    self.setState({ retract_button_pressed: true });        
+            });
+            $('.approach-button, .retract-button').mouseup(function() {
+                self.setState({
+                    approach_button_pressed: false,
+                    retract_button_pressed: false
+
+                })
+            });
+        },
+        approach: function() {
+            motor.direction = 1;
+            motor.state = 1;
+            motor.cmd_single_step();
+            var self = this;
+            setTimeout(function() {
+                if (self.state.approach_button_pressed)
+                    motor.run_continuous();
+            }, 50);
+        },
+        retract: function() {
+            motor.direction = 0;
+            motor.state = 1;
+            motor.cmd_single_step();
+            var self = this;
+            setTimeout(function() {
+                if (self.state.retract_button_pressed)
+                    motor.run_continuous();
+            }, 50);
+        },
+        stop_motor: function() {
+            motor.cmd_stop_continuous();
+        },
+        render: function() {
+            return (
+                <div className="motor-control">
+                    <SpeedSlider />
+                    <span className="settings-drawer-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</span>
+                    <span className="settings-drawer-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</span>
+                </div>
+            );
+        }
+    });
+    return MotorControl;
 });
 

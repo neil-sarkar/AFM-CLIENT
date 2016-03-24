@@ -19,27 +19,41 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                     text: self.props.chart_title,
                     fontFamily: Constants.System_Font,
                     fontSize: Constants.Approach_Amplitude_Font_Size,
-                    padding: 10,
+                    padding: 5
                 },
                 data: [{
                     type: "line",
                     color: Constants.Approach_Amplitude_Data_Color,
-                    dataPoints: self.state.data
+                    dataPoints: self.state.data,
+                    markerType: "none",
                 }],
                 axisY: {
                     stripLines: [{
                         value: self.props.plotline_default,
                         color: Constants.Approach_Amplitude_Strip_Line_Color,
                         lineDashType: "dash",
+                        label: "Setpoint",
+                        labelFontColor: "#606060",
+                        labelBackgroundColor: "transparent",
+                    },
+                    {  // just for a background color effect
+                        startValue: -5,
+                        endValue: 5,
+                        color:"#EFEFEF",
                     }],
                     labelFontFamily: Constants.System_Font,
                     labelFontSize: 11,
+                    maximum: 3,
+                    gridColor: "#DFDFDF",
+                    gridThickness: 1,
+                    tickLength: 0,
+                    lineThickness: 0,
                 },
                 axisX: {
                     lineThickness: 0,
                     tickThickness: 0,
                     valueFormatString: " ",
-                }
+                },
             });
             this.setState({
                 chart: chart
@@ -69,7 +83,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
         start_streaming: function() {
             stream_interval_id = setInterval(function() {
                 this.props.prompt_read();
-            }.bind(this), Constants.Approach_Poll_Rate);
+            }.bind(this), this.props.poll_rate);
         },
         stop_streaming: function() {
             if (typeof stream_interval_id !== 'undefined') {

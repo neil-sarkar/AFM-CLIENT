@@ -26,31 +26,31 @@ int Motor::microstep() {
     return m_microstep;
 }
 
-void Motor::set_speed(double speed) {
+void Motor::set_speed(int speed) {
     m_speed = speed;
     qDebug() << "Changing speed to" << m_speed;
-    emit speed_changed();
+    emit speed_changed(m_speed);
     cmd_set_speed();
 }
 
 void Motor::set_direction(int direction) {
     m_direction = direction;
     qDebug() << "Changing direction to" << m_direction;
-    emit direction_changed();
+    emit direction_changed(m_direction);
     cmd_set_direction();
 }
 
 void Motor::set_state(int state) {
     m_state = state;
     qDebug() << "Changing state to" << m_state;
-    emit state_changed();
+    emit state_changed(m_state);
     m_state == StatusConstants.Asleep  ? cmd_set_state_asleep() : cmd_set_state_awake();
 }
 
 void Motor::set_microstep(int microstep) {
     m_microstep = microstep;
     qDebug() << "Changing microstep to" << m_microstep;
-    emit microstep_changed();
+    emit microstep_changed(m_microstep);
     cmd_set_micro_step();
 }
 

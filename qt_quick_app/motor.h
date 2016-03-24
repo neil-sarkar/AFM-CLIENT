@@ -19,7 +19,7 @@ class Motor : public AFMObject
 public:
     explicit Motor();
     void set_direction(int direction);
-    void set_speed(double speed);
+    void set_speed(int speed);
     void set_state(int state);
     void set_microstep(int microstep);
     int speed();
@@ -33,10 +33,10 @@ public:
     Q_INVOKABLE void cmd_set_micro_step();
 
 signals:
-    void speed_changed();
-    void direction_changed();
-    void state_changed();
-    void microstep_changed();
+    void speed_changed(int);
+    void direction_changed(int);
+    void state_changed(int);
+    void microstep_changed(int);
 
 public slots:
 
