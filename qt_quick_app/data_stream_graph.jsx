@@ -12,20 +12,21 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 },
                 data: [{
                     type: "line",
+                    color: Constants.Approach_Amplitude_Data_Color,
                     dataPoints: data
                 }],
                 axisY: {
                     stripLines: [
                     {
                         value: this.props.plotline_default,
-                        color: "red",
+                        color: Constants.Approach_Amplitude_Strip_Line_Color,
                         lineDashType: "dash",
                     }
                     ]
                 },
                 axisX: {
                     lineThickness: 0,
-                    tickThickness:0,
+                    tickThickness: 0,
                     valueFormatString: " ",
                 }
             });
