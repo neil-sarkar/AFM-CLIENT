@@ -299,3 +299,12 @@
 .home-wrapper {
     height: 100%;
 }
+
+.canvasjs-chart-canvas {
+    position: relative !important;
+}
+
+#approach-graph {
+    height: 50%;
+    width: 90%;
+}

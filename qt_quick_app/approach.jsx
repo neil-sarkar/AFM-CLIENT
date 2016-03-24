@@ -22,7 +22,6 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		},
 		componentDidMount: function() {
 			approacher.new_data.connect(this.handleNewData);
-
 			// hacky way to allow force curve to take precedence and not have the 
 			// streaming commands be queued while the force curve is going
 			// window.onblur = function() {
@@ -95,7 +94,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
-						<DataStreamGraph ref="approach_graph" data_update_signal={adc_5.value_changed} prompt_read={adc_5.read} num_points_displayed={Constants.Approach_Num_Points_Displayed} plotline_default={pid.setpoint} plotline_update_signal={pid.setpoint_changed}/>
+						<DataStreamGraph ref="approach_graph" dom_id="approach-graph" data_update_signal={adc_5.value_changed} prompt_read={adc_5.read} num_points_displayed={Constants.Approach_Num_Points_Displayed} plotline_default={pid.setpoint} plotline_update_signal={pid.setpoint_changed}/>
 						<div className="approacher-status">
 							{status_map[this.state.status]}
 							{this.state.approach_complete && <div>Approach complete</div>}

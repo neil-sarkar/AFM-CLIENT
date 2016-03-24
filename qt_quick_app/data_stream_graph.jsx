@@ -6,30 +6,33 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
     var ApproachGraph = React.createClass({
         init_chart: function() {
             var self = this;
-            chart = new CanvasJS.Chart(this.refs.chartNode, {
-                title: {
-                    text: "Approach"
-                },
-                data: [{
-                    type: "line",
-                    color: Constants.Approach_Amplitude_Data_Color,
-                    dataPoints: data
-                }],
-                axisY: {
-                    stripLines: [
-                    {
-                        value: this.props.plotline_default,
-                        color: Constants.Approach_Amplitude_Strip_Line_Color,
-                        lineDashType: "dash",
+            if (typeof chart === 'undefined') {
+                chart = new CanvasJS.Chart(this.refs.chartNode, {
+                    title: {
+                        text: "Approach",
+                        fontFamily: "Roboto-Thin"
+                    },
+                    data: [{
+                        type: "line",
+                        color: Constants.Approach_Amplitude_Data_Color,
+                        dataPoints: data
+                    }],
+                    axisY: {
+                        stripLines: [
+                        {
+                            value: this.props.plotline_default,
+                            color: Constants.Approach_Amplitude_Strip_Line_Color,
+                            lineDashType: "dash",
+                        }
+                        ]
+                    },
+                    axisX: {
+                        lineThickness: 0,
+                        tickThickness: 0,
+                        valueFormatString: " ",
                     }
-                    ]
-                },
-                axisX: {
-                    lineThickness: 0,
-                    tickThickness: 0,
-                    valueFormatString: " ",
-                }
-            });
+                });
+            }
         },
         add_data: function(value) {
             if (data.length < this.props.num_points_displayed) {
@@ -39,6 +42,9 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             }
             x += 1;
             chart.render();
+            if (data.length === 1) {
+                $('.canvasjs-chart-credit').hide(); // TODO: put this in a more appropriate place
+            }
         },
         update_plotline: function(new_value) {
             chart.options.axisY.stripLines[0].value = new_value;
@@ -58,11 +64,11 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 clearInterval(stream_interval_id);
             }
         },
-        handle_new_data: function(adc_value) {
-            this.add_data(adc_value);
+        handle_new_data: function(value) {
+            this.add_data(value);
         },
         render: function() {
-            return (React.DOM.div({className: "chart", ref: "chartNode"}));
+            return (React.DOM.div({className: "chart", ref: "chartNode", id: this.props.dom_id}));
         }
     });
     return ApproachGraph;
