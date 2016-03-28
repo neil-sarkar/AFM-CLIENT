@@ -65,7 +65,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var bound_method = this.prepare_new_data.bind(this, i);
                 scan_views[i].data_source.connect(bound_method);
             }
-            this.set_heatmap_name();
+            $('.view-selector-button').first().addClass('selected-scan-view');
         },
         tally_new_data: function(obj, x, y, z) {
             obj.heatmap.push({x: x, y: y, value: z});
@@ -147,16 +147,22 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.refs.heatmap.eliminate_outliers(current_data, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
-        set_heatmap_name: function(name) {
-            this.refs.heatmap.set_name((this.state.current_view % 2 === 0 ? "Forward" : "Reverse") + " " + scan_views[Math.floor(this.state.current_view / 2)].name);
-        },
-        handle_view_selector_click: function(index) {
+        handle_view_selector_click: function(index, e) {
+            // Set style of selected name
+            var target = $(e.target);
+            $('.view-selector-button').removeClass('selected-scan-view');
+             // for some reason the click events sometimes register under the p tag, sometimes under the span
+            if (target.is('p')) {
+                target.addClass('selected-scan-view');
+            } else if (target.is('span')) {
+                target.parent().addClass("selected-scan-view");
+            }
+
             this.setState({
                 current_view: index
             }, function () {
                 this.refs.line_profile.clear_plotlines();
                 this.push_data_to_view(scan_views[Math.floor(index/2)]);
-                this.set_heatmap_name();
             });
         },
         get_specific_row_profile: function(data, y_value) {
@@ -171,7 +177,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             return (
                 <div className="wrapper" id="scan-wrapper">
                     <div className="left-flexbox">
-                        <div className="top-row">
+                        <div className="top-row scan-top">
                             <div className="scan-view-selector-container">
                                 {scan_views.map(function(view, i) {
                                     var forward_bound_click = this.handle_view_selector_click.bind(this, 2*i);

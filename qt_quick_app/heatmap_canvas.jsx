@@ -100,9 +100,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         change_num_columns: function(new_num_columns) {
             num_columns = new_num_columns;
         },
-        set_name: function(name) {
-            $('#heatmap-name').text(name);
-        },
         handle_new_data: function(new_data) {
             var useful_data = new_data.slice(0, num_rows * 3);
             var update_all = true;
@@ -189,11 +186,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         render: function() {
             return (
                 <div>
-                    <p id="heatmap-name"></p>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
-                    <br/>
-                    <p>{this.state.num_points}</p>
                 </div>
                     );
         }

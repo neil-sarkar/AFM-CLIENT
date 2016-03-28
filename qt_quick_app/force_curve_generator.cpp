@@ -21,6 +21,9 @@ void ForceCurveGenerator::clear_buffers() {
 
 void ForceCurveGenerator::cmd_generate_force_curve() {
     emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&ForceCurveGenerator::callback_generate_force_curve)));
+    mutex.lock();
+    is_approaching = true;
+    mutex.unlock();
 }
 
 void ForceCurveGenerator::callback_generate_force_curve(QByteArray return_bytes) {
@@ -44,6 +47,9 @@ void ForceCurveGenerator::callback_generate_force_curve(QByteArray return_bytes)
     emit new_approaching_phase_data(m_approaching_phase);
     emit new_retracting_amplitude_data(m_retracting_amplitude);
     emit new_retracting_phase_data(m_retracting_phase);
+    mutex.lock();
+    is_approaching = false;
+    mutex.unlock();
 }
 
 ForceCurveGenerator::callback_return_type ForceCurveGenerator::bind(callback_type method) {

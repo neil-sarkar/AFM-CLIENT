@@ -270,10 +270,13 @@
 
 .scan-view-selector-container {
     -webkit-align-self: flex-start;
+    text-align: right;
 }
 
 .view-selector-button {
-    cursor:pointer;
+    cursor: pointer;
+    padding-right: 10px;
+    border-right: 5px solid transparent;
 }
 
 .save-directory {
@@ -319,4 +322,16 @@
 #z-fine-graph {
     height: 35%;
     width: 100%;
+}
+
+#heatmap-name {
+    display: block;
+}
+
+.scan-top {
+    margin-bottom: 10%;
+}
+
+.selected-scan-view {
+    border-right: 5px solid #6DADE6;
 }
