@@ -23,6 +23,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     page()->setNetworkAccessManager(m_network);
     addJSObject(&m_welcome_page);
     addJSObject(&m_main_app_page);
+    addJSObject(&m_force_curve_page);
     m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
     m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
     setPage(&m_welcome_page);

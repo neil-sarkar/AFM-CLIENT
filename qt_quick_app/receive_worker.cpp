@@ -167,7 +167,6 @@ void ReceiveWorker::handle_auto_approach_stopped_message() {
     }
 
     qDebug() << "Command queue flushed - new count" << receive_command_queue.count();
-
     mutex.lock();  // TODO: look into atomic bools
     is_approaching = false;
     port_writing_command = false;

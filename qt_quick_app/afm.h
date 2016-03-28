@@ -42,6 +42,8 @@ class AFM : public AFMObject
         Q_INVOKABLE void save_scan_data();
         Q_INVOKABLE void save_force_curve_data();
 
+        Q_INVOKABLE void release_port();
+
     signals:
         void command_generated(CommandNode*);
         void dac_table_set();
@@ -71,6 +73,7 @@ class AFM : public AFMObject
         void set_settings();
         QString m_save_folder;
         static const QString settings_group_name;
+
 
 };
 

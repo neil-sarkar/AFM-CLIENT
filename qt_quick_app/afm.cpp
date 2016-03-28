@@ -156,5 +156,11 @@ void AFM::set_settings() {
     settings.endGroup();
 }
 
+void AFM::release_port() {
+    mutex.lock();
+    port_writing_command = false;
+    mutex.unlock();
+}
+
 const int AFM::DAC_Table_Block_Size = 256;
 const QString AFM::settings_group_name = "afm";

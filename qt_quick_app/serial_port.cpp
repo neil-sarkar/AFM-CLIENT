@@ -79,7 +79,7 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 
 void SerialPort::on_ready_read() {
     QByteArray q = port->readAll();
-//    qDebug() << "On serial read all" << q;
+    qDebug() << "On serial read all" << q;
     for (char byte : q) {
         emit byte_received(byte);
     }
