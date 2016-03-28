@@ -28,6 +28,7 @@ public slots:
 
 private slots:
     void build_working_response();
+    void delay_send_next_command();
     void flush();
 
 private:

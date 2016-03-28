@@ -2,6 +2,7 @@
 #include "constants.h"
 #include <assert.h>
 #include <QDebug>
+#include <QTimer>
 #include "globals.h"
 
 SendWorker::SendWorker(QObject *parent) : QObject(parent) {
@@ -14,9 +15,7 @@ void SendWorker::enqueue_command(CommandNode* command_node) {
     mutex.lock();
     if (!is_approaching)
         send_command_queue.enqueue(command_node);
-    qDebug() << "Approaching? " << is_approaching;
     mutex.unlock();
-    qDebug() << "Port writing? " << port_writing_command;
     if (!port_writing_command) {
         dequeue_command();
     }

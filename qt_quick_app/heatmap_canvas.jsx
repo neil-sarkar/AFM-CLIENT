@@ -83,8 +83,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         getDefaultProps: function() {
             return {
-                canvas_height: 256,
-                canvas_width: 256,
+                canvas_height: 384,
+                canvas_width: 384,
             };
         },
         get_context: function() {

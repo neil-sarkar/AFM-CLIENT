@@ -71,6 +71,10 @@ void ReceiveWorker::process_working_response() {
     delete node;
 }
 
+void ReceiveWorker::delay_send_next_command() {
+    emit send_next_command();
+}
+
 void ReceiveWorker::handle_invalid_response() {
     qDebug() << "Invalid response received";
     // one possible reason for an invalid response is that we had a hard reset button reset in the process

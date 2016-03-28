@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QDateTime>
+#include <QTimer>
 #include "constants.h"
 #include "adc.h"
 
@@ -31,7 +32,7 @@ void Scanner::resume_state_machine() {
 void Scanner::set_settings() {
     settings.beginGroup(settings_group_name);
     set_num_averages(settings.contains("num_averages") ? settings.value("num_averages").toInt() : 5);
-    set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 16);
+    set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 32);
     set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 2);
     set_num_columns(settings.contains("num_columns") ? settings.value("num_columns").toInt() : 16);
     set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
@@ -120,7 +121,9 @@ void Scanner::receive_data() {
 }
 
 void Scanner::cmd_step_scan() {
-    emit command_generated(new CommandNode(command_hash[AFM_Step_Scan], bind(&Scanner::callback_step_scan)));
+    CommandNode* node = new CommandNode(command_hash[AFM_Step_Scan], bind(&Scanner::callback_step_scan));
+    node->num_receive_bytes = Num_Meta_Data_Bytes + m_send_back_count * 6; // 6 bytes per step - two for each type of Z, multiplies by 2 for fwd and rev
+    emit command_generated(node);
 }
 
 bool Scanner::is_scanning_forward() {
@@ -147,7 +150,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0); // TODO: ENUM the 0,1,2
             offset_data.append(reverse_data->package_data_for_ui(m_send_back_count, 0));
             emit new_offset_data(offset_data);
-            
+
             QVariantList phase_data = forward_data->package_data_for_ui(m_send_back_count, 1);
             phase_data.append(reverse_data->package_data_for_ui(m_send_back_count, 1));
             emit new_phase_data(phase_data);
@@ -159,7 +162,6 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;
     }
-//    fine_z->set_value(z_amplitude * DAC::SCALE_FACTOR, false);
     receive_data();
 }
 
@@ -247,8 +249,8 @@ void Scanner::set_rms_threshold(double rms_threshold) {
 
 void Scanner::cmd_set_send_back_count() {
     QByteArray payload;
-    payload += (m_send_back_count & 0xFF);
-    payload += ((m_send_back_count & 0xFF00) >> 8);
+    payload += (m_send_back_count & 0xFF); // low byte
+    payload += ((m_send_back_count & 0xFF00) >> 8); // high byte
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Send_Back_Count], payload));
 }
 

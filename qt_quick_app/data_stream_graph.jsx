@@ -1,6 +1,5 @@
 define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasjs"], function($, React, ReactDOM, highcharts, console, Constants, CanvasJS) {
     var x = 0;
-    var stream_interval_id;
     var ApproachGraph = React.createClass({
         getDefaultProps: function() {
             return {
@@ -81,14 +80,15 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 this.props.plotline_update_signal.connect(this.update_plotline);
         },
         start_streaming: function() {
-            stream_interval_id = setInterval(function() {
+            var stream_interval_id = setInterval(function() {
                 this.props.prompt_read();
             }.bind(this), this.props.poll_rate);
+            this.setState({
+                interval_id: stream_interval_id,
+            });
         },
         stop_streaming: function() {
-            if (typeof stream_interval_id !== 'undefined') {
-                clearInterval(stream_interval_id);
-            }
+            clearInterval(this.state.interval_id);
         },
         handle_new_data: function(value) {
             this.add_data(value);
