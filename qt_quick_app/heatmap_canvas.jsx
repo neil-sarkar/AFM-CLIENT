@@ -113,8 +113,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var canvasOffset = $("#" + this.props.id).offset();
             mouseX = e.clientX - canvasOffset.left;
             mouseY = e.clientY - canvasOffset.top;
-
-            console.log(Math.round(mouseX * num_columns/this.props.canvas_width), Math.round(mouseY * num_rows/this.props.canvas_height));
+            pointX = Math.round(mouseX * num_columns/this.props.canvas_width);
+            pointY = Math.round(mouseY * num_rows/this.props.canvas_height);
+            for (var i = 0; i < this.state.data.length; i++) {
+                if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
+                    console.log(pointX, pointY, this.state.data[i].value);
+                    $('#current-data').text(pointX + ", " + pointY + ", " + this.state.data[i].value);
+                }
+            }
         },
         change_num_rows: function(new_num_rows) {
             num_rows = new_num_rows;
@@ -225,6 +231,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 <div>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
+                    <p id="current-data"></p>
+                    <p id="img"></p>
                 </div>
                     );
         }
