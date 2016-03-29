@@ -130,6 +130,7 @@ void Sweeper::frequency_sweep() {
 }
 
 void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
+    // TODO: CLEAN UP DATA PACKING/UNPACKING
     quint32 current_frequency;
     m_amplitude_data.clear(); // remove any past data from previous sweep iterations
     m_phase_data.clear();

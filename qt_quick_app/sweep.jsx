@@ -12,12 +12,12 @@
 		},
 		manual_sweep: function() {
 			setTimeout(function() {
-				sweeper.start_manual_sweep();
+				sweeper.start_manual_sweep(); // TODO: probably don't need this settimeout
 			}, 200);
 		},
 		auto_sweep: function() {
 			setTimeout(function() {
-				sweeper.start_auto_sweep();
+				sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout
 			}, 200);
 		},
 		clear: function() {

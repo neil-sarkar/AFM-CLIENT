@@ -114,16 +114,27 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
             });
         },
-        receive_data: function(data, min, max, num_points_to_draw) {
-            update_all = !(this.state.running_max >= max && this.state.running_min <= min);
-            this.setState({
-                num_points: data.length,
-                data: data,
-                running_max: Math.max(max, this.state.running_max),
-                running_min: Math.min(min, this.state.running_min)
-            }, function() {
-                this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
-            });
+        receive_data: function(data, min, max, num_points_to_draw, is_switching_views) {
+            if (!is_switching_views) {
+                update_all = !(this.state.running_max >= max && this.state.running_min <= min);
+                this.setState({
+                    num_points: data.length,
+                    data: data,
+                    running_max: Math.max(max, this.state.running_max),
+                    running_min: Math.min(min, this.state.running_min)
+                }, function() {
+                    this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
+                });
+            } else {
+                this.setState({
+                    num_points: data.length,
+                    data: data,
+                    running_max: max,
+                    running_min: min,
+                }, function() {
+                    this.redraw_canvas_points(this.state.data, this.state.running_max, this.state.running_min);
+                });
+            }
         },
         redraw_canvas_points: function(data, max, min) {
             var ctx = this.get_context();
@@ -141,7 +152,11 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                         color = percent(0, myColours);
                     else
                         color = percent((z - min)/range * 100, myColours);
-                    ctx.fillStyle = color.hex;
+                    try {
+                        ctx.fillStyle = color.hex;
+                    } catch (e) {
+                        console.log(e, color, x, y, z, min, max, range);
+                    }
                     ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
                 }.bind(this, x, y, z), 0);
             }

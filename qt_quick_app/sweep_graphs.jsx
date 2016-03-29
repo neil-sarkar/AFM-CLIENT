@@ -94,31 +94,34 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         componentDidMount: function() {
             this.renderChart();
-            this.props.establishDataConnection(this.handleNewData);
+            this.props.data_connection.connect(this.handle_new_data);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         componentDidUpdate: function() {
             this.renderChart(); // after the component props are updated, render the chart into the DOM node
         },
-        handleNewData: function(data) {
+        handle_new_data: function(data) {
             var two_dimensional_data = [];
             var min_x = 100000;
             var max_x = 0;
             for (i = 0; i < data.length; i += 2) {
                 min_x = data[i] < min_x  ? data[i] : min_x;
                 max_x = data[i] > max_x  ? data[i] : max_x;
-                two_dimensional_data.push([data[i], data[i+1]]);
+                two_dimensional_data.push([data[i], data[i+1]]); // parse x, y coordinates 
             }
-            this.addSeries(two_dimensional_data);
+            this.add_series(two_dimensional_data);
+            
+            // TODO: check if this does anything
             this.state.model.push([]);
             (this.state.model[this.state.model.length - 1]).push(two_dimensional_data);
+
             var node = this.refs.chartNode.getDOMNode();
             $(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);
         },
-        addSeries: function(data) {
-                var series = {
-                    data: data,
-                };
+        add_series: function(data) {
+            var series = {
+                data: data,
+            };
             var node = this.refs.chartNode.getDOMNode();
             $(node).highcharts().addSeries(series);
         },
@@ -165,8 +168,8 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} establishDataConnection={sweeper.new_amplitude_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} establishDataConnection={sweeper.new_phase_data.connect} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} data_connection={sweeper.new_amplitude_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="phase_graph" title={"Phase"} data_connection={sweeper.new_phase_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
                 </div>
             );
         }

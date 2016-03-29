@@ -43,34 +43,12 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                 },
                 series: [ {
                     name: "Z Piezoresistor Amplitude",
-                    // type: "area",
-                    // plotOptions: {
-                    //     area: {
-                    //         fillColor: {
-                    //             linearGradient: {
-                    //                 x1: 0,
-                    //                 y1: 0,
-                    //                 x2: 0,
-                    //                 y2: 1
-                    //             },
-                    //             stops: [
-                    //                 [0, Highcharts.getOptions().colors[0]],
-                    //                 [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                    //             ]
-                    //         },
-                    //         marker: {
-                    //             enabled: true,
-                    //         },
-                    //         lineWidth: 1,
-                    //         threshold: null
-                    //     }
-                    // }
                 }
                 ],
             });
         });
         },
-        handleNewData: function(approach_state, approach_adc_read) {
+        handle_new_data: function(approach_state, approach_adc_read) {
             // we don't use the appraoch state here...we use it in a separate dialog
             // might be worth refactoring the signal
             var node = this.refs.chartNode;
@@ -125,7 +103,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
             this.setState({
                 chart: $(node).highcharts()
             });
-            this.props.establishDataConnection(this.handleNewData);
+            this.props.establishDataConnection(this.handle_new_data);
             pid.setpoint_changed.connect(this.update_plotline);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
             var that = this;
