@@ -11,11 +11,13 @@
 			return false;
 		},
 		manual_sweep: function() {
+			pid.set_disabled();
 			setTimeout(function() {
 				sweeper.start_manual_sweep(); // TODO: probably don't need this settimeout
 			}, 200);
 		},
 		auto_sweep: function() {
+			pid.set_disabled();
 			setTimeout(function() {
 				sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout
 			}, 200);

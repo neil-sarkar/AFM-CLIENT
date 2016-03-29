@@ -323,7 +323,6 @@ void Scanner::save_raw_data(QString save_folder) {
 
     for (int i = 0; i < forward_data->size(); i++) {
         for (int j = 0; j < full_paths.length() / 2; j++) {
-            qDebug() << full_paths[j];
             QFile file(full_paths[j]);
             if (file.open(QIODevice::Append)) {
                 QTextStream out(&file);   // we will serialize the data into the file
@@ -346,7 +345,6 @@ void Scanner::save_raw_data(QString save_folder) {
 
     for (int i = 0; i < reverse_data->size(); i++) {
         for (int j = full_paths.length() / 2; j < full_paths.length(); j++) {
-            qDebug() << full_paths[j];
             QFile file(full_paths[j]);
             if (file.open(QIODevice::Append)) {
                 QTextStream out(&file);   // we will serialize the data into the file

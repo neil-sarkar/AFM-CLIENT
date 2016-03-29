@@ -132,6 +132,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             afm.save_force_curve_data();
         },
         generate: function() {
+            pid.set_disabled();
             force_curve_generator.cmd_generate_force_curve();
         },
         render: function() {

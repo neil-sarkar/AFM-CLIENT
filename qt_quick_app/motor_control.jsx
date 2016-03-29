@@ -44,8 +44,8 @@ define(["react"], function(React) {
                 speed: speed,
                 slider_position: slider_position,
             }, function() {
-                motor.microstep = microstep;
-                motor.speed = speed;
+                motor.set_microstep(microstep);
+                motor.set_speed(speed);
             });
         },
         update_value_from_backend_change: function(speed) {
@@ -104,8 +104,8 @@ define(["react"], function(React) {
             });
         },
         approach: function() {
-            motor.direction = 1;
-            motor.state = 1;
+            motor.set_direction(1);
+            motor.set_state(1);
             motor.cmd_single_step();
             var self = this;
             setTimeout(function() {
@@ -114,14 +114,13 @@ define(["react"], function(React) {
             }, 50);
         },
         retract: function() {
-            motor.direction = 0;
-            motor.state = 1;
+            motor.set_direction(0);
+            motor.set_state(1);
             motor.cmd_single_step();
-            var self = this;
             setTimeout(function() {
-                if (self.state.retract_button_pressed)
+                if (this.state.retract_button_pressed)
                     motor.run_continuous();
-            }, 50);
+            }.bind(this), 50);
         },
         stop_motor: function() {
             motor.cmd_stop_continuous();

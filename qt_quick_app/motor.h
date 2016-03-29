@@ -18,10 +18,6 @@ class Motor : public AFMObject
 
 public:
     explicit Motor();
-    void set_direction(int direction);
-    void set_speed(int speed);
-    void set_state(int state);
-    void set_microstep(int microstep);
     int speed();
     int direction();
     int state();
@@ -31,6 +27,10 @@ public:
     Q_INVOKABLE void run_continuous();
     Q_INVOKABLE void cmd_stop_continuous();
     Q_INVOKABLE void cmd_set_micro_step();
+    Q_INVOKABLE void set_direction(int direction);
+    Q_INVOKABLE void set_speed(int speed);
+    Q_INVOKABLE void set_state(int state);
+    Q_INVOKABLE void set_microstep(int microstep);
 
 signals:
     void speed_changed(int);
@@ -38,8 +38,8 @@ signals:
     void state_changed(int);
     void microstep_changed(int);
 
-public slots:
-
+private slots:
+    void cmd_set_state_asleep();
 
 private:
     int m_direction;
@@ -48,11 +48,12 @@ private:
     int m_microstep;
     void cmd_set_speed();
     void cmd_set_direction();
-    void cmd_set_state_asleep();
     void cmd_set_state_awake();
     void cmd_run_continuous();
+    void reset_timeout_timer(QByteArray result);
     callback_return_type bind(void (Motor::*method)(QByteArray));
     typedef void (Motor::*callback_type)(QByteArray);
+    QTimer* timeout_timer;
 
     struct PayloadConstants {
         const unsigned char MotorApproach = 0x62;
@@ -73,6 +74,8 @@ private:
         const int Step16 = 4;
         const int Step32 = 5;
     } StatusConstants;
+
+    static const int Timeout_Milliseconds;
 
 };
 

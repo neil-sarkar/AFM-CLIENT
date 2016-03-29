@@ -70,11 +70,11 @@ void Motor::cmd_run_continuous() {
 }
 
 void Motor::cmd_stop_continuous() {
-    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous]));
+    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous], bind(&Motor::reset_timeout_timer)));
 }
 
 void Motor::cmd_single_step() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step]));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step], bind(&Motor::reset_timeout_timer)));
 }
 
 void Motor::cmd_set_speed() {
@@ -97,6 +97,7 @@ void Motor::cmd_set_direction() {
 }
 
 void Motor::cmd_set_state_asleep() {
+    qDebug() << "Setting state asleep";
     emit command_generated(new CommandNode(command_hash[Motor_Set_State_Asleep]));
 }
 
@@ -111,8 +112,20 @@ void Motor::cmd_set_micro_step() {
     emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], payload));
 }
 
+void Motor::reset_timeout_timer(QByteArray result) {
+    if (timeout_timer)
+        timeout_timer->stop();
+    timeout_timer = new QTimer();
+    timeout_timer->setSingleShot(true);
+    QObject::connect(timeout_timer, SIGNAL(timeout()), this, SLOT(cmd_set_state_asleep()));
+    timeout_timer->start(Motor::Timeout_Milliseconds);
+}
+
 Motor::callback_return_type Motor::bind(callback_type method) {
     // If keeping the instance alive by the time the command is called becomes an issue, use the trick showed in this post:
     // http://stackoverflow.com/questions/9281172/how-do-i-write-a-pointer-to-member-function-with-stdfunction
     return std::bind(method, this, std::placeholders::_1);
 }
+
+
+const int Motor::Timeout_Milliseconds = 5000;
