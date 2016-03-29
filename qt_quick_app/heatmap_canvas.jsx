@@ -1,6 +1,6 @@
 define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     // Color manipualation adapted from this:
-    // http://stackoverflow.com/questions/16252448/how-to-calculate-the-proportional-color-between-the-three-given-with-a-percentag
+    // http://stackoverflow.com/questions/16252448/how-to-calculate-the-proportional-color-between-the-three-given-with-a-percentage
     var Colour = (function () {
         function limit(x) {
             if (x > 255) return 255;
@@ -50,20 +50,34 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     }());
 
     var myColours = [
-        new Colour('#000000'),
         new Colour('#581C00'),
         new Colour('#bc8000'),
         new Colour('#FcFc80'),
     ];
+    // var myColours = [
+    //     new Colour('#39bf26'), // Colour {hex: "#39BF26", r: 57, g: 191, b: 38, …}
+    //     new Colour('#c7c228'), // Colour {hex: "#C7C228", r: 199, g: 194, b: 40, …}
+    //     new Colour('#C7282E')  // Colour {hex: "#C7282E", r: 199, g: 40, b: 46, …}
+    // ];
 
+    // function percent(x, col) {
+    //     var bucket_size = 100 / (col.length - 1);
+    //     for (var i = 1; i < col.length; i += 1) {
+    //         var value = bucket_size * i;
+    //         if (x <= value) {
+    //             var factor = (value - x) / bucket_size;
+    //             return col[i - 1].scale(1-factor).add(col[i].scale(factor));
+    //         }
+    //     }
+    // }
     function percent(x, col) {
-        var bucket_size = 100 / (col.length - 1);
-        for (var i = 1; i < col.length; i += 1) {
-            var value = bucket_size * i;
-            if (x <= value) {
-                var factor = (value - x) / bucket_size;
-                return col[i - 1].scale(1-factor).add(col[i].scale(factor));
-            }
+        var factor;
+        if (x < 50) {
+            factor = (50 - x) / 50;
+            return col[0].scale(factor).add(col[1].scale(1-factor));
+        } else {
+            factor = (100 - x) / 50;
+            return col[2].scale(factor).add(col[1].scale(1-factor));
         }
     }
 
@@ -93,6 +107,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         componentDidMount: function() {
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
+            $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
+        },
+        handle_mouse_move: function (e) {
+            var canvasOffset = $("#" + this.props.id).offset();
+            mouseX = e.clientX - canvasOffset.left;
+            mouseY = e.clientY - canvasOffset.top;
+
+            console.log(Math.round(mouseX * num_columns/this.props.canvas_width), Math.round(mouseY * num_rows/this.props.canvas_height));
         },
         change_num_rows: function(new_num_rows) {
             num_rows = new_num_rows;
