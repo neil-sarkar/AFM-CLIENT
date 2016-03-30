@@ -77,7 +77,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             return col[0].scale(factor).add(col[1].scale(1-factor));
         } else {
             factor = (100 - x) / 50;
-            return col[2].scale(factor).add(col[1].scale(1-factor));
+            return col[2].scale(1-factor).add(col[1].scale(factor));
         }
     }
 
@@ -151,6 +151,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     running_max: Math.max(max, this.state.running_max),
                     running_min: Math.min(min, this.state.running_min)
                 }, function() {
+                    console.log(this.state.data);
                     this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
                 });
             } else {
@@ -220,6 +221,13 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 }
             }
             this.handle_new_data(dummy_data);
+        },
+        dummy_data: function () {
+            data = [];
+            for (var i = 0; i < 20; i++)
+                for (var j = 0; j < 20; j++)
+                    data.push({x: i, y: j, value: i * j});
+            this.receive_data(data, 0, 19*19, 20*20, false);
         },
         erase_data: function() {
             this.replaceState(this.getInitialState());

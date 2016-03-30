@@ -174,6 +174,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
             this.refs.line_profile.set_data(this.get_specific_row_profile(current_data_set.forward_data.profile, y_value), this.get_specific_row_profile(current_data_set.reverse_data.profile, y_value));
         },
+        dummy_data: function (argument) {
+            this.refs.heatmap.dummy_data();
+        },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
             return (
@@ -206,6 +209,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <button className="action-button" onClick={this.clear_scan}>Clear</button>
                             <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
                             <button className="action-button" onClick={afm.save_scan_data} disabled={this.state.scanning}>Download Data</button>
+                            <button className="action-button" onClick={this.dummy_data} disabled={this.state.scanning}>Dummy</button>
                         </div>
                         <InlineScanControls />
                         <div className="nav-buttons-wrapper">

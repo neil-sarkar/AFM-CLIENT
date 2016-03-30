@@ -5,7 +5,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         },
         componentDidMount: function() {
             $(this.refs.dropdown_content).hide();
-            scanner.ratio_changed.connect(this.update_value_from_backend_change);
+            this.props.notify_signal.connect(this.update_value_from_backend_change);
         },
         handle_menu_click: function() {
             $(this.refs.dropdown_content).toggle();
@@ -24,7 +24,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         render: function() {
             return (
                 <div className="dropdown">
-                    <p style={{display: "inline"}}> Scan ratio: </p>
+                    <p style={{display: "inline"}}>{this.props.title}: </p>
                     <div style={{display: "inline"}}>
                         <span onClick={this.handle_menu_click} className="dropbtn">{this.state.text} &#8594;</span>
                         <div style={{display: "inline"}} ref="dropdown_content" className="dropdown-content">

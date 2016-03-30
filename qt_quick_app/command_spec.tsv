@@ -4,6 +4,7 @@ AFM_Begin_Auto_Approach	1	AFM	auto approach	begin			154	9a		PCB3	1	4	Setpoint by
 AFM_Calibrate	1	AFM		calibrate			111	6F	o		1	5	(‘l’/’r’/‘z’, max_voltage byte 1, max_voltage byte 2)	5	N	Vmax*4 bytes - [actuator_direct_adc_measurement byte 1, actuator_direct_adc_measurement byte 2, actuator_indirect_adc_measurement byte 1, actuator_indirect_adc_measurement byte 2]*4096 values (ADC measurements per DAC level)
 AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	4002
 AFM_Get_Auto_Approach_Status	1	AFM	auto approach status	get			156	9c		PCB3	1	2	None	5	N	3 Bytes: (Current state; Current coase Z offset measurement byte 1; Current coase Z offset measurement byte 2)
+AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
 AFM_PCBMOT_STAGE_DIR_FWD_SELECT	0						108	6C	l		1	2		3	Y	Stat Byte
 AFM_PCBMOT_STAGE_DIR_REVERSE_SELECT	0						107	6B	k		1	2		3	Y	Stat Byte
 AFM_Read_Signal_Phase_Offset	1	AFM	Signal Phase Offset	read			101	65	e		1	2		8	N	6 bytes (ADC Amplitude byte1, ADC Amplitude byte2, DAC Z Offset byte1, DAC Z Offset byte2, ADC PHASE byte1, ADC PHASE byte2)	read DAC8 and ADC5 and Phase
@@ -38,10 +39,10 @@ PID_Set_Derivative	1	PID	derivative	set			100	64	d		1	6		2	N	Nothing
 PID_Set_Integral	1	PID	integral	set			105	69	i		1	6		2	N	Nothing
 PID_Set_Proportional	1	PID	proportional	set			112	70	p		1	6		2	N	Nothing
 PID_Set_Setpoint	1	PID	setpoint	set			115	73	s		1	4	(val byte 1, val byte 2)	2	N	Nothing
+Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None
+Scanner_Set_Num_Averages	1	Scanner	num averages	set			121	79	y		1	3	(u8)	2
+Scanner_Set_Send_Back_Count	1	Scanner	send back count	set			90	5A	Z		1	4	u8, u8	2
+Scanner_Set_Leveling_Direction	1	Scanner	leveling direction	set			40	28	(		1	3	u8 - 'f' for forward, any other char for reverse	2
 Serial_Worker_Raise_Invalid_Command	0	Serial Worker	Invalid Command	raise			241	F1			2	3	An invalid message ID received. 	0	N	No Reply Needed	MCU sends this ID when it receives a command it does not recognize. Check firmware/client version.
 Stage_Set_Pulse_Step	0	Stage	Pulse Step	set			109	6D	m		1	2		3	Y	Stat Byte
 Stage_Set_Pulse_Width	0	Stage	Pulse Width	set			106	6A	j		1	3	(val)	3	Y	Stat Byte	Pulse Width
-Scanner_Set_Dwell_Time	1	Scanner	dwell time	set			119	77	w		1	3	(unsigned8 val)	2	N	None
-AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
-Scanner_Set_Num_Averages	1	Scanner	num averages	set			121	79	y		1	3	(u8)	2
-Scanner_Set_Send_Back_Count	1	Scanner	send back count	set			90	5A	Z		1	4	u8, u8	2

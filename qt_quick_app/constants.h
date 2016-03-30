@@ -42,6 +42,7 @@ extern const QString Stage_Set_Pulse_Width;
 extern const QString Scanner_Set_Dwell_Time;
 extern const QString Scanner_Set_Num_Averages;
 extern const QString Scanner_Set_Send_Back_Count;
+extern const QString Scanner_Set_Leveling_Direction;
 
 extern const char Message_Delimiter;
 extern const char Newline_Character;

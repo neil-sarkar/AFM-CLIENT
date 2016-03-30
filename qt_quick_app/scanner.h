@@ -19,6 +19,7 @@ class Scanner : public AFMObject
     Q_PROPERTY(double m_rms_threshold READ rms_threshold WRITE set_rms_threshold NOTIFY rms_threshold_changed)
     Q_PROPERTY(int m_ratio READ ratio WRITE set_ratio NOTIFY ratio_changed)
     Q_PROPERTY(QString m_base_file_name READ base_file_name WRITE set_base_file_name NOTIFY base_file_name_changed)
+    Q_PROPERTY(QChar m_leveling_direction READ leveling_direction WRITE set_leveling_direction NOTIFY leveling_direction_changed)
 
 public:
     explicit Scanner(PID*, AFMObject* dac);
@@ -42,6 +43,8 @@ public:
     Q_INVOKABLE void set_ratio(int ratio);
     Q_INVOKABLE QString base_file_name();
     Q_INVOKABLE void set_base_file_name(QString);
+    Q_INVOKABLE QChar leveling_direction();
+    Q_INVOKABLE void set_leveling_direction (QChar);
 
     void set_settings();
     void save_raw_data(QString save_folder);
@@ -65,6 +68,7 @@ signals:
     void rms_threshold_changed(double);
     void ratio_changed(int);
     void base_file_name_changed(QString);
+    void leveling_direction_changed(QChar);
 
 public slots:
     // Scan state machine methods
@@ -87,6 +91,7 @@ private:
     quint8 m_num_averages;
     quint16 m_send_back_count;
     double m_rms_threshold;
+    QChar m_leveling_direction;
 
     int m_num_columns_received;
     void cmd_set_signal_generator();
@@ -95,7 +100,9 @@ private:
     void cmd_set_dwell_time();
     void cmd_set_num_averages();
     void cmd_set_send_back_count();
+    void cmd_set_leveling_direction();
     void callback_step_scan(QByteArray payload);
+    void move_to_starting_point();
     bool is_scanning_forward();
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();

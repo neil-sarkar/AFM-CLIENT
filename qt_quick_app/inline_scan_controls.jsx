@@ -51,7 +51,8 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text
 								notify_signal={scanner.rms_threshold_changed} 
 								get_value={scanner.rms_threshold} 
 								set_value={scanner.set_rms_threshold} />
-					<Dropdown options_list={[{text: "0:1", cmd_number: 1}, {text: "1:1", cmd_number: 2}, {text: "3:1", cmd_number: 4}, {text: "7:1", cmd_number: 8}]} selection_method={scanner.set_ratio}/>
+					<Dropdown options_list={[{text: "0:1", cmd_number: 1}, {text: "1:1", cmd_number: 2}, {text: "3:1", cmd_number: 4}, {text: "7:1", cmd_number: 8}]} selection_method={scanner.set_ratio} notify_signal={scanner.ratio_changed} title="Scan ratio"/>
+					<Dropdown options_list={[{text: "Forward", cmd_number: 'f'}, {text: "Reverse", cmd_number: 'b'}]} selection_method={scanner.set_leveling_direction} notify_signal={scanner.leveling_direction_changed} title="Leveling direction" />
 					<TextInput name="File name base" 
 								notify_signal={scanner.base_file_name_changed}
 								get_value={scanner.base_file_name}

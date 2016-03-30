@@ -39,6 +39,7 @@ void Scanner::set_settings() {
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
+    set_leveling_direction(settings.contains("leveling_direction") ? settings.value("leveling_direction").toChar() : 'f');
     settings.endGroup();
 }
 
@@ -68,6 +69,10 @@ void Scanner::init() {
     m_state_machine.setInitialState(running_state);
 
     set_settings();
+    move_to_starting_point();
+}
+
+void Scanner::move_to_starting_point() {
     cmd_set_signal_generator();
     cmd_start_scan();
 }
@@ -169,6 +174,7 @@ void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done" << m_num_columns_received;
     forward_data->print();
+    move_to_starting_point();
 }
 
 quint8 Scanner::num_averages() {
@@ -247,6 +253,20 @@ void Scanner::set_rms_threshold(double rms_threshold) {
     }
 }
 
+QChar Scanner::leveling_direction() {
+    return m_leveling_direction;
+}
+
+void Scanner::set_leveling_direction(QChar leveling_direction) {
+    if (m_leveling_direction != leveling_direction) {
+        m_leveling_direction = leveling_direction;
+        qDebug() << "Changing leveling direction to " << m_leveling_direction;
+        update_settings(settings_group_name, "leveling_direction", QVariant(m_leveling_direction));
+        emit leveling_direction_changed(m_leveling_direction);
+        cmd_set_leveling_direction();
+    }
+}
+
 void Scanner::cmd_set_send_back_count() {
     QByteArray payload;
     payload += (m_send_back_count & 0xFF); // low byte
@@ -300,6 +320,12 @@ void Scanner::cmd_set_dwell_time() {
     QByteArray payload;
     payload += m_dwell_time;
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Dwell_Time], payload));
+}
+
+void Scanner::cmd_set_leveling_direction() {
+    QByteArray payload;
+    payload += m_leveling_direction;
+    emit command_generated (new CommandNode(command_hash[Scanner_Set_Leveling_Direction], payload));
 }
 
 void Scanner::save_raw_data(QString save_folder) {
