@@ -22,7 +22,7 @@
 #include <QDir>
 #include <QApplication>
 #include <QDesktopWidget>
-#include "safe_application.h"`
+#include "safe_application.h"
 
 int main(int argc, char *argv[])
 {

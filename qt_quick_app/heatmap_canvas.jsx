@@ -113,8 +113,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var canvasOffset = $("#" + this.props.id).offset();
             mouseX = e.clientX - canvasOffset.left;
             mouseY = e.clientY - canvasOffset.top;
-            pointX = Math.round(mouseX * num_columns/this.props.canvas_width);
-            pointY = Math.round(mouseY * num_rows/this.props.canvas_height);
+            console.log(mouseX, num_columns, this.props.canvas_width);
+            pointX = Math.floor(mouseX * num_columns/this.props.canvas_width);
+            pointY = Math.floor(mouseY * num_rows/this.props.canvas_height);
             for (var i = 0; i < this.state.data.length; i++) {
                 if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
                     console.log(pointX, pointY, this.state.data[i].value);
