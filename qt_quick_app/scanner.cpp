@@ -305,9 +305,9 @@ void Scanner::set_ratio(int ratio) {
 void Scanner::cmd_set_signal_generator() {
     QByteArray payload;
     payload += m_ratio;
-    payload += (m_num_columns & 0xFF);
+    payload += (m_num_columns & 0xFF); //num points
     payload += ((m_num_columns & 0x0F00) >> 8);
-    payload += (m_num_rows & 0xFF);
+    payload += (m_num_rows & 0xFF); //num lines
     payload += ((m_num_rows & 0x0F00) >> 8);
     emit command_generated(new CommandNode(command_hash[AFM_Set_Signal_Generation],  payload));
 }

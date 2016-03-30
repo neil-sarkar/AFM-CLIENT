@@ -4,21 +4,21 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text
 			return (
 				<div>
 					<NumberInput value_type="scan"
-								name="Number of Rows"
-								min={0}
-								max={256}
-								step={1}
-								notify_signal={scanner.num_rows_changed}
-								get_value={scanner.num_rows}
-								set_value={scanner.set_num_rows} />
-					<NumberInput value_type="scan"
-								name="Number of Columns"
+								name="Number of Rows" // we map number of rows to num_columns because something seems backwards...
 								min={0}
 								max={256}
 								step={1}
 								notify_signal={scanner.num_columns_changed}
 								get_value={scanner.num_columns}
 								set_value={scanner.set_num_columns} />
+					<NumberInput value_type="scan"
+								name="Number of Columns"
+								min={0}
+								max={256}
+								step={1}
+								notify_signal={scanner.num_rows_changed}
+								get_value={scanner.num_rows}
+								set_value={scanner.set_num_rows} />
 					<NumberInput value_type="scan" 
 								name="Send Back Count"
 								min={0}
