@@ -113,6 +113,7 @@ void Motor::cmd_set_micro_step() {
 }
 
 void Motor::reset_timeout_timer(QByteArray result) {
+    Q_UNUSED(result);
     if (timeout_timer)
         timeout_timer->stop();
     timeout_timer = new QTimer();
