@@ -147,7 +147,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             var rms_multiplier = scanner.rms_threshold();
             var min = mean - rms_multiplier * rms;
             var max = mean + rms_multiplier * rms;
-            this.refs.heatmap.eliminate_outliers(current_data, min, max);
+            this.refs.heatmap.eliminate_outliers(min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         handle_view_selector_click: function(index, e) {
