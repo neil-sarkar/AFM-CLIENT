@@ -117,6 +117,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 } else {
                     scanner.resume_state_machine();
                 }
+                // TODO: decide if it's worth repushing the data to the heatmap - otherwise it will remain "cleaned" if the user pressed clean
+                // until such a time that a full rerender is necessary
                 this.refs.line_profile.clear_plotlines();
                 this.setState({
                     starting_fresh_scan: false

@@ -54,22 +54,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         new Colour('#bc8000'),
         new Colour('#FcFc80'),
     ];
-    // var myColours = [
-    //     new Colour('#39bf26'), // Colour {hex: "#39BF26", r: 57, g: 191, b: 38, …}
-    //     new Colour('#c7c228'), // Colour {hex: "#C7C228", r: 199, g: 194, b: 40, …}
-    //     new Colour('#C7282E')  // Colour {hex: "#C7282E", r: 199, g: 40, b: 46, …}
-    // ];
-
-    // function percent(x, col) {
-    //     var bucket_size = 100 / (col.length - 1);
-    //     for (var i = 1; i < col.length; i += 1) {
-    //         var value = bucket_size * i;
-    //         if (x <= value) {
-    //             var factor = (value - x) / bucket_size;
-    //             return col[i - 1].scale(1-factor).add(col[i].scale(factor));
-    //         }
-    //     }
-    // }
+    
     function percent(x, col) {
         var factor;
         if (x < 50) {
@@ -233,7 +218,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 <div>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
-                    <p><span>Hovered point:</span><span id="current-data"></span></p>
+                    <p><span>Hovered point: </span><span id="current-data"></span></p>
                 </div>
                     );
         }
