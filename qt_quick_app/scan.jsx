@@ -117,6 +117,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 } else {
                     scanner.resume_state_machine();
                 }
+                this.refs.line_profile.clear_plotlines();
                 this.setState({
                     starting_fresh_scan: false
                 });
@@ -134,7 +135,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
                 this.set_scan_complete();
-            }.bind(this), 100); // give time for the scnaner to actually pause 
+            }.bind(this), 200); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },

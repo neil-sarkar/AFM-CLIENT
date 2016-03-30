@@ -51,7 +51,11 @@ void AFM::read_all_ADCs() {
 }
 
 void AFM::cmd_get_resistances() {
+    bool pid_enabled = this->scanner->pid->enabled();
+    this->scanner->pid->set_disabled();
     emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
+    if (pid_enabled)
+        this->scanner->pid->set_enabled();
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {

@@ -105,14 +105,25 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
-						<DataStreamGraph ref="approach_graph" dom_id="approach-graph" chart_title="Amplitude" 
-											data_update_signal={adc_5.value_changed} 
-											prompt_read={adc_5.read} 
+						<DataStreamGraph 	ref="approach_graph"
+											dom_id="approach-graph"
+											chart_title="Amplitude"
+											data_update_signal={adc_5.value_changed}
+											prompt_read={adc_5.read}
+											num_points_displayed={Constants.Approach_Num_Points_Displayed}
+											plotline_default={pid.setpoint}
+											plotline_update_signal={pid.setpoint_changed}
+											poll_rate={Constants.Approach_Poll_Rate}
+											max_value={2.5} />
+
+						<DataStreamGraph 	ref="z_fine_graph" 
+											dom_id="z-fine-graph" 
+											chart_title="Fine Z" 
+											data_update_signal={dac_6.value_changed} 
+											prompt_read={dac_6.cmd_read_value} 
 											num_points_displayed={Constants.Approach_Num_Points_Displayed} 
-											plotline_default={pid.setpoint} 
-											plotline_update_signal={pid.setpoint_changed} 
-											poll_rate={Constants.Approach_Poll_Rate}/>
-						<DataStreamGraph ref="z_fine_graph" dom_id="z-fine-graph" chart_title="Fine Z" data_update_signal={dac_6.value_changed} prompt_read={dac_6.cmd_read_value} num_points_displayed={Constants.Approach_Num_Points_Displayed} poll_rate={Constants.Z_Fine_Poll_Rate}/>
+											poll_rate={Constants.Z_Fine_Poll_Rate}
+											max_value={3.3} />
 						<div className="approacher-status">
 							{status_map[this.state.status]}
 							{this.state.approach_complete && <div>Approach complete</div>}

@@ -113,35 +113,21 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var canvasOffset = $("#" + this.props.id).offset();
             mouseX = e.clientX - canvasOffset.left;
             mouseY = e.clientY - canvasOffset.top;
-            console.log(mouseX, num_columns, this.props.canvas_width);
             pointX = Math.floor(mouseX * num_columns/this.props.canvas_width);
             pointY = Math.floor(mouseY * num_rows/this.props.canvas_height);
             for (var i = 0; i < this.state.data.length; i++) {
                 if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
-                    console.log(pointX, pointY, this.state.data[i].value);
                     $('#current-data').text(pointX + ", " + pointY + ", " + this.state.data[i].value);
+                    return;
                 }
             }
+            $('#current-data').text("");
         },
         change_num_rows: function(new_num_rows) {
             num_rows = new_num_rows;
         },
         change_num_columns: function(new_num_columns) {
             num_columns = new_num_columns;
-        },
-        handle_new_data: function(new_data) {
-            var useful_data = new_data.slice(0, num_rows * 3);
-            var update_all = true;
-            if (this.state.running_max >= new_data[useful_data.length] && this.state.running_min <= new_data[useful_data.length + 1])
-                update_all = false;
-            this.setState({
-                num_points: this.state.num_points + useful_data.length,
-                data: this.state.data.concat(useful_data),
-                running_max: Math.max(new_data[useful_data.length], this.state.running_max),
-                running_min: Math.min(new_data[useful_data.length + 1], this.state.running_min)
-            }, function() {
-                this.redraw_canvas(update_all ? this.state.data : useful_data, this.state.running_max, this.state.running_min);
-            });
         },
         receive_data: function(data, min, max, num_points_to_draw, is_switching_views) {
             if (!is_switching_views) {
@@ -152,7 +138,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     running_max: Math.max(max, this.state.running_max),
                     running_min: Math.min(min, this.state.running_min)
                 }, function() {
-                    console.log(this.state.data);
                     this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
                 });
             } else {
@@ -212,17 +197,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 }.bind(this, x, y, z), 0);
             }
         },
-        add_points: function() {
-            var dummy_data = [];
-            for (var i = 0; i < this.props.canvas_height; i += 1) {
-                for (var j = 0; j < this.props.canvas_width; j += 1) {
-                    dummy_data.push(i);
-                    dummy_data.push(j);
-                    dummy_data.push(i*j);
-                }
-            }
-            this.handle_new_data(dummy_data);
-        },
         dummy_data: function () {
             data = [];
             for (var i = 0; i < 20; i++)
@@ -234,14 +208,32 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             this.replaceState(this.getInitialState());
             var ctx = this.get_context();
             ctx.clearRect(0, 0, this.props.canvas_width, this.props.canvas_height);
+            $('#current-data').text("");
+        },
+        eliminate_outliers: function (min, max) {
+            new_data = [];
+            for (var i = 0; i < this.state.data.length; i++) {
+                var x = this.state.data[i].x;
+                var y = this.state.data[i].y;
+                var value = this.state.data[i].value;
+                if (value < min) {
+                    new_data.push({x: x, y: y, value: min});
+                    continue;
+                }
+                if (value > max) {
+                    new_data.push({x: x, y: y, value: max});
+                    continue;
+                }
+                new_data.push({x: x, y:y, value: value});
+            }
+            this.redraw_canvas_points(new_data, max, min);
         },
         render: function() {
             return (
                 <div>
                     <canvas id={this.props.id} style={{border: "1px solid black"}} height={this.props.canvas_height} width={this.props.canvas_width}>
                     </canvas>
-                    <p id="current-data"></p>
-                    <p id="img"></p>
+                    <p><span>Hovered point:</span><span id="current-data"></span></p>
                 </div>
                     );
         }

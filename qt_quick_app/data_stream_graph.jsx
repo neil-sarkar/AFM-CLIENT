@@ -42,7 +42,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                     }],
                     labelFontFamily: Constants.System_Font,
                     labelFontSize: 11,
-                    maximum: 3,
+                    maximum: self.props.max_value,
                     gridColor: "#DFDFDF",
                     gridThickness: 1,
                     tickLength: 0,
