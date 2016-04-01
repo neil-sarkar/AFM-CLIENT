@@ -67,6 +67,8 @@ void Motor::run_continuous() {
 
 void Motor::cmd_run_continuous() {
     emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous]));
+    if (timeout_timer)
+        timeout_timer->stop();
 }
 
 void Motor::cmd_stop_continuous() {

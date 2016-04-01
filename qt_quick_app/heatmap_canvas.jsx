@@ -161,27 +161,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 }.bind(this, x, y, z), 0);
             }
         },
-        redraw_canvas: function(data) {
-            var ctx = this.get_context();
-            var pixel_width = this.props.canvas_width/num_columns;
-            var pixel_height = this.props.canvas_height/num_rows;
-            var pixel_dimension = Math.min(pixel_width, pixel_height);
-            var range = max - min;
-            for (var i = 0; i < data.length; i += 3) {
-                var x = data[i];
-                var y = data[i+1];
-                var z = data[i+2];
-                setTimeout(function(x, y, z) {
-                    var color;
-                    if (max == min)
-                        color = percent(0, myColours);
-                    else
-                        color = percent((z - min)/range * 100, myColours);
-                    ctx.fillStyle = color.hex;
-                    ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
-                }.bind(this, x, y, z), 0);
-            }
-        },
         dummy_data: function () {
             data = [];
             for (var i = 0; i < 20; i++)
