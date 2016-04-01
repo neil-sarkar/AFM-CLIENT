@@ -4,13 +4,17 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
         getDefaultProps: function() {
             return {
                 plotline_default: Number.NEGATIVE_INFINITY,
+                padding: 0.05,
+                num_dashlines: 5,
+                max_value: 3.3,
+                min_value: 0,
             };
         },
         getInitialState: function() {
             return {
                 data: [],
                 running_min: this.props.max_value,
-                running_max: 0,
+                running_max: this.props.min_value,
             };
         },
         init_chart: function() {
@@ -74,8 +78,9 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 running_max: Math.max.apply(null, y_values),
             }, function () {
                 x += 1;
-                this.state.chart.options.axisY.minimum = this.state.running_min - 0.1;
-                this.state.chart.options.axisY.maximum = this.state.running_max + 0.1;
+                this.state.chart.options.axisY.minimum = this.state.running_min - this.props.padding;
+                this.state.chart.options.axisY.maximum = this.state.running_max + this.props.padding;
+                this.state.chart.options.axisY.interval = (Math.abs(this.state.running_max - this.state.running_min) + 2 * this.props.padding) / this.props.num_dashlines,
                 this.state.chart.render();
                 if (this.state.data.length === 1) {
                     $('.canvasjs-chart-credit').hide(); // TODO: put this in a more appropriate place
