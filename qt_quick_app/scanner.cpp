@@ -173,7 +173,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
 void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done" << m_num_columns_received;
-    forward_data->print();
+    // forward_data->print();
     move_to_starting_point();
 }
 

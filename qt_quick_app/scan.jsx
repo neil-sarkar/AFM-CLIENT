@@ -1,8 +1,11 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, HeatmapCanvas, LineProfile, InlineScanControls) {
     function two_d_matrix_generator(rows, cols) {
-        var matrix = [];
+        var matrix = new Array();
         for(var i=0; i<rows; i++) {
-            matrix[i] = new Array(cols);
+            matrix.push([]);
+            for (var j = 0; j < cols; j++) {
+                matrix[i].push("-1");
+            }
         }
         return matrix;
     }
@@ -16,6 +19,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         this.num_columns = num_columns;
         this.heatmap = two_d_matrix_generator(num_rows, num_columns);
         this.profile = one_d_matrix_generator(num_columns);
+        this.latest_diff = [];
         this.sum = 0;
         this.num_points = 0;
         this.sum_of_squares = 0;
@@ -47,8 +51,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 starting_fresh_scan: true,
                 current_view: 0,
                 current_line: 0,
-                num_rows: scanner.num_rows(),
-                num_columns: scanner.num_columns(),
+                num_rows: 10,
+                num_columns: 10,
                 send_back_count: 0
             };
         },
@@ -97,39 +101,40 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         tally_new_data: function(obj, x, y, z) {
-            obj.heatmap[x][y] = z;
+            obj.heatmap[y][x] = z;
             obj.profile[x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
         },
         prepare_new_data: function (view_index, data) {
-            console.log(data);
-            view_index_num_points = scan_views[view_index].forward_data.num_points;
+            // console.log("New da", data);
+            // console.log("Heatmap before adding", scan_views[view_index].forward_data.heatmap);
+            // console.log("Heatmap before adding", this.refs.heatmap.state.data);
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
+                // console.log(data[i], data[i+1], data[i+2]);
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
+            // console.log("Heatmap after adding", scan_views[view_index].forward_data.heatmap);
             scan_views[view_index].forward_data.max = Math.max(data[data.length/2 - 2], scan_views[view_index].forward_data.max);
             scan_views[view_index].forward_data.min = Math.min(data[data.length/2 - 1], scan_views[view_index].forward_data.min);
             scan_views[view_index].reverse_data.max = Math.max(data[data.length - 2], scan_views[view_index].reverse_data.max);
             scan_views[view_index].reverse_data.min = Math.min(data[data.length - 1], scan_views[view_index].reverse_data.min);
             if (Math.floor(this.state.current_view / 2) == view_index) {
-                this.push_data_to_view(scan_views[view_index], scan_views[view_index].forward_data.num_points - view_index_num_points, false);
+                this.push_data_to_view(scan_views[view_index], false);
             }
         },
         limit_line_profile_data: function(data) {
             return data.slice(Math.max(data.length - this.state.send_back_count, 0));
         },
-        push_data_to_view: function(data_obj, num_points_to_draw, is_switching_views) {
-            console.log(data_obj);
+        push_data_to_view: function(data_obj, is_switching_views) {
             if (this.state.current_view % 2 === 0) {
-                num_points_to_draw = num_points_to_draw === true ? data_obj.forward_data.num_points : num_points_to_draw;
-                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max, num_points_to_draw, is_switching_views);
+                // console.log("heatmap send", data_obj.forward_data.heatmap);
+                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max, data_obj.forward_data.num_points, is_switching_views);
             } else {
-                num_points_to_draw = num_points_to_draw === true ? data_obj.reverse_data.num_points : num_points_to_draw;
-                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max, num_points_to_draw, is_switching_views);
+                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max, data_obj.forward_data.num_points, is_switching_views);
             }
             // this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
@@ -146,7 +151,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 if (this.state.starting_fresh_scan) {
                     for (var i = 0; i < scan_views.length; i++) {
                         scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
-                        console.log(scan_views[i]);
+                        this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
                     }
                     scanner.start_state_machine();
                 } else {
@@ -200,7 +205,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 current_view: index
             }, function () {
                 this.refs.line_profile.clear_plotlines();
-                this.push_data_to_view(scan_views[Math.floor(index/2)], true, true);
+                this.push_data_to_view(scan_views[Math.floor(index/2)], true);
             });
         },
         get_specific_row_profile: function(data, y_value) {

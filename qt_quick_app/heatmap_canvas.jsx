@@ -1,6 +1,18 @@
 define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     // Color manipualation adapted from this:
     // http://stackoverflow.com/questions/16252448/how-to-calculate-the-proportional-color-between-the-three-given-with-a-percentage
+
+    function two_d_matrix_generator(rows, cols) {
+        var matrix = [];
+        for(var i=0; i<rows; i++) {
+            matrix.push([]);
+            for (var j = 0; j < cols; j++) {
+                matrix[i].push("-1");
+            }
+        }
+        return matrix;
+    }
+
     var Colour = (function () {
         function limit(x) {
             if (x > 255) return 255;
@@ -89,55 +101,85 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
         },
         handle_mouse_move: function (e) {
-            var canvasOffset = $("#" + this.props.id).offset();
-            mouseX = e.clientX - canvasOffset.left;
-            mouseY = e.clientY - canvasOffset.top;
-            pointX = Math.floor(mouseX * num_columns/this.props.canvas_width);
-            pointY = Math.floor(mouseY * num_rows/this.props.canvas_height);
-            for (var i = 0; i < this.state.data.length; i++) {
-                if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
-                    $('#current-data').text(pointX + ", " + pointY + ", " + this.state.data[i].value);
-                    return;
-                }
-            }
-            $('#current-data').text("");
+            // var canvasOffset = $("#" + this.props.id).offset();
+            // mouseX = e.clientX - canvasOffset.left;
+            // mouseY = e.clientY - canvasOffset.top;
+            // pointX = Math.floor(mouseX * num_columns/this.props.canvas_width);
+            // pointY = Math.floor(mouseY * num_rows/this.props.canvas_height);
+            // for (var i = 0; i < this.state.data.length; i++) {
+            //     if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
+            //         $('#current-data').text(pointX + ", " + pointY + ", " + this.state.data[i].value);
+            //         return;
+            //     }
+            // }
+            // $('#current-data').text("");
         },
-        change_pizel_size: function(num_rows, num_columns) {
+        change_pixel_size: function(num_rows, num_columns, callback) {
             this.setState({
                 pixel_size: Math.min(this.props.canvas_width/num_columns, this.props.canvas_height/num_rows),
+                data: two_d_matrix_generator(num_rows, num_columns),
+            }, function() {
+                if (callback)
+                    callback();
             });
         },
-        change_num_columns: function(new_num_columns) {
-            num_columns = new_num_columns;
-        },
-        receive_data: function(data, min, max, num_points_to_draw, is_switching_views) {
-            if (!is_switching_views) {
-                update_all = !(this.state.running_max >= max && this.state.running_min <= min);
-                this.setState({
-                    num_points: data.length,
-                    data: data,
-                    running_max: Math.max(max, this.state.running_max),
-                    running_min: Math.min(min, this.state.running_min)
-                }, function() {
-                    this.redraw_canvas_points(update_all ? this.state.data : this.state.data.slice(this.state.data.length - num_points_to_draw), this.state.running_max, this.state.running_min);
-                });
-            } else {
-                this.setState({
-                    num_points: data.length,
-                    data: data,
-                    running_max: max,
-                    running_min: min,
-                }, function() {
-                    this.redraw_canvas_points(this.state.data, this.state.running_max, this.state.running_min);
-                });
+        diff_data: function (prev, next) {
+            diffed = [];
+            // console.log("p", prev, "n", next);
+            // console.log("prev", prev, "next", next);
+            for (var x = 0; x < next.length; x++) {
+                for (var y = 0; y < next[x].length; y++) {
+                    if (next[x][y] !== prev[x][y]) {
+                        diffed.push({x: x, y: y, z: next[x][y]});
+                    }
+                }
             }
+            // console.log("Length of difference", diffed.length);
+            // console.log(diffed, diffed.length);
+            return diffed;
+        },
+        receive_data: function(data, min, max, data_length, is_switching_views) {
+            // console.log("receiving data", data, min, max, data_length, is_switching_views);
+            // console.log(data.length);
+            // for (var i = 0; i < data.length; i++) {
+            //     for (var j = 0; j < data[i].length; j++) {
+            //         console.log(data[i][j] === 0);
+            //     }
+            // }
+            var diff = this.diff_data(this.state.data, data);
+            update_all = is_switching_views || !(this.state.running_max >= max && this.state.running_min <= min);
+            // console.log(update_all);
+            curr_data = this.state.data.slice();
+            next_data = [];
+            for (var i = 0; i < data.length; i++) {
+                next_data.push([]);
+                for (var j = 0; j < data[i].length; j++)
+                    next_data[i].push(data[i][j]);
+            }
+            this.setState({
+                num_points: data_length,
+                data: next_data,
+                running_max: (is_switching_views && max) || Math.max(max, this.state.running_max),
+                running_min: (is_switching_views && min) || Math.min(min, this.state.running_min),
+            }, function() {
+                if (update_all) {
+                    this.redraw_canvas_points(this.state.data, this.state.running_max, this.state.running_min);
+                } else {
+                    this.draw_canvas_points(diff, this.state.running_max, this.state.running_min);
+                }
+            });
         },
         redraw_canvas_points: function(data, max, min) {
+            // console.log(data.length * data.length);
+            // takes a MxN array
+            console.log(data.length * data.length);
             var ctx = this.get_context();
             var range = max - min;
             for (var x = 0; x < data.length; x += 1) {
                 for (var y = 0; y < data[x].length; y += 1) {
-                    var z = data[i].value;
+                    var z = data[x][y];
+                    if (z === "-1")
+                        continue;
                     setTimeout(function(x, y, z) {
                         var color;
                         if (max == min)
@@ -149,18 +191,51 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                         } catch (e) {
                             console.log(e, color, x, y, z, min, max, range);
                         }
-                        console.log(x, y, this.state.pizel_size);
+                        // console.log(x, y, z);
                         ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
                     }.bind(this, x, y, z), 0);
                 }
             }
         },
+        draw_canvas_points: function(data, max, min) {
+            // console.log("here", data.length);
+            // takes a flat array of {x: y: z:} objects
+            console.log(data.length);
+            var ctx = this.get_context();
+            var range = max - min;
+            for (var i = 0; i < data.length; i += 1) {
+                var x = data[i].x;
+                var y = data[i].y;
+                var z = data[i].z;
+                setTimeout(function(x, y, z) {
+                    var color;
+                    if (max == min)
+                        color = percent(0, myColours);
+                    else
+                        color = percent((z - min)/range * 100, myColours);
+                    try {
+                        ctx.fillStyle = color.hex;
+                    } catch (e) {
+                        console.log(e, color, x, y, z, min, max, range);
+                    }
+                    ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
+                }.bind(this, x, y, z), 0);
+            }
+        },
         dummy_data: function () {
-            data = [];
-            for (var i = 0; i < 20; i++)
-                for (var j = 0; j < 20; j++)
-                    data.push({x: i, y: j, value: i * j});
-            this.receive_data(data, 0, 19*19, 20*20, false);
+            size = 256;
+            this.change_pixel_size(size,size, function() {
+                // console.log("here");
+                var matrix = [];
+                for(var i=0; i<256; i++) {
+                    matrix[i] = new Array(256);
+                }
+                for (var i = 0; i < size; i++)
+                    for (var j = 0; j < size; j++)
+                        matrix[i][j] = i * j;
+
+                this.receive_data(matrix, 0, (size -1)*(size -1), size * size, false);
+            }.bind(this));
         },
         erase_data: function() {
             this.replaceState(this.getInitialState());
