@@ -8,7 +8,9 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
         },
         getInitialState: function() {
             return {
-                data: []
+                data: [],
+                running_min: this.props.max_value,
+                running_max: 0,
             };
         },
         init_chart: function() {
@@ -64,11 +66,21 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             } else {
                 this.state.data.shift({x: x, y: value});
             }
-            x += 1;
-            this.state.chart.render();
-            if (this.state.data.length === 1) {
-                $('.canvasjs-chart-credit').hide(); // TODO: put this in a more appropriate place
-            }
+            
+            y_values = this.state.data.map(function (point) {return point.y});
+
+            this.setState({
+                running_min: Math.min.apply(null, y_values),
+                running_max: Math.max.apply(null, y_values),
+            }, function () {
+                x += 1;
+                this.state.chart.options.axisY.minimum = this.state.running_min - 0.1;
+                this.state.chart.options.axisY.maximum = this.state.running_max + 0.1;
+                this.state.chart.render();
+                if (this.state.data.length === 1) {
+                    $('.canvasjs-chart-credit').hide(); // TODO: put this in a more appropriate place
+                }
+            });
         },
         update_plotline: function(new_value) {
             this.state.chart.options.axisY.stripLines[0].value = new_value;
