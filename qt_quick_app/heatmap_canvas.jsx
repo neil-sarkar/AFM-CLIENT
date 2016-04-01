@@ -66,11 +66,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         }
     }
 
-    // for some reason num_rows and num_columns don't work properly when in state variables...
-    // maybe should pass as props through scan.jsx
-    var num_rows = scanner.num_rows();
-    var num_columns = scanner.num_columns();
-
     var ScanHeatMap = React.createClass({
         getInitialState: function() {
             return {
@@ -78,6 +73,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 running_min: Number.POSITIVE_INFINITY,
                 data: [],
                 num_points: 0,
+                pixel_size: 0,
             };
         },
         getDefaultProps: function() {
@@ -90,8 +86,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             return document.getElementById(this.props.id).getContext("2d");
         },
         componentDidMount: function() {
-            scanner.num_rows_changed.connect(this.change_num_rows);
-            scanner.num_columns_changed.connect(this.change_num_columns);
             $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
         },
         handle_mouse_move: function (e) {
@@ -108,8 +102,10 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             }
             $('#current-data').text("");
         },
-        change_num_rows: function(new_num_rows) {
-            num_rows = new_num_rows;
+        change_pizel_size: function(num_rows, num_columns) {
+            this.setState({
+                pixel_size: Math.min(this.props.canvas_width/num_columns, this.props.canvas_height/num_rows),
+            });
         },
         change_num_columns: function(new_num_columns) {
             num_columns = new_num_columns;
@@ -138,27 +134,25 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         redraw_canvas_points: function(data, max, min) {
             var ctx = this.get_context();
-            var pixel_width = this.props.canvas_width/num_columns;
-            var pixel_height = this.props.canvas_height/num_rows;
-            var pixel_dimension = Math.min(pixel_width, pixel_height);
             var range = max - min;
-            for (var i = 0; i < data.length; i += 1) {
-                var x = data[i].x;
-                var y = data[i].y;
-                var z = data[i].value;
-                setTimeout(function(x, y, z) {
-                    var color;
-                    if (max == min)
-                        color = percent(0, myColours);
-                    else
-                        color = percent((z - min)/range * 100, myColours);
-                    try {
-                        ctx.fillStyle = color.hex;
-                    } catch (e) {
-                        console.log(e, color, x, y, z, min, max, range);
-                    }
-                    ctx.fillRect(x * pixel_dimension, y * pixel_dimension, pixel_dimension, pixel_dimension);
-                }.bind(this, x, y, z), 0);
+            for (var x = 0; x < data.length; x += 1) {
+                for (var y = 0; y < data[x].length; y += 1) {
+                    var z = data[i].value;
+                    setTimeout(function(x, y, z) {
+                        var color;
+                        if (max == min)
+                            color = percent(0, myColours);
+                        else
+                            color = percent((z - min)/range * 100, myColours);
+                        try {
+                            ctx.fillStyle = color.hex;
+                        } catch (e) {
+                            console.log(e, color, x, y, z, min, max, range);
+                        }
+                        console.log(x, y, this.state.pizel_size);
+                        ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
+                    }.bind(this, x, y, z), 0);
+                }
             }
         },
         dummy_data: function () {

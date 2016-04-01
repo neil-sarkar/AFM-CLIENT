@@ -1,7 +1,21 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, HeatmapCanvas, LineProfile, InlineScanControls) {
-    function DataContainer() {
-        this.heatmap = [];
-        this.profile = [];
+    function two_d_matrix_generator(rows, cols) {
+        var matrix = [];
+        for(var i=0; i<rows; i++) {
+            matrix[i] = new Array(cols);
+        }
+        return matrix;
+    }
+
+    function one_d_matrix_generator(cols) {
+        return new Array(cols);
+    }
+
+    function DataContainer(num_rows, num_columns) {
+        this.num_rows = num_rows;
+        this.num_columns = num_columns;
+        this.heatmap = two_d_matrix_generator(num_rows, num_columns);
+        this.profile = one_d_matrix_generator(num_columns);
         this.sum = 0;
         this.num_points = 0;
         this.sum_of_squares = 0;
@@ -12,13 +26,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     function ScanView(name, data_source) {
         this.name = name;
         this.data_source = data_source;
-        this.forward_data = new DataContainer();
-        this.reverse_data = new DataContainer();
+        this.forward_data = null;
+        this.reverse_data = null;
     }
 
-    ScanView.prototype.clear_data = function () {
-        this.forward_data = new DataContainer();
-        this.reverse_data = new DataContainer();
+    ScanView.prototype.init_data = function (num_rows, num_columns) {
+        this.forward_data = new DataContainer(num_rows, num_columns);
+        this.reverse_data = new DataContainer(num_rows, num_columns);
     };
 
     var scan_views = [];
@@ -33,8 +47,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 starting_fresh_scan: true,
                 current_view: 0,
                 current_line: 0,
-                num_rows: 0,
-                num_columns: 0,
+                num_rows: scanner.num_rows(),
+                num_columns: scanner.num_columns(),
                 send_back_count: 0
             };
         },
@@ -59,6 +73,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         componentDidMount: function() {
+            scanner.num_rows_changed.connect(this.change_num_rows);
+            scanner.num_columns_changed.connect(this.change_num_columns);
             scanner.all_data_received.connect(this.set_scan_complete);
             for (var i = 0; i < scan_views.length; i++) {
                 var bound_method = this.prepare_new_data.bind(this, i);
@@ -66,14 +82,29 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }
             $('.view-selector-button').first().addClass('selected-scan-view');
         },
+        change_num_rows: function (num_rows) {
+            this.setState({
+                num_rows: num_rows,
+            }, function() {
+                this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
+            });
+        },
+        change_num_columns: function (num_cols) {
+            this.setState({
+                num_columns: num_cols,
+            }, function() {
+                this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
+            });
+        },
         tally_new_data: function(obj, x, y, z) {
-            obj.heatmap.push({x: x, y: y, value: z});
-            obj.profile.push({x: x, y: z});
+            obj.heatmap[x][y] = z;
+            obj.profile[x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
         },
         prepare_new_data: function (view_index, data) {
+            console.log(data);
             view_index_num_points = scan_views[view_index].forward_data.num_points;
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
@@ -92,14 +123,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             return data.slice(Math.max(data.length - this.state.send_back_count, 0));
         },
         push_data_to_view: function(data_obj, num_points_to_draw, is_switching_views) {
+            console.log(data_obj);
             if (this.state.current_view % 2 === 0) {
-                num_points_to_draw = num_points_to_draw === true ? data_obj.forward_data.heatmap.length : num_points_to_draw;
+                num_points_to_draw = num_points_to_draw === true ? data_obj.forward_data.num_points : num_points_to_draw;
                 this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max, num_points_to_draw, is_switching_views);
             } else {
-                num_points_to_draw = num_points_to_draw === true ? data_obj.reverse_data.heatmap.length : num_points_to_draw;
+                num_points_to_draw = num_points_to_draw === true ? data_obj.reverse_data.num_points : num_points_to_draw;
                 this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max, num_points_to_draw, is_switching_views);
             }
-            this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
+            // this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
         },
         // TODO: this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -112,6 +144,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: true,
             }, function(){
                 if (this.state.starting_fresh_scan) {
+                    for (var i = 0; i < scan_views.length; i++) {
+                        scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
+                        console.log(scan_views[i]);
+                    }
                     scanner.start_state_machine();
                 } else {
                     scanner.resume_state_machine();
@@ -129,9 +165,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.reset();
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
-                    scan_views[i].clear_data();
-                    console.log(scan_views[i].forward_data);
-                    console.log(scan_views[i].reverse_data);
+                    scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
                 }
                 this.refs.line_profile.erase_data();
                 this.refs.heatmap.erase_data();
