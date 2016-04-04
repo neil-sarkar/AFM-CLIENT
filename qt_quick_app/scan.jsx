@@ -11,7 +11,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     }
 
     function one_d_matrix_generator(cols) {
-        return new Array(cols);
+        matrix = [];
+        for (var i = 0; i < cols; i++)
+            matrix.push("-1");
+        return matrix;
     }
 
     function DataContainer(num_rows, num_columns) {
@@ -19,7 +22,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         this.num_columns = num_columns;
         this.heatmap = two_d_matrix_generator(num_rows, num_columns);
         this.profile = one_d_matrix_generator(num_columns);
-        this.latest_diff = [];
+        
+        // Used for cleaning and heatmap color mapping
         this.sum = 0;
         this.num_points = 0;
         this.sum_of_squares = 0;
@@ -50,7 +54,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: false,
                 starting_fresh_scan: true,
                 current_view: 0,
-                current_line: 0,
                 num_rows: 10,
                 num_columns: 10,
                 send_back_count: 0
@@ -77,13 +80,18 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         componentDidMount: function() {
+
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
             scanner.all_data_received.connect(this.set_scan_complete);
+
+            // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
                 var bound_method = this.prepare_new_data.bind(this, i);
                 scan_views[i].data_source.connect(bound_method);
             }
+
+            // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
         },
         change_num_rows: function (num_rows) {
@@ -108,21 +116,20 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.num_points += 1;
         },
         prepare_new_data: function (view_index, data) {
-            // console.log(data);
-            // console.log("New da", data);
-            // console.log("Heatmap before adding", scan_views[view_index].forward_data.heatmap);
-            // console.log("Heatmap before adding", this.refs.heatmap.state.data);
+            // Data comex as (x,y,z.. max,min) * 2 for forward and reverse
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
-                // console.log(data[i], data[i+1], data[i+2]);
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
-            // console.log("Heatmap after adding", scan_views[view_index].forward_data.heatmap);
+
+            // set the max and min for the whole scan - take the max of the new data's max current max so far
             scan_views[view_index].forward_data.max = Math.max(data[data.length/2 - 2], scan_views[view_index].forward_data.max);
             scan_views[view_index].forward_data.min = Math.min(data[data.length/2 - 1], scan_views[view_index].forward_data.min);
             scan_views[view_index].reverse_data.max = Math.max(data[data.length - 2], scan_views[view_index].reverse_data.max);
             scan_views[view_index].reverse_data.min = Math.min(data[data.length - 1], scan_views[view_index].reverse_data.min);
+            
+            // If the data we just got refers to what we're looking at currently, send the data to the heatmap
             if (Math.floor(this.state.current_view / 2) == view_index) {
                 this.push_data_to_view(scan_views[view_index], false);
             }
@@ -130,14 +137,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         limit_line_profile_data: function(data) {
             return data.slice(Math.max(data.length - this.state.send_back_count, 0));
         },
-        push_data_to_view: function(data_obj, is_switching_views) {
-            if (this.state.current_view % 2 === 0) {
-                // console.log("heatmap send", data_obj.forward_data.heatmap);
-                this.refs.heatmap.receive_data(data_obj.forward_data.heatmap, data_obj.forward_data.min, data_obj.forward_data.max, data_obj.forward_data.num_points, is_switching_views);
-            } else {
-                this.refs.heatmap.receive_data(data_obj.reverse_data.heatmap, data_obj.reverse_data.min, data_obj.reverse_data.max, data_obj.forward_data.num_points, is_switching_views);
+        push_data_to_view: function(scan_view, is_switching_views) {
+            if (this.state.current_view % 2 === 0) { // we're looking at the forward 
+                this.refs.heatmap.receive_data(scan_view.forward_data.heatmap, scan_view.forward_data.min, scan_view.forward_data.max, scan_view.forward_data.num_points, is_switching_views);
+            } else { // we;re looking at the reverse
+                this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
             }
-            // this.refs.line_profile.set_data(this.limit_line_profile_data(data_obj.forward_data.profile), this.limit_line_profile_data(data_obj.reverse_data.profile));
+            this.refs.line_profile.set_data(this.limit_line_profile_data(scan_view.forward_data.profile), this.limit_line_profile_data(scan_view.reverse_data.profile));
         },
         // TODO: this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -231,8 +237,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
                                     return (
                                         <div>
-                                            <p className="view-selector-button" onClick={forward_bound_click} key={2*i}>Forward {view.name}</p>
-                                            <p className="view-selector-button" onClick={reverse_bound_click} key={2*i + 1}>Reverse {view.name}</p>
+                                            <p className="view-selector-button" onClick={forward_bound_click} >Forward {view.name}</p>
+                                            <p className="view-selector-button" onClick={reverse_bound_click} >Reverse {view.name}</p>
                                         </div>
                                         );
                                 }, this)}

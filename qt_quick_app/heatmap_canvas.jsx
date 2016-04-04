@@ -68,6 +68,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     ];
     
     function percent(x, col) {
+        // Only works for 3 colours - should be generalized if you want to add more colours in the myColours array
+        // to interpolate between
         var factor;
         if (x < 50) {
             factor = (50 - x) / 50;
@@ -121,38 +123,29 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             });
         },
         diff_data: function (prev, next) {
+            // prev and next are complete data matrices
             diffed = [];
-            // console.log("p", prev, "n", next);
-            // console.log("prev", prev, "next", next);
             for (var x = 0; x < next.length; x++) {
                 for (var y = 0; y < next[x].length; y++) {
-                    if (next[x][y] !== prev[x][y]) {
+                    if (next[x][y] !== prev[x][y]) { // push different data
                         diffed.push({x: x, y: y, z: next[x][y]});
                     }
                 }
             }
-            // console.log("Length of difference", diffed.length);
-            // console.log(diffed, diffed.length);
+            // RETURNS a flat array of {x: y: z:} objects
             return diffed;
         },
         receive_data: function(data, min, max, data_length, is_switching_views) {
-            // console.log("receiving data", data, min, max, data_length, is_switching_views);
-            // console.log(data.length);
-            // for (var i = 0; i < data.length; i++) {
-            //     for (var j = 0; j < data[i].length; j++) {
-            //         console.log(data[i][j] === 0);
-            //     }
-            // }
             var diff = this.diff_data(this.state.data, data);
-            update_all = is_switching_views || !(this.state.running_max >= max && this.state.running_min <= min);
-            // console.log(update_all);
-            curr_data = this.state.data.slice();
-            next_data = [];
+            var update_all = is_switching_views || !(this.state.running_max >= max && this.state.running_min <= min);
+
+            next_data = []; // copy the data to a new array to avoid weird pass by reference issues when setting this.state.data
             for (var i = 0; i < data.length; i++) {
                 next_data.push([]);
                 for (var j = 0; j < data[i].length; j++)
                     next_data[i].push(data[i][j]);
             }
+
             this.setState({
                 num_points: data_length,
                 data: next_data,
@@ -180,7 +173,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             }
         },
         draw_canvas_points: function(data, max, min) {
-            // console.log("here", data.length);
             // takes a flat array of {x: y: z:} objects
             var ctx = this.get_context();
             var range = max - min;
@@ -198,13 +190,15 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     color = percent(0, myColours);
                 else
                     color = percent((z - min)/range * 100, myColours);
+                
                 try {
                     ctx.fillStyle = color.hex;
-                } catch (e) {
+                } catch (e) { // this should never happen
                     console.log(e, color, x, y, z, min, max, range);
                 }
+                // actually draw on the canvas
                 ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
-            }.bind(this, x, y, z, min, max, range, ctx), 0);
+            }.bind(this, x, y, z, min, max, range, ctx), 0); // wrap in a settimeout to avoid blocking UI
         },
         dummy_data: function () {
             size = 256;
