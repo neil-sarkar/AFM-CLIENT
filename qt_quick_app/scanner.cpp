@@ -182,13 +182,11 @@ quint8 Scanner::num_averages() {
 }
 
 void Scanner::set_num_averages(int num_averages) {
-    if (m_num_averages != num_averages) {
-        m_num_averages = num_averages;
-        qDebug() << "Changing num averages to " << m_num_averages;
-        emit num_averages_changed(static_cast<int>(m_num_averages));
-        update_settings(settings_group_name, "num_averages", QVariant(m_num_averages));
-        cmd_set_num_averages();
-    }
+    m_num_averages = num_averages;
+    qDebug() << "Changing num averages to " << m_num_averages;
+    emit num_averages_changed(m_num_averages);
+    update_settings(settings_group_name, "num_averages", QVariant(m_num_averages));
+    cmd_set_num_averages();
 }
 
 void Scanner::cmd_set_num_averages() {
@@ -202,13 +200,11 @@ quint16 Scanner::send_back_count() {
 }
 
 void Scanner::set_send_back_count(int send_back_count) {
-    if (m_send_back_count != send_back_count) {
-        m_send_back_count = send_back_count;
-        qDebug() << "Changing send back count to " << m_send_back_count;
-        emit send_back_count_changed(static_cast<int>(m_send_back_count));
-        update_settings(settings_group_name, "send_back_count", QVariant(m_send_back_count));
-        cmd_set_send_back_count();
-    }
+    m_send_back_count = send_back_count;
+    qDebug() << "Changing send back count to " << m_send_back_count;
+    emit send_back_count_changed(static_cast<int>(m_send_back_count));
+    update_settings(settings_group_name, "send_back_count", QVariant(m_send_back_count));
+    cmd_set_send_back_count();
 }
 
 quint16 Scanner::num_rows() {
@@ -216,14 +212,12 @@ quint16 Scanner::num_rows() {
 }
 
 void Scanner::set_num_rows(int num_rows) {
-    if (m_num_rows != num_rows) {
-        m_num_rows = num_rows;
-        qDebug() << "Changing num rows to " << m_num_rows;
-        emit num_rows_changed(static_cast<int>(m_num_rows));
-        update_settings(settings_group_name, "num_rows", QVariant(m_num_rows));
-        set_send_back_count(m_num_rows);
-        cmd_set_signal_generator();
-    }
+    m_num_rows = num_rows;
+    qDebug() << "Changing num rows to " << m_num_rows;
+    emit num_rows_changed(static_cast<int>(m_num_rows));
+    update_settings(settings_group_name, "num_rows", QVariant(m_num_rows));
+    set_send_back_count(m_num_rows);
+    cmd_set_signal_generator();
 }
 
 quint16 Scanner::num_columns() {
@@ -231,13 +225,11 @@ quint16 Scanner::num_columns() {
 }
 
 void Scanner::set_num_columns(int num_columns) {
-    if (m_num_columns != num_columns) {
-        m_num_columns = num_columns;
-        qDebug() << "Changing num columns to " << m_num_columns;
-        emit num_columns_changed(static_cast<int>(m_num_columns));
-        update_settings(settings_group_name, "num_columns", QVariant(m_num_columns));
-        cmd_set_signal_generator();
-    }
+    m_num_columns = num_columns;
+    qDebug() << "Changing num columns to " << m_num_columns;
+    emit num_columns_changed(static_cast<int>(m_num_columns));
+    update_settings(settings_group_name, "num_columns", QVariant(m_num_columns));
+    cmd_set_signal_generator();
 }
 
 double Scanner::rms_threshold() {
@@ -245,12 +237,10 @@ double Scanner::rms_threshold() {
 }
 
 void Scanner::set_rms_threshold(double rms_threshold) {
-    if (m_rms_threshold != rms_threshold) {
-        m_rms_threshold = rms_threshold;
-        qDebug() << "Changing RMS threshold to " << m_rms_threshold;
-        update_settings(settings_group_name, "rms_threshold", QVariant(m_rms_threshold));
-        emit rms_threshold_changed(m_rms_threshold);
-    }
+    m_rms_threshold = rms_threshold;
+    qDebug() << "Changing RMS threshold to " << m_rms_threshold;
+    update_settings(settings_group_name, "rms_threshold", QVariant(m_rms_threshold));
+    emit rms_threshold_changed(m_rms_threshold);
 }
 
 QChar Scanner::leveling_direction() {
@@ -258,13 +248,11 @@ QChar Scanner::leveling_direction() {
 }
 
 void Scanner::set_leveling_direction(QChar leveling_direction) {
-    if (m_leveling_direction != leveling_direction) {
-        m_leveling_direction = leveling_direction;
-        qDebug() << "Changing leveling direction to " << m_leveling_direction;
-        update_settings(settings_group_name, "leveling_direction", QVariant(m_leveling_direction));
-        emit leveling_direction_changed(m_leveling_direction);
-        cmd_set_leveling_direction();
-    }
+    m_leveling_direction = leveling_direction;
+    qDebug() << "Changing leveling direction to " << m_leveling_direction;
+    update_settings(settings_group_name, "leveling_direction", QVariant(m_leveling_direction));
+    emit leveling_direction_changed(m_leveling_direction);
+    cmd_set_leveling_direction();
 }
 
 void Scanner::cmd_set_send_back_count() {
@@ -279,13 +267,11 @@ quint8 Scanner::dwell_time() {
 }
 
 void Scanner::set_dwell_time(int dwell_time) {
-    if (m_dwell_time != dwell_time) {
-        m_dwell_time = dwell_time;
-        qDebug() << "Changing dwell time to " << m_dwell_time;
-        emit dwell_time_changed(static_cast<int>(m_dwell_time));
-        update_settings(settings_group_name, "dwell_time", QVariant(m_dwell_time));
-        cmd_set_dwell_time();
-    }
+    m_dwell_time = dwell_time;
+    qDebug() << "Changing dwell time to " << m_dwell_time;
+    emit dwell_time_changed(m_dwell_time);
+    update_settings(settings_group_name, "dwell_time", QVariant(m_dwell_time));
+    cmd_set_dwell_time();
 }
 
 int Scanner::ratio() {
@@ -293,13 +279,11 @@ int Scanner::ratio() {
 }
 
 void Scanner::set_ratio(int ratio) {
-    if (m_ratio != ratio) {
-        m_ratio = ratio;
-        qDebug() << "Changing ratio to " << m_ratio;
-        emit ratio_changed(m_ratio);
-        update_settings(settings_group_name, "ratio", QVariant(m_ratio));
-        cmd_set_signal_generator();
-    }
+    m_ratio = ratio;
+    qDebug() << "Changing ratio to " << m_ratio;
+    emit ratio_changed(m_ratio);
+    update_settings(settings_group_name, "ratio", QVariant(m_ratio));
+    cmd_set_signal_generator();
 }
 
 void Scanner::cmd_set_signal_generator() {

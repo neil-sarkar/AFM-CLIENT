@@ -172,7 +172,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         redraw_canvas_points: function(data, max, min) {
             // console.log(data.length * data.length);
             // takes a MxN array
-            console.log(data.length * data.length);
             var ctx = this.get_context();
             var range = max - min;
             for (var x = 0; x < data.length; x += 1) {
@@ -180,47 +179,36 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     var z = data[x][y];
                     if (z === "-1")
                         continue;
-                    setTimeout(function(x, y, z) {
-                        var color;
-                        if (max == min)
-                            color = percent(0, myColours);
-                        else
-                            color = percent((z - min)/range * 100, myColours);
-                        try {
-                            ctx.fillStyle = color.hex;
-                        } catch (e) {
-                            console.log(e, color, x, y, z, min, max, range);
-                        }
-                        // console.log(x, y, z);
-                        ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
-                    }.bind(this, x, y, z), 0);
+                    this.draw_canvas_point(x, y, z, min, max, range, ctx);
                 }
             }
         },
         draw_canvas_points: function(data, max, min) {
             // console.log("here", data.length);
             // takes a flat array of {x: y: z:} objects
-            console.log(data.length);
             var ctx = this.get_context();
             var range = max - min;
             for (var i = 0; i < data.length; i += 1) {
                 var x = data[i].x;
                 var y = data[i].y;
                 var z = data[i].z;
-                setTimeout(function(x, y, z) {
-                    var color;
-                    if (max == min)
-                        color = percent(0, myColours);
-                    else
-                        color = percent((z - min)/range * 100, myColours);
-                    try {
-                        ctx.fillStyle = color.hex;
-                    } catch (e) {
-                        console.log(e, color, x, y, z, min, max, range);
-                    }
-                    ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
-                }.bind(this, x, y, z), 0);
+                this.draw_canvas_point(x, y, z, min, max, range, ctx);
             }
+        },
+        draw_canvas_point: function(x, y, z, min, max, range, ctx) {
+            setTimeout(function(x, y, z, min, max, range, ctx) {
+                var color;
+                if (max == min)
+                    color = percent(0, myColours);
+                else
+                    color = percent((z - min)/range * 100, myColours);
+                try {
+                    ctx.fillStyle = color.hex;
+                } catch (e) {
+                    console.log(e, color, x, y, z, min, max, range);
+                }
+                ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
+            }.bind(this, x, y, z, min, max, range, ctx), 0);
         },
         dummy_data: function () {
             size = 256;

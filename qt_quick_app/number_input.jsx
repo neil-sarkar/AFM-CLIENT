@@ -81,7 +81,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         render: function() {
             return (
                 <div>
-                    <label for={this.props.name}>{this.props.name}: </label>
+                    <label htmlFor={this.props.name}>{this.props.name}: </label>
                     <input type="number" ref="input" 
                                         className="number-input" 
                                         id={this.compressed_name()} 

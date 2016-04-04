@@ -32,7 +32,7 @@ define(["react"], function(React) {
 		render: function() {
 			return (
 				<div className="slider">
-					<label for={this.props.name}>{this.props.name}: </label>
+					<label htmlFor={this.props.name}>{this.props.name}: </label>
 					<input type="range" id={this.props.name}
 										min={this.props.min} 
 										max={this.props.max} 

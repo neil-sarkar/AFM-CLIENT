@@ -101,7 +101,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         tally_new_data: function(obj, x, y, z) {
-            obj.heatmap[y][x] = z;
+            obj.heatmap[x][y] = z;
             obj.profile[x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
@@ -230,8 +230,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
                                     return (
                                         <div>
-                                            <p className="view-selector-button" onClick={forward_bound_click}>Forward {view.name}</p>
-                                            <p className="view-selector-button" onClick={reverse_bound_click}>Reverse {view.name}</p>
+                                            <p className="view-selector-button" onClick={forward_bound_click} key={2*i}>Forward {view.name}</p>
+                                            <p className="view-selector-button" onClick={reverse_bound_click} key={2*i + 1}>Reverse {view.name}</p>
                                         </div>
                                         );
                                 }, this)}

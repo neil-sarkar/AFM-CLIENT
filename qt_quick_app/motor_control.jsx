@@ -67,15 +67,17 @@ define(["react"], function(React) {
             return i;
         },
         render: function() {
+            // thre is a warning about how we use value instead of defaultValue in the <input> field
+            // but the way its done here with "value" is necessary so that all motor slider components are synced
             return (
                 <div className="slider">
-                    <label for="speed">Speed</label>
+                    <label htmlFor="speed">Speed</label>
                     <input type="range" id="speed"
                                         min={this.props.min} 
                                         max={this.props.max} 
                                         step={this.props.step} 
-                                        value={this.state.slider_position} 
-                                        onInput={this.update_value_from_slider_input}/>
+                                        value={this.state.slider_position}
+                                        onChange={this.update_value_from_slider_input}/>
                 </div>
             );
         }

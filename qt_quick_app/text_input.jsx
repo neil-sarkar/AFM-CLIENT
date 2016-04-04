@@ -29,7 +29,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         render: function() {
             return (
                 <div>
-                    <label for={this.props.name}>{this.props.name}: </label>
+                    <label htmlFor={this.props.name}>{this.props.name}: </label>
                     <input type="text" ref="input" 
                                         className="text-input"
                                         value={this.state.value} 
