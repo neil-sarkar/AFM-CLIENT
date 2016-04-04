@@ -106,6 +106,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             });
         },
         set_data: function(forward_data, reverse_data) {
+            console.log("called set");
             if (this.state.chart.series.length === 0) {
                 this.addSeries("Forward");
                 this.addSeries("Reverse");

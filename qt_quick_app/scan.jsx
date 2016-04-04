@@ -187,13 +187,12 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },
         eliminate_outliers: function() {
-            current_view_obj = this.state.current_view % 2 === 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
-            var current_data = current_view_obj.heatmap;
-            var rms = Math.sqrt(current_view_obj.sum_of_squares / current_view_obj.num_points);
-            var mean = current_view_obj.sum / current_view_obj.num_points;
+            current_data_container = this.state.current_view % 2 === 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
+            var rms = Math.sqrt(current_data_container.sum_of_squares / current_data_container.num_points);
+            var mean = current_data_container.sum / current_data_container.num_points;
             var rms_multiplier = scanner.rms_threshold();
-            var min = mean - rms_multiplier * rms;
-            var max = mean + rms_multiplier * rms;
+            var min = Math.max(mean - rms_multiplier * rms, current_data_container.min);
+            var max = Math.min(mean + rms_multiplier * rms, current_data_container.max);
             this.refs.heatmap.eliminate_outliers(min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
