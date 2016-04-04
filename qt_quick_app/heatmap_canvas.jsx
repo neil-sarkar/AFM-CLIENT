@@ -101,18 +101,15 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
         },
         handle_mouse_move: function (e) {
-            // var canvasOffset = $("#" + this.props.id).offset();
-            // mouseX = e.clientX - canvasOffset.left;
-            // mouseY = e.clientY - canvasOffset.top;
-            // pointX = Math.floor(mouseX * num_columns/this.props.canvas_width);
-            // pointY = Math.floor(mouseY * num_rows/this.props.canvas_height);
-            // for (var i = 0; i < this.state.data.length; i++) {
-            //     if (this.state.data[i].x == pointX && this.state.data[i].y == pointY) {
-            //         $('#current-data').text(pointX + ", " + pointY + ", " + this.state.data[i].value);
-            //         return;
-            //     }
-            // }
-            // $('#current-data').text("");
+            var canvasOffset = $("#" + this.props.id).offset();
+            mouseX = e.clientX - canvasOffset.left;
+            mouseY = e.clientY - canvasOffset.top;
+            pointX = Math.floor(mouseX / this.state.pixel_size);
+            pointY = Math.floor(mouseY / this.state.pixel_size);
+            value = this.state.data[pointX][pointY];
+            if (value === undefined || value === "-1")
+                value = "undefined";
+            $('#current-data').text(pointX + ", " + pointY + ", " + value);
         },
         change_pixel_size: function(num_rows, num_columns, callback) {
             this.setState({
