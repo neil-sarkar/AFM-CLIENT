@@ -170,7 +170,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             });
         },
         redraw_canvas_points: function(data, max, min) {
-            // console.log(data.length * data.length);
             // takes a MxN array
             var ctx = this.get_context();
             var range = max - min;
@@ -232,20 +231,18 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             $('#current-data').text("");
         },
         eliminate_outliers: function (min, max) {
-            new_data = [];
-            for (var i = 0; i < this.state.data.length; i++) {
-                var x = this.state.data[i].x;
-                var y = this.state.data[i].y;
-                var value = this.state.data[i].value;
-                if (value < min) {
-                    new_data.push({x: x, y: y, value: min});
-                    continue;
+            new_data = this.state.data.slice();
+            for (var x = 0; x < this.state.data.length; x++) {
+                for (var y = 0; y < this.state.data[0].length; y++) {
+                    if (this.state.data[x][y] < min) {
+                        this.state.data[x][y] = min;
+                        continue;
+                    }
+                    if (this.state.data[x][y] > max) {
+                        this.state.data[x][y] = max;
+                        continue;
+                    }
                 }
-                if (value > max) {
-                    new_data.push({x: x, y: y, value: max});
-                    continue;
-                }
-                new_data.push({x: x, y:y, value: value});
             }
             this.redraw_canvas_points(new_data, max, min);
         },
