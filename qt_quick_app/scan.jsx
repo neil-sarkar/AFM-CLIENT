@@ -108,6 +108,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.num_points += 1;
         },
         prepare_new_data: function (view_index, data) {
+            // console.log(data);
             // console.log("New da", data);
             // console.log("Heatmap before adding", scan_views[view_index].forward_data.heatmap);
             // console.log("Heatmap before adding", this.refs.heatmap.state.data);
