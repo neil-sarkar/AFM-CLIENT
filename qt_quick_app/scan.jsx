@@ -4,7 +4,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         for(var i=0; i<rows; i++) {
             matrix.push([]);
             for (var j = 0; j < cols; j++) {
-                matrix[i].push("-1");
+                matrix[i].push("-1"); // TODO: put as constatn
             }
         }
         return matrix;
@@ -21,7 +21,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         this.num_rows = num_rows;
         this.num_columns = num_columns;
         this.heatmap = two_d_matrix_generator(num_rows, num_columns);
-        this.profile = one_d_matrix_generator(num_columns);
+        this.profile = two_d_matrix_generator(num_rows, num_columns);
         
         // Used for cleaning and heatmap color mapping
         this.sum = 0;
@@ -30,6 +30,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         this.min = Number.POSITIVE_INFINITY;
         this.max = Number.NEGATIVE_INFINITY;
     }
+
+    DataContainer.prototype.most_recent_line_profile = function() {
+        for (var i = this.profile.length - 1; i >= 0; i--) // iterate backwards, since we assume we fill in one direction only
+            if (this.profile[i][0] !== "-1") {// check if this row has been filled (assumes the entire row would be filled at once, therefore only check index 0 and assume the rest of the row is also -1)
+                return this.profile[i];
+            }
+    };
     
     function ScanView(name, data_source) {
         this.name = name;
@@ -110,7 +117,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         },
         tally_new_data: function(obj, x, y, z) {
             obj.heatmap[x][y] = z;
-            obj.profile[x] = z;
+            obj.profile[y][x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
@@ -134,16 +141,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 this.push_data_to_view(scan_views[view_index], false);
             }
         },
-        limit_line_profile_data: function(data) {
-            return data.slice(Math.max(data.length - this.state.send_back_count, 0));
-        },
         push_data_to_view: function(scan_view, is_switching_views) {
             if (this.state.current_view % 2 === 0) { // we're looking at the forward 
                 this.refs.heatmap.receive_data(scan_view.forward_data.heatmap, scan_view.forward_data.min, scan_view.forward_data.max, scan_view.forward_data.num_points, is_switching_views);
             } else { // we;re looking at the reverse
                 this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
             }
-            this.refs.line_profile.set_data(this.limit_line_profile_data(scan_view.forward_data.profile), this.limit_line_profile_data(scan_view.reverse_data.profile));
+            this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
         },
         // TODO: this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
@@ -188,12 +192,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         },
         eliminate_outliers: function() {
             current_data_container = this.state.current_view % 2 === 0 ? scan_views[Math.floor(this.state.current_view / 2)].forward_data : scan_views[Math.floor(this.state.current_view / 2)].reverse_data;
+            current_heatmap = current_data_container.heatmap;
             var rms = Math.sqrt(current_data_container.sum_of_squares / current_data_container.num_points);
             var mean = current_data_container.sum / current_data_container.num_points;
             var rms_multiplier = scanner.rms_threshold();
             var min = Math.max(mean - rms_multiplier * rms, current_data_container.min);
             var max = Math.min(mean + rms_multiplier * rms, current_data_container.max);
-            this.refs.heatmap.eliminate_outliers(min, max);
+            this.refs.heatmap.eliminate_outliers(current_heatmap, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         handle_view_selector_click: function(index, e) {
@@ -217,12 +222,12 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
-        handle_tooltip_select: function(y_value) {
-            var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
-            this.refs.line_profile.set_data(this.get_specific_row_profile(current_data_set.forward_data.profile, y_value), this.get_specific_row_profile(current_data_set.reverse_data.profile, y_value));
-        },
         dummy_data: function (argument) {
             this.refs.heatmap.dummy_data();
+        },
+        handle_heatmap_click: function(x, y) {
+            var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
+            this.refs.line_profile.set_data(current_data_set.forward_data.profile[y], current_data_set.reverse_data.profile[y]);
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
@@ -242,7 +247,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         );
                                 }, this)}
                             </div>
-                            <HeatmapCanvas ref="heatmap" id="heatmap1" />
+                            <HeatmapCanvas ref="heatmap" id="heatmap1" handle_click={this.handle_heatmap_click}/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>

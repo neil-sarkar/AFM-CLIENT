@@ -147,7 +147,7 @@ void AFM::set_save_folder(QString save_folder) {
 }
 
 void AFM::save_scan_data() {
-    scanner->save_raw_data(m_save_folder);
+    scanner->save_raw_data2(m_save_folder);
 }
 
 void AFM::save_force_curve_data() {

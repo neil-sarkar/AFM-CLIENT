@@ -377,6 +377,50 @@ void Scanner::save_raw_data(QString save_folder) {
     }
 }
 
+void Scanner::save_raw_data2(QString save_folder) {
+    if (!forward_data)
+        return;
+
+    QString folder_path = save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
+    QDir().mkdir(folder_path);
+    QList<QString> specific_file_names;
+    QList<QString> full_paths;
+    specific_file_names << "offset forward" << "phase forward" << "error forward" << "offset reverse" << "phase reverse" << "error reverse";
+    for (int i = 0; i < specific_file_names.length(); i++) {
+        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i]);
+        if (file.open(QIODevice::WriteOnly)) {
+            qDebug() << "file created" << file.fileName();
+            full_paths.append(file.fileName());
+        } else {
+            qDebug() << "File failed to create file: " << specific_file_names[i];
+        }
+    }
+
+    for (int i = 0; i < full_paths.length(); i++) {
+        ScanData* data_container = i < 3 ? forward_data : reverse_data;
+        QFile file(full_paths[i]);
+        if (file.open(QIODevice::Append)) {
+            QTextStream out(&file);   // we will serialize the data into the file
+            for (int j = 0; j < data_container->size(); j++) {
+                out << QString::number(data_container->data[j].x) << " ";
+                out << QString::number(data_container->data[j].y) << " ";
+                switch(i % 3) {
+                    case 0:
+                         out << QString::number(data_container->data[j].z_offset);
+                        break;
+                    case 1:
+                        out << QString::number(data_container->data[j].z_phase);
+                        break;
+                    case 2:
+                        out << QString::number(data_container->data[j].z_error);
+                }
+                out << "\n";
+            }
+        }
+    }
+}
+
+
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }

@@ -101,8 +101,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         componentDidMount: function() {
             $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
+            $("#" + this.props.id).click(function(e){this.handle_click(e);}.bind(this));
         },
-        handle_mouse_move: function (e) {
+        handle_mouse_move: function (e) { // TODO: investigate if we can put this on a setTimeout 0 to avoid blocking the canvas rendering
             var canvasOffset = $("#" + this.props.id).offset();
             mouseX = e.clientX - canvasOffset.left;
             mouseY = e.clientY - canvasOffset.top;
@@ -112,6 +113,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             if (value === undefined || value === "-1")
                 value = "undefined";
             $('#current-data').text(pointX + ", " + pointY + ", " + value);
+        },
+        handle_click: function (e) {
+            var canvasOffset = $("#" + this.props.id).offset();
+            mouseX = e.clientX - canvasOffset.left;
+            mouseY = e.clientY - canvasOffset.top;
+            canvas_x = Math.floor(mouseX / this.state.pixel_size);
+            canvas_y = Math.floor(mouseY / this.state.pixel_size);
+            this.props.handle_click(canvas_x, canvas_y);
         },
         change_pixel_size: function(num_rows, num_columns, callback) {
             this.setState({
@@ -203,16 +212,15 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         dummy_data: function () {
             size = 256;
             this.change_pixel_size(size,size, function() {
-                // console.log("here");
                 var matrix = [];
-                for(var i=0; i<256; i++) {
-                    matrix[i] = new Array(256);
+                for (var i = 0; i < 32; i++) {
+                    matrix[i] = new Array(64);
                 }
-                for (var i = 0; i < size; i++)
-                    for (var j = 0; j < size; j++)
+                for (var i = 0; i < 32; i++)
+                    for (var j = 0; j < 64; j++)
                         matrix[i][j] = i * j;
 
-                this.receive_data(matrix, 0, (size -1)*(size -1), size * size, false);
+                this.receive_data(matrix, 0, (32 -1)*(64 -1), 32 * 64, false);
             }.bind(this));
         },
         erase_data: function() {
@@ -221,21 +229,21 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             ctx.clearRect(0, 0, this.props.canvas_width, this.props.canvas_height);
             $('#current-data').text("");
         },
-        eliminate_outliers: function (min, max) {
-            new_data = this.state.data.slice();
-            for (var x = 0; x < this.state.data.length; x++) {
-                for (var y = 0; y < this.state.data[0].length; y++) {
-                    if (this.state.data[x][y] < min) {
-                        this.state.data[x][y] = min;
+        eliminate_outliers: function (data, min, max) {
+            data = data.slice();
+            for (var x = 0; x < data.length; x++) {
+                for (var y = 0; y < data[0].length; y++) {
+                    if (data[x][y] < min) {
+                        data[x][y] = min;
                         continue;
                     }
-                    if (this.state.data[x][y] > max) {
-                        this.state.data[x][y] = max;
+                    if (data[x][y] > max) {
+                        data[x][y] = max;
                         continue;
                     }
                 }
             }
-            this.redraw_canvas_points(new_data, max, min);
+            this.redraw_canvas_points(data, max, min);
         },
         render: function() {
             return (
