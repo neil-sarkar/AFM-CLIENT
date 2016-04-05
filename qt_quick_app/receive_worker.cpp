@@ -56,7 +56,7 @@ void ReceiveWorker::build_working_response() {
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
-    qDebug() << "Now processing" << response_tag << response_id << working_response;
+    qDebug() << "Now processing" << response_tag << response_id;
     assert (receive_command_queue.isEmpty() == false);
     CommandNode* node = receive_command_queue.dequeue();
     if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct

@@ -48,7 +48,6 @@ public:
 
     void set_settings();
     void save_raw_data(QString save_folder);
-    void save_raw_data2(QString save_folder);
 
 signals:
     void scanner_initialization_done();
