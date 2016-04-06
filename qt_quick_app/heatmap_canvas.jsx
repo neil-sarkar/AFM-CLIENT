@@ -109,7 +109,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             mouseY = e.clientY - canvasOffset.top;
             pointX = Math.floor(mouseX / this.state.pixel_size);
             pointY = Math.floor(mouseY / this.state.pixel_size);
-            value = this.state.data[pointX][pointY];
+            value = this.state.data[pointY][pointX];
             if (value === undefined || value === "-1")
                 value = "undefined";
             $('#current-data').text(pointX + ", " + pointY + ", " + value);
@@ -134,10 +134,10 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         diff_data: function (prev, next) {
             // prev and next are complete data matrices
             diffed = [];
-            for (var x = 0; x < next.length; x++) {
-                for (var y = 0; y < next[x].length; y++) {
-                    if (next[x][y] !== prev[x][y]) { // push different data
-                        diffed.push({x: x, y: y, z: next[x][y]});
+            for (var y = 0; y < next.length; y++) {
+                for (var x = 0; x < next[y].length; x++) {
+                    if (next[y][x] !== prev[y][x]) { // push different data
+                        diffed.push({x: x, y: y, z: next[y][x]});
                     }
                 }
             }
@@ -172,9 +172,9 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             // takes a MxN array
             var ctx = this.get_context();
             var range = max - min;
-            for (var x = 0; x < data.length; x += 1) {
-                for (var y = 0; y < data[x].length; y += 1) {
-                    var z = data[x][y];
+            for (var y = 0; y < data.length; y += 1) {
+                for (var x = 0; x < data[y].length; x += 1) {
+                    var z = data[y][x];
                     if (z === "-1")
                         continue;
                     this.draw_canvas_point(x, y, z, min, max, range, ctx);
@@ -210,7 +210,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             }.bind(this, x, y, z, min, max, range, ctx), 0); // wrap in a settimeout to avoid blocking UI
         },
         dummy_data: function () {
-            size = 256;
             this.change_pixel_size(size,size, function() {
                 var matrix = [];
                 for (var i = 0; i < 32; i++) {
@@ -231,14 +230,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         eliminate_outliers: function (data, min, max) {
             data = data.slice();
-            for (var x = 0; x < data.length; x++) {
-                for (var y = 0; y < data[0].length; y++) {
-                    if (data[x][y] < min) {
-                        data[x][y] = min;
+            for (var y = 0; y < data.length; y++) {
+                for (var x = 0; x < data[0].length; x++) {
+                    if (data[y][x] < min) {
+                        data[y][x] = min;
                         continue;
                     }
-                    if (data[x][y] > max) {
-                        data[x][y] = max;
+                    if (data[y][x] > max) {
+                        data[y][x] = max;
                         continue;
                     }
                 }

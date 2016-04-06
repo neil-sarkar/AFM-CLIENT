@@ -15,7 +15,6 @@
 Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 {
     pid = pid_;
-    scanning_forward = true;
     fine_z = static_cast<DAC*>(dac_fine_z_);
     m_should_pause = false;
 }
@@ -101,9 +100,10 @@ void Scanner::initialize_scan_state_machine() {
     // Old code used to set PGAs here, but we really don't need to - they should already have been set
     qDebug() << "Initializing";
     m_should_pause = false;
+    scanning_forward = true;
     emit scanner_initialization_done();
-    forward_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), true);
-    reverse_data = new ScanData(m_num_rows, m_num_columns, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), false);
+    forward_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), true);
+    reverse_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(), false);
 }
 
 void Scanner::set_signal_generator() {
@@ -132,6 +132,8 @@ void Scanner::cmd_step_scan() {
 }
 
 bool Scanner::is_scanning_forward() {
+    if (forward_data->size() == 0)
+        return true;
     if (scanning_forward && (forward_data->size() % m_num_columns) == 0)
         return false;
     if (!scanning_forward && (reverse_data->size() % m_num_columns) == 0)
@@ -152,17 +154,18 @@ void Scanner::callback_step_scan(QByteArray payload) {
             reverse_data->append(z_amplitude, z_offset, z_phase, pid->setpoint() / ADC::SCALE_FACTOR);
         }
         // This condition checks to see if we should send data (should be every line)
-        if (!scanning_forward && reverse_data->size() % m_send_back_count == 0) { // TODO: check this condition
-            QVariantList offset_data = forward_data->package_data_for_ui(m_send_back_count, 0); // TODO: ENUM the 0,1,2
-            offset_data.append(reverse_data->package_data_for_ui(m_send_back_count, 0));
+        if (reverse_data->size() == forward_data->size() && reverse_data->size() % m_num_columns == 0) { // TODO: check this condition
+           forward_data->print();
+            QVariantList offset_data = forward_data->package_data_for_ui(m_num_columns, 0); // TODO: ENUM the 0,1,2
+            offset_data.append(reverse_data->package_data_for_ui(m_num_columns, 0));
             emit new_offset_data(offset_data);
 
-            QVariantList phase_data = forward_data->package_data_for_ui(m_send_back_count, 1);
-            phase_data.append(reverse_data->package_data_for_ui(m_send_back_count, 1));
+            QVariantList phase_data = forward_data->package_data_for_ui(m_num_columns, 1);
+            phase_data.append(reverse_data->package_data_for_ui(m_num_columns, 1));
             emit new_phase_data(phase_data);
 
-            QVariantList error_data = forward_data->package_data_for_ui(m_send_back_count, 2);
-            error_data.append(reverse_data->package_data_for_ui(m_send_back_count, 2));
+            QVariantList error_data = forward_data->package_data_for_ui(m_num_columns, 2);
+            error_data.append(reverse_data->package_data_for_ui(m_num_columns, 2));
             emit new_error_data(error_data);
         }
         scanning_forward = is_scanning_forward();

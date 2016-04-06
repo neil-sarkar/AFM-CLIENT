@@ -1,7 +1,7 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, HeatmapCanvas, LineProfile, InlineScanControls) {
     function two_d_matrix_generator(rows, cols) {
         var matrix = new Array();
-        for(var i=0; i<rows; i++) {
+        for(var i=0; i < rows; i++) {
             matrix.push([]);
             for (var j = 0; j < cols; j++) {
                 matrix[i].push("-1"); // TODO: put as constatn
@@ -61,9 +61,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: false,
                 starting_fresh_scan: true,
                 current_view: 0,
-                num_rows: 10,
-                num_columns: 10,
-                send_back_count: 0
+                num_rows: 16,
+                num_columns: 16,
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -116,7 +115,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         tally_new_data: function(obj, x, y, z) {
-            obj.heatmap[x][y] = z;
+            obj.heatmap[y][x] = z;
             obj.profile[y][x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
@@ -126,6 +125,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             // Data comex as (x,y,z.. max,min) * 2 for forward and reverse
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
+
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }
@@ -154,7 +154,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.setState({
                 num_rows: scanner.num_rows(),
                 num_columns: scanner.num_columns(),
-                send_back_count: scanner.send_back_count()
             });
             this.setState({
                 scanning: true,

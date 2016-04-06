@@ -17,6 +17,7 @@
 			}, 200);
 		},
 		auto_sweep: function() {
+			this.clear();
 			pid.set_disabled();
 			setTimeout(function() {
 				sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout

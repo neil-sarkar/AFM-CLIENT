@@ -4,7 +4,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text
 			return (
 				<div>
 					<NumberInput value_type="scan"
-								name="Number of Rows" // we map number of rows to num_columns because something seems backwards...
+								name="Number of Columns" // we map number of rows to num_columns because something seems backwards...
 								min={0}
 								max={256}
 								step={1}
@@ -12,7 +12,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text
 								get_value={scanner.num_columns}
 								set_value={scanner.set_num_columns} />
 					<NumberInput value_type="scan"
-								name="Number of Columns"
+								name="Number of Rows"
 								min={0}
 								max={256}
 								step={1}
