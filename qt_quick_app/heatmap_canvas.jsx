@@ -110,13 +110,11 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
 
             pointX = Math.floor(mouseX / this.state.pixel_size);
             pointY = Math.floor(mouseY / this.state.pixel_size);
-            console.log(mouseX, mouseY, this.state.pixel_size);
             pointX = Math.max(pointX, 0);
             pointY = Math.max(pointY, 0);
 
             pointX = Math.min(pointX, this.props.canvas_width/this.state.pixel_size - 1);
             pointY = Math.min(pointY, this.props.canvas_height/this.state.pixel_size - 1);
-            console.log(pointX, pointY);
             return {x: pointX, y: pointY};
         },
         handle_mouse_move: function (e) { // TODO: investigate if we can put this on a setTimeout 0 to avoid blocking the canvas rendering
@@ -128,7 +126,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         handle_click: function (e) {
             coord = this.get_mouse_coordinate(e);
-            console.log("Clicked", coord.x, coord.y);
             this.props.handle_click(coord.x, coord.y);
         },
         change_pixel_size: function(num_rows, num_columns, callback) {
