@@ -109,6 +109,10 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             mouseY = e.clientY - canvasOffset.top;
             pointX = Math.floor(mouseX / this.state.pixel_size);
             pointY = Math.floor(mouseY / this.state.pixel_size);
+            pointX = Math.max(pointX, -1);
+            pointY = Math.max(pointY, -1);
+            pointX = Math.min(pointX, this.props.canvas_width/this.state.pixel_size - 1);
+            pointY = Math.min(pointY, this.props.canvas_height/this.state.pixel_size - 1);
             value = this.state.data[pointY][pointX];
             if (value === undefined || value === "-1")
                 value = "undefined";
