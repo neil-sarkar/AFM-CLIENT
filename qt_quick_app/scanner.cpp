@@ -155,7 +155,6 @@ void Scanner::callback_step_scan(QByteArray payload) {
         }
         // This condition checks to see if we should send data (should be every line)
         if (reverse_data->size() == forward_data->size() && reverse_data->size() % m_num_columns == 0) { // TODO: check this condition
-           forward_data->print();
             QVariantList offset_data = forward_data->package_data_for_ui(m_num_columns, 0); // TODO: ENUM the 0,1,2
             offset_data.append(reverse_data->package_data_for_ui(m_num_columns, 0));
             emit new_offset_data(offset_data);
