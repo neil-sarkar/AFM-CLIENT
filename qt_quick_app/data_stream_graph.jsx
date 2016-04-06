@@ -78,9 +78,11 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 running_max: Math.max.apply(null, y_values),
             }, function () {
                 x += 1;
-                this.state.chart.options.axisY.minimum = this.state.running_min - this.props.padding;
-                this.state.chart.options.axisY.maximum = this.state.running_max + this.props.padding;
-                this.state.chart.options.axisY.interval = (Math.abs(this.state.running_max - this.state.running_min) + 2 * this.props.padding) / this.props.num_dashlines,
+                // If you want autoscale, uncomment these lines
+                // TODO: make this toggleable in the UI
+                // this.state.chart.options.axisY.minimum = this.state.running_min - this.props.padding;
+                // this.state.chart.options.axisY.maximum = this.state.running_max + this.props.padding;
+                // this.state.chart.options.axisY.interval = (Math.abs(this.state.running_max - this.state.running_min) + 2 * this.props.padding) / this.props.num_dashlines,
                 this.state.chart.render();
                 if (this.state.data.length === 1) {
                     $('.canvasjs-chart-credit').hide(); // TODO: put this in a more appropriate place
