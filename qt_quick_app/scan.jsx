@@ -34,7 +34,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     DataContainer.prototype.most_recent_line_profile = function() {
         for (var i = this.profile.length - 1; i >= 0; i--) // iterate backwards, since we assume we fill in one direction only
             if (this.profile[i][0] !== "-1") {// check if this row has been filled (assumes the entire row would be filled at once, therefore only check index 0 and assume the rest of the row is also -1)
-                return this.profile[i];
+                return this.profile[i].slice(); // must slice, otherwise the first row gets set to the last row retreived (I think it's because we pass by arrays reference and highcharts will retain a reference to the first points it gets, which means it can also set that data)
             }
     };
     
@@ -125,7 +125,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             // Data comex as (x,y,z.. max,min) * 2 for forward and reverse
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
-
                 var j = data.length / 2 + i;
                 this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
             }

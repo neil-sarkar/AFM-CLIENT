@@ -103,28 +103,33 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             $("#" + this.props.id).mousemove(function(e){this.handle_mouse_move(e);}.bind(this));
             $("#" + this.props.id).click(function(e){this.handle_click(e);}.bind(this));
         },
-        handle_mouse_move: function (e) { // TODO: investigate if we can put this on a setTimeout 0 to avoid blocking the canvas rendering
+        get_mouse_coordinate: function(e) {
             var canvasOffset = $("#" + this.props.id).offset();
             mouseX = e.clientX - canvasOffset.left;
             mouseY = e.clientY - canvasOffset.top;
+
             pointX = Math.floor(mouseX / this.state.pixel_size);
             pointY = Math.floor(mouseY / this.state.pixel_size);
-            pointX = Math.max(pointX, -1);
-            pointY = Math.max(pointY, -1);
+            console.log(mouseX, mouseY, this.state.pixel_size);
+            pointX = Math.max(pointX, 0);
+            pointY = Math.max(pointY, 0);
+
             pointX = Math.min(pointX, this.props.canvas_width/this.state.pixel_size - 1);
             pointY = Math.min(pointY, this.props.canvas_height/this.state.pixel_size - 1);
-            value = this.state.data[pointY][pointX];
+            console.log(pointX, pointY);
+            return {x: pointX, y: pointY};
+        },
+        handle_mouse_move: function (e) { // TODO: investigate if we can put this on a setTimeout 0 to avoid blocking the canvas rendering
+            coord = this.get_mouse_coordinate(e);
+            value = this.state.data[coord.y][coord.x];
             if (value === undefined || value === "-1")
                 value = "undefined";
-            $('#current-data').text(pointX + ", " + pointY + ", " + value);
+            $('#current-data').text(coord.x + ", " + coord.y + ", " + value);
         },
         handle_click: function (e) {
-            var canvasOffset = $("#" + this.props.id).offset();
-            mouseX = e.clientX - canvasOffset.left;
-            mouseY = e.clientY - canvasOffset.top;
-            canvas_x = Math.floor(mouseX / this.state.pixel_size);
-            canvas_y = Math.floor(mouseY / this.state.pixel_size);
-            this.props.handle_click(canvas_x, canvas_y);
+            coord = this.get_mouse_coordinate(e);
+            console.log("Clicked", coord.x, coord.y);
+            this.props.handle_click(coord.x, coord.y);
         },
         change_pixel_size: function(num_rows, num_columns, callback) {
             this.setState({
