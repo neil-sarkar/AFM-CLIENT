@@ -3,26 +3,36 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text
 		render: function() {
 			return (
 				<div>
-					<NumberInput value_type="scan"
-								name="Number of Columns" // we map number of rows to num_columns because something seems backwards...
-								min={0}
-								max={256}
-								step={1}
-								notify_signal={scanner.num_columns_changed}
-								get_value={scanner.num_columns}
-								set_value={scanner.set_num_columns} />
-					<NumberInput value_type="scan"
-								name="Number of Rows"
-								min={0}
-								max={256}
-								step={1}
-								notify_signal={scanner.num_rows_changed}
-								get_value={scanner.num_rows}
-								set_value={scanner.set_num_rows} />
+					<Dropdown options_list={[
+								{text: "8", cmd_number: 8},
+								{text: "16", cmd_number: 16},
+								{text: "32", cmd_number: 32},
+								{text: "64", cmd_number: 64},
+								{text: "128", cmd_number: 128},
+								{text: "256", cmd_number: 256},
+								{text: "512", cmd_number: 512},
+								{text: "1024", cmd_number: 1024},
+							]}
+							selection_method={scanner.set_num_columns}
+							notify_signal={scanner.num_columns_changed}
+							title="Number of Columns"/>
+					<Dropdown options_list={[
+								{text: "8", cmd_number: 8},
+								{text: "16", cmd_number: 16},
+								{text: "32", cmd_number: 32},
+								{text: "64", cmd_number: 64},
+								{text: "128", cmd_number: 128},
+								{text: "256", cmd_number: 256},
+								{text: "512", cmd_number: 512},
+								{text: "1024", cmd_number: 1024},
+							]}
+							selection_method={scanner.set_num_rows}
+							notify_signal={scanner.num_rows_changed}
+							title="Number of Rows"/>
 					<NumberInput value_type="scan" 
 								name="Send Back Count"
 								min={0}
-								max={256}
+								max={1024}
 								step={1} 
 								notify_signal={scanner.send_back_count_changed} 
 								get_value={scanner.send_back_count} 

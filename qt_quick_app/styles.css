@@ -265,6 +265,7 @@
 
 .dropdown-option {
     padding-left: 2%;
+    cursor: pointer;
 }
 
 .scan-view-selector-container {
@@ -334,3 +335,4 @@
 .selected-scan-view {
     border-right: 5px solid #6DADE6;
 }
+
