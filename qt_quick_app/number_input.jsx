@@ -2,7 +2,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
     var NumberInput = React.createClass({
         componentDidMount: function() {
             this.props.notify_signal.connect(this.update_value_from_backend_change);
-            var element_id = ('#' + this.compressed_name());
+            var element_id = ('.' + this.compressed_name());
             var component = this;
             $(element_id).keydown(function(e){
                 var key = e.which;
@@ -61,6 +61,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
             this.setState({
                 value: text_to_render
             });
+            // this.send_value_to_backend();
         },
         validate_input_and_format: function(num) {
             num = this.round(num);
@@ -83,8 +84,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
                 <div>
                     <label htmlFor={this.props.name}>{this.props.name}: </label>
                     <input type="number" ref="input" 
-                                        className="number-input" 
-                                        id={this.compressed_name()} 
+                                        className={"number-input " + this.compressed_name()}
                                         min={this.props.min} 
                                         max={this.props.max} 
                                         step={this.props.step}
