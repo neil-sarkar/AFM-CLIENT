@@ -50,7 +50,7 @@ define(["react", "dom"], function(React, ReactDOM) {
                         <img id="home-image" src="qrc:/images/afm.jpeg"></img>
                     </div>
                     <div className="right-flexbox vertically-centered-column">
-                        <h1>Welcome to openAFM.</h1>
+                        <h1>Welcome to nGauge.</h1>
                         <p>{status_map[this.state.status].text}</p>
                         <button className="action-button" onClick={main_window.load_main_app_page}>Enter</button>
                      </div>

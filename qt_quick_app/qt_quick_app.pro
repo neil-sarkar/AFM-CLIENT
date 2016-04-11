@@ -1,5 +1,5 @@
 TEMPLATE = app
-
+TARGET = "nGauge"
 QT += qml quick
 QT += serialport
 QT += concurrent
