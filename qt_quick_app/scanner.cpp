@@ -219,7 +219,6 @@ void Scanner::set_num_rows(int num_rows) {
     qDebug() << "Changing num rows to " << m_num_rows;
     emit num_rows_changed(static_cast<int>(m_num_rows));
     update_settings(settings_group_name, "num_rows", QVariant(m_num_rows));
-    set_send_back_count(m_num_rows);
     cmd_set_signal_generator();
 }
 
@@ -232,6 +231,7 @@ void Scanner::set_num_columns(int num_columns) {
     qDebug() << "Changing num columns to " << m_num_columns;
     emit num_columns_changed(static_cast<int>(m_num_columns));
     update_settings(settings_group_name, "num_columns", QVariant(m_num_columns));
+    set_send_back_count(m_num_columns);
     cmd_set_signal_generator();
 }
 
