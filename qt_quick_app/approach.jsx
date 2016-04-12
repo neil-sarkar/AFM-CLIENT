@@ -18,6 +18,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 				status: 0,
 				approach_complete: false,
 				approach_in_progress: false,
+				advanced: false,
 			};
 		},
 		componentDidMount: function() {
@@ -101,6 +102,11 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			}.bind(this), 250);
 			this.allow_dangerous_user_input();
 		},
+		toggle_advanced_controls: function () {
+			this.setState({
+				advanced: !this.state.advanced
+			});
+		},
 		render: function() {
 			return (
 				<div className="wrapper" id="approach-wrapper">
@@ -132,15 +138,17 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 					<div className="right-flexbox">
 						<div className="step-name">Sample Approach</div>
 						<div className="step-description">
-							Press the "Approach" button to begin a raising the sample towards the AFM chip.
-							The approach is complete once the amplitude value reaches the desired setpoint.
+							Click "Approach" to bring the AFM in contact with the sample.
 						</div>
 						<button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
-						<InlineApproachControls />
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
 						</div>
+						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
+                        <div className={this.state.advanced ? "visible" : "hidden"}>
+                            <InlineApproachControls />
+                        </div>
 					</div>
 				</div>
 			);

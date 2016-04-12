@@ -83,6 +83,7 @@
 
 .step-description {
     font-family: "Roboto-Thin";
+    margin-bottom: 5%;
 }
 
 .sweep-button {
@@ -336,3 +337,18 @@
     border-right: 5px solid #6DADE6;
 }
 
+.advanced-controls-toggle {
+    cursor: pointer;
+}
+
+.visible {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.dropbtn {
+    cursor: pointer;
+}

@@ -75,10 +75,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
             return series;
         },
-        componentWillReceiveProps: function(nextProps) {
-        // we can use this method to see if the component is receiving props
-            this.renderChart();
-        },
         getInitialState: function() {
             return {
                 model: []
@@ -90,15 +86,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             };
         },
         shouldComponentUpdate: function(nextProps, nextState) {
-            return nextProps.model.length > 0; // should we update the component?
+            return (nextProps.model || false) && nextProps.model.length > 0; // should we update the component?
         },
         componentDidMount: function() {
             this.renderChart();
             this.props.data_connection.connect(this.handle_new_data);
             $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
-        },
-        componentDidUpdate: function() {
-            this.renderChart(); // after the component props are updated, render the chart into the DOM node
         },
         handle_new_data: function(data) {
             var two_dimensional_data = [];
