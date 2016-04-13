@@ -1,15 +1,15 @@
 define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls", "jsx!pages/data_stream_graph"], function(React, Constants, ApproachGraph, ZFineGraph, InlineApproachControls, DataStreamGraph) {
 	var status_map = {
-		0: "Motor idle",
-		1: "Motor waking up",
-		2: "Retracting quickly",
-		3: "Pausing for measurement",
-		4: "Taking initial measurement",
-		5: "Preparing for approach",
-		6: "Approaching quickly",
-		7: "Slowing down",
-		8: "Approaching slowly",
-		9: "Reached setpoint",
+		0: "motor idle",
+		1: "motor waking up",
+		2: "retracting quickly",
+		3: "pausing for measurement",
+		4: "taking initial measurement",
+		5: "preparing for approach",
+		6: "approaching quickly",
+		7: "slowing down",
+		8: "approaching slowly",
+		9: "reached setpoint",
 	};
 
 	var Approach = React.createClass({
@@ -60,6 +60,10 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			}
 			this.setState({
 				approach_in_progress: (approacher_state !== 0)
+			}, function (argument) {
+				if (!this.state.approach_in_progress) {
+					clearInterval(warning_interval);
+				}
 			});
 		},
 		componentWillReceiveProps : function(nextProps) {
@@ -90,17 +94,28 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			this.refs.approach_graph.stop_streaming();
 			pid.set_disabled();
 			approacher.cmd_start_auto_approach();
+			motor_status_opacity = 0.5;
+			setTimeout(function (argument) {
+				warning_interval = setInterval(function () {
+					$(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+						motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+					});
+				}, 300);
+			}, 500);
 		},
 		stop_approaching: function() {
 			approacher.cmd_stop_auto_approach();
 			this.setState({
-				approach_in_progress: false
+				approach_in_progress: false,
+				status: 0,
 			});
 			setTimeout(function() {
 				this.refs.z_fine_graph.start_streaming();
 				this.refs.approach_graph.start_streaming();
 			}.bind(this), 250);
 			this.allow_dangerous_user_input();
+			clearInterval(warning_interval);
+			$(".motor-status").fadeTo("fast", 1);
 		},
 		toggle_advanced_controls: function () {
 			this.setState({
@@ -108,6 +123,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			});
 		},
 		render: function() {
+			var motor_status_style = this.state.approach_complete ? "completion-background" : "warning-background";
+			var approach_status_style = this.state.approach_complete ? "completion-background" : "warning-background";
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
@@ -130,15 +147,15 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 											num_points_displayed={Constants.Approach_Num_Points_Displayed} 
 											poll_rate={Constants.Z_Fine_Poll_Rate}
 											max_value={3.3} />
-						<div className="approacher-status">
-							{status_map[this.state.status]}
-							{this.state.approach_complete && <div>Approach complete</div>}
-						</div>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Sample Approach</div>
 						<div className="step-description">
 							Click "Approach" to bring the AFM in contact with the sample.
+						</div>
+						<div className="approacher-status">
+							<p className={"motor-status " + motor_status_style}><span className="bold-label">Motor status:</span> {status_map[this.state.status]}</p>
+							<p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete</span> : <span>sample not in contact</span>}</p>
 						</div>
 						<button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
 						<div className="nav-buttons-wrapper">

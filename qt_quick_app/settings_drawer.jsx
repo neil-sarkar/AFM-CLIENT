@@ -26,6 +26,8 @@
 					$("#settings-drawer-wrapper").css('visibility', 'hidden');
 				}
 			});
+
+			$("#settings-drawer-wrapper").css('visibility', 'hidden');
 		},
 		render: function() {
 			var self = this;
