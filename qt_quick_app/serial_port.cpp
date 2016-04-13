@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QTextCodec>
 #include <assert.h>
+#include "globals.h"
 #include "constants.h"
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {

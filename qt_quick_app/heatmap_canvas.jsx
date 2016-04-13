@@ -140,10 +140,19 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         diff_data: function (prev, next) {
             // prev and next are complete data matrices
             diffed = [];
+            var exit = false;
             for (var y = 0; y < next.length; y++) {
+                if (exit) {
+                    console.log("early exit");
+                    break;
+                }
                 for (var x = 0; x < next[y].length; x++) {
                     if (next[y][x] !== prev[y][x]) { // push different data
                         diffed.push({x: x, y: y, z: next[y][x]});
+                    }
+                    if (next[y][x] === "-1") {
+                        exit = true;
+                        break;
                     }
                 }
             }
@@ -154,12 +163,12 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var diff = this.diff_data(this.state.data, data);
             var update_all = is_switching_views || !(this.state.running_max >= max && this.state.running_min <= min);
 
-            next_data = []; // copy the data to a new array to avoid weird pass by reference issues when setting this.state.data
-            for (var i = 0; i < data.length; i++) {
-                next_data.push([]);
-                for (var j = 0; j < data[i].length; j++)
-                    next_data[i].push(data[i][j]);
+            console.log("Started");
+            next_data = this.state.data; // copy the data to a new array to avoid weird pass by reference issues when setting this.state.data
+            for (var i = 0; i < diff.length; i++) {
+                next_data[diff[i].y][diff[i].x] = diff[i].z
             }
+            console.log("Finished");
 
             this.setState({
                 num_points: data_length,
@@ -182,7 +191,7 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 for (var x = 0; x < data[y].length; x += 1) {
                     var z = data[y][x];
                     if (z === "-1")
-                        continue;
+                        return;
                     this.draw_canvas_point(x, y, z, min, max, range, ctx);
                 }
             }

@@ -146,7 +146,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             } else { // we;re looking at the reverse
                 this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
             }
-            this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
+            // this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
         },
         // TODO: this whole tristate scanning button really should just be done with a dictionary
         start_or_resume_scanning: function() {
