@@ -377,3 +377,7 @@
 .bold-label {
     font-family: "Roboto-Medium";
 }
+
+.active-step {
+    text-decoration: underline;
+}
