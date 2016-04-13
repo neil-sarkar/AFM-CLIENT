@@ -24,7 +24,7 @@
 	var ProgressBarStep = React.createClass({
 		render: function() {
 			var this_step_number = this.props.this_step;
-			return (<span className={"progress-bar-step"} onClick={this.props.go_to_step.bind(this, this_step_number)}> {this.props.name} </span>);
+			return (<span className="progress-bar-step" onClick={this.props.go_to_step.bind(this, this_step_number)}> {this.props.name} </span>);
 		}
 	})
 	return ProgressBar;

@@ -71,7 +71,7 @@ define(["react"], function(React) {
             // but the way its done here with "value" is necessary so that all motor slider components are synced
             return (
                 <div className="slider">
-                    <label htmlFor="speed">Speed</label>
+                    <label htmlFor="speed">Motor Speed</label>
                     <input type="range" id="speed"
                                         min={this.props.min} 
                                         max={this.props.max} 

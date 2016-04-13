@@ -11,14 +11,14 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		8: "approaching slowly",
 		9: "reached setpoint",
 	};
-
+	var warning_interval;
 	var Approach = React.createClass({
 		getInitialState : function() {
 			return {
 				status: 0,
 				approach_complete: false,
 				approach_in_progress: false,
-				advanced: false,
+				advanced: false
 			};
 		},
 		componentDidMount: function() {
@@ -95,13 +95,11 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			pid.set_disabled();
 			approacher.cmd_start_auto_approach();
 			motor_status_opacity = 0.5;
-			setTimeout(function (argument) {
-				warning_interval = setInterval(function () {
-					$(".motor-status").fadeTo("fast", motor_status_opacity, function () {
-						motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
-					});
-				}, 300);
-			}, 500);
+			warning_interval = setInterval(function () {
+				$(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+					motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+				});
+			}, 300);
 		},
 		stop_approaching: function() {
 			approacher.cmd_stop_auto_approach();
