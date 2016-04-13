@@ -83,6 +83,7 @@
 
 .step-description {
     font-family: "Roboto-Thin";
+    margin-bottom: 5%;
 }
 
 .sweep-button {
@@ -336,3 +337,46 @@
     border-right: 5px solid #6DADE6;
 }
 
+.advanced-controls-toggle {
+    cursor: pointer;
+}
+
+.visible {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.dropbtn {
+    cursor: pointer;
+}
+
+.approacher-status {
+    text-align: center;
+    font-size: 20px;
+    width: 60%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+.motor-status {
+    padding: 5px;
+}
+
+.approach-status { 
+    padding: 5px;
+}
+
+.warning-background {
+    background-color: lightblue;
+}
+
+.completion-background {
+    background-color: lightgreen;
+}
+
+.bold-label {
+    font-family: "Roboto-Medium";
+}

@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<<<<<<< HEAD
-<!-- Written by QtCreator 3.6.1, 2016-04-11T20:10:23. -->
-<qtcreator>
- <data>
-  <variable>EnvironmentId</variable>
-  <value type="QByteArray">{1a57d23e-169f-4534-9eda-102c1d7cc8e0}</value>
-=======
-<!-- Written by QtCreator 3.6.0, 2016-04-13T17:53:03. -->
+<!-- Written by QtCreator 3.6.0, 2016-04-06T19:54:28. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
   <value type="QByteArray">{2891f499-05e1-437d-bfff-45f86bd67280}</value>
->>>>>>> cc583da520a56b65fdcc40e4a42b1736c0b6d4f4
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -309,12 +301,8 @@
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">qt_quick_app</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
-<<<<<<< HEAD
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/Users/rrmansou/Documents/code/AFM-CLIENT/qt_quick_app/qt_quick_app.pro</value>
-=======
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">qt_quick_app2</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/Users/abali/Drive/Code/icspi/AFM-CLIENT/qt_quick_app/qt_quick_app.pro</value>
->>>>>>> cc583da520a56b65fdcc40e4a42b1736c0b6d4f4
     <value type="bool" key="QmakeProjectManager.QmakeRunConfiguration.UseLibrarySearchPath">true</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments"></value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">qt_quick_app.pro</value>

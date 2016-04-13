@@ -1,14 +1,16 @@
  define(["jquery" ,"react", "jsx!pages/sweep_graphs", "jsx!pages/inline_sweep_controls"], function($, React, Graphs, InlineSweepControls) {
-	var Sweep = React.createClass({	
+	var Sweep = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
-			if (nextProps.showStep == false) {
+			if (nextProps.showStep === false) {
 				$('#sweep-wrapper').hide();
 			} else {
 				$('#sweep-wrapper').show();
 			}
 		},
-		shouldComponentUpdate : function() {
-			return false;
+		getInitialState: function () {
+			return {
+				advanced: false,
+			};
 		},
 		manual_sweep: function() {
 			pid.set_disabled();
@@ -26,6 +28,11 @@
 		clear: function() {
 			this.refs.graphs.clear();
 		},
+		toggle_advanced_controls: function () {
+			this.setState({
+				advanced: !this.state.advanced,
+			});
+		},
 		render: function() {
 			return (
 				<div className="wrapper" id="sweep-wrapper">
@@ -35,18 +42,26 @@
 					<div className="right-flexbox">
 						<div className="step-name">Frequency Sweep</div>
 						<div className="step-description">
-							Press the "Sweep" button to begin a frequency sweep. When the graphs are populated, you may select
-							a frequency to drive the cantilever. By default, the resonant frequency is chosen.
-							Click and drag on the graphs to zoom in and out.
+							Click "Sweep" to find the resonant frequency of the AFM.
 						</div>
 						<div className="top-row">
-							<button className="action-button" onClick={this.auto_sweep}>Auto Sweep</button>
-							<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
-							<button className="action-button" onClick={this.clear}>Clear</button>
+							<button className="action-button" onClick={this.auto_sweep}>Sweep</button>
 						</div>
-						<InlineSweepControls/>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
+						</div>
+						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
+						<div className={this.state.advanced ? "visible" : "hidden"}>
+							<p>
+							 After sweeping, click on the graph to manually select an operating frequency from the curve.
+							 By default, the resonant frequency is chosen.
+							 Click and drag on the graphs to zoom in and out.
+							</p>
+							<div className="top-row">
+								<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
+								<button className="action-button" onClick={this.clear}>Clear</button>
+							</div>
+							<InlineSweepControls/>
 						</div>
 					</div>
 				</div>

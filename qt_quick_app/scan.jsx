@@ -1,4 +1,4 @@
-define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls"], function(React, HeatmapCanvas, LineProfile, InlineScanControls) {
+define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text_input", "jsx!pages/save_folder"], function(React, HeatmapCanvas, LineProfile, InlineScanControls, NumberInput, Dropdown, TextInput, SaveFolderPicker) {
     function two_d_matrix_generator(rows, cols) {
         var matrix = new Array();
         for(var i=0; i < rows; i++) {
@@ -63,6 +63,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 current_view: 0,
                 num_rows: 16,
                 num_columns: 16,
+                advanced: false,
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -227,6 +228,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
             this.refs.line_profile.set_data(current_data_set.forward_data.profile[y], current_data_set.reverse_data.profile[y]);
         },
+        toggle_advanced_controls: function () {
+            this.setState({
+                advanced: !this.state.advanced
+            });
+        },
+        save_data: function () {
+            afm.save_scan_data();
+        },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
             return (
@@ -252,19 +261,69 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     <div className="right-flexbox">
                         <div className="step-name">Scan</div>
                         <div className="step-description">
-                        After setting the scan parameters below, press "Scan". "Clear" will stop the scan completely and erase the image. 
-                        "Clean" will perform outlier truncation, with its level set by the "Remove outliers" setting below. "Download Data" will save the data from each image
-                        in at the file path specified in the settings window, with a folder name that begins with the base name set below.
+                            Press "Scan" to begin imaging.
+                        </div>
+                        <div>
+                            <Dropdown options_list={[
+                                        {text: "8", cmd_number: 8},
+                                        {text: "16", cmd_number: 16},
+                                        {text: "32", cmd_number: 32},
+                                        {text: "64", cmd_number: 64},
+                                        {text: "128", cmd_number: 128},
+                                        {text: "256", cmd_number: 256},
+                                        {text: "512", cmd_number: 512},
+                                        {text: "1024", cmd_number: 1024},
+                                    ]}
+                                    selection_method={scanner.set_num_columns}
+                                    notify_signal={scanner.num_columns_changed}
+                                    title="Number of pixels per line"/>
+                            <Dropdown options_list={[
+                                        {text: "8", cmd_number: 8},
+                                        {text: "16", cmd_number: 16},
+                                        {text: "32", cmd_number: 32},
+                                        {text: "64", cmd_number: 64},
+                                        {text: "128", cmd_number: 128},
+                                        {text: "256", cmd_number: 256},
+                                        {text: "512", cmd_number: 512},
+                                        {text: "1024", cmd_number: 1024},
+                                    ]}
+                                    selection_method={scanner.set_num_rows}
+                                    notify_signal={scanner.num_rows_changed}
+                                    title="Number of lines"/>
+                            <NumberInput value_type="scan"
+                                        name="Number of averages taken at each point"
+                                        min={0}
+                                        max={255} 
+                                        step={1} 
+                                        notify_signal={scanner.num_averages_changed} 
+                                        get_value={scanner.num_averages} 
+                                        set_value={scanner.set_num_averages} />
+                            <NumberInput value_type="scan" 
+                                        name="Time spent at each point (ms)"
+                                        min={0}
+                                        max={255}
+                                        step={1} 
+                                        notify_signal={scanner.dwell_time_changed} 
+                                        get_value={scanner.dwell_time} 
+                                        set_value={scanner.set_dwell_time} />
+                            <TextInput name="File name base" 
+                                        notify_signal={scanner.base_file_name_changed}
+                                        get_value={scanner.base_file_name}
+                                        set_value={scanner.set_base_file_name} />
+                            <SaveFolderPicker compressed={true}/>
                         </div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
-                            <button className="action-button" onClick={this.clear_scan}>Clear</button>
-                            <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
-                            <button className="action-button" onClick={afm.save_scan_data} disabled={this.state.scanning}>Download Data</button>
+                            <button className="action-button" onClick={this.clear_scan}>Reset</button>
+                            <button className="action-button" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
                         </div>
-                        <InlineScanControls />
                         <div className="nav-buttons-wrapper">
                             <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+                        </div>
+                        <p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
+                        <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>
+                            <InlineScanControls />
+                            <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
                         </div>
                     </div>
                 </div>

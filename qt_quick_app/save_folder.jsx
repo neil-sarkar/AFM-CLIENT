@@ -12,14 +12,22 @@ define(["react"], function(React) {
 				value: afm.save_folder
 			};
 		},
+		getDefaultProps: function (argument) {
+			return {
+				compressed: false
+			};
+		},
 		launch_folder_picker: function() {
 			afm.launch_folder_picker();
 		},
 		render: function() {
 			return (
 				<div>
-					<p className="save-directory">Save Directory: {this.state.value}</p>
-					<button style={{position: 'relative'}} className="settings-drawer-button folder-picker-button" onClick={this.launch_folder_picker}>Pick folder</button>
+					<p className="save-directory">Save Directory: {this.state.value == "" ? "Not Selected" : this.state.value}
+						<span>
+						{(this.props.compressed ? <span onClick={this.launch_folder_picker} className="dropbtn"> | Select &#8594;</span> : <button style={{position: 'relative'}} className="settings-drawer-button folder-picker-button" onClick={this.launch_folder_picker}>Pick folder</button>)}
+						</span>
+					</p>
 				</div>
 				);
 		}
