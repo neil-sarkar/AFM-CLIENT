@@ -93,6 +93,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			this.refs.z_fine_graph.stop_streaming();
 			this.refs.approach_graph.stop_streaming();
 			pid.set_disabled();
+			dac_6.set_value(1.5);
 			approacher.cmd_start_auto_approach();
 			motor_status_opacity = 0.5;
 			warning_interval = setInterval(function () {

@@ -223,13 +223,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                     color = color_map[0];
                 else
                     color = color_map[(Math.round((z - min)/range * 10000) / 100) * 100];
-                try {
-                    ctx.fillStyle = color;
-                } catch (e) { // this should never happen
-                    console.log(e, color, x, y, z, min, max, range);
-                }
-                // actually draw on the canvas
-                ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size);
+                ctx.fillStyle = color;
+                ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size); // actually draw on the canvas
             }.bind(this, x, y, z, min, max, range, ctx), 0); // wrap in a settimeout to avoid blocking UI
         },
         dummy_data: function () {
