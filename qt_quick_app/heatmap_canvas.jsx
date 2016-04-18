@@ -219,15 +219,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             }
         },
         draw_canvas_point: function(x, y, z, min, max, range, ctx) {
-            setTimeout(function(x, y, z, min, max, range, ctx) {
-                var color;
-                if (max == min)
-                    color = color_map[0];
-                else
-                    color = color_map[(Math.round((z - min)/range * 10000) / 100) * 100];
+            var pixel_size = this.state.pixel_size;
+            if (max == min)
+                color = color_map[0];
+            else
+                color = color_map[((z - min)/range * 10000) | 0];
+            if (ctx.fillStyle != color)
                 ctx.fillStyle = color;
-                ctx.fillRect(x * this.state.pixel_size, y * this.state.pixel_size, this.state.pixel_size, this.state.pixel_size); // actually draw on the canvas
-            }.bind(this, x, y, z, min, max, range, ctx), 0); // wrap in a settimeout to avoid blocking UI
+            ctx.fillRect(x * pixel_size, y * pixel_size, pixel_size, pixel_size); // actually draw on the canvas
         },
         dummy_data: function () {
             this.change_pixel_size(size,size, function() {
