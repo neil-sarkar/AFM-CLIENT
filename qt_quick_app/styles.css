@@ -381,3 +381,8 @@
 .active-step {
     text-decoration: underline;
 }
+
+#heatmap1 {
+    width: 384px;
+    height: 384px;
+}

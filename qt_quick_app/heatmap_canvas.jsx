@@ -2,6 +2,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
     // Color manipualation adapted from this:
     // http://stackoverflow.com/questions/16252448/how-to-calculate-the-proportional-color-between-the-three-given-with-a-percentage
 
+    var color_map = [];
+
     function two_d_matrix_generator(rows, cols) {
         var matrix = [];
         for(var i=0; i<rows; i++) {
@@ -80,6 +82,16 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         }
     }
 
+    function populate_color_map() {
+        for (var i = 0; i < 100; i += 0.01) {
+            color_map.push(percent(parseFloat(i.toFixed(2)), myColours).hex);
+        }
+    }
+
+    setTimeout(function()  {
+        populate_color_map();
+    }, 0);
+
     var ScanHeatMap = React.createClass({
         getInitialState: function() {
             return {
@@ -92,8 +104,8 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
         },
         getDefaultProps: function() {
             return {
-                canvas_height: 384,
-                canvas_width: 384,
+                canvas_height: 1024,
+                canvas_width: 1024,
             };
         },
         get_context: function() {
@@ -143,7 +155,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var exit = false;
             for (var y = 0; y < next.length; y++) {
                 if (exit) {
-                    console.log("early exit");
                     break;
                 }
                 for (var x = 0; x < next[y].length; x++) {
@@ -163,12 +174,10 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var diff = this.diff_data(this.state.data, data);
             var update_all = is_switching_views || !(this.state.running_max >= max && this.state.running_min <= min);
 
-            console.log("Started");
             next_data = this.state.data; // copy the data to a new array to avoid weird pass by reference issues when setting this.state.data
             for (var i = 0; i < diff.length; i++) {
-                next_data[diff[i].y][diff[i].x] = diff[i].z
+                next_data[diff[i].y][diff[i].x] = diff[i].z;
             }
-            console.log("Finished");
 
             this.setState({
                 num_points: data_length,
@@ -211,12 +220,11 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             setTimeout(function(x, y, z, min, max, range, ctx) {
                 var color;
                 if (max == min)
-                    color = percent(0, myColours);
+                    color = color_map[0];
                 else
-                    color = percent((z - min)/range * 100, myColours);
-                
+                    color = color_map[(Math.round((z - min)/range * 10000) / 100) * 100];
                 try {
-                    ctx.fillStyle = color.hex;
+                    ctx.fillStyle = color;
                 } catch (e) { // this should never happen
                     console.log(e, color, x, y, z, min, max, range);
                 }
