@@ -123,7 +123,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.num_points += 1;
         },
         prepare_new_data: function (view_index, data) {
-            // Data comex as (x,y,z.. max,min) * 2 for forward and reverse
+            // Data comes as (x,y,z.. max,min) * 2 for forward and reverse
             for (var i = 0; i < (data.length / 2) - 2; i += 3) {
                 this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;

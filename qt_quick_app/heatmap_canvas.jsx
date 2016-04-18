@@ -197,12 +197,14 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
             var ctx = this.get_context();
             var range = max - min;
             for (var y = 0; y < data.length; y += 1) {
-                for (var x = 0; x < data[y].length; x += 1) {
-                    var z = data[y][x];
-                    if (z === "-1")
-                        return;
-                    this.draw_canvas_point(x, y, z, min, max, range, ctx);
-                }
+                setTimeout(function(row) {
+                    for (var x = 0; x < data[row].length; x += 1) {
+                        var z = data[row][x];
+                        if (z === "-1")
+                            return;
+                        this.draw_canvas_point(x, row, z, min, max, range, ctx);
+                    }
+                }.bind(this, y), 0);
             }
         },
         draw_canvas_points: function(data, max, min) {
