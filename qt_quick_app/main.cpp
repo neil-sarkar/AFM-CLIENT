@@ -28,11 +28,7 @@
 
 int main(int argc, char *argv[])
 {
-    Builder* builder = new Builder();
-    builder->generate_color_map();
 
-
-    return 1;
     QCoreApplication::setApplicationName("nGauge");
     QCoreApplication::setOrganizationName("ICSPI");
     SafeApplication app(argc, argv); // init app
@@ -44,13 +40,14 @@ int main(int argc, char *argv[])
     QThread* receiver_thread = new QThread();
 
     // Object creation
-//    Builder* builder = new Builder();
+    Builder* builder = new Builder();
     SerialPort* serial_port = new SerialPort();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
     builder->generate_command_nodes();
+    builder->generate_color_map();
 
     // Thread connections
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));

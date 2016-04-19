@@ -166,7 +166,6 @@ QColor Builder::interpolate_color(double percent, QVector<QColor> colors) {
         if (percent > bucket_size * i)
             continue;
         double factor = (bucket_size * i - percent) / (bucket_size);
-        qDebug() << i << factor;
         int r1, g1, b1;
         r1 = colors[i].red();
         g1= colors[i].green();
@@ -190,16 +189,24 @@ void Builder::generate_color_map() {
     colors.append(QColor(188,128,0));
     colors.append(QColor(252,252,128));
 
-    for (int i = 0; i < 100; i += 0.01) {
+    for (double i = 0; i < 100; i += 0.01) {
         color_map[i] = interpolate_color(i, colors);
     }
-//    QImage image(1, 100, QImage::Format_RGB32);
+
+    for (double i = 0; i < 100; i += 0.01) {
+        qDebug() << i << color_map[i];
+    }
+
+    // How to draw images:
+
+//    QImage image(1, 1000, QImage::Format_RGB32);
 //    QColor value;
-//    for (int i = 0; i < 100; i++) {
+//    for (double i = 0; i < 100; i += 0.1) {
+//            qDebug() << i;
 //            value = color_map[i];
 //            int r1, g1, b1;
 //            value.getRgb(&r1, &g1, &b1);
-//            image.setPixel(0, i, qRgb(r1,g1,b1));
+//            image.setPixel(0, i*10, qRgb(r1,g1,b1));
 //        }
 //    QByteArray ba;
 //    QBuffer buffer(&ba);

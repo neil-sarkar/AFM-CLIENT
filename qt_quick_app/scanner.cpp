@@ -158,7 +158,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             QVariantList offset_data = forward_data->package_data_for_ui(m_num_columns, 0); // TODO: ENUM the 0,1,2
             offset_data.append(reverse_data->package_data_for_ui(m_num_columns, 0));
             emit new_offset_data(offset_data);
-
+            qDebug() << forward_data->generate_png();
             QVariantList phase_data = forward_data->package_data_for_ui(m_num_columns, 1);
             phase_data.append(reverse_data->package_data_for_ui(m_num_columns, 1));
             emit new_phase_data(phase_data);
