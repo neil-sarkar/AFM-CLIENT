@@ -11,10 +11,13 @@
 #include "constants.h"
 #include "approacher.h"
 #include "scanner.h"
+#include "globals.h"
 #include "force_curve_generator.h"
 #include <iostream>
 #include <iomanip>
 #include <QFinalState>
+#include <QImage>
+#include <QBuffer>
 
 Builder::Builder() {}
 
@@ -154,4 +157,53 @@ int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base) {
     if (conversion_successful)
         return result;
     return -1;
+}
+
+QColor Builder::interpolate_color(double percent, QVector<QColor> colors) {
+    double bucket_size = 100.0 / (colors.length() - 1);
+//    qDebug() << bucket_size << colors.length();
+    for (int i = 1; i < colors.length(); i++) {
+        if (percent > bucket_size * i)
+            continue;
+        double factor = (bucket_size * i - percent) / (bucket_size);
+        qDebug() << i << factor;
+        int r1, g1, b1;
+        r1 = colors[i].red();
+        g1= colors[i].green();
+        b1 = colors[i].blue();
+        int r0, g0, b0;
+        r0 = colors[i -1].red();
+        g0= colors[i - 1].green();
+        b0 = colors[i -1].blue();
+//        int *r0, *g0, *b0;
+//        colors[i - 1].getRgb(r0, g0, b0);
+        int mixed_r = r1 * (1-factor) + r0 * factor;
+        int mixed_g = g1 * (1-factor) + g0 * factor;
+        int mixed_b = b1 * (1-factor) + b0 * factor;
+        return QColor(std::min(mixed_r, 255), std::min(mixed_g, 255), std::min(mixed_b, 255));
+    }
+}
+
+void Builder::generate_color_map() {
+    QVector<QColor> colors;
+    colors.append(QColor(88,28,0));
+    colors.append(QColor(188,128,0));
+    colors.append(QColor(252,252,128));
+
+    for (int i = 0; i < 100; i += 0.01) {
+        color_map[i] = interpolate_color(i, colors);
+    }
+//    QImage image(1, 100, QImage::Format_RGB32);
+//    QColor value;
+//    for (int i = 0; i < 100; i++) {
+//            value = color_map[i];
+//            int r1, g1, b1;
+//            value.getRgb(&r1, &g1, &b1);
+//            image.setPixel(0, i, qRgb(r1,g1,b1));
+//        }
+//    QByteArray ba;
+//    QBuffer buffer(&ba);
+//    buffer.open(QIODevice::WriteOnly);
+//    image.save(&buffer, "PNG"); // writes image into ba in PNG format
+//    qDebug() << ba.toBase64();
 }

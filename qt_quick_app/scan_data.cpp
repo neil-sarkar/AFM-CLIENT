@@ -3,6 +3,9 @@
 #include "adc.h"
 #include "QDebug"
 #include <QtGlobal>
+#include "adc.h"
+#include <QImage>
+#include <QBuffer>
 
 ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int delta_y, bool is_forward)
 {
@@ -14,6 +17,8 @@ ScanData::ScanData(int num_points, int num_lines, int ratio, int delta_x, int de
     m_x_index = -1;
     m_y_index = -1;
     m_is_forward = is_forward;
+    m_max = 0;
+    m_min = ADC::RESOLUTION;
 }
 
 int ScanData::max_size() {
@@ -97,4 +102,20 @@ void ScanData::print() {
     for (DataPoint data_point : data) {
         qDebug() << data_point.x << data_point.y << data_point.z_error << data_point.z_offset << data_point.z_phase;
     }
+}
+
+QString ScanData::generate_png() {
+    QImage image(m_num_rows, m_num_columns, QImage::Format_RGB32);
+    QRgb value;
+    for (int i = 0; i < m_num_rows; i++) {
+        for (int j = 0; j < m_num_columns; j++) {
+
+            image.setPixel(j, i, value);
+        }
+    }
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG"); // writes image into ba in PNG format
+    return ba.toBase64();
 }

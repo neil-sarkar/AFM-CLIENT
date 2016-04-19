@@ -68,7 +68,8 @@ HEADERS += \
     safe_application.h \
     web_file_dialog.h \
     force_curve_generator.h \
-    globals.h
+    globals.h \
+    color_map.h
 
 DISTFILES += \
     test.html

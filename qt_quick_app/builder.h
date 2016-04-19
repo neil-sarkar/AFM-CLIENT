@@ -4,6 +4,7 @@
 #include "serial_port.h"
 #include "send_worker.h"
 #include "receive_worker.h"
+#include <QRgb>
 
 
 class Builder
@@ -15,7 +16,8 @@ public:
     void wire_hash_command_generated(QHash<int, AFMObject*> & collection, SendWorker* & send_worker);
     void generate_command_nodes();  // pull all the command nodes from .tsv file
     int bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base);
-
+    void generate_color_map();
+    QColor interpolate_color(double percent, QVector<QColor> colors);
 
 };
 

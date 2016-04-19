@@ -18,6 +18,7 @@ public:
     QVariantList package_data_for_ui(int num_points, int z_type);
     QVariantList package_error_signal_for_ui(int num_points, int setpoint); // setpoint is int here because we convert it to bits
     QList<DataPoint> data;
+    QString generate_png();
 
 signals:
 
@@ -31,8 +32,8 @@ private:
     int m_y_index;
     int m_delta_x;
     int m_delta_y;
-    int max;
-    int min;
+    int m_max;
+    int m_min;
     bool m_is_forward;
 };
 

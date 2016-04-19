@@ -22,10 +22,17 @@
 #include <QDir>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QImage>
+#include <QBuffer>
 #include "safe_application.h"
 
 int main(int argc, char *argv[])
 {
+    Builder* builder = new Builder();
+    builder->generate_color_map();
+
+
+    return 1;
     QCoreApplication::setApplicationName("nGauge");
     QCoreApplication::setOrganizationName("ICSPI");
     SafeApplication app(argc, argv); // init app
@@ -37,7 +44,7 @@ int main(int argc, char *argv[])
     QThread* receiver_thread = new QThread();
 
     // Object creation
-    Builder* builder = new Builder();
+//    Builder* builder = new Builder();
     SerialPort* serial_port = new SerialPort();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
