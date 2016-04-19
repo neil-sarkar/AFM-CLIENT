@@ -93,13 +93,17 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.all_data_received.connect(this.set_scan_complete);
 
             // connect scan views to their data sources
-            for (var i = 0; i < scan_views.length; i++) {
-                var bound_method = this.prepare_new_data.bind(this, i);
-                scan_views[i].data_source.connect(bound_method);
-            }
+            // for (var i = 0; i < scan_views.length; i++) {
+            //     var bound_method = this.prepare_new_data.bind(this, i);
+            //     scan_views[i].data_source.connect(bound_method);
+            // }
+            scanner.new_offset_data.connect(this.render_png);
 
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
+        },
+        render_png: function(new_data) {
+            document.getElementById("pngimage").src = "data:image/jpg;base64," + new_data;
         },
         change_num_rows: function (num_rows) {
             this.setState({
@@ -254,6 +258,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         );
                                 }, this)}
                             </div>
+                            <img src="" id="pngimage" />
                             <HeatmapCanvas ref="heatmap" id="heatmap1" handle_click={this.handle_heatmap_click}/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>

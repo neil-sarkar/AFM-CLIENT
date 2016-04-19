@@ -141,15 +141,14 @@ QColor get_color(double percent) {
     return interpolate_color(percent, colors);
 }
 
-
 QString ScanData::generate_png() {
     QImage image(m_num_rows, m_num_columns, QImage::Format_RGB32);
     int num_points = size();
     DataPoint point;
+    QColor value;
+    double percentage;
     for (int i = 0; i < num_points; i++) {
-        QColor value;
         point = data[i];
-        double percentage;
         if (m_max == m_min)
             percentage = 0;
         else {

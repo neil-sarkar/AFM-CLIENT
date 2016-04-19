@@ -86,7 +86,7 @@ void Scanner::emit_dummy_data() {
             data.append(i*j);
         }
     }
-    emit new_offset_data(data);
+//    emit new_offset_data(data);
     // emit new_phase_data(data);
     // emit new_error_data(data);
     return;
@@ -155,17 +155,18 @@ void Scanner::callback_step_scan(QByteArray payload) {
         }
         // This condition checks to see if we should send data (should be every line)
         if (reverse_data->size() == forward_data->size() && reverse_data->size() % m_num_columns == 0) { // TODO: check this condition
-            QVariantList offset_data = forward_data->package_data_for_ui(m_num_columns, 0); // TODO: ENUM the 0,1,2
-            offset_data.append(reverse_data->package_data_for_ui(m_num_columns, 0));
-            emit new_offset_data(offset_data);
-            qDebug() << forward_data->generate_png();
-            QVariantList phase_data = forward_data->package_data_for_ui(m_num_columns, 1);
-            phase_data.append(reverse_data->package_data_for_ui(m_num_columns, 1));
-            emit new_phase_data(phase_data);
+            // QVariantList offset_data = forward_data->package_data_for_ui(m_num_columns, 0); // TODO: ENUM the 0,1,2
+            // offset_data.append(reverse_data->package_data_for_ui(m_num_columns, 0));
+            // emit new_offset_data(offset_data);
+            emit new_offset_data(forward_data->generate_png());
 
-            QVariantList error_data = forward_data->package_data_for_ui(m_num_columns, 2);
-            error_data.append(reverse_data->package_data_for_ui(m_num_columns, 2));
-            emit new_error_data(error_data);
+            // QVariantList phase_data = forward_data->package_data_for_ui(m_num_columns, 1);
+            // phase_data.append(reverse_data->package_data_for_ui(m_num_columns, 1));
+            // emit new_phase_data(phase_data);
+
+            // QVariantList error_data = forward_data->package_data_for_ui(m_num_columns, 2);
+            // error_data.append(reverse_data->package_data_for_ui(m_num_columns, 2));
+            // emit new_error_data(error_data);
         }
         scanning_forward = is_scanning_forward();
         m_num_columns_received += 1;

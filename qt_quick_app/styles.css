@@ -385,4 +385,5 @@
 #heatmap1 {
     width: 384px;
     height: 384px;
+    display:none;
 }
