@@ -106,6 +106,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var bound_method = this.render_png.bind(this, picture_map[i].dom_id);
                 picture_map[i].data_source.connect(bound_method);
             }
+
+            scanner.new_offset_line_profile.connect(this.prepare_new_line_profile_data);
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
             $('.scan-image').hide();
@@ -146,31 +148,30 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.sum_of_squares += Math.pow(z, 2);
             obj.num_points += 1;
         },
-        prepare_new_data: function (view_index, data) {
+        prepare_new_line_profile_data: function (data) {
             // Data comes as (x,y,z.. max,min) * 2 for forward and reverse
-            for (var i = 0; i < (data.length / 2) - 2; i += 3) {
-                this.tally_new_data(scan_views[view_index].forward_data, data[i], data[i+1], data[i+2]);
+            console.log(data);
+            for (var i = 0; i < (data.length / 2); i += 3) {
+                this.tally_new_data(scan_views[0].forward_data, data[i], data[i+1], data[i+2]);
                 var j = data.length / 2 + i;
-                this.tally_new_data(scan_views[view_index].reverse_data, data[j], data[j+1], data[j+2]);
+                this.tally_new_data(scan_views[0].reverse_data, data[j], data[j+1], data[j+2]);
             }
+            console.log(scan_views[0].forward_data);
+            console.log(scan_views[0].reverse_data);
 
-            // set the max and min for the whole scan - take the max of the new data's max current max so far
-            scan_views[view_index].forward_data.max = Math.max(data[data.length/2 - 2], scan_views[view_index].forward_data.max);
-            scan_views[view_index].forward_data.min = Math.min(data[data.length/2 - 1], scan_views[view_index].forward_data.min);
-            scan_views[view_index].reverse_data.max = Math.max(data[data.length - 2], scan_views[view_index].reverse_data.max);
-            scan_views[view_index].reverse_data.min = Math.min(data[data.length - 1], scan_views[view_index].reverse_data.min);
+            // // set the max and min for the whole scan - take the max of the new data's max current max so far
+            // scan_views[0].forward_data.max = Math.max(data[data.length/2 - 2], scan_views[0].forward_data.max);
+            // scan_views[0].forward_data.min = Math.min(data[data.length/2 - 1], scan_views[0].forward_data.min);
+            // scan_views[0].reverse_data.max = Math.max(data[data.length - 2], scan_views[0].reverse_data.max);
+            // scan_views[0].reverse_data.min = Math.min(data[data.length - 1], scan_views[0].reverse_data.min);
             
-            // If the data we just got refers to what we're looking at currently, send the data to the heatmap
-            if (Math.floor(this.state.current_view / 2) == view_index) {
-                this.push_data_to_view(scan_views[view_index], false);
-            }
+            // // If the data we just got refers to what we're looking at currently, send the data to the heatmap
+            // if (Math.floor(this.state.current_view / 2) == 0) {
+            console.log("Here");
+            this.push_data_to_view(scan_views[0], false);
+            // }
         },
         push_data_to_view: function(scan_view, is_switching_views) {
-            if (this.state.current_view % 2 === 0) { // we're looking at the forward 
-                // this.refs.heatmap.receive_data(scan_view.forward_data.heatmap, scan_view.forward_data.min, scan_view.forward_data.max, scan_view.forward_data.num_points, is_switching_views);
-            } else { // we;re looking at the reverse
-                // this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
-            }
             this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
         },
         // TODO: this whole tristate scanning button really should just be done with a dictionary
@@ -184,6 +185,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }, function(){
                 if (this.state.starting_fresh_scan) {
                     scanner.start_state_machine();
+                    for (var i = 0; i < scan_views.length; i++) {
+                        scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
+                    }
                 } else {
                     scanner.resume_state_machine();
                 }

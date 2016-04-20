@@ -72,6 +72,10 @@ signals:
     void ratio_changed(int);
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
+    void new_offset_line_profile(QVariantList);
+    void new_phase_line_profile(QVariantList);
+    void new_error_line_profile(QVariantList);
+
 
 public slots:
     // Scan state machine methods
@@ -123,6 +127,8 @@ private:
     ScanData* rev_offset_data;
     ScanData* rev_phase_data;
     ScanData* rev_error_data;
+
+    QVariantList get_latest_line_profile(ScanData* fwd, ScanData* rev);
 
     static const QString settings_group_name;
 };

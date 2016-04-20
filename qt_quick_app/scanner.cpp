@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QTimer>
+#include "scan_data.h"
 #include "constants.h"
 #include "adc.h"
 
@@ -166,9 +167,29 @@ void Scanner::callback_step_scan(QByteArray payload) {
             emit new_reverse_offset_data(rev_offset_data->generate_png());
             emit new_reverse_phase_data(rev_phase_data->generate_png());
             emit new_reverse_error_data(rev_error_data->generate_png());
+
+            emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
         }
         scanning_forward = is_scanning_forward();
     }
+}
+
+QVariantList Scanner::get_latest_line_profile(ScanData* fwd, ScanData* rev) {
+    QVariantList flat_data;
+    DataPoint p;
+    for (int i = fwd->data.length() - m_num_columns; i < fwd->data.length(); i++) {
+        p = fwd->data[i];
+        flat_data.append(p.x);
+        flat_data.append(p.y);
+        flat_data.append(p.z);
+    }
+    for (int i = rev->data.length() - m_num_columns; i < rev->data.length(); i++) {
+        p = rev->data[i];
+        flat_data.append(p.x);
+        flat_data.append(p.y);
+        flat_data.append(p.z);
+    }
+    return flat_data;
 }
 
 void Scanner::end_scan_state_machine() {
