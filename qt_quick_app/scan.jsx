@@ -117,12 +117,28 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         change_num_rows: function (num_rows) {
             this.setState({
                 num_rows: num_rows,
+            }, function() {
+                this.set_img_size();
             });
         },
         change_num_columns: function (num_cols) {
             this.setState({
                 num_columns: num_cols,
+            }, function() {
+                this.set_img_size();
             });
+        },
+        set_img_size: function() {
+            if (this.state.num_rows > this.state.num_columns) {
+                $(".scan-image").height(384);
+                $(".scan-image").width(384 / 1024 * this.state.num_columns);
+            } else if (this.state.num_rows < this.state.num_columns) {
+                $(".scan-image").width(384);
+                $(".scan-image").height(384 / 1024 * this.state.num_rows);
+            } else {
+                $(".scan-image").width(384);
+                $(".scan-image").height(384);
+            }
         },
         tally_new_data: function(obj, x, y, z) {
             obj.profile[y][x] = z;
