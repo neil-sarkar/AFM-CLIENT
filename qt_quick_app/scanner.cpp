@@ -160,35 +160,35 @@ void Scanner::callback_step_scan(QByteArray payload) {
             rev_error_data->append(x_coord, m_y_index, pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
         }
         // This condition checks to see if we should send data (should be every line)
-        if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) { // TODO: check this condition
-            emit new_forward_offset_data(fwd_offset_data->generate_png());
-            emit new_forward_phase_data(fwd_phase_data->generate_png());
-            emit new_forward_error_data(fwd_error_data->generate_png());
-            emit new_reverse_offset_data(rev_offset_data->generate_png());
-            emit new_reverse_phase_data(rev_phase_data->generate_png());
-            emit new_reverse_error_data(rev_error_data->generate_png());
+         if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) { // TODO: check this condition
+//            emit new_forward_offset_data(fwd_offset_data->generate_png());
+//            emit new_forward_phase_data(fwd_phase_data->generate_png());
+//            emit new_forward_error_data(fwd_error_data->generate_png());
+//            emit new_reverse_offset_data(rev_offset_data->generate_png());
+//            emit new_reverse_phase_data(rev_phase_data->generate_png());
+//            emit new_reverse_error_data(rev_error_data->generate_png());
 
-            emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
-        }
+            // emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
+         }
         scanning_forward = is_scanning_forward();
     }
 }
 
 QVariantList Scanner::get_latest_line_profile(ScanData* fwd, ScanData* rev) {
     QVariantList flat_data;
-    DataPoint p;
-    for (int i = fwd->data.length() - m_num_columns; i < fwd->data.length(); i++) {
-        p = fwd->data[i];
-        flat_data.append(p.x);
-        flat_data.append(p.y);
-        flat_data.append(p.z);
-    }
-    for (int i = rev->data.length() - m_num_columns; i < rev->data.length(); i++) {
-        p = rev->data[i];
-        flat_data.append(p.x);
-        flat_data.append(p.y);
-        flat_data.append(p.z);
-    }
+//    DataPoint p;
+//    for (int i = fwd->data.length() - m_num_columns; i < fwd->data.length(); i++) {
+//        p = fwd->data[i];
+//        flat_data.append(p.x);
+//        flat_data.append(p.y);
+//        flat_data.append(p.z);
+//    }
+//    for (int i = rev->data.length() - m_num_columns; i < rev->data.length(); i++) {
+//        p = rev->data[i];
+//        flat_data.append(p.x);
+//        flat_data.append(p.y);
+//        flat_data.append(p.z);
+//    }
     return flat_data;
 }
 

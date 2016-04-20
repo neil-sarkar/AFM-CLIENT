@@ -18,10 +18,15 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_delta_x = delta_x;
     m_delta_y = delta_y;
 
-    m_max = 0;
-    m_min = ADC::RESOLUTION;
-    m_prev_min = 0;
-    m_prev_max = ADC::RESOLUTION;
+    // m_image_max = 0;
+    // m_image_min = ADC::RESOLUTION;
+    // m_prev_image_min = 0;
+    // m_prev_image_max = ADC::RESOLUTION;
+    // m_current_size = 0;
+
+    data = new DataPoint*[m_num_rows];
+    for(int i = 0; i < m_num_rows; ++i)
+        data[i] = new DataPoint[m_num_columns];
 
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
@@ -30,6 +35,7 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
             m_image.setPixel(i, j, qRgb(255,255,255));
         }
     }
+    m_current_size = 0;
 }
 
 int ScanData::max_size() {
@@ -37,40 +43,34 @@ int ScanData::max_size() {
 }
 
 bool ScanData::is_full() {
-    return (data.size() == max_size());
+    return (size() == max_size());
 }
 
 bool ScanData::is_almost_full() {
     // returns true if there's just one colunn left
-    return (data.size() == max_size() - m_num_columns);
+    return (size() == max_size() - m_num_columns);
 }
 
 
-int ScanData::size() { //
-    return data.size();
+quint64 ScanData::size() { //
+    return m_current_size;
 }
 
 bool ScanData::append(int x, int y, int z) {
     assert(!is_full());
     
     DataPoint point(x, y, z);
-    data.append(point);
-
-    if (z > m_max)
-        m_max = z;
-    if (z < m_min)
-        m_min = z;
-
+    data[y][x] = point;
+    m_current_size += 1;
     return true;
 }
 
 
 void ScanData::print() {
-    for (DataPoint data_point : data) {
-        qDebug() << data_point.x << data_point.y << data_point.z;
-    }
+//    for (DataPoint data_point : data) {
+//        qDebug() << data_point.x << data_point.y << data_point.z;
+//    }
 }
-
 
 QColor interpolate_color(double percent, QVector<QColor> colors) {
     double bucket_size = 100.0 / (colors.length() - 1);
@@ -103,33 +103,34 @@ QColor get_color(double percent) {
 }
 
 QString ScanData::generate_png() {
-    double percentage;
-    QColor value;
-    int num_points = size();
-    DataPoint point;
-    bool same_range = (m_prev_max == m_max && m_prev_min == m_min);
-    for (int i = 0; i < num_points; i++) {
-        point = data[i];
-        if (same_range && point.drawn) {
-            continue;
-        }
-        if (m_max == m_min)
-            percentage = 0;
-        else {
-            percentage = double(point.z - m_min)  / (m_max - m_min) * 100;
-            percentage = floor(percentage * 100 + .5) / 100;
-        }
-        value = get_color(percentage);
-        m_image.setPixel(point.x, point.y, qRgb(value.red(),value.green(),value.blue()));
-        data[i].drawn = true;
-    }
+    // double percentage;
+    // QColor value;
+    // int num_points = size();
+    // DataPoint point;
+    // bool same_range = (m_prev_max == m_max && m_prev_min == m_min);
+    // for (int i = 0; i < num_points; i++) {
+    //     point = data[i];
+    //     if (same_range && point.drawn) {
+    //         continue;
+    //     }
+    //     if (m_max == m_min)
+    //         percentage = 0;
+    //     else {
+    //         percentage = double(point.z - m_min)  / (m_max - m_min) * 100;
+    //         percentage = floor(percentage * 100 + .5) / 100;
+    //     }
+    //     value = get_color(percentage);
+    //     m_image.setPixel(point.x, point.y, qRgb(value.red(),value.green(),value.blue()));
+    //     data[i].drawn = true;
+    // }
 
-    m_prev_min = m_min;
-    m_prev_max = m_max;
+    // m_prev_min = m_min;
+    // m_prev_max = m_max;
 
-    QByteArray ba;
-    QBuffer buffer(&ba);
-    buffer.open(QIODevice::WriteOnly);
-    m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
-    return ba.toBase64();
+    // QByteArray ba;
+    // QBuffer buffer(&ba);
+    // buffer.open(QIODevice::WriteOnly);
+    // m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
+    // return ba.toBase64();
+    return "";
 }

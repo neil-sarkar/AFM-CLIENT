@@ -14,10 +14,10 @@ public:
     bool append(int x, int y, int z);
     bool is_full();
     bool is_almost_full();
-    int size();
+    quint64 size();
     void print();
     int max_size();
-    QList<DataPoint> data;
+    DataPoint** data;
     QString generate_png();
 
 signals:
@@ -34,6 +34,7 @@ private:
     int m_min;
     int m_prev_min;
     int m_prev_max;
+    quint64 m_current_size;
     QImage m_image;
 };
 
