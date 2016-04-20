@@ -55,6 +55,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     scan_views.push(new ScanView("Phase", scanner.new_phase_data));
     scan_views.push(new ScanView("Error", scanner.new_error_data));
 
+    picture_map = [];
+    picture_map.push({data_source: scanner.new_forward_offset_data, dom_id: "fo_image"});
+    picture_map.push({data_source: scanner.new_forward_error_data, dom_id: "fe_image"});
+    picture_map.push({data_source: scanner.new_forward_phase_data, dom_id: "fp_image"});
+    picture_map.push({data_source: scanner.new_reverse_offset_data, dom_id: "ro_image"});
+    picture_map.push({data_source: scanner.new_reverse_error_data, dom_id: "re_image"});
+    picture_map.push({data_source: scanner.new_reverse_phase_data, dom_id: "rp_image"});
+
+
     var Scan = React.createClass({
         getInitialState: function() {
             return {
@@ -93,17 +102,16 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.all_data_received.connect(this.set_scan_complete);
 
             // connect scan views to their data sources
-            // for (var i = 0; i < scan_views.length; i++) {
-            //     var bound_method = this.prepare_new_data.bind(this, i);
-            //     scan_views[i].data_source.connect(bound_method);
-            // }
-            scanner.new_offset_data.connect(this.render_png);
-
+            for (var i = 0; i < scan_views.length; i++) {
+                var bound_method = this.render_png.bind(this, picture_map[i].dom_id);
+                picture_map[i].data_source.connect(bound_method);
+            }
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
         },
-        render_png: function(new_data) {
-            document.getElementById("pngimage").src = "data:image/jpg;base64," + new_data;
+        render_png: function(dom_id, new_data) {
+            console.log("caught signal", dom_id, new_data);
+            document.getElementById(dom_id).src = "data:image/jpg;base64," + new_data;
         },
         change_num_rows: function (num_rows) {
             this.setState({
@@ -258,7 +266,12 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         );
                                 }, this)}
                             </div>
-                            <img src="" id="pngimage" />
+                            <img src="" id="fo_image" />
+                            <img src="" id="ro_image" />
+                            <img src="" id="fp_image" />
+                            <img src="" id="rp_image" />
+                            <img src="" id="fe_image" />
+                            <img src="" id="re_image" />
                             <HeatmapCanvas ref="heatmap" id="heatmap1" handle_click={this.handle_heatmap_click}/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>

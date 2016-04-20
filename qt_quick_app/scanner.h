@@ -54,9 +54,12 @@ signals:
     void set_signal_generator_done();
     void all_data_received();
     void reset();
-    void new_offset_data(QString); // eventually make it convert the data struct into json
-    void new_phase_data(QVariantList);
-    void new_error_data(QVariantList);
+    void new_forward_offset_data(QString);
+    void new_forward_phase_data(QString);
+    void new_forward_error_data(QString);
+    void new_reverse_offset_data(QString);
+    void new_reverse_phase_data(QString);
+    void new_reverse_error_data(QString);
     void started_scan_state_machine();
 
     // property changes
@@ -113,8 +116,12 @@ private:
     bool m_should_pause;
     QString m_base_file_name;
 
-    ScanData* forward_data;
-    ScanData* reverse_data;
+    ScanData* fwd_offset_data;
+    ScanData* fwd_phase_data;
+    ScanData* fwd_error_data;
+    ScanData* rev_offset_data;
+    ScanData* rev_phase_data;
+    ScanData* rev_error_data;
 
     static const QString settings_group_name;
 };
