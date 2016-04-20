@@ -266,12 +266,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                 <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fe_image")}> Foward Error</p>
                                 <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "re_image")}> Reverse Error</p>
                             </div>
-                            <img src="" id="fo_image" className="scan-image" />
-                            <img src="" id="ro_image" className="scan-image" />
-                            <img src="" id="fp_image" className="scan-image" />
-                            <img src="" id="rp_image" className="scan-image" />
-                            <img src="" id="fe_image" className="scan-image" />
-                            <img src="" id="re_image" className="scan-image" />
+                            <div className="scan-images-container">
+                                <img src="" id="fo_image" className="scan-image" />
+                                <img src="" id="ro_image" className="scan-image" />
+                                <img src="" id="fp_image" className="scan-image" />
+                                <img src="" id="rp_image" className="scan-image" />
+                                <img src="" id="fe_image" className="scan-image" />
+                                <img src="" id="re_image" className="scan-image" />
+                            </div>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>
