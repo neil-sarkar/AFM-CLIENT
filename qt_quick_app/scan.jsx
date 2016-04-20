@@ -117,19 +117,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         change_num_rows: function (num_rows) {
             this.setState({
                 num_rows: num_rows,
-            }, function() {
-                this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
             });
         },
         change_num_columns: function (num_cols) {
             this.setState({
                 num_columns: num_cols,
-            }, function() {
-                this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
             });
         },
         tally_new_data: function(obj, x, y, z) {
-            obj.heatmap[y][x] = z;
             obj.profile[y][x] = z;
             obj.sum += z;
             obj.sum_of_squares += Math.pow(z, 2);
@@ -156,9 +151,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         },
         push_data_to_view: function(scan_view, is_switching_views) {
             if (this.state.current_view % 2 === 0) { // we're looking at the forward 
-                this.refs.heatmap.receive_data(scan_view.forward_data.heatmap, scan_view.forward_data.min, scan_view.forward_data.max, scan_view.forward_data.num_points, is_switching_views);
+                // this.refs.heatmap.receive_data(scan_view.forward_data.heatmap, scan_view.forward_data.min, scan_view.forward_data.max, scan_view.forward_data.num_points, is_switching_views);
             } else { // we;re looking at the reverse
-                this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
+                // this.refs.heatmap.receive_data(scan_view.reverse_data.heatmap, scan_view.reverse_data.min, scan_view.reverse_data.max, scan_view.forward_data.num_points, is_switching_views);
             }
             this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
         },
@@ -172,16 +167,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: true,
             }, function(){
                 if (this.state.starting_fresh_scan) {
-                    for (var i = 0; i < scan_views.length; i++) {
-                        scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
-                        this.refs.heatmap.change_pixel_size(this.state.num_rows, this.state.num_columns);
-                    }
                     scanner.start_state_machine();
                 } else {
                     scanner.resume_state_machine();
                 }
-                // TODO: decide if it's worth repushing the data to the heatmap - otherwise it will remain "cleaned" if the user pressed clean
-                // until such a time that a full rerender is necessary
                 this.refs.line_profile.clear_plotlines();
                 this.setState({
                     starting_fresh_scan: false
@@ -191,12 +180,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
+            $(".scan-image").each(function(i) {
+                $('.scan-image').eq(i).src = ""; // Delete the images
+            });
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
                 }
                 this.refs.line_profile.erase_data();
-                this.refs.heatmap.erase_data();
                 this.set_scan_complete();
             }.bind(this), 200); // give time for the scnaner to actually pause 
             // so data doesn't get rendered 
@@ -210,7 +201,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             var rms_multiplier = scanner.rms_threshold();
             var min = Math.max(mean - rms_multiplier * rms, current_data_container.min);
             var max = Math.min(mean + rms_multiplier * rms, current_data_container.max);
-            this.refs.heatmap.eliminate_outliers(current_heatmap, min, max);
+            // this.refs.heatmap.eliminate_outliers(current_heatmap, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
         handle_view_selector_click: function(dom_id_of_image, e) {
@@ -231,7 +222,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
         dummy_data: function (argument) {
-            this.refs.heatmap.dummy_data();
+            // this.refs.heatmap.dummy_data();
         },
         handle_heatmap_click: function(x, y) {
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
@@ -265,7 +256,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <img src="" id="rp_image" className="scan-image" />
                             <img src="" id="fe_image" className="scan-image" />
                             <img src="" id="re_image" className="scan-image" />
-                            <HeatmapCanvas ref="heatmap" id="heatmap1" handle_click={this.handle_heatmap_click}/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>

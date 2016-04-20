@@ -82,7 +82,6 @@ public slots:
     Q_INVOKABLE void start_state_machine();
     Q_INVOKABLE void pause_state_machine();
     Q_INVOKABLE void resume_state_machine();
-    Q_INVOKABLE void emit_dummy_data();
     void cmd_step_scan();
 
 private:
@@ -96,7 +95,9 @@ private:
     double m_rms_threshold;
     QChar m_leveling_direction;
 
-    int m_num_columns_received;
+    int m_x_index;
+    int m_y_index;
+    
     void cmd_set_signal_generator();
     void cmd_start_scan();
 

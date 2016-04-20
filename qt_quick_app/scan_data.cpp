@@ -9,26 +9,25 @@
 #include <QBuffer>
 #include <QtMath>
 
-ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y, bool is_forward)
+ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y)
 {
     m_num_columns = num_columns;
     m_num_rows = num_rows;
+
     m_ratio = ratio;
     m_delta_x = delta_x;
     m_delta_y = delta_y;
-    
-    m_x_index = -1;
-    m_y_index = -1;
-    m_is_forward = is_forward;
+
     m_max = 0;
     m_min = ADC::RESOLUTION;
     m_prev_min = 0;
     m_prev_max = ADC::RESOLUTION;
 
-    m_image = QImage(m_num_rows, m_num_columns, QImage::Format_RGB32);
+    // Initialize the image to be all white
+    m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
     for (int i = 0; i < m_num_columns; i++) {
         for (int j = 0; j < m_num_rows; j++) {
-            m_image.setPixel(j, i, qRgb(255,255,255));
+            m_image.setPixel(i, j, qRgb(255,255,255));
         }
     }
 }
@@ -41,24 +40,20 @@ bool ScanData::is_full() {
     return (data.size() == max_size());
 }
 
+bool ScanData::is_almost_full() {
+    // returns true if there's just one colunn left
+    return (data.size() == max_size() - m_num_columns);
+}
+
+
 int ScanData::size() { //
     return data.size();
 }
 
-bool ScanData::append(int z) {
+bool ScanData::append(int x, int y, int z) {
     assert(!is_full());
     
-    m_x_index = (m_x_index + 1) % m_num_columns;
-    if (m_x_index == 0)
-        m_y_index += 1;
-    
-    DataPoint point;
-    
-    point.x = m_is_forward ? m_x_index : m_num_columns - m_x_index - 1;
-    point.y = m_y_index;
-    point.z = z;
-    point.drawn = false;
-    
+    DataPoint point(x, y, z);
     data.append(point);
 
     if (z > m_max)
@@ -112,9 +107,10 @@ QString ScanData::generate_png() {
     QColor value;
     int num_points = size();
     DataPoint point;
+    bool same_range = (m_prev_max == m_max && m_prev_min == m_min);
     for (int i = 0; i < num_points; i++) {
         point = data[i];
-        if (m_prev_max == m_max && m_prev_min == m_min && point.drawn) {
+        if (same_range && point.drawn) {
             continue;
         }
         if (m_max == m_min)

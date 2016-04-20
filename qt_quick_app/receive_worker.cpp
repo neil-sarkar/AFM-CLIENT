@@ -59,14 +59,16 @@ void ReceiveWorker::process_working_response() {
     qDebug() << "Now processing" << response_tag << response_id;
     assert (receive_command_queue.isEmpty() == false);
     CommandNode* node = receive_command_queue.dequeue();
-    if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct
-        handle_invalid_response();
-    } else if (node->process_callback) {
-            node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes)); // maybe run in separate thread to avoid blocking
-    }
+
     mutex.lock();
     port_writing_command = false;
     mutex.unlock();
+    
+    if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct
+        handle_invalid_response();
+    } else if (node->process_callback) {
+        node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes)); // maybe run in separate thread to avoid blocking
+    }
     emit send_next_command();
     delete node;
 }

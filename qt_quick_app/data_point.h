@@ -7,6 +7,16 @@ public:
     double y;
     double z;
     bool drawn;
+
+    DataPoint(double x_, double y_, double z_) {
+        x = x_;
+        y = y_;
+        z = z_;
+        drawn = false;
+    }
+
+    DataPoint() {
+    }
 };
 
 
