@@ -156,7 +156,6 @@
                 fwd_offset_data->append(z_amplitude);
                 fwd_phase_data->append(z_phase);
                 fwd_error_data->append(pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
-
             } else {
                 rev_offset_data->append(z_amplitude);
                 rev_phase_data->append(z_phase);

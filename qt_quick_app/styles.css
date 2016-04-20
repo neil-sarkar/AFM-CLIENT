@@ -387,3 +387,8 @@
     height: 384px;
     display:none;
 }
+
+.scan-image {
+    width: 384;
+    height: 384;
+}

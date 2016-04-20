@@ -102,15 +102,16 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.all_data_received.connect(this.set_scan_complete);
 
             // connect scan views to their data sources
-            for (var i = 0; i < scan_views.length; i++) {
+            for (var i = 0; i < picture_map.length; i++) {
                 var bound_method = this.render_png.bind(this, picture_map[i].dom_id);
                 picture_map[i].data_source.connect(bound_method);
             }
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
+            $('.scan-image').hide();
+            $('.scan-image').first().show();
         },
         render_png: function(dom_id, new_data) {
-            console.log("caught signal", dom_id, new_data);
             document.getElementById(dom_id).src = "data:image/jpg;base64," + new_data;
         },
         change_num_rows: function (num_rows) {
@@ -212,7 +213,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.refs.heatmap.eliminate_outliers(current_heatmap, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
-        handle_view_selector_click: function(index, e) {
+        handle_view_selector_click: function(dom_id_of_image, e) {
             // Set style of selected name
             var target = $(e.target);
             $('.view-selector-button').removeClass('selected-scan-view');
@@ -223,12 +224,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 target.parent().addClass("selected-scan-view");
             }
 
-            this.setState({
-                current_view: index
-            }, function () {
-                this.refs.line_profile.clear_plotlines();
-                this.push_data_to_view(scan_views[Math.floor(index/2)], true);
-            });
+            $(".scan-image").hide();
+            $("#" + dom_id_of_image).show();
         },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
@@ -255,23 +252,19 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     <div className="left-flexbox">
                         <div className="top-row scan-top">
                             <div className="scan-view-selector-container">
-                                {scan_views.map(function(view, i) {
-                                    var forward_bound_click = this.handle_view_selector_click.bind(this, 2*i);
-                                    var reverse_bound_click = this.handle_view_selector_click.bind(this, 2*i + 1);
-                                    return (
-                                        <div>
-                                            <p className="view-selector-button" onClick={forward_bound_click} >Forward {view.name}</p>
-                                            <p className="view-selector-button" onClick={reverse_bound_click} >Reverse {view.name}</p>
-                                        </div>
-                                        );
-                                }, this)}
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fo_image")}> Forward Offset</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "ro_image")}> Reverse Offset</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fp_image")}> Forward Phase</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "rp_image")}> Reverse Phase</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fe_image")}> Foward Error</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "re_image")}> Reverse Error</p>
                             </div>
-                            <img src="" id="fo_image" />
-                            <img src="" id="ro_image" />
-                            <img src="" id="fp_image" />
-                            <img src="" id="rp_image" />
-                            <img src="" id="fe_image" />
-                            <img src="" id="re_image" />
+                            <img src="" id="fo_image" className="scan-image" />
+                            <img src="" id="ro_image" className="scan-image" />
+                            <img src="" id="fp_image" className="scan-image" />
+                            <img src="" id="rp_image" className="scan-image" />
+                            <img src="" id="fe_image" className="scan-image" />
+                            <img src="" id="re_image" className="scan-image" />
                             <HeatmapCanvas ref="heatmap" id="heatmap1" handle_click={this.handle_heatmap_click}/>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
