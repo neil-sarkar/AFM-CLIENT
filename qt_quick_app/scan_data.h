@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QImage>
 #include "data_point.h"
 
 class ScanData : public QObject
@@ -32,8 +33,10 @@ private:
     int m_delta_y;
     int m_max;
     int m_min;
+    int m_prev_min;
+    int m_prev_max;
     bool m_is_forward;
+    QImage m_image;
 };
-
 
 #endif // SCANDATA_H

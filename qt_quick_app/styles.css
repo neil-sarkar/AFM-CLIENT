@@ -385,10 +385,11 @@
 #heatmap1 {
     width: 384px;
     height: 384px;
-    display:none;
+    display: none;
 }
 
 .scan-image {
     width: 384;
     height: 384;
+    border: 1px solid gray;
 }

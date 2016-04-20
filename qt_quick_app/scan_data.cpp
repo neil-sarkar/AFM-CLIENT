@@ -22,6 +22,15 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_is_forward = is_forward;
     m_max = 0;
     m_min = ADC::RESOLUTION;
+    m_prev_min = 0;
+    m_prev_max = ADC::RESOLUTION;
+
+    m_image = QImage(m_num_rows, m_num_columns, QImage::Format_RGB32);
+    for (int i = 0; i < m_num_columns; i++) {
+        for (int j = 0; j < m_num_rows; j++) {
+            m_image.setPixel(j, i, qRgb(255,255,255));
+        }
+    }
 }
 
 int ScanData::max_size() {
@@ -48,6 +57,7 @@ bool ScanData::append(int z) {
     point.x = m_is_forward ? m_x_index : m_num_columns - m_x_index - 1;
     point.y = m_y_index;
     point.z = z;
+    point.drawn = false;
     
     data.append(point);
 
@@ -97,14 +107,16 @@ QColor get_color(double percent) {
     return interpolate_color(percent, colors);
 }
 
-QString ScanData::generate_png() { // TODO: enum z value types
-    QImage image(m_num_rows, m_num_columns, QImage::Format_RGB32);
+QString ScanData::generate_png() {
     double percentage;
     QColor value;
     int num_points = size();
     DataPoint point;
     for (int i = 0; i < num_points; i++) {
         point = data[i];
+        if (m_prev_max == m_max && m_prev_min == m_min && point.drawn) {
+            continue;
+        }
         if (m_max == m_min)
             percentage = 0;
         else {
@@ -112,11 +124,16 @@ QString ScanData::generate_png() { // TODO: enum z value types
             percentage = floor(percentage * 100 + .5) / 100;
         }
         value = get_color(percentage);
-        image.setPixel(point.x, point.y, qRgb(value.red(),value.green(),value.blue()));
+        m_image.setPixel(point.x, point.y, qRgb(value.red(),value.green(),value.blue()));
+        data[i].drawn = true;
     }
+
+    m_prev_min = m_min;
+    m_prev_max = m_max;
+
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG"); // writes image into ba in PNG format
+    m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
     return ba.toBase64();
 }

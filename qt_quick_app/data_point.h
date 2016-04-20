@@ -6,6 +6,7 @@ public:
     double x;
     double y;
     double z;
+    bool drawn;
 };
 
 
