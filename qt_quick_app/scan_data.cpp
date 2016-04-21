@@ -59,9 +59,8 @@ quint64 ScanData::size() { //
     return m_current_size;
 }
 
-bool ScanData::append(int x, int y, int z) {
+bool ScanData::append(coordinate x, coordinate y, point z) {
     assert(!is_full());
-//    qDebug() << x << y << z;
     raw_data[y]->add_point(x, z);
     if (raw_data[y]->is_full()) {
         raw_data[y]->compute_average();

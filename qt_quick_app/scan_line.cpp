@@ -3,7 +3,7 @@
 #include "assert.h"
 #include <QDebug>
 
-ScanLine::ScanLine(int capacity_) {
+ScanLine::ScanLine(coordinate capacity_) {
     capacity = capacity_;
     size = 0;
     sum = 0;
@@ -11,7 +11,7 @@ ScanLine::ScanLine(int capacity_) {
     max = -ADC::RESOLUTION * 2;
     min = ADC::RESOLUTION * 2;
 
-    data = new int[capacity];
+    data = new qint32[capacity];
 
     for (int i = 0; i < capacity; i++) {
         data[i] = 0;
@@ -28,7 +28,7 @@ bool ScanLine::is_full() {
     return size == capacity;
 }
 
-void ScanLine::add_point(int x, int z) {
+void ScanLine::add_point(coordinate x, point z) {
 
     data[x] = z;
     size += 1;

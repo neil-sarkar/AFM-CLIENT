@@ -127,5 +127,4 @@ void CustomPage::handle(QNetworkReply* msg) {
 
 void CustomPage::downloadRequestedHandler(const QNetworkRequest & request) {
     qDebug() << "download requested"; // request.url has the image of interest from the download buttons of highcharts.
-    qDebug() << request.header();
 }

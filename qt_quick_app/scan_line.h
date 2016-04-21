@@ -3,25 +3,27 @@
 
 #include "data_point.h"
 #include "data_point.h"
+#include "globals.h"
+#include <QtGlobal>
 
 class ScanLine
 {
 public:
-    ScanLine(int capacity_);
+    ScanLine(coordinate capacity_);
     ~ScanLine();
     bool is_full();
-    void add_point(int x, int z);
+    void add_point(coordinate x, point z);
     void compute_average();
     ScanLine generate_leveled_line();
-    int size;
+    quint16 size;
 
-    int* data;
-    int sum;
-    int capacity;
+    point* data; // can be positive or negative because this is a subtraction from the error signal
+    qint64 sum;
+    coordinate capacity;
     double average;
     bool drawn;
-    int max;
-    int min;
+    double_point max; // plus/minus 2*4095
+    double_point min;
 
 };
 

@@ -211,11 +211,6 @@ void Scanner::callback_step_scan(QByteArray payload) {
              watcher_fe.setFuture(future);
              future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
              watcher_re.setFuture(future);
-//            emit new_forward_phase_data(fwd_phase_data->generate_png());
-//            emit new_forward_error_data(fwd_error_data->generate_png());
-//            emit new_reverse_offset_data(rev_offset_data->generate_png());
-//            emit new_reverse_phase_data(rev_phase_data->generate_png());
-//            emit new_reverse_error_data(rev_error_data->generate_png());
 
             // emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
          }
