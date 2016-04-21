@@ -29,6 +29,13 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     setPage(&m_welcome_page);
 
     set_global_web_settings();
+//    timer = new QTimer(this);
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+//    timer->start(1000);
+}
+
+void MainWindow::update() {
+//    QWebSettings::clearMemoryCaches();
 }
 
 void MainWindow::set_global_web_settings() {
@@ -39,6 +46,7 @@ void MainWindow::set_global_web_settings() {
     QWebSettings::globalSettings()->setAttribute(QWebSettings::JavascriptCanAccessClipboard, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, true);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
+//    QWebSettings::clearMemoryCaches();
 }
 
 MainWindow::MainWindow(CustomPage* custom_page) {
@@ -72,6 +80,7 @@ void MainWindow::addJSObject(CustomPage* page) {
         QString name = "adc_" + QString::number(i.key());
         page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
+    page->settings()->setMaximumPagesInCache(0);
 }
 
 void MainWindow::log_cpp(QString text) {
@@ -118,4 +127,5 @@ void CustomPage::handle(QNetworkReply* msg) {
 
 void CustomPage::downloadRequestedHandler(const QNetworkRequest & request) {
     qDebug() << "download requested"; // request.url has the image of interest from the download buttons of highcharts.
+    qDebug() << request.header();
 }

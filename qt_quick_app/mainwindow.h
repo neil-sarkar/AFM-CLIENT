@@ -34,6 +34,7 @@ public:
 
 private slots:
     void addJSObject(CustomPage* page);
+    void update();
 
 private:
     void set_global_web_settings();
@@ -43,5 +44,6 @@ private:
     CustomPage m_main_app_page;
     CustomPage m_force_curve_page;
     WebFileDialog* m_folder_picker;
+    QTimer* timer;
 };
 #endif // MAINWINDOW_H

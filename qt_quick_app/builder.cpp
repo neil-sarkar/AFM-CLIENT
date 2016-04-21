@@ -191,8 +191,4 @@ void Builder::generate_color_map() {
     for (int i = 0; i < 10000; i += 1) {
         color_map.push_back(interpolate_color(double(i)/100, colors));
     }
-
-    for (int i = 0; i < 10000; i += 1) {
-        qDebug() << i <<     color_map[i];
-    }
 }

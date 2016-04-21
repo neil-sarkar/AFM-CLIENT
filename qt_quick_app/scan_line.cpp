@@ -10,11 +10,18 @@ ScanLine::ScanLine(int capacity_) {
     average = 0;
     max = -ADC::RESOLUTION * 2;
     min = ADC::RESOLUTION * 2;
+
     data = new int[capacity];
+
     for (int i = 0; i < capacity; i++) {
         data[i] = 0;
     }
+
     drawn = false;
+}
+
+ScanLine::~ScanLine() {
+    delete this->data;
 }
 
 bool ScanLine::is_full() {

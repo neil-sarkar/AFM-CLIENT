@@ -31,19 +31,19 @@ void Scanner::handleFinished_fo() {
     emit new_forward_offset_data(watcher_fo.future());
 }
 
-void handleFinished_ro() {
+void Scanner::handleFinished_ro() {
     emit new_reverse_offset_data(watcher_ro.future());
 }
-void handleFinished_fp() {
+void Scanner::handleFinished_fp() {
     emit new_forward_phase_data(watcher_fp.future());
 }
-void handleFinished_rp() {
+void Scanner::handleFinished_rp() {
     emit new_reverse_phase_data(watcher_rp.future());
 }
-void handleFinished_fe() {
+void Scanner::handleFinished_fe() {
     emit new_forward_error_data(watcher_fe.future());
 }
-void handleFinished_re() {
+void Scanner::handleFinished_re() {
     emit new_reverse_error_data(watcher_re.future());
 }
 
@@ -117,6 +117,16 @@ void Scanner::initialize_scan_state_machine() {
     m_x_index = -1;
     m_y_index = -1;
     emit scanner_initialization_done();
+
+    if (fwd_offset_data != NULL)  {
+        delete fwd_offset_data;
+        delete fwd_phase_data;
+        delete fwd_error_data;
+        delete rev_offset_data;
+        delete rev_phase_data;
+        delete rev_error_data;
+    }
+
     fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
     fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
     fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
@@ -191,15 +201,15 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
              QFuture<QString> future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
              watcher_fo.setFuture(future);
-             QFuture<QString> future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
+             future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
              watcher_ro.setFuture(future);
-             QFuture<QString> future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
+             future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
              watcher_fp.setFuture(future);
-             QFuture<QString> future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
+             future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
              watcher_rp.setFuture(future);
-             QFuture<QString> future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
+             future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
              watcher_fe.setFuture(future);
-             QFuture<QString> future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
+             future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
              watcher_re.setFuture(future);
 //            emit new_forward_phase_data(fwd_phase_data->generate_png());
 //            emit new_forward_error_data(fwd_error_data->generate_png());

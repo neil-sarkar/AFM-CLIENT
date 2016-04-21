@@ -8,6 +8,7 @@ class ScanLine
 {
 public:
     ScanLine(int capacity_);
+    ~ScanLine();
     bool is_full();
     void add_point(int x, int z);
     void compute_average();

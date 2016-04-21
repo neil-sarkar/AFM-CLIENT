@@ -36,6 +36,12 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_current_size = 0;
 }
 
+ScanData::~ScanData() {
+    for (int i = 0; i < raw_data.size(); i++) {
+        delete raw_data[i];
+    }
+}
+
 int ScanData::max_size() {
     return m_num_rows * m_num_columns;
 }

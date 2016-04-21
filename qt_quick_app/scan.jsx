@@ -9,6 +9,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         }
         return matrix;
     }
+    var img_str = "";
 
     function one_d_matrix_generator(cols) {
         matrix = [];
@@ -114,7 +115,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             $('.scan-image').first().show();
         },
         render_png: function(dom_id, new_data) {
-            document.getElementById(dom_id).src = "data:image/jpg;base64," + new_data;
+            var img_str = "data:image/jpg;base64," + new_data;
+            $('#' + dom_id).data("imgsrc", img_str);
+            document.getElementById(dom_id).src = $('#' + dom_id).data('imgsrc');
         },
         change_num_rows: function (num_rows) {
             this.setState({

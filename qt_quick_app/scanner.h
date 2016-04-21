@@ -88,7 +88,7 @@ public slots:
     Q_INVOKABLE void pause_state_machine();
     Q_INVOKABLE void resume_state_machine();
     void cmd_step_scan();
-    void handleFinished();
+//    void handleFinished();
     void handleFinished_fo();
     void handleFinished_ro();
     void handleFinished_fp();
