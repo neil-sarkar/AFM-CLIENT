@@ -2,6 +2,7 @@
 #include "QFinalState"
 #include <QHistoryState>
 #include <QTemporaryFile>
+#include <QtConcurrent>
 #include <QTextStream>
 #include <QFileDialog>
 #include <QCoreApplication>
@@ -18,6 +19,32 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     pid = pid_;
     fine_z = static_cast<DAC*>(dac_fine_z_);
     m_should_pause = false;
+    connect(&watcher_fo, SIGNAL(finished()), this, SLOT(handleFinished_fo()));
+    connect(&watcher_ro, SIGNAL(finished()), this, SLOT(handleFinished_ro()));
+    connect(&watcher_fp, SIGNAL(finished()), this, SLOT(handleFinished_fp()));
+    connect(&watcher_rp, SIGNAL(finished()), this, SLOT(handleFinished_rp()));
+    connect(&watcher_fe, SIGNAL(finished()), this, SLOT(handleFinished_fe()));
+    connect(&watcher_re, SIGNAL(finished()), this, SLOT(handleFinished_re()));
+}
+
+void Scanner::handleFinished_fo() {
+    emit new_forward_offset_data(watcher_fo.future());
+}
+
+void handleFinished_ro() {
+    emit new_reverse_offset_data(watcher_ro.future());
+}
+void handleFinished_fp() {
+    emit new_forward_phase_data(watcher_fp.future());
+}
+void handleFinished_rp() {
+    emit new_reverse_phase_data(watcher_rp.future());
+}
+void handleFinished_fe() {
+    emit new_forward_error_data(watcher_fe.future());
+}
+void handleFinished_re() {
+    emit new_reverse_error_data(watcher_re.future());
 }
 
 void Scanner::pause_state_machine() {
@@ -161,12 +188,24 @@ void Scanner::callback_step_scan(QByteArray payload) {
         }
         // This condition checks to see if we should send data (should be every line)
          if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) { // TODO: check this condition
-            emit new_forward_offset_data(fwd_offset_data->generate_png());
-            emit new_forward_phase_data(fwd_phase_data->generate_png());
-            emit new_forward_error_data(fwd_error_data->generate_png());
-            emit new_reverse_offset_data(rev_offset_data->generate_png());
-            emit new_reverse_phase_data(rev_phase_data->generate_png());
-            emit new_reverse_error_data(rev_error_data->generate_png());
+
+             QFuture<QString> future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
+             watcher_fo.setFuture(future);
+             QFuture<QString> future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
+             watcher_ro.setFuture(future);
+             QFuture<QString> future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
+             watcher_fp.setFuture(future);
+             QFuture<QString> future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
+             watcher_rp.setFuture(future);
+             QFuture<QString> future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
+             watcher_fe.setFuture(future);
+             QFuture<QString> future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
+             watcher_re.setFuture(future);
+//            emit new_forward_phase_data(fwd_phase_data->generate_png());
+//            emit new_forward_error_data(fwd_error_data->generate_png());
+//            emit new_reverse_offset_data(rev_offset_data->generate_png());
+//            emit new_reverse_phase_data(rev_phase_data->generate_png());
+//            emit new_reverse_error_data(rev_error_data->generate_png());
 
             // emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
          }

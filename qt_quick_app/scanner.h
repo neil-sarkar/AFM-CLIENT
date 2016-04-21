@@ -2,6 +2,7 @@
 #define SCANNER_H
 
 #include <QObject>
+#include <QFutureWatcher>
 #include "afm_object.h"
 #include <QStateMachine>
 #include "pid.h"
@@ -87,6 +88,13 @@ public slots:
     Q_INVOKABLE void pause_state_machine();
     Q_INVOKABLE void resume_state_machine();
     void cmd_step_scan();
+    void handleFinished();
+    void handleFinished_fo();
+    void handleFinished_ro();
+    void handleFinished_fp();
+    void handleFinished_rp();
+    void handleFinished_fe();
+    void handleFinished_re();
 
 private:
     QStateMachine m_state_machine;
@@ -127,6 +135,13 @@ private:
     ScanData* rev_offset_data;
     ScanData* rev_phase_data;
     ScanData* rev_error_data;
+
+    QFutureWatcher<QString> watcher_fo;
+    QFutureWatcher<QString> watcher_ro;
+    QFutureWatcher<QString> watcher_fp;
+    QFutureWatcher<QString> watcher_rp;
+    QFutureWatcher<QString> watcher_fe;
+    QFutureWatcher<QString> watcher_re;
 
     QVariantList get_latest_line_profile(ScanData* fwd, ScanData* rev);
 
