@@ -18,7 +18,7 @@ public:
     quint64 size();
     void print();
     int max_size();
-    std::vector<ScanLine> raw_data;
+    std::vector<ScanLine*> raw_data;
     QVector<ScanLine> leveled_data;
     QString generate_png();
 

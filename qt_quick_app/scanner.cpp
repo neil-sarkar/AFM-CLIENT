@@ -151,22 +151,22 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
         if (scanning_forward) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
-//            fwd_phase_data->append(m_x_index, m_y_index, z_phase);
-//            fwd_error_data->append(m_x_index, m_y_index, pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
+            fwd_phase_data->append(m_x_index, m_y_index, z_phase);
+            fwd_error_data->append(m_x_index, m_y_index, pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
         } else {
             int x_coord = 2 * m_num_columns - m_x_index - 1;
             rev_offset_data->append(x_coord, m_y_index, z_offset);
-//            rev_phase_data->append(x_coord, m_y_index, z_phase);
-//            rev_error_data->append(x_coord, m_y_index, pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
+            rev_phase_data->append(x_coord, m_y_index, z_phase);
+            rev_error_data->append(x_coord, m_y_index, pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude);
         }
         // This condition checks to see if we should send data (should be every line)
          if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) { // TODO: check this condition
             emit new_forward_offset_data(fwd_offset_data->generate_png());
-//            emit new_forward_phase_data(fwd_phase_data->generate_png());
-//            emit new_forward_error_data(fwd_error_data->generate_png());
-//            emit new_reverse_offset_data(rev_offset_data->generate_png());
-//            emit new_reverse_phase_data(rev_phase_data->generate_png());
-//            emit new_reverse_error_data(rev_error_data->generate_png());
+            emit new_forward_phase_data(fwd_phase_data->generate_png());
+            emit new_forward_error_data(fwd_error_data->generate_png());
+            emit new_reverse_offset_data(rev_offset_data->generate_png());
+            emit new_reverse_phase_data(rev_phase_data->generate_png());
+            emit new_reverse_error_data(rev_error_data->generate_png());
 
             // emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
          }

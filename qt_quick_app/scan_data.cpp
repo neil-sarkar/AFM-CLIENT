@@ -23,7 +23,8 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_prev_min = ADC::RESOLUTION * 2;
 
 
-    raw_data = std::vector<ScanLine>(m_num_rows, ScanLine(m_num_columns));
+    for (int i = 0; i < m_num_rows; i++)
+        raw_data.push_back(new ScanLine(m_num_columns));
 
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
@@ -54,9 +55,10 @@ quint64 ScanData::size() { //
 
 bool ScanData::append(int x, int y, int z) {
     assert(!is_full());
-    raw_data[y].add_point(x, z);
-    if (raw_data[y].is_full()) {
-        raw_data[y].compute_average();
+//    qDebug() << x << y << z;
+    raw_data[y]->add_point(x, z);
+    if (raw_data[y]->is_full()) {
+        raw_data[y]->compute_average();
     }
     m_current_size += 1;
     return true;
@@ -85,9 +87,9 @@ QColor interpolate_color(double percent, QVector<QColor> colors) {
 
 void ScanData::print() {
     for (int i = 0; i < 1; i++) {
-        qDebug() << raw_data[i].drawn << raw_data[i].min << raw_data[i].max;
+        qDebug() << raw_data[i]->drawn << raw_data[i]->min << raw_data[i]->max;
         for (int j = 0; j < m_num_columns; j++)
-            qDebug() << raw_data[i].data[j];
+            qDebug() << raw_data[i]->data[j];
     }
 }
 
@@ -108,32 +110,26 @@ QString ScanData::generate_png() {
      // Step 1: Compute the max and the min of the leveled image
      double scan_max = -2 * ADC::RESOLUTION, scan_min = 2 * ADC::RESOLUTION;
      for (int i = 0; i < raw_data.size(); i++) {
-         if (raw_data[i].size > 0) {
-//            qDebug() << raw_data[i].max << raw_data[i].min  << raw_data[i].average;
-            for (int j =0; j < raw_data[i].size; j++) {
-//                qDebug() << raw_data[i].data[j];
+         if (raw_data[i]->size > 0) {
+            if (raw_data[i]->max - raw_data[i]->average > scan_max) {
+                scan_max = raw_data[i]->max - raw_data[i]->average;
             }
-            if (raw_data[i].max - raw_data[i].average > scan_max) {
-                scan_max = raw_data[i].max - raw_data[i].average;
-            }
-            if (raw_data[i].min - raw_data[i].average < scan_min) {
-                scan_min = raw_data[i].min - raw_data[i].average;
+            if (raw_data[i]->min - raw_data[i]->average < scan_min) {
+                scan_min = raw_data[i]->min - raw_data[i]->average;
             }
         }
      }
-//     qDebug() << scan_max << scan_min << m_prev_max << m_prev_min;
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
 
      for (int i = 0; i < m_num_rows; i++) {
-         if (raw_data[i].size == 0)
+         if (raw_data[i]->size == 0)
              continue;
 
-         if (same_range && raw_data[i].drawn)
+         if (same_range && raw_data[i]->drawn)
              continue;
 
-         for (int j = 0; j < raw_data[i].size; j++) {
-             int z_value = raw_data[i].data[j] - raw_data[i].average;
-//             qDebug() << raw_data[i].data[j] << z_value;
+         for (int j = 0; j < raw_data[i]->size; j++) {
+             double z_value = raw_data[i]->data[j] - raw_data[i]->average;
              if (scan_max == scan_min)
                  percentage = 0;
              else {
@@ -144,7 +140,7 @@ QString ScanData::generate_png() {
              m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
          }
 
-         raw_data[i].drawn = true;
+         raw_data[i]->drawn = true;
      }
      m_prev_min = scan_max;
      m_prev_max = scan_min;
