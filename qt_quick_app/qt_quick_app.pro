@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     safe_application.cpp \
     web_file_dialog.cpp \
     force_curve_generator.cpp \
-    globals.cpp
+    globals.cpp \
+    scan_line.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -69,7 +70,8 @@ HEADERS += \
     web_file_dialog.h \
     force_curve_generator.h \
     globals.h \
-    color_map.h
+    color_map.h \
+    scan_line.h
 
 DISTFILES += \
     test.html

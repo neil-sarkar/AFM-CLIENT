@@ -5,6 +5,7 @@
 #include <QtGlobal>
 #include "adc.h"
 #include "globals.h"
+#include "scan_line.h"
 #include <QImage>
 #include <QBuffer>
 #include <QtMath>
@@ -18,15 +19,11 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_delta_x = delta_x;
     m_delta_y = delta_y;
 
-    // m_image_max = 0;
-    // m_image_min = ADC::RESOLUTION;
-    // m_prev_image_min = 0;
-    // m_prev_image_max = ADC::RESOLUTION;
-    // m_current_size = 0;
+    m_prev_max = -ADC::RESOLUTION * 2;
+    m_prev_min = ADC::RESOLUTION * 2;
 
-    data = new DataPoint*[m_num_rows];
-    for(int i = 0; i < m_num_rows; ++i)
-        data[i] = new DataPoint[m_num_columns];
+
+    raw_data = std::vector<ScanLine>(m_num_rows, ScanLine(m_num_columns));
 
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
@@ -51,25 +48,18 @@ bool ScanData::is_almost_full() {
     return (size() == max_size() - m_num_columns);
 }
 
-
 quint64 ScanData::size() { //
     return m_current_size;
 }
 
 bool ScanData::append(int x, int y, int z) {
     assert(!is_full());
-    
-    DataPoint point(x, y, z);
-    data[y][x] = point;
+    raw_data[y].add_point(x, z);
+    if (raw_data[y].is_full()) {
+        raw_data[y].compute_average();
+    }
     m_current_size += 1;
     return true;
-}
-
-
-void ScanData::print() {
-//    for (DataPoint data_point : data) {
-//        qDebug() << data_point.x << data_point.y << data_point.z;
-//    }
 }
 
 QColor interpolate_color(double percent, QVector<QColor> colors) {
@@ -93,6 +83,14 @@ QColor interpolate_color(double percent, QVector<QColor> colors) {
     }
 }
 
+void ScanData::print() {
+    for (int i = 0; i < 1; i++) {
+        qDebug() << raw_data[i].drawn << raw_data[i].min << raw_data[i].max;
+        for (int j = 0; j < m_num_columns; j++)
+            qDebug() << raw_data[i].data[j];
+    }
+}
+
 QColor get_color(double percent) {
     QVector<QColor> colors;
     colors.append(QColor(88,28,0));
@@ -103,34 +101,57 @@ QColor get_color(double percent) {
 }
 
 QString ScanData::generate_png() {
-    // double percentage;
-    // QColor value;
-    // int num_points = size();
-    // DataPoint point;
-    // bool same_range = (m_prev_max == m_max && m_prev_min == m_min);
-    // for (int i = 0; i < num_points; i++) {
-    //     point = data[i];
-    //     if (same_range && point.drawn) {
-    //         continue;
-    //     }
-    //     if (m_max == m_min)
-    //         percentage = 0;
-    //     else {
-    //         percentage = double(point.z - m_min)  / (m_max - m_min) * 100;
-    //         percentage = floor(percentage * 100 + .5) / 100;
-    //     }
-    //     value = get_color(percentage);
-    //     m_image.setPixel(point.x, point.y, qRgb(value.red(),value.green(),value.blue()));
-    //     data[i].drawn = true;
-    // }
+     double percentage;
+     QColor color;
+     int num_points = size();
 
-    // m_prev_min = m_min;
-    // m_prev_max = m_max;
+     // Step 1: Compute the max and the min of the leveled image
+     double scan_max = -2 * ADC::RESOLUTION, scan_min = 2 * ADC::RESOLUTION;
+     for (int i = 0; i < raw_data.size(); i++) {
+         if (raw_data[i].size > 0) {
+//            qDebug() << raw_data[i].max << raw_data[i].min  << raw_data[i].average;
+            for (int j =0; j < raw_data[i].size; j++) {
+//                qDebug() << raw_data[i].data[j];
+            }
+            if (raw_data[i].max - raw_data[i].average > scan_max) {
+                scan_max = raw_data[i].max - raw_data[i].average;
+            }
+            if (raw_data[i].min - raw_data[i].average < scan_min) {
+                scan_min = raw_data[i].min - raw_data[i].average;
+            }
+        }
+     }
+//     qDebug() << scan_max << scan_min << m_prev_max << m_prev_min;
+     bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
 
-    // QByteArray ba;
-    // QBuffer buffer(&ba);
-    // buffer.open(QIODevice::WriteOnly);
-    // m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
-    // return ba.toBase64();
-    return "";
+     for (int i = 0; i < m_num_rows; i++) {
+         if (raw_data[i].size == 0)
+             continue;
+
+         if (same_range && raw_data[i].drawn)
+             continue;
+
+         for (int j = 0; j < raw_data[i].size; j++) {
+             int z_value = raw_data[i].data[j] - raw_data[i].average;
+//             qDebug() << raw_data[i].data[j] << z_value;
+             if (scan_max == scan_min)
+                 percentage = 0;
+             else {
+                 percentage = double(z_value - scan_min)  / (scan_max - scan_min) * 100;
+                 percentage = floor(percentage * 100 + .5) / 100;
+             }
+             color = get_color(percentage);
+             m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
+         }
+
+         raw_data[i].drawn = true;
+     }
+     m_prev_min = scan_max;
+     m_prev_max = scan_min;
+
+     QByteArray ba;
+     QBuffer buffer(&ba);
+     buffer.open(QIODevice::WriteOnly);
+     m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
+     return ba.toBase64();
 }

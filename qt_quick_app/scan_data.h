@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QImage>
 #include "data_point.h"
+#include "scan_line.h"
 
 class ScanData : public QObject
 {
@@ -17,7 +18,8 @@ public:
     quint64 size();
     void print();
     int max_size();
-    DataPoint** data;
+    std::vector<ScanLine> raw_data;
+    QVector<ScanLine> leveled_data;
     QString generate_png();
 
 signals:
@@ -30,10 +32,8 @@ private:
     int m_ratio;
     int m_delta_x;
     int m_delta_y;
-    int m_max;
-    int m_min;
-    int m_prev_min;
-    int m_prev_max;
+    double m_prev_min;
+    double m_prev_max;
     quint64 m_current_size;
     QImage m_image;
 };
