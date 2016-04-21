@@ -64,42 +64,12 @@ bool ScanData::append(int x, int y, int z) {
     return true;
 }
 
-QColor interpolate_color(double percent, QVector<QColor> colors) {
-    double bucket_size = 100.0 / (colors.length() - 1);
-    for (int i = 1; i < colors.length(); i++) {
-        if (percent > bucket_size * i)
-            continue;
-        double factor = (bucket_size * i - percent) / (bucket_size);
-        int r1, g1, b1;
-        r1 = colors[i].red();
-        g1= colors[i].green();
-        b1 = colors[i].blue();
-        int r0, g0, b0;
-        r0 = colors[i -1].red();
-        g0= colors[i - 1].green();
-        b0 = colors[i -1].blue();
-        int mixed_r = r1 * (1-factor) + r0 * factor;
-        int mixed_g = g1 * (1-factor) + g0 * factor;
-        int mixed_b = b1 * (1-factor) + b0 * factor;
-        return QColor(std::min(mixed_r, 255), std::min(mixed_g, 255), std::min(mixed_b, 255));
-    }
-}
-
 void ScanData::print() {
     for (int i = 0; i < 1; i++) {
         qDebug() << raw_data[i]->drawn << raw_data[i]->min << raw_data[i]->max;
         for (int j = 0; j < m_num_columns; j++)
             qDebug() << raw_data[i]->data[j];
     }
-}
-
-QColor get_color(double percent) {
-    QVector<QColor> colors;
-    colors.append(QColor(88,28,0));
-    colors.append(QColor(188,128,0));
-    colors.append(QColor(252,252,128));
-
-    return interpolate_color(percent, colors);
 }
 
 QString ScanData::generate_png() {
@@ -130,23 +100,25 @@ QString ScanData::generate_png() {
         scan_min = m_prev_min;
 
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
+     double range = scan_max - scan_min;
 
      for (int i = 0; i < m_num_rows; i++) {
-         if (raw_data[i]->size == 0)
+         if (raw_data[i]->size == 0) {
              continue;
+         }
 
-         if (same_range && raw_data[i]->drawn)
+         if (same_range && raw_data[i]->drawn) {
              continue;
+         }
 
          for (int j = 0; j < raw_data[i]->size; j++) {
              double z_value = raw_data[i]->data[j] - raw_data[i]->average;
              if (scan_max == scan_min)
                  percentage = 0;
              else {
-                 percentage = double(z_value - scan_min)  / (scan_max - scan_min) * 100;
-                 percentage = floor(percentage * 100 + .5) / 100;
+                 percentage = double(z_value - scan_min)  / range * 100;
              }
-             color = get_color(percentage);
+             color = color_map[int(percentage * 100)];
              m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
          }
 

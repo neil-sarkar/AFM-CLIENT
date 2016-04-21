@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     AFM* afm = builder->build_afm();
     builder->wire(afm, serial_port, send_worker, receive_worker);
     builder->generate_command_nodes();
+    builder->generate_color_map();
 
     // Thread connections
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));

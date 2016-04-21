@@ -188,29 +188,11 @@ void Builder::generate_color_map() {
     colors.append(QColor(88,28,0));
     colors.append(QColor(188,128,0));
     colors.append(QColor(252,252,128));
-
-    for (double i = 0; i < 100; i += 0.01) {
-        color_map[i] = interpolate_color(i, colors);
+    for (int i = 0; i < 10000; i += 1) {
+        color_map.push_back(interpolate_color(double(i)/100, colors));
     }
 
-    for (double i = 0; i < 100; i += 0.01) {
-        qDebug() << i << color_map[i];
+    for (int i = 0; i < 10000; i += 1) {
+        qDebug() << i <<     color_map[i];
     }
-
-    // How to draw images:
-
-//    QImage image(1, 1000, QImage::Format_RGB32);
-//    QColor value;
-//    for (double i = 0; i < 100; i += 0.1) {
-//            qDebug() << i;
-//            value = color_map[i];
-//            int r1, g1, b1;
-//            value.getRgb(&r1, &g1, &b1);
-//            image.setPixel(0, i*10, qRgb(r1,g1,b1));
-//        }
-//    QByteArray ba;
-//    QBuffer buffer(&ba);
-//    buffer.open(QIODevice::WriteOnly);
-//    image.save(&buffer, "PNG"); // writes image into ba in PNG format
-//    qDebug() << ba.toBase64();
 }
