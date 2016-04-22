@@ -457,6 +457,7 @@ body {
     background-image: url("qrc:/images/nGauge.png");
     border-radius: 50%;
     border: 2px solid silver;
+    cursor: pointer;
 }
 
 #progressbar li {
