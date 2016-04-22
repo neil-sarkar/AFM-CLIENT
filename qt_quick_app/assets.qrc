@@ -19,6 +19,7 @@
     <qresource prefix="/images">
         <file>icspi_logo_chopped.jpg</file>
         <file>afm.jpeg</file>
+        <file>nGauge.png</file>
     </qresource>
     <qresource prefix="/fonts">
         <file>roboto/RobotoCondensed-Regular.ttf</file>
@@ -101,6 +102,7 @@
         <file>heatmap_canvas.jsx</file>
         <file>data_stream_graph.jsx</file>
         <file>scan_range_slider.jsx</file>
+        <file>null_step.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>heatmap.js</file>

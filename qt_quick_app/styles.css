@@ -165,12 +165,13 @@ body {
 
 #nav-toggle {
   position: fixed;
-  right: 2%;
-  top: 2%;
+  right: 20px;
+  top: 25px;
   z-index: 1;
+  cursor: pointer; 
+  padding: 10px 35px 16px 0;
 }
 
-#nav-toggle { cursor: pointer; padding: 10px 35px 16px 0px; }
 #nav-toggle span, #nav-toggle span:before, #nav-toggle span:after {
   cursor: pointer;
   border-radius: 1px;
@@ -292,13 +293,6 @@ body {
 
 .text-input {
     border-bottom: 1px solid gray;
-}
-
-.home-button {
-    position: absolute;
-    left: 2%;
-    top: 2%;
-    cursor: pointer;
 }
 
 .vertically-centered-column {
@@ -434,6 +428,22 @@ body {
     padding-top: 1em;
     border-bottom: 1px solid silver;
     box-shadow: 0 1px 2px 0 silver;
+    position: relative;
+}
+
+.home {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    background-size: 40;
+    background-repeat: no-repeat;
+    -webkit-filter: invert(100%);
+    opacity: 0.6;
+    left: 20px;
+    top: 15px;
+    background-image: url("qrc:/images/nGauge.png");
+    border-radius: 50%;
+    border: 2px solid silver;
 }
 
 #progressbar li {
@@ -444,6 +454,7 @@ body {
     width: 20%; /* bc there's 5 steps */
     float: left;
     position: relative;
+    cursor: pointer;
 }
 #progressbar li:before {
     content: counter(step);
