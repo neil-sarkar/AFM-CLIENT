@@ -22,6 +22,7 @@ public:
     std::vector<ScanLine*> raw_data;
     QVector<ScanLine> leveled_data;
     QString generate_png();
+    QVariantList get_latest_line();
 
 signals:
 

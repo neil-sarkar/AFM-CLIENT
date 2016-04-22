@@ -22,7 +22,7 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_prev_max = -ADC::RESOLUTION * 2;
     m_prev_min = ADC::RESOLUTION * 2;
 
-
+    raw_data.reserve(m_num_rows);
     for (int i = 0; i < m_num_rows; i++)
         raw_data.push_back(new ScanLine(m_num_columns));
 
@@ -39,6 +39,20 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
 ScanData::~ScanData() {
     for (int i = 0; i < raw_data.size(); i++) {
         delete raw_data[i];
+    }
+}
+
+QVariantList ScanData::get_latest_line() {
+    for (int i = m_num_rows - 1; i >= 0; i--) {
+        if (raw_data[i]->drawn) {
+            QVariantList data;
+            for (int j = 0; j < m_num_columns; j++) {
+                data.append(j);
+                data.append(i);
+                data.append(raw_data[i]->data[j]);
+            }
+            return data;
+        }
     }
 }
 
