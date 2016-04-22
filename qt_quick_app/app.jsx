@@ -28,10 +28,10 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
         render: function() { 
             return (
             <div className="app">
-                    <ProgressBar step={this.state.step} go_to_step={this.go_to_step} step_list={["Setup", "Sweep", "Approach", "Scan", "Finish"]}/>
-                    <StepData ref="step_data" step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
-                    <SettingsDrawer step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
-                </div>
+                <ProgressBar step={this.state.step} go_to_step={this.go_to_step} step_list={["Setup", "Sweep", "Approach", "Scan", "Finish"]}/>
+                <StepData ref="step_data" step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
+                <SettingsDrawer/>
+            </div>
             )
         }
     });
