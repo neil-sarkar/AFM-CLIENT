@@ -230,7 +230,6 @@ QVariantList Scanner::get_latest_line_profile(ScanData* fwd, ScanData* rev) {
 void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done";
-    // forward_data->print();
     move_to_starting_point();
 }
 
