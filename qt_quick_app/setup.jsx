@@ -18,7 +18,9 @@ define(["jquery", "react"], function($, React) {
                         <img src="qrc:/images/sample_load.jpg"></img>
                         <div className="setup-step-desc">Align the sample underneath the AFM tip.</div>
                     </div>
-
+                    <div className="nav-buttons-wrapper">
+                        <button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
+                    </div>
                 </div>
             )
         },
