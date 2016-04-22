@@ -465,7 +465,7 @@ body {
     font-size: 0.9em;
     color: #333;
     background: white;
-    border-radius: 3px;
+    border-radius: 50%; /* make it a circle */
     margin: 0 auto 5px auto;
 }
 /*progressbar connectors*/
@@ -486,6 +486,6 @@ body {
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
 #progressbar li.active:before,  #progressbar li.active:after{
-    background: rgba(113,165,216,1);
+    background: rgba(113,165,216,0.8);
     color: white;
 }
