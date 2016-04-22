@@ -1,4 +1,0 @@
-Added Qthread Skeleton
-	-ability to request methods
-	-thread is always listening
-	-need to test still

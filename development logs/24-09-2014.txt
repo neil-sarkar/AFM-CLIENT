@@ -1,9 +1,0 @@
-Fixed some bugs with the queue. Pushing and poping from the queue now actually works.
-	-fixed a bug where the incorrect address was being passed to the thread
-	-created a commandNode class instead of using a struct
-	-cleaned up the queue code
-	-swapped out to just use the c++ queue library
-
-Need to now look at how to implement the buffers
-	-Possible solutions:
-		
