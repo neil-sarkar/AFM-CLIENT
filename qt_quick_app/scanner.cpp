@@ -175,7 +175,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
     receive_data();
     double z_amplitude, z_offset, z_phase;
-
+    
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back
 
         m_x_index = (m_x_index + 1) % (m_num_columns * 2);

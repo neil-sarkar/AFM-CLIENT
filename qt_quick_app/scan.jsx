@@ -159,16 +159,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 this.tally_new_data(scan_views[0].reverse_data, data[j], data[j+1], data[j+2]);
             }
 
-            // // set the max and min for the whole scan - take the max of the new data's max current max so far
-            // scan_views[0].forward_data.max = Math.max(data[data.length/2 - 2], scan_views[0].forward_data.max);
-            // scan_views[0].forward_data.min = Math.min(data[data.length/2 - 1], scan_views[0].forward_data.min);
-            // scan_views[0].reverse_data.max = Math.max(data[data.length - 2], scan_views[0].reverse_data.max);
-            // scan_views[0].reverse_data.min = Math.min(data[data.length - 1], scan_views[0].reverse_data.min);
-            
-            // // If the data we just got refers to what we're looking at currently, send the data to the heatmap
-            // if (Math.floor(this.state.current_view / 2) == 0) {
             this.push_data_to_view(scan_views[0], false);
-            // }
         },
         push_data_to_view: function(scan_view, is_switching_views) {
             this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
