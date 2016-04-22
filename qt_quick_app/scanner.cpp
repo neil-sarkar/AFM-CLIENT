@@ -222,8 +222,8 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
 QVariantList Scanner::get_latest_line_profile(ScanData* fwd, ScanData* rev) {
     QVariantList flat_data;
-    flat_data += fwd->get_latest_line();
-    flat_data += rev->get_latest_line();
+    flat_data.append(fwd->get_latest_line());
+    flat_data.append(rev->get_latest_line());
     return flat_data;
 }
 

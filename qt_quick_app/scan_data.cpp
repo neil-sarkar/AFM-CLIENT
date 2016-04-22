@@ -43,17 +43,21 @@ ScanData::~ScanData() {
 }
 
 QVariantList ScanData::get_latest_line() {
+    mutex.lock();
+    QVariantList data;
     for (int i = m_num_rows - 1; i >= 0; i--) {
         if (raw_data[i]->drawn) {
-            QVariantList data;
             for (int j = 0; j < m_num_columns; j++) {
                 data.append(j);
                 data.append(i);
                 data.append(raw_data[i]->data[j]);
             }
+            mutex.unlock();
             return data;
         }
     }
+   mutex.unlock();
+   return data;
 }
 
 int ScanData::max_size() {
@@ -99,7 +103,7 @@ QString ScanData::generate_png() {
      double scan_max = -2 * ADC::RESOLUTION, scan_min = 2 * ADC::RESOLUTION;
 
      // Find the max and min of the lines we've yet draw -- assumes that we add lines to the raw_data sequentially (index 0 to n, not the other way)
-    for (int i = raw_data.size() - 1; i >= 0; i--) {
+     for (int i = raw_data.size() - 1; i >= 0; i--) {
         if (raw_data[i]->drawn)
             break;
         if (raw_data[i]->size == 0)
@@ -120,7 +124,6 @@ QString ScanData::generate_png() {
 
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
      double range = scan_max - scan_min;
-
      for (int i = 0; i < m_num_rows; i++) {
          if (raw_data[i]->size == 0) {
              continue;
@@ -145,7 +148,6 @@ QString ScanData::generate_png() {
      }
      m_prev_min = scan_min;
      m_prev_max = scan_max;
-
      QByteArray ba;
      QBuffer buffer(&ba);
      buffer.open(QIODevice::WriteOnly);
