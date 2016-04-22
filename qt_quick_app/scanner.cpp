@@ -211,13 +211,10 @@ void Scanner::callback_step_scan(QByteArray payload) {
              watcher_fe.setFuture(future);
              future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
              watcher_re.setFuture(future);
-//            emit new_forward_phase_data(fwd_phase_data->generate_png());
-//            emit new_forward_error_data(fwd_error_data->generate_png());
-//            emit new_reverse_offset_data(rev_offset_data->generate_png());
-//            emit new_reverse_phase_data(rev_phase_data->generate_png());
-//            emit new_reverse_error_data(rev_error_data->generate_png());
 
-            // emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
+             emit new_offset_line_profile(get_latest_line_profile(fwd_offset_data, rev_offset_data));
+             emit new_phase_line_profile(get_latest_line_profile(fwd_phase_data, rev_phase_data));
+             emit new_error_line_profile(get_latest_line_profile(fwd_error_data, rev_error_data));
          }
         scanning_forward = is_scanning_forward();
     }
@@ -225,26 +222,14 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
 QVariantList Scanner::get_latest_line_profile(ScanData* fwd, ScanData* rev) {
     QVariantList flat_data;
-//    DataPoint p;
-//    for (int i = fwd->data.length() - m_num_columns; i < fwd->data.length(); i++) {
-//        p = fwd->data[i];
-//        flat_data.append(p.x);
-//        flat_data.append(p.y);
-//        flat_data.append(p.z);
-//    }
-//    for (int i = rev->data.length() - m_num_columns; i < rev->data.length(); i++) {
-//        p = rev->data[i];
-//        flat_data.append(p.x);
-//        flat_data.append(p.y);
-//        flat_data.append(p.z);
-//    }
+    flat_data += fwd->get_latest_line();
+    flat_data += rev->get_latest_line();
     return flat_data;
 }
 
 void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done";
-    // forward_data->print();
     move_to_starting_point();
 }
 

@@ -12,7 +12,7 @@ define(["react"], function(React) {
         getDefaultProps: function() {
             return {
                 min: 0,
-                max: 100,
+                max: 140,
                 step: 1,
             };
         },
@@ -41,13 +41,14 @@ define(["react"], function(React) {
         render: function() {
             return (
                 <div className="slider">
-                    <label htmlFor={this.props.name}>{this.props.name}: </label>
+                    <label htmlFor={this.props.name}>{this.props.name}:</label>
                     <input type="range" id={this.props.name}
                                         min={this.props.min} 
                                         max={this.props.max} 
                                         step={this.props.step} 
                                         value={this.state.value} 
                                         onInput={this.update_value_from_slider_input}/>
+                    <span>  {this.state.value}%</span>
                 </div>
             );
         }

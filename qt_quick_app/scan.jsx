@@ -341,6 +341,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         </div>
                         <div className="nav-buttons-wrapper">
                             <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
+                            <button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
                         </div>
                         <p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
                         <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>

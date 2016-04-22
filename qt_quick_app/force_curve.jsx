@@ -1,7 +1,7 @@
 define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
     var ForceCurve = React.createClass({
         renderChart: function() {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
@@ -54,7 +54,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         handleNewData: function() {
             // we don't use the appraoch state here...we use it in a separate dialog
             // might be worth refactoring the signal
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var point = [(new Date()).getTime(), approach_adc_read];
             var num_points_displayed = $(node).highcharts().series[0].data.length;
             $(node).highcharts().series[0].addPoint(point, true, num_points_displayed > 10, false);
@@ -63,7 +63,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var new_series = this.add_series();
             new_series.name = "Approaching amplitude";
             new_series.yAxis = 0;
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             chart.addSeries(new_series);
             for (var i = 0; i < data.length; i += 2) {
@@ -74,7 +74,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var new_series = this.add_series();
             new_series.name = "Approaching phase";
             new_series.yAxis = 1;
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             chart.addSeries(new_series);
             for (var i = 0; i < data.length; i += 2) {
@@ -85,7 +85,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var new_series = this.add_series();
             new_series.name = "Retracting amplitude";
             new_series.yAxis = 0;
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             chart.addSeries(new_series);
             for (var i = 0; i < data.length; i += 2) {
@@ -96,7 +96,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var new_series = this.add_series();
             new_series.name = "Retracting phase";
             new_series.yAxis = 1;
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             chart.addSeries(new_series);
             for (var i = 0; i < data.length; i += 2) {
@@ -105,7 +105,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             chart.redraw(false, false);
         },
         clear: function() {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             while (chart.series.length)
                 chart.series[0].remove(false);

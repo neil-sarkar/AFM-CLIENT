@@ -108,23 +108,23 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.state.model.push([]);
             (this.state.model[this.state.model.length - 1]).push(two_dimensional_data);
 
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             $(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);
         },
         add_series: function(data) {
             var series = {
                 data: data,
             };
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             $(node).highcharts().addSeries(series);
         },
         get_point: function(index, series) {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             return chart.series[series].points[index];
         },
         update_tooltip: function(index, series, e) {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             var point = this.get_point(index, series);
             chart.tooltip.refresh(point);
@@ -132,7 +132,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             chart.yAxis[0].drawCrosshair(e, point);
         },
         clear: function() {
-            var node = this.refs.chartNode.getDOMNode();
+            var node = this.refs.chartNode;
             var chart = $(node).highcharts();
             while (chart.series.length)
                 chart.series[0].remove(false);

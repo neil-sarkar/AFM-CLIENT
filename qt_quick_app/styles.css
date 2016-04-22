@@ -7,6 +7,11 @@
     font-family: "Roboto-Thin";
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .action-button {
     font-family: 'Rubik-Regular';
     border: solid black 2px;
@@ -35,13 +40,26 @@
     cursor: default;
 }
 
-.wrapper  {
-    display: -webkit-flex;
-    -webkit-flex-flow: row wrap;
-    -webkit-justify-content: center;
-    -webkit-align-items: center;
-    -webkit-align-content: center;
-    width: 100%;
+@media (min-width: 600px) {
+  .wrapper {
+      display: -webkit-flex;
+      -webkit-flex-flow: row wrap;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      -webkit-align-content: center;
+      width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+      display: -webkit-flex;
+      -webkit-flex-flow: column wrap;
+      -webkit-justify-content: center;
+      -webkit-align-items: center;
+      -webkit-align-content: center;
+      width: 100%;
+  }
 }
 
 .left-flexbox {
@@ -160,12 +178,13 @@
 
 #nav-toggle {
   position: fixed;
-  right: 2%;
-  top: 2%;
+  right: 20px;
+  top: 25px;
   z-index: 1;
+  cursor: pointer; 
+  padding: 10px 35px 16px 0;
 }
 
-#nav-toggle { cursor: pointer; padding: 10px 35px 16px 0px; }
 #nav-toggle span, #nav-toggle span:before, #nav-toggle span:after {
   cursor: pointer;
   border-radius: 1px;
@@ -289,13 +308,6 @@
     border-bottom: 1px solid gray;
 }
 
-.home-button {
-    position: absolute;
-    left: 2%;
-    top: 2%;
-    cursor: pointer;
-}
-
 .vertically-centered-column {
     -webkit-align-content: center;
     -webkit-align-self: center;
@@ -403,4 +415,110 @@
     height: 384px;
     width: 384px;
     border: 1px solid gray;
+}
+
+/*progressbar*/
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    padding: 0;
+    /*CSS counters to number the steps*/
+    counter-reset: step;
+    width: 50%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+
+.progress-bar-wrapper {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 1em;
+    padding-top: 1em;
+    border-bottom: 1px solid silver;
+    box-shadow: 0 1px 2px 0 silver;
+    position: relative;
+}
+
+.home {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    background-size: 40;
+    background-repeat: no-repeat;
+    -webkit-filter: invert(100%);
+    opacity: 0.6;
+    left: 20px;
+    top: 15px;
+    background-image: url("qrc:/images/nGauge.png");
+    border-radius: 50%;
+    border: 2px solid silver;
+    cursor: pointer;
+}
+
+#progressbar li {
+    list-style-type: none;
+    color: black;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    width: 20%; /* bc there's 5 steps */
+    float: left;
+    position: relative;
+    cursor: pointer;
+}
+#progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 20px;
+    line-height: 20px;
+    display: block;
+    font-size: 0.9em;
+    color: #333;
+    background: white;
+    border-radius: 50%; /* make it a circle */
+    margin: 0 auto 5px auto;
+}
+/*progressbar connectors*/
+#progressbar li:after {
+    content: '';
+    width: 70%;
+    height: 2px;
+    background: silver;
+    position: absolute;
+    left: -35%;
+    top: 9px;
+    z-index: 0; /*put it behind the numbers*/
+}
+#progressbar li:first-child:after {
+    /*connector not needed before the first step*/
+    content: none; 
+}
+/*marking active/completed steps green*/
+/*The number of the step and the connector before it = green*/
+#progressbar li.active:before,  #progressbar li.active:after{
+    background: rgba(113,165,216,0.8);
+    color: white;
+}
+
+
+.setup-step-wrapper {
+    width: 95%;
+    margin-top: 20px;
+
+}
+
+.setup-step-wrapper img {
+    width: 50%;
+    width: 43%;
+    height: 40%;
+    float: left;
+}
+
+.setup-step-desc {
+    float: left;
+    margin-left: 10%;
 }

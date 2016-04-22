@@ -97,6 +97,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             this.props.data_update_signal.connect(this.handle_new_data);
             if (typeof this.props.plotline_update_signal !== 'undefined')
                 this.props.plotline_update_signal.connect(this.update_plotline);
+            $('#' + this.props.dom_id).find('canvas').eq(1).hide(); // for some reason it generates two canvases. the second one takes up space but is not visible...
         },
         start_streaming: function() {
             var stream_interval_id = setInterval(function() {
@@ -118,4 +119,3 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
     });
     return ApproachGraph;
 });
-

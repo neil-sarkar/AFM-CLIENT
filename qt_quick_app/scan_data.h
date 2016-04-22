@@ -13,7 +13,7 @@ class ScanData : public QObject
 public:
     explicit ScanData(int num_columns, int num_points, int ratio, int delta_x, int delta_y);
     ~ScanData();
-    bool append(int x, int y, int z);
+    bool append(coordinate x, coordinate y, point z);
     bool is_full();
     bool is_almost_full();
     quint64 size();
@@ -22,6 +22,7 @@ public:
     std::vector<ScanLine*> raw_data;
     QVector<ScanLine> leveled_data;
     QString generate_png();
+    QVariantList get_latest_line();
 
 signals:
 

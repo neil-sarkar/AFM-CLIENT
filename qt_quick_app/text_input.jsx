@@ -1,7 +1,6 @@
 define(["react", "console", "underscore"], function(React, console, _) {
     var TextInput = React.createClass({
         componentDidMount: function() {
-            console.log(this.props.notify_signal);
             this.props.notify_signal.connect(this.update_value_from_backend_change);
         },
         getInitialState: function() {
