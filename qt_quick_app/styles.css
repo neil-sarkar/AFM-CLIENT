@@ -502,3 +502,22 @@ body {
     background: rgba(113,165,216,0.8);
     color: white;
 }
+
+
+.setup-step-wrapper {
+    width: 95%;
+    margin-top: 20px;
+
+}
+
+.setup-step-wrapper img {
+    width: 50%;
+    width: 43%;
+    height: 40%;
+    float: left;
+}
+
+.setup-step-desc {
+    float: left;
+    margin-left: 10%;
+}
