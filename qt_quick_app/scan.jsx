@@ -205,6 +205,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         save_data: function () {
+            afm.launch_folder_picker();
             afm.save_scan_data();
         },
         render: function() {
@@ -284,7 +285,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         notify_signal={scanner.base_file_name_changed}
                                         get_value={scanner.base_file_name}
                                         set_value={scanner.set_base_file_name} />
-                            <SaveFolderPicker compressed={true}/>
                         </div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
