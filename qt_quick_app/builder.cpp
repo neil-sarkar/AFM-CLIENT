@@ -65,6 +65,7 @@ AFM* Builder::build_afm() {
     Sweeper* sweeper = new Sweeper(pid);
     sweeper->dds = new DDS();
     ForceCurveGenerator* force_curve_generator = new ForceCurveGenerator();
+
     return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner, force_curve_generator);
 }
 

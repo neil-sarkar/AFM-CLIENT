@@ -34,7 +34,6 @@ public:
 
 private slots:
     void addJSObject(CustomPage* page);
-    void update();
 
 private:
     void set_global_web_settings();

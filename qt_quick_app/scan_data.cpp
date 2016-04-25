@@ -22,9 +22,9 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_prev_max = -ADC::RESOLUTION * 2;
     m_prev_min = ADC::RESOLUTION * 2;
 
-    raw_data.reserve(m_num_rows);
+    raw_data.reserve(m_num_rows + 1);
     for (int i = 0; i < m_num_rows; i++)
-        raw_data.push_back(new ScanLine(m_num_columns));
+        raw_data[i] = new ScanLine(m_num_columns);
 
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
@@ -79,6 +79,7 @@ quint64 ScanData::size() { //
 
 bool ScanData::append(coordinate x, coordinate y, point z) {
     assert(!is_full());
+
     raw_data[y]->add_point(x, z);
     if (raw_data[y]->is_full()) {
         raw_data[y]->compute_average();
@@ -124,6 +125,7 @@ QString ScanData::generate_png() {
 
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
      double range = scan_max - scan_min;
+     qDebug() << range << scan_max << scan_min;
      for (int i = 0; i < m_num_rows; i++) {
          if (raw_data[i]->size == 0) {
              continue;
@@ -143,7 +145,6 @@ QString ScanData::generate_png() {
              color = color_map[int(percentage * 100)];
              m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
          }
-
          raw_data[i]->drawn = true;
      }
      m_prev_min = scan_min;

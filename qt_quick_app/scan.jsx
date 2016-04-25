@@ -4,65 +4,32 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         for(var i=0; i < rows; i++) {
             matrix.push([]);
             for (var j = 0; j < cols; j++) {
-                matrix[i].push("-1"); // TODO: put as constatn
+                matrix[i].push("-1"); // TODO: put "-1" as a constant in constants.js
             }
         }
         return matrix;
     }
     var img_str = "";
-
-    function one_d_matrix_generator(cols) {
-        matrix = [];
-        for (var i = 0; i < cols; i++)
-            matrix.push("-1");
-        return matrix;
-    }
-
-    function DataContainer(num_rows, num_columns) {
-        this.num_rows = num_rows;
-        this.num_columns = num_columns;
-        this.heatmap = two_d_matrix_generator(num_rows, num_columns);
-        this.profile = two_d_matrix_generator(num_rows, num_columns);
-        
-        // Used for cleaning and heatmap color mapping
-        this.sum = 0;
-        this.num_points = 0;
-        this.sum_of_squares = 0;
-        this.min = Number.POSITIVE_INFINITY;
-        this.max = Number.NEGATIVE_INFINITY;
-    }
-
-    DataContainer.prototype.most_recent_line_profile = function() {
-        for (var i = this.profile.length - 1; i >= 0; i--) // iterate backwards, since we assume we fill in one direction only
-            if (this.profile[i][0] !== "-1") {// check if this row has been filled (assumes the entire row would be filled at once, therefore only check index 0 and assume the rest of the row is also -1)
-                return this.profile[i].slice(); // must slice, otherwise the first row gets set to the last row retreived (I think it's because we pass by arrays reference and highcharts will retain a reference to the first points it gets, which means it can also set that data)
-            }
-    };
     
-    function ScanView(name, data_source) {
+    function ScanView(name, render_signal, dom_id, data_source) {
         this.name = name;
         this.data_source = data_source;
-        this.forward_data = null;
-        this.reverse_data = null;
+        this.dom_id = dom_id;
+        this.render_signal = render_signal;
+        this.data = null;
     }
 
     ScanView.prototype.init_data = function (num_rows, num_columns) {
-        this.forward_data = new DataContainer(num_rows, num_columns);
-        this.reverse_data = new DataContainer(num_rows, num_columns);
+        this.data = two_d_matrix_generator(num_rows, num_columns);
     };
 
     var scan_views = [];
-    scan_views.push(new ScanView("Offset", scanner.new_offset_data));
-    scan_views.push(new ScanView("Phase", scanner.new_phase_data));
-    scan_views.push(new ScanView("Error", scanner.new_error_data));
-
-    picture_map = [];
-    picture_map.push({data_source: scanner.new_forward_offset_data, dom_id: "fo_image"});
-    picture_map.push({data_source: scanner.new_forward_error_data, dom_id: "fe_image"});
-    picture_map.push({data_source: scanner.new_forward_phase_data, dom_id: "fp_image"});
-    picture_map.push({data_source: scanner.new_reverse_offset_data, dom_id: "ro_image"});
-    picture_map.push({data_source: scanner.new_reverse_error_data, dom_id: "re_image"});
-    picture_map.push({data_source: scanner.new_reverse_phase_data, dom_id: "rp_image"});
+    scan_views.push(new ScanView("Forward Offset", scanner.new_forward_offset_data, "fo_image",scanner.new_forward_offset_profile));
+    scan_views.push(new ScanView("Forward Error", scanner.new_forward_error_data, "fe_image", scanner.new_forward_error_profile));
+    scan_views.push(new ScanView("Forward Phase",  scanner.new_forward_phase_data, "fp_image", scanner.new_forward_phase_profile));
+    scan_views.push(new ScanView("Reverse Offset",  scanner.new_reverse_offset_data, "ro_image",scanner.new_reverse_offset_profile));
+    scan_views.push(new ScanView("Reverse Error",  scanner.new_reverse_error_data, "re_image", scanner.new_reverse_error_profile));
+    scan_views.push(new ScanView("Reverse Phase",  scanner.new_reverse_phase_data, "rp_image", scanner.new_reverse_phase_profile));
 
 
     var Scan = React.createClass({
@@ -103,12 +70,12 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.all_data_received.connect(this.set_scan_complete);
 
             // connect scan views to their data sources
-            for (var i = 0; i < picture_map.length; i++) {
-                var bound_method = this.render_png.bind(this, picture_map[i].dom_id);
-                picture_map[i].data_source.connect(bound_method);
+            for (var i = 0; i < scan_views.length; i++) {
+                var bound_method = this.render_png.bind(this, scan_views[i].dom_id);
+                scan_views[i].render_signal.connect(bound_method);
+                bound_method = this.prepare_line_profile.bind(this, scan_views[i]);
+                scan_views[i].data_source.connect(bound_method);
             }
-
-            scanner.new_offset_line_profile.connect(this.prepare_new_line_profile_data);
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
             $('.scan-image').hide();
@@ -146,20 +113,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }
         },
         tally_new_data: function(obj, x, y, z) {
-            obj.profile[y][x] = z;
-            obj.sum += z;
-            obj.sum_of_squares += Math.pow(z, 2);
-            obj.num_points += 1;
+            obj.data[y][x] = z;
         },
-        prepare_new_line_profile_data: function (data) {
-            // Data comes as (x,y,z.. max,min) * 2 for forward and reverse
-            for (var i = 0; i < (data.length / 2); i += 3) {
-                this.tally_new_data(scan_views[0].forward_data, data[i], data[i+1], data[i+2]);
-                var j = data.length / 2 + i;
-                this.tally_new_data(scan_views[0].reverse_data, data[j], data[j+1], data[j+2]);
+        prepare_line_profile: function (scan_view, data) {
+            scan_data = [];
+            for (var i = 0; i < data.length; i += 3) {
+                scan_data.push({x: data[i], y: data[i+2]});
             }
-
-            this.push_data_to_view(scan_views[0], false);
+            this.refs.line_profile.set_data(scan_data);
         },
         push_data_to_view: function(scan_view, is_switching_views) {
             this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());

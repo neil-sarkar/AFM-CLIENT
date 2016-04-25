@@ -1,17 +1,17 @@
 <RCC>
-    <qresource prefix="/js" lang="js">
+    <qresource lang="js" prefix="/js">
         <file>console.js</file>
         <file>common.js</file>
         <file>jsx.js</file>
         <file>JSXTransformer.js</file>
         <file>text.js</file>
     </qresource>
-    <qresource prefix="/css" lang="css">
+    <qresource lang="css" prefix="/css">
         <file>home.css</file>
         <file>fonts.css</file>
         <file>styles.css</file>
     </qresource>
-    <qresource prefix="/html" lang="html">
+    <qresource lang="html" prefix="/html">
         <file>home.html</file>
         <file>main.html</file>
         <file>force_curve.html</file>
@@ -57,11 +57,9 @@
         <file>jquery.js</file>
         <file>require.js</file>
         <file>highcharts.js</file>
-        <file>handlebars-v4.0.5.js</file>
         <file>react.js</file>
         <file>react-dom.js</file>
         <file>browser.js</file>
-        <file>classNames.js</file>
         <file>underscore.js</file>
         <file>constants.js</file>
         <file>canvasjs.js</file>
@@ -74,16 +72,9 @@
         <file>approach.jsx</file>
         <file>scan.jsx</file>
         <file>sweep.jsx</file>
-        <file>right_pane.jsx</file>
         <file>sweep_graphs.jsx</file>
-        <file>approach_graph.jsx</file>
-        <file>flow.jsx</file>
-        <file>scan_heatmap.jsx</file>
-        <file>highcharts-canvas.js</file>
-        <file>spinner.jsx</file>
         <file>slider.jsx</file>
         <file>number_input.jsx</file>
-        <file>settings_drawer.js</file>
         <file>pga_controller.jsx</file>
         <file>dac_controller.jsx</file>
         <file>adc_controller.jsx</file>
@@ -92,7 +83,6 @@
         <file>line_profile.jsx</file>
         <file>scan_viewer.jsx</file>
         <file>inline_scan_controls.jsx</file>
-        <file>z_fine_graph.jsx</file>
         <file>dropdown.jsx</file>
         <file>inline_sweep_controls.jsx</file>
         <file>dds_controller.jsx</file>
@@ -108,8 +98,6 @@
         <file>setup.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
-        <file>heatmap.js</file>
-        <file>boost.js</file>
         <file>exporting.js</file>
         <file>offline-exporting.js</file>
     </qresource>

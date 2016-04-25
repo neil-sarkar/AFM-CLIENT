@@ -1,6 +1,7 @@
 #include "scan_line.h"
 #include "adc.h"
 #include "assert.h"
+#include "globals.h"
 #include <QDebug>
 
 ScanLine::ScanLine(coordinate capacity_) {
@@ -11,7 +12,7 @@ ScanLine::ScanLine(coordinate capacity_) {
     max = -ADC::RESOLUTION * 2;
     min = ADC::RESOLUTION * 2;
 
-    data = new qint32[capacity];
+    data = new point[capacity];
 
     for (int i = 0; i < capacity; i++) {
         data[i] = 0;
@@ -21,7 +22,7 @@ ScanLine::ScanLine(coordinate capacity_) {
 }
 
 ScanLine::~ScanLine() {
-    delete this->data;
+    delete[] this->data;
 }
 
 bool ScanLine::is_full() {
@@ -29,7 +30,6 @@ bool ScanLine::is_full() {
 }
 
 void ScanLine::add_point(coordinate x, point z) {
-
     data[x] = z;
     size += 1;
     sum += z;
@@ -37,7 +37,6 @@ void ScanLine::add_point(coordinate x, point z) {
         this->max = z;
     if (z < this->min)
         this->min = z;
-    assert(z <= max && z >= min);
 }
 
 void ScanLine::compute_average() {

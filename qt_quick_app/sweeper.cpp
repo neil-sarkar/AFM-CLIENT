@@ -8,7 +8,6 @@
 #include <QTimer>
 
 Sweeper::Sweeper(PID* pid_) : MinStepSize(1) {
-    // to be loaded from a settings file
     m_repetitions_counter = 0;
     pid = pid_;
 }

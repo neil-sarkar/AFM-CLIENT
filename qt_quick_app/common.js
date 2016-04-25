@@ -3,11 +3,9 @@ requirejs.config({
     paths: {
         home: "pages/home",
         console: "console",
-        classnames: "lib/classNames",
         jquery: 'lib/jquery',
         highcharts: 'lib/highcharts',
         highcharts_canvas: 'pages/highcharts-canvas',
-        boost: 'lib/modules/boost',
         heatmap: 'lib/modules/heatmap',
         constants: 'lib/constants',
         canvasjs: 'lib/canvasjs',

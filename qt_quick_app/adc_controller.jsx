@@ -1,5 +1,4 @@
 define(["react"], function(React) {
-
 	var ADCController = React.createClass({
 		componentDidMount: function() {
 			if (this.props.resistance)

@@ -11,7 +11,6 @@ define([], function() {
         
         System_Font: "Roboto-Thin",
 
-
     };
     return Constants;
 });

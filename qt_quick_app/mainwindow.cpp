@@ -19,7 +19,6 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     // commented out because we just call addJSObject manually now and pass in the appropriate page
     // QObject::connect(m_main_app_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject())); // Signal is emitted before frame loads any web content:
 
-
     page()->setNetworkAccessManager(m_network);
     addJSObject(&m_welcome_page);
     addJSObject(&m_main_app_page);
@@ -29,13 +28,6 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     setPage(&m_welcome_page);
 
     set_global_web_settings();
-//    timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-//    timer->start(1000);
-}
-
-void MainWindow::update() {
-//    QWebSettings::clearMemoryCaches();
 }
 
 void MainWindow::set_global_web_settings() {

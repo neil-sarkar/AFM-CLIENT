@@ -73,9 +73,12 @@ signals:
     void ratio_changed(int);
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
-    void new_offset_line_profile(QVariantList);
-    void new_phase_line_profile(QVariantList);
-    void new_error_line_profile(QVariantList);
+    void new_forward_offset_profile(QVariantList);
+    void new_forward_error_profile(QVariantList);
+    void new_forward_phase_profile(QVariantList);
+    void new_reverse_offset_profile(QVariantList);
+    void new_reverse_error_profile(QVariantList);
+    void new_reverse_phase_profile(QVariantList);
 
 
 public slots:
@@ -143,7 +146,12 @@ private:
     QFutureWatcher<QString> watcher_fe;
     QFutureWatcher<QString> watcher_re;
 
-    QVariantList get_latest_line_profile(ScanData* fwd, ScanData* rev);
+    QVariantList current_fwd_offset_line_profile;
+    QVariantList current_rev_offset_line_profile;
+    QVariantList current_fwd_phase_line_profile;
+    QVariantList current_rev_phase_line_profile;
+    QVariantList current_fwd_error_line_profile;
+    QVariantList current_rev_error_line_profile;
 
     static const QString settings_group_name;
 };

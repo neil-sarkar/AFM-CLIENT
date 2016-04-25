@@ -1,4 +1,4 @@
- define(["react", "classnames"], function(React, classNames) {
+ define(["react"], function(React) {
 	var ProgressBar = React.createClass({
         render: function() {
             var steps = [];

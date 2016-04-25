@@ -1,13 +1,5 @@
 #include "command_node.h"
 
-CommandNode::CommandNode(const CommandNode& other, QObject* _instance, QByteArray _payload) {
-    id = other.id;
-    num_receive_bytes = other.num_receive_bytes;
-    num_send_bytes = other.num_send_bytes;
-    instance = _instance;
-    payload = _payload;
-}
-
 CommandNode::CommandNode(const CommandNode& other, QByteArray _payload) {
     id = other.id;
     num_receive_bytes = other.num_receive_bytes;

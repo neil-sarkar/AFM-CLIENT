@@ -1,16 +1,1 @@
-<RCC>
-    <qresource prefix="/">
-        <file>main.qml</file>
-        <file>MainForm.ui.qml</file>
-        <file>MyItem.qml</file>
-        <file>Motor.qml</file>
-        <file>MotorButton.qml</file>
-        <file>DAC.qml</file>
-        <file>PGA.qml</file>
-        <file>PID.qml</file>
-        <file>Sweep.qml</file>
-        <file>Approach.qml</file>
-        <file>DDS.qml</file>
-        <file>jquery.min.js</file>
-    </qresource>
-</RCC>
+<RCC/>
