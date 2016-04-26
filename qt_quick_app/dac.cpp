@@ -25,7 +25,7 @@ void DAC::init() {
     QByteArray q;
     q.push_back(m_id);
     q.push_back(RESOLUTION & 0xFF);
-    q.push_back((RESOLUTION & 0x0F00) >> 8);
+    q.push_back((RESOLUTION & 0xFF00) >> 8);
     CommandNode* node = new CommandNode(command_hash[DAC_Set_Max_Value], q); // Set the maximum value of the DAC - make its own method
     emit command_generated(node);
     set_settings();
@@ -51,7 +51,7 @@ void DAC::cmd_set_value() {
     qint16 value = m_value / DAC::SCALE_FACTOR;
     payload.push_back(m_id);
     payload.push_back((value & 0xFF));
-    payload.push_back((value & 0x0F00) >> 8);
+    payload.push_back((value & 0xFF00) >> 8);
     CommandNode* node = new CommandNode(command_hash[DAC_Write], payload);
     emit command_generated(node);
 }
@@ -89,6 +89,6 @@ const int DAC::X_2 = 11;
 
 const QString DAC::settings_group_name = "dac";
 
-const quint16 DAC::RESOLUTION = 4095;
+const quint16 DAC::RESOLUTION = 0xFFFF;
 const double DAC::MAX_VOLTAGE = 3.3;
 const double DAC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;

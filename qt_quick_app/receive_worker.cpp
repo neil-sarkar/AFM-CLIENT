@@ -36,13 +36,15 @@ void ReceiveWorker::build_working_response() {
         return;
     }
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
+        qDebug() << working_response.length();
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character) {
                 handle_asynchronous_message(); // should really be called "special message". The "auto approach stop command" (aka the pause confirmation) also has the special character
             } else if (receive_command_queue.count()) {
                 process_working_response();
-            } else
+            } else {
                 qDebug() << "This async command is not accounted for" << static_cast<unsigned char>(working_response.at(0)) << working_response;
+            }
 
             working_response.clear();
             return;
@@ -51,6 +53,7 @@ void ReceiveWorker::build_working_response() {
         }
     }
     working_response += byte;
+    qDebug() << working_response;
 }
 
 void ReceiveWorker::process_working_response() {

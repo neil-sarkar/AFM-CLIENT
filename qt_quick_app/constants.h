@@ -55,6 +55,5 @@ extern const int Auto_Approach_Stopped_Character;
 extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
 extern const int Set_Receive_Bytes_Error;
-extern const int DAC_Table_Values[4096];
 
 #endif // CONSTANTS_H

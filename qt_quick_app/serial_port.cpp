@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QTextCodec>
+#include <QTest>
 #include <assert.h>
 #include "globals.h"
 #include "constants.h"
@@ -54,12 +55,13 @@ void SerialPort::reset_mcu() {
     emit resetting_mcu(); // this connects to the flushing of the buffers
     // super important, because the UI creation will try to call a bunch of setters
     QByteArray message;
-    message += 'M';
-    message += 'A';
-    message += 'B';
-    message += 'C';
-    message += 'D';
-    write_bytes(message);
+//    message += 'M';
+//    message += 'A';
+//    message += 'B';
+//    message += 'C';
+//    message += 'D';
+//    write_bytes(message);
+//    QTest::qSleep(10000);
 //    write_byte('M');
 //    write_byte('A');
 //    write_byte('B');
@@ -89,6 +91,7 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
 }
 
 int SerialPort::write_bytes(QByteArray bytes) { // This method is the only one that actually writes anything to the serial port
+    qDebug() << "Sending " << bytes;
     if (port->write(bytes.data(), bytes.length()) == bytes.length()) { //        qDebug() << QString().sprintf("%2p",byte);
         return AFM_Success;
     }
@@ -133,8 +136,7 @@ void SerialPort::execute_command(CommandNode* command_node) {
 //        message += payload_byte
 
     for (int i = 0; i < command_node->payload.length(); i++) {
-        if (i != 0)
-            message += command_node->payload[i];
+        message += command_node->payload[i];
     }
 //        result += write_byte(payload_byte);
 //    message += Message_Delimiter; // delimit the message

@@ -90,13 +90,13 @@ void AFM::set_dac_table() {
     // that would be too many bytes for the MCU to handle at once
     // Therefore, we have to string together these commands only after one has completely executed
     emit setting_dac_table();
-    qDebug() << "Setting dac table";
-    if (dac_table_page_count < 16) {
-        cmd_set_dac_table(dac_table_page_count);
-    } else {
-        dac_table_page_count = 0; // after writing 16 pages to the flash, we're done.
+//    qDebug() << "Setting dac table";
+//    if (dac_table_page_count < 16) {
+//        cmd_set_dac_table(dac_table_page_count);
+//    } else {
+//        dac_table_page_count = 0; // after writing 16 pages to the flash, we're done.
         emit dac_table_set();
-    }
+//    }
 }
 
 void AFM::callback_set_dac_table(QByteArray buffer) {
@@ -106,14 +106,14 @@ void AFM::callback_set_dac_table(QByteArray buffer) {
 }
 
 void AFM::cmd_set_dac_table(int block_number) {
-    QByteArray payload;
-    int start_byte_index = block_number * AFM::DAC_Table_Block_Size;
-    for (int i = start_byte_index; i < start_byte_index + AFM::DAC_Table_Block_Size; i++) {
-        auto value = DAC_Table_Values[i];
-        payload += (value & 0xFF);
-        payload += ((value & 0x0F00) >> 8);
-    }
-    emit command_generated(new CommandNode(command_hash[AFM_Set_Dac_Table], bind(&AFM::callback_set_dac_table), payload));
+//    QByteArray payload;
+//    int start_byte_index = block_number * AFM::DAC_Table_Block_Size;
+//    for (int i = start_byte_index; i < start_byte_index + AFM::DAC_Table_Block_Size; i++) {
+//        auto value = DAC_Table_Values[i];
+//        payload += (value & 0xFF);
+//        payload += ((value & 0x0F00) >> 8);
+//    }
+//    emit command_generated(new CommandNode(command_hash[AFM_Set_Dac_Table], bind(&AFM::callback_set_dac_table), payload));
 }
 
 void AFM::restore_defaults() {
