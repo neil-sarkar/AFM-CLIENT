@@ -8,6 +8,8 @@
 #include <QPointF>
 #include <pid.h>
 
+// This class handles everything to do with the frequency sweep
+// It contains the DDS object
 class Sweeper : public AFMObject
 {
     Q_OBJECT
@@ -70,6 +72,7 @@ private:
     double m_max_amplitude;
     QList<quint16> m_step_sizes;
     QList<quint32> m_boundaries; // how much +/- should we put on the max found in the previous state
+    // start/stop frequency and step size of the initial sweep - not always equal to the start/stop/step of the DDS
     quint32 m_start_frequency;
     quint32 m_end_frequency;
     quint16 m_step_size;

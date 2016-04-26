@@ -25,9 +25,13 @@ public:
     static const int Z;
     static const int Z_Piezoresistor_Amplitude;
     static const int Phase;
+
+
     static const double MAX_VOLTAGE;
     static const int RESOLUTION;
-    static const double SCALE_FACTOR;
+    static const double SCALE_FACTOR; // calculated from MAX_VOLTAGE and RESOLUTION
+
+     // if you were to call get resistances, what range of values would be acceptable for us to consider the actuator working
     static const int Min_Resistance;
     static const int Max_Resistance;
 

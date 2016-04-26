@@ -16,6 +16,8 @@
 #include <QStateMachine>
 
 
+// This class is at the top of the object tree for the main gui thread
+// It contains references to all of the peripherals either directly or through additional wrapper objects
 class AFM : public AFMObject
 {
     Q_OBJECT
@@ -31,7 +33,6 @@ class AFM : public AFMObject
         Scanner* scanner;
         ForceCurveGenerator* force_curve_generator;
 
-        static const int DAC_Table_Block_Size;
         void callback_set_dac_table(QByteArray buffer);
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
@@ -41,8 +42,9 @@ class AFM : public AFMObject
         Q_INVOKABLE QString save_folder();
         Q_INVOKABLE void save_scan_data();
         Q_INVOKABLE void save_force_curve_data();
-
         Q_INVOKABLE void release_port();
+
+        static const int DAC_Table_Block_Size;
 
     signals:
         void command_generated(CommandNode*);
@@ -51,7 +53,7 @@ class AFM : public AFMObject
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
         
-        // used for UI
+        // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
         void chip_mounted_ok();
         void setting_dac_table();
@@ -65,16 +67,16 @@ class AFM : public AFMObject
         // typedefs
         callback_return_type bind(void (AFM::*method)(QByteArray));
         typedef void (AFM::*callback_type)(QByteArray);
+
         void cmd_set_dac_table(int block_number);
-        int dac_table_page_count;
-        double voltage_resistance_equation(double);
         void set_save_folder(QString);
-        bool is_initializing;
         void set_settings();
+        double voltage_resistance_equation(double);
+
+        int dac_table_page_count;
+        bool is_initializing;
         QString m_save_folder;
         static const QString settings_group_name;
-
-
 };
 
 #endif // AFM_H

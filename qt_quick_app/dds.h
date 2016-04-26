@@ -5,6 +5,7 @@
 #include <afm_object.h>
 #include <qmath.h>
 
+// This class interfaces with the DDS peripheral
 class DDS : public AFMObject
 {
     Q_OBJECT
