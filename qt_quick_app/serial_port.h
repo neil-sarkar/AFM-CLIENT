@@ -29,6 +29,7 @@ Q_OBJECT
         void scan_for_ports();
         void check_connected(); // this method runs periodically as dictated by the port_scan_timer
         int write_byte(char byte);
+        int write_bytes(QByteArray bytes);
         void execute_command(CommandNode*);
         void reset_mcu();
         void initialize_reading();

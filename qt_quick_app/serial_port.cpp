@@ -26,9 +26,11 @@ bool SerialPort::auto_connect() {
 
     if (!connected_ports.size()) // if there are no ports available
         return false;
-    for (int i = 0; i < connected_ports.size(); i++) // iterate through the ports
-            if (connected_ports[i].manufacturer() == AFM_Port_Name) // check if the port is the AFM
-            return open(connected_ports[i].portName(), AFM_Baud_Rate);
+    for (int i = 0; i < connected_ports.size(); i++){ // iterate through the ports
+//            if (connected_ports[i].manufacturer() == AFM_Port_Name) // check if the port is the AFM
+        qDebug() << connected_ports[i].portName();
+        return open(connected_ports[1].portName(), AFM_Baud_Rate);
+    }
     return false;
 }
 
@@ -50,11 +52,18 @@ void SerialPort::reset_mcu() {
     qDebug() << "Resetting MCU";
     emit resetting_mcu(); // this connects to the flushing of the buffers
     // super important, because the UI creation will try to call a bunch of setters
-    write_byte('M');
-    write_byte('A');
-    write_byte('B');
-    write_byte('C');
-    write_byte('D');
+    QByteArray message;
+    message += 'M';
+    message += 'A';
+    message += 'B';
+    message += 'C';
+    message += 'D';
+    write_bytes(message);
+//    write_byte('M');
+//    write_byte('A');
+//    write_byte('B');
+//    write_byte('C');
+//    write_byte('D');
 }
 
 void SerialPort::initialize_reading() {
@@ -78,9 +87,17 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
     return AFM_Fail;
 }
 
+int SerialPort::write_bytes(QByteArray bytes) { // This method is the only one that actually writes anything to the serial port
+    if (port->write(bytes.data(), bytes.length()) == bytes.length()) { //        qDebug() << QString().sprintf("%2p",byte);
+        return AFM_Success;
+    }
+    qDebug() << "Failed to write byte ";
+    return AFM_Fail;
+}
+
 void SerialPort::on_ready_read() {
     QByteArray q = port->readAll();
-//    qDebug() << "On serial read all" << q;
+    qDebug() << "On serial read all" << q;
     for (char byte : q) {
         emit byte_received(byte);
     }
@@ -106,11 +123,22 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 void SerialPort::execute_command(CommandNode* command_node) {
     qDebug() << "Tag: " << command_node->tag << "Id: " << char(command_node->id) << "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
-    result += write_byte(Message_Delimiter); // delimit the message
-    for (char payload_byte : command_node->payload) // send all the associated data with the command
-        result += write_byte(payload_byte);
-    result += write_byte(Message_Delimiter); // delimit the message
 
+    QByteArray message;
+//    message += Message_Delimiter;
+
+//    result += write_byte(Message_Delimiter); // delimit the message
+//    for (char payload_byte : command_node->payload)  // send all the associated data with the command
+//        message += payload_byte
+
+    for (int i = 0; i < command_node->payload.length(); i++) {
+        if (i != 0)
+            message += command_node->payload[i];
+    }
+//        result += write_byte(payload_byte);
+//    message += Message_Delimiter; // delimit the message
+
+    write_bytes(message);
     // TODO:: throw graceful exception
     assert (result == AFM_Success);
     emit message_sent(command_node);
