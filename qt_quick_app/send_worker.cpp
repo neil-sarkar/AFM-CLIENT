@@ -7,28 +7,37 @@
 
 SendWorker::SendWorker(QObject *parent) : QObject(parent) {
     tag = -1;
+    QObject::connect(this, SIGNAL(immediately_dequeue()), this, SLOT(dequeue_command()), Qt::QueuedConnection);
+}
+
+
+void SendWorker::handle_receive_return() {
+    if (send_command_queue.count()) {
+        dequeue_command();
+    } else {
+        port_writing_command = false;
+    }
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {
     command_node->tag = iterate_tag(); // assign tag then increment
     assert (send_command_queue.isFull() == false);
+
     mutex.lock();
     if (!is_approaching)
         send_command_queue.enqueue(command_node);
     mutex.unlock();
+
     if (!port_writing_command) {
+        port_writing_command = true;
         dequeue_command();
+        return;
     }
 }
 
 void SendWorker::dequeue_command() {
     if (!send_command_queue.count())
         return;
-
-    // TODO: look into atomic bool in Qt
-    mutex.lock();
-    port_writing_command = true;
-    mutex.unlock();
 
     CommandNode* command_node = send_command_queue.dequeue();
     populate_send_bytes(command_node);

@@ -18,50 +18,34 @@
 #include <QFinalState>
 #include <QImage>
 #include <QBuffer>
+#include "pin_map.h"
 
 Builder::Builder() {}
 
 AFM* Builder::build_afm() {
-    // Create the collection of DACs
-    QHash<int, AFMObject*> dac_collection;
-    dac_collection[DAC::Buffered_1] = new DAC(DAC::Buffered_1);
-    dac_collection[DAC::Buffered_2] = new DAC(DAC::Buffered_2);
-    dac_collection[DAC::Board_2] = new DAC(DAC::Board_2);
-    dac_collection[DAC::Z_Amplitude] = new DAC(DAC::Z_Amplitude);
-    dac_collection[DAC::Board_1] = new DAC(DAC::Board_1);
-    dac_collection[DAC::Buffered_3] = new DAC(DAC::Buffered_3);
-    dac_collection[DAC::Z_Offset_Fine] = new DAC(DAC::Z_Offset_Fine);
-    dac_collection[DAC::Y_1] = new DAC(DAC::Y_1);
-    dac_collection[DAC::Z_Offset_Coarse] = new DAC(DAC::Z_Offset_Coarse);
-    dac_collection[DAC::Y_2] = new DAC(DAC::Y_2);
-    dac_collection[DAC::X_1] = new DAC(DAC::X_1);
-    dac_collection[DAC::X_2] = new DAC(DAC::X_2);
+    PinMap p;
 
+    // Create the collection of DACs
+    peripheral_collection dac_collection;
+    for (int i = 0; i < p.dac_array.length(); i++) {
+        dac_collection[p.dac_array[i].name] = new DAC(p.dac_array[i].id);
+    }
     // Create the collection of ADC
-    QHash<int, AFMObject*> adc_collection;
-    adc_collection[ADC::X_1] = new ADC(ADC::X_1);
-    adc_collection[ADC::X_2] = new ADC(ADC::X_2);
-    adc_collection[ADC::Y_1] = new ADC(ADC::Y_1);
-    adc_collection[ADC::Y_2] = new ADC(ADC::Y_2);
-    adc_collection[ADC::Z] = new ADC(ADC::Z);
-    adc_collection[ADC::Z_Piezoresistor_Amplitude] = new ADC(ADC::Z_Piezoresistor_Amplitude);
-    adc_collection[ADC::Phase] = new ADC(ADC::Phase);
+    peripheral_collection adc_collection;
+    for (int i = 0; i < p.adc_array.length(); i++) {
+        adc_collection[p.adc_array[i].name] = new ADC(p.adc_array[i].id);
+    }
 
     // PGA
-    QHash<int, AFMObject*> pga_collection;
-    pga_collection[PGA::X_1] = new PGA(PGA::X_1);
-    pga_collection[PGA::X_2] = new PGA(PGA::X_2);
-    pga_collection[PGA::Y_1] = new PGA(PGA::Y_1);
-    pga_collection[PGA::Y_2] = new PGA(PGA::Y_2);
-    pga_collection[PGA::Z_Fine] = new PGA(PGA::Z_Fine);
-    pga_collection[PGA::DDS_Amplitude] = new PGA(PGA::DDS_Amplitude);
-    pga_collection[PGA::Z_Coarse] = new PGA(PGA::Z_Coarse);
-    pga_collection[PGA::Leveling] = new PGA(PGA::Leveling);
+    peripheral_collection pga_collection;
+    for (int i = 0; i < p.pga_array.length(); i++) {
+        pga_collection[p.pga_array[i].name] = new PGA(p.pga_array[i].id);
+    }
 
     PID* pid = new PID();
     Motor* motor = new Motor();
-    Scanner* scanner = new Scanner(pid, dac_collection[DAC::Z_Offset_Fine]);
-    Approacher* approacher = new Approacher(pid, adc_collection[ADC::Z_Piezoresistor_Amplitude]);
+    Scanner* scanner = new Scanner(pid, dac_collection["z_offset_fine"]);
+    Approacher* approacher = new Approacher(pid, adc_collection["z_piezoresistor_amplitude"]);
     Sweeper* sweeper = new Sweeper(pid);
     sweeper->dds = new DDS();
     ForceCurveGenerator* force_curve_generator = new ForceCurveGenerator();
@@ -70,23 +54,23 @@ AFM* Builder::build_afm() {
 }
 
 
-void Builder::wire_hash_command_generated(QHash<int, AFMObject*> & collection, SendWorker* & send_worker) {
-    QHash<int, AFMObject*>::iterator i;
+void Builder::wire_hash_command_generated(peripheral_collection & collection, SendWorker* & send_worker) {
+    peripheral_collection::iterator i;
     for (i = collection.begin(); i != collection.end(); ++i)
-        QObject::connect(i.value(), SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+        QObject::connect(i.value(), SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
 }
 
 void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_worker, ReceiveWorker* & receive_worker) {
     // Wire command_generated signal
 //     TODO: There is likely a cleaner way to connect all the command_generated SIGNALS to the enqueue_command SLOT as command_generated is inherited from AFMObject
-     QObject::connect(afm, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->scanner, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->scanner->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
-     QObject::connect(afm->force_curve_generator, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
+     QObject::connect(afm, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->motor, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->scanner, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->scanner->pid, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
+     QObject::connect(afm->force_curve_generator, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)));
      wire_hash_command_generated(afm->ADC_collection, send_worker);
      wire_hash_command_generated(afm->DAC_collection, send_worker);
      wire_hash_command_generated(afm->PGA_collection, send_worker);
@@ -98,7 +82,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), receive_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray))); // why isn't this a qt direct connection
     QObject::connect(afm, SIGNAL(trigger_mcu_reset()), serial_port, SLOT(reset_mcu()));
-    QObject::connect(receive_worker, SIGNAL(send_next_command()), send_worker, SLOT(dequeue_command()));
+    QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
     QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(disconnected()));
 
     // Misc connections

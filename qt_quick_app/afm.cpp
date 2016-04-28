@@ -10,8 +10,9 @@
 #include <QFileDialog>
 #include <QStateMachine>
 #include <QFinalState>
+#include "globals.h"
 
-AFM::AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator) {
+AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collection, peripheral_collection ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator) {
     this->PGA_collection = PGA_collection;
     this->ADC_collection = ADC_collection;
     this->DAC_collection = DAC_collection;
@@ -27,7 +28,7 @@ void AFM::init() {
     // This method calls the init methods of all the members
     set_settings();
     is_initializing = true;
-    QHash<int, AFMObject*>::iterator i;
+    peripheral_collection::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
     for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
@@ -45,7 +46,7 @@ void AFM::init() {
 
 void AFM::read_all_ADCs() {
     qDebug() << "Reading all ADCs";
-    QHash<int, AFMObject*>::iterator i;
+    peripheral_collection ::iterator i;
     for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
         static_cast<ADC*>(i.value())->read();
 }
@@ -68,14 +69,15 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
     double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
     double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
     double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
-    static_cast<ADC*>(ADC_collection[ADC::X_1])->update_value(x_1_voltage);
-    static_cast<ADC*>(ADC_collection[ADC::X_2])->update_value(x_2_voltage);
-    static_cast<ADC*>(ADC_collection[ADC::Y_1])->update_value(y_1_voltage);
-    static_cast<ADC*>(ADC_collection[ADC::Y_2])->update_value(y_2_voltage);
-    static_cast<ADC*>(ADC_collection[ADC::Z])->update_value(z_voltage);
+    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage);
+    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage);
+    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
+    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
+    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
 
-    if (ADC::is_actuator_connected(z_voltage) && ADC::is_actuator_connected(x_1_voltage) && ADC::is_actuator_connected(y_1_voltage))
+    if (ADC::is_actuator_connected(z_voltage) && ADC::is_actuator_connected(x_1_voltage) && ADC::is_actuator_connected(y_1_voltage)) {
         emit chip_mounted_ok();
+    }
 //    else
 //        cmd_get_resistances();
 }
@@ -117,7 +119,7 @@ void AFM::cmd_set_dac_table(int block_number) {
 }
 
 void AFM::restore_defaults() {
-    QHash<int, AFMObject*>::iterator i;
+    peripheral_collection::iterator i;
     settings.clear();
     scanner->set_settings();
     scanner->pid->set_settings();

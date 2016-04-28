@@ -74,18 +74,16 @@ DAC::callback_return_type DAC::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-const int DAC::Buffered_1 = 0;
-const int DAC::Buffered_2 = 1;
-const int DAC::Board_2 = 2;
-const int DAC::Z_Amplitude = 3;
-const int DAC::Board_1 = 4;
-const int DAC::Buffered_3 = 5;
+
 const int DAC::Z_Offset_Fine = 6;
-const int DAC::Y_1 = 7;
-const int DAC::Z_Offset_Coarse = 8;
-const int DAC::Y_2 = 9;
-const int DAC::X_1 = 10;
-const int DAC::X_2 = 11;
+const int DAC::Y_1 = 2;
+const int DAC::Z_Offset_Coarse = 9;
+const int DAC::Y_2 = 5;
+const int DAC::X_1 = 4;
+const int DAC::X_2 = 3;
+const int DAC::Leveling = 7;
+const int DAC::Tip = 8;
+
 
 const QString DAC::settings_group_name = "dac";
 

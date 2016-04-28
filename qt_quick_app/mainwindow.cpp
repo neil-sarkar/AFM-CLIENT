@@ -59,17 +59,18 @@ void MainWindow::addJSObject(CustomPage* page) {
     page->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     page->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
     page->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
-    QHash<int, AFMObject*>::iterator i;
+
+    peripheral_collection::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {
-        QString name = "pga_" + QString::number(i.key());
+        QString name = "pga_" + i.key();
         page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     for (i = m_afm->DAC_collection.begin(); i != m_afm->DAC_collection.end(); ++i) {
-        QString name = "dac_" + QString::number(i.key());
+        QString name = "dac_" + i.key();
         page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     for (i = m_afm->ADC_collection.begin(); i != m_afm->ADC_collection.end(); ++i) {
-        QString name = "adc_" + QString::number(i.key());
+        QString name = "adc_" + i.key();
         page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     page->settings()->setMaximumPagesInCache(0);

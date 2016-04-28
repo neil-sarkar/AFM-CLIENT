@@ -114,6 +114,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         add_series: function(data) {
             var series = {
                 data: data,
+                color: "#000",
             };
             var node = this.refs.chartNode;
             $(node).highcharts().addSeries(series);

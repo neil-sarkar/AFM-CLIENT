@@ -72,7 +72,8 @@ HEADERS += \
     force_curve_generator.h \
     globals.h \
     color_map.h \
-    scan_line.h
+    scan_line.h \
+    pin_map.h
 
 DISTFILES += \
     test.html

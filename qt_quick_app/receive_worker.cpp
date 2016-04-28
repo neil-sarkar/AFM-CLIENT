@@ -5,8 +5,10 @@
 #include <QtConcurrent>
 #include "globals.h"
 
-ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent)
-{}
+ReceiveWorker::ReceiveWorker(QObject *parent) : QObject(parent){
+    escape = false;
+
+}
 
 void ReceiveWorker::enqueue_command(CommandNode* command_node) {
     assert (receive_command_queue.isFull() == false);
@@ -24,7 +26,7 @@ void ReceiveWorker::build_working_response() {
     if (response_byte_queue.isEmpty()) // this could happen when we have a hard MCU reset where we have pending signals trying to call this slot after the queue is emptied in another operation
         return;
     quint8 byte = response_byte_queue.dequeue();
-
+//    qDebug() << byte;
     if (byte == Escape_Character && !escape) {
         escape = true;
         return;
@@ -36,7 +38,7 @@ void ReceiveWorker::build_working_response() {
         return;
     }
     if (byte == Message_Delimiter) { // if we're seeing a newline, it could mean the message is done or just be garbage at the beginning of a message
-        qDebug() << working_response.length();
+//        qDebug() <<"Response length" << working_response.length();
         if (working_response.length() >= Message_Size_Minimum) { // minimum message size on return would be 2, this implies we have a complete message
             if (static_cast<unsigned char>(working_response.at(0)) == Special_Message_Character) {
                 handle_asynchronous_message(); // should really be called "special message". The "auto approach stop command" (aka the pause confirmation) also has the special character
@@ -53,31 +55,24 @@ void ReceiveWorker::build_working_response() {
         }
     }
     working_response += byte;
-    qDebug() << working_response;
+//    qDebug() << "Working response" << working_response;
 }
 
 void ReceiveWorker::process_working_response() {
     unsigned char response_tag = working_response.at(0);
     unsigned char response_id = working_response.at(1);
-    qDebug() << "Now processing" << response_tag << response_id;
+    qDebug() << "Now processing" << response_tag << response_id << working_response;
     assert (receive_command_queue.isEmpty() == false);
     CommandNode* node = receive_command_queue.dequeue();
-
-    mutex.lock();
-    port_writing_command = false;
-    mutex.unlock();
     
     if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct
         handle_invalid_response();
     } else if (node->process_callback) {
         node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes)); // maybe run in separate thread to avoid blocking
     }
-    emit send_next_command();
-    delete node;
-}
 
-void ReceiveWorker::delay_send_next_command() {
-    emit send_next_command();
+    emit receive_returned();
+    delete node;
 }
 
 void ReceiveWorker::handle_invalid_response() {
@@ -109,7 +104,7 @@ bool ReceiveWorker::is_response_valid(CommandNode* node, unsigned char tag, unsi
     }
 
     if (length != node->num_receive_bytes) {
-        qDebug() << length << node->num_receive_bytes << node->id;
+        qDebug() << "Length mismatch, got: " << length << "| expected:" << node->num_receive_bytes << "| for ID " << node->id;
         return false;
     }
     return true;
@@ -162,7 +157,7 @@ bool ReceiveWorker::is_auto_approach_stopped_message() {
 }
 
 void ReceiveWorker::handle_auto_approach_stopped_message() {
-    // I think the MCU auto approach routine is blocking - it would be better to trigger it on interrupt
+    // I think the MCU auto approach routine is blocking - it would be better to use interrupts
     // Either way, to circumvent that for now, we have to flush all the commands that came
     // before the stop message, and just stop all execution
     while (receive_command_queue.count()) {

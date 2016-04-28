@@ -54,14 +54,15 @@ ADC::callback_return_type ADC::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
+// TODO put these in spreadsheet
+const int ADC::X_1 = 4;
+const int ADC::X_2 = 1;
+const int ADC::Y_1 = 2;
+const int ADC::Y_2 = 3;
+const int ADC::Z = 23;
+const int ADC::Z_Piezoresistor_Amplitude = 0;
+const int ADC::Phase = 10;
 
-const int ADC::X_1 = 3;
-const int ADC::X_2 = 7;
-const int ADC::Y_1 = 6;
-const int ADC::Y_2 = 8;
-const int ADC::Z = 2;
-const int ADC::Z_Piezoresistor_Amplitude = 5;
-const int ADC::Phase = 0;
 
 const double ADC::MAX_VOLTAGE = 2.5;
 const int ADC::RESOLUTION = 4095;

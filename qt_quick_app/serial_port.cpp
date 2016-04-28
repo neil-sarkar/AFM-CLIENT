@@ -55,12 +55,12 @@ void SerialPort::reset_mcu() {
     emit resetting_mcu(); // this connects to the flushing of the buffers
     // super important, because the UI creation will try to call a bunch of setters
     QByteArray message;
-//    message += 'M';
+    message += 'M';
 //    message += 'A';
 //    message += 'B';
 //    message += 'C';
 //    message += 'D';
-//    write_bytes(message);
+    write_bytes(message);
 //    QTest::qSleep(10000);
 //    write_byte('M');
 //    write_byte('A');
@@ -70,7 +70,7 @@ void SerialPort::reset_mcu() {
 }
 
 void SerialPort::initialize_reading() {
-    port->readAll(); // Read any data left on the port
+    qDebug() << "Data left on port from before" << port->readAll(); // Read any data left on the port
     QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
@@ -148,6 +148,6 @@ void SerialPort::execute_command(CommandNode* command_node) {
 }
 
 const QString SerialPort::AFM_Port_Name = "FTDI";
-const int SerialPort::AFM_Baud_Rate = 76800;
+const int SerialPort::AFM_Baud_Rate = 115200;
 const int SerialPort::AFM_Success = 0;
 const int SerialPort::AFM_Fail = -1;

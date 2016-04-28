@@ -18,7 +18,7 @@ signals:
     void command_received();
     void response_byte_received();
     void mcu_reset_message_received();
-    void send_next_command();
+    void receive_returned();
     void auto_approach_info_received(QByteArray);
     void prompt_dac_table_reset();
 
@@ -28,7 +28,6 @@ public slots:
 
 private slots:
     void build_working_response();
-    void delay_send_next_command();
     void flush();
 
 private:

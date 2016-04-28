@@ -28,7 +28,6 @@
 
 int main(int argc, char *argv[])
 {
-
     QCoreApplication::setApplicationName("nGauge");
     QCoreApplication::setOrganizationName("ICSPI");
     SafeApplication app(argc, argv); // init app

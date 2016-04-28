@@ -40,48 +40,45 @@
 							<PIDControl />
 							<p className="setting-section-name">DACs (/3.3V)</p>
 							<div className="settings-container">
-								<DACController name="Buffered 1" qt_object={dac_0}/>
-								<DACController name="Buffered 2" qt_object={dac_1}/>
-								<DACController name="Buffered 3" qt_object={dac_5}/>
-								<DACController name="Board 1" qt_object={dac_4}/>
-								<DACController name="Board 2" qt_object={dac_2}/>
-								<DACController name="Z Amplitude" qt_object={dac_3}/>
-								<DACController name="X1" qt_object={dac_10}/>
-								<DACController name="X2" qt_object={dac_11}/>
-								<DACController name="Y1" qt_object={dac_7}/>
-								<DACController name="Y2" qt_object={dac_9}/>
-								<DACController name="Z Fine" qt_object={dac_6} slider={true}/>
-								<DACController name="Z Coarse" qt_object={dac_8} slider={true}/>
+								<DACController name="Z Amplitude" qt_object={dac_z_offset_fine}/>
+								<DACController name="X1" qt_object={dac_x_1}/>
+								<DACController name="X2" qt_object={dac_x_2}/>
+								<DACController name="Y1" qt_object={dac_y_1}/>
+								<DACController name="Y2" qt_object={dac_y_2}/>
+								<DACController name="Leveling" qt_object={dac_leveling}/>
+								<DACController name="Tip" qt_object={dac_tip}/>
+								<DACController name="Z Fine" qt_object={dac_z_offset_fine} slider={true}/>
+								<DACController name="Z Coarse" qt_object={dac_z_offset_coarse} slider={true}/>
 							</div>
 							<p className="setting-section-name">PGAs (/100%)</p>
 							<div className="settings-container">
-								<PGAController name="X1" qt_object={pga_1}/>
-								<PGAController name="X2" qt_object={pga_2}/>
-								<PGAController name="Y1" qt_object={pga_3}/>
-								<PGAController name="Y2" qt_object={pga_4}/>
-								<PGAController name="Z Fine" qt_object={pga_5}/>
-								<PGAController name="Z Coarse" qt_object={pga_7}/>
-								<PGAController name="DDS" qt_object={pga_6}/>
-								<PGAController name="Leveling" qt_object={pga_8}/>
+								<PGAController name="X1" qt_object={pga_x_1}/>
+								<PGAController name="X2" qt_object={pga_x_2}/>
+								<PGAController name="Y1" qt_object={pga_y_1}/>
+								<PGAController name="Y2" qt_object={pga_y_2}/>
+								<PGAController name="Z Fine" qt_object={pga_fine_z}/>
+								<PGAController name="Z Coarse" qt_object={pga_coarse_z}/>
+								<PGAController name="DDS" qt_object={pga_dds}/>
+								<PGAController name="Leveling" qt_object={pga_leveling}/>
 							</div>
 							<p className="setting-section-name">ADCs (/2.5V)</p>
 							<div className="settings-container">
-								<ADCController name="X1" qt_object={adc_3}/>
-								<ADCController name="X2" qt_object={adc_7}/>
-								<ADCController name="Y1" qt_object={adc_6}/>
-								<ADCController name="Y2" qt_object={adc_8}/>
-								<ADCController name="Z" qt_object={adc_2}/>
-								<ADCController name="Z Piezo" qt_object={adc_5}/>
-								<ADCController name="Phase" qt_object={adc_0}/>
+								<ADCController name="X1" qt_object={adc_x_1}/>
+								<ADCController name="X2" qt_object={adc_x_2}/>
+								<ADCController name="Y1" qt_object={adc_y_1}/>
+								<ADCController name="Y2" qt_object={adc_y_2}/>
+								<ADCController name="Z" qt_object={adc_z_1}/>
+								<ADCController name="Z Piezo" qt_object={adc_z_piezoresistor_amplitude}/>
+								<ADCController name="Phase" qt_object={adc_phase}/>
 							</div>
 							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
 							<p className="setting-section-name">Resistances (Ohm)</p>
 							<div className="settings-container">
-								<ADCController name="X1" qt_object={adc_3} resistance={true}/>
-								<ADCController name="X2" qt_object={adc_7} resistance={true}/>
-								<ADCController name="Y1" qt_object={adc_6} resistance={true}/>
-								<ADCController name="Y2" qt_object={adc_8} resistance={true}/>
-								<ADCController name="Z" qt_object={adc_2} resistance={true}/>
+								<ADCController name="X1" qt_object={adc_x_1} resistance={true}/>
+								<ADCController name="X2" qt_object={adc_x_2} resistance={true}/>
+								<ADCController name="Y1" qt_object={adc_y_1} resistance={true}/>
+								<ADCController name="Y2" qt_object={adc_y_2} resistance={true}/>
+								<ADCController name="Z" qt_object={adc_z_1} resistance={true}/>
 							</div>
 							<p className="setting-section-name">DDS (Hz)</p>
 							<DDSControl />

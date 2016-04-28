@@ -5,7 +5,7 @@
                                 <div className="top-row">
                                         <MotorControl/>
                                         <PIDControl />
-                                        <DACController name="Z Coarse" qt_object={dac_8}/>
+                                        <DACController name="Z Coarse" qt_object={dac_z_offset_coarse}/>
                                 </div>
                         )
                 }

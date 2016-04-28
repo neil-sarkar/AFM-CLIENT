@@ -130,8 +130,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						<DataStreamGraph 	ref="approach_graph"
 											dom_id="approach-graph"
 											chart_title="Amplitude"
-											data_update_signal={adc_5.value_changed}
-											prompt_read={adc_5.read}
+											data_update_signal={adc_z_piezoresistor_amplitude.value_changed}
+											prompt_read={adc_z_piezoresistor_amplitude.read}
 											num_points_displayed={Constants.Approach_Num_Points_Displayed}
 											plotline_default={pid.setpoint}
 											plotline_update_signal={pid.setpoint_changed}
@@ -141,8 +141,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						<DataStreamGraph 	ref="z_fine_graph" 
 											dom_id="z-fine-graph" 
 											chart_title="Fine Z" 
-											data_update_signal={dac_6.value_changed} 
-											prompt_read={dac_6.cmd_read_value} 
+											data_update_signal={dac_z_offset_fine.value_changed} 
+											prompt_read={dac_z_offset_fine.cmd_read_value} 
 											num_points_displayed={Constants.Approach_Num_Points_Displayed} 
 											poll_rate={Constants.Z_Fine_Poll_Rate}
 											max_value={3.3} />

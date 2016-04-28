@@ -16,6 +16,7 @@ public:
 signals:
     void send_command_immediately();
     void command_dequeued(CommandNode*);
+    void immediately_dequeue();
 
 private slots:
     void dequeue_command();
@@ -23,6 +24,7 @@ private slots:
 public slots:
     void enqueue_command(CommandNode* command_node);
     void flush();
+    void handle_receive_return();
 
 private:
     int tag;

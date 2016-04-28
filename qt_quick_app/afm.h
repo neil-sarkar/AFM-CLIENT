@@ -23,10 +23,10 @@ class AFM : public AFMObject
     Q_OBJECT
     Q_PROPERTY(QString m_save_folder READ save_folder NOTIFY save_folder_changed)
     public:
-        explicit AFM(QHash<int, AFMObject*> PGA_collection, QHash<int, AFMObject*> DAC_collection, QHash<int, AFMObject*> ADC_collection, Motor* motor, Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator);
-        QHash<int, AFMObject*> PGA_collection;
-        QHash<int, AFMObject*> DAC_collection;
-        QHash<int, AFMObject*> ADC_collection;
+        explicit AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collection, peripheral_collection ADC_collection, Motor* motor, Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator);
+        peripheral_collection PGA_collection;
+        peripheral_collection DAC_collection;
+        peripheral_collection ADC_collection;
         Motor* motor;
         Sweeper* sweeper;
         Approacher* approacher;
