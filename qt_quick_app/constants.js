@@ -11,6 +11,10 @@ define([], function() {
         
         System_Font: "Roboto-Thin",
 
+        Graph_Background_Color: "#EFEFEF",
+        Graph_Grid_Color: "#DFDFDF",
+        Graph_Num_Dashlines: 5,
+
     };
     return Constants;
 });

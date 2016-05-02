@@ -19,7 +19,7 @@ void PGA::set_value(double value) {
 
 void PGA::set_settings() {
     settings.beginGroup(settings_group_name);
-    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : default_value(m_id));
+    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : 0);
     settings.endGroup();
 }
 
@@ -42,38 +42,6 @@ qint8 PGA::value_to_pga() {
     return (round(20 * log10(double(m_value) / 100))  * 2 + 210);
 }
 
-const int PGA::X_1 = 1;
-const int PGA::X_2 = 2;
-const int PGA::Y_1 = 3;
-const int PGA::Y_2 = 4;
-const int PGA::Z_Fine = 5;
-const int PGA::DDS_Amplitude = 6;
-const int PGA::Z_Coarse = 7;
-const int PGA::Leveling = 8;
-
 const QString PGA::settings_group_name = "pga";
-
-
-int PGA::default_value(int id) {
-    switch (id) {
-        case PGA::X_1:
-            return 100;
-        case PGA::X_2:
-            return 100;
-        case PGA::Y_1:
-            return 100;
-        case PGA::Y_2:
-            return 100;
-        case PGA::Z_Coarse:
-            return 100;
-        case PGA::Leveling:
-            return 0;
-        case PGA::Z_Fine:
-            return 10;
-        case PGA::DDS_Amplitude:
-            return 50;
-    }
-    return 0;
-}
 
 

@@ -1,7 +1,7 @@
 define(["react"], function(React) {
     motor_settings_map = {
         4: {
-            speed: 26300,
+            speed: 49500,
             microstep: 1,
         },
         3: {

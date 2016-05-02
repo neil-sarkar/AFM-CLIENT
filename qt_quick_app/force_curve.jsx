@@ -5,7 +5,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
-                    plotBackgroundColor: '#EFEFEF',
+                    plotBackgroundColor: Constants.Graph_Background_Color,
                     height: 500,
                     type: 'line',
                     zoomType: 'x',

@@ -61,7 +61,7 @@
 								<PGAController name="DDS" qt_object={pga_dds}/>
 								<PGAController name="Leveling" qt_object={pga_leveling}/>
 							</div>
-							<p className="setting-section-name">ADCs (/2.5V)</p>
+                                                        <p className="setting-section-name">ADCs (/3.3V)</p>
 							<div className="settings-container">
 								<ADCController name="X1" qt_object={adc_x_1}/>
 								<ADCController name="X2" qt_object={adc_x_2}/>

@@ -5,7 +5,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             return {
                 plotline_default: Number.NEGATIVE_INFINITY,
                 padding: 0.05,
-                num_dashlines: 5,
+                num_dashlines: Constants.Graph_Num_Dashlines,
                 max_value: 3.3,
                 min_value: 0,
             };
@@ -44,12 +44,12 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                     {  // just for a background color effect
                         startValue: -5,
                         endValue: 5,
-                        color:"#EFEFEF",
+                        color: Constants.Graph_Background_Color,
                     }],
                     labelFontFamily: Constants.System_Font,
                     labelFontSize: 11,
                     maximum: self.props.max_value,
-                    gridColor: "#DFDFDF",
+                    gridColor: Constants.Graph_Grid_Color,
                     gridThickness: 1,
                     tickLength: 0,
                     lineThickness: 0,

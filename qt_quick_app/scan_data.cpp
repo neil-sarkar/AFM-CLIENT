@@ -9,6 +9,7 @@
 #include <QImage>
 #include <QBuffer>
 #include <QtMath>
+#include <QPainter>
 
 ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y)
 {
@@ -28,11 +29,15 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
 
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
-    for (int i = 0; i < m_num_columns; i++) {
-        for (int j = 0; j < m_num_rows; j++) {
-            m_image.setPixel(i, j, qRgb(255,255,255));
-        }
-    }
+    m_image.fill(Qt::white);
+    QPainter p;
+    p.begin(&m_image);
+    p.drawText(0,0,"hello");
+    // for (int i = 0; i < m_num_columns; i++) {
+    //     for (int j = 0; j < m_num_rows; j++) {
+    //         m_image.setPixel(i, j, qRgb(255,255,255));
+    //     }
+    // }
     m_current_size = 0;
 }
 
@@ -117,13 +122,16 @@ QString ScanData::generate_png() {
         }
     }
 
-    // Find the extreme max and min for the entire scan ( would probably cause an issue with the first line because prev min is set to -2*4095 and prev max is 2*4095)
-    if (scan_max < m_prev_max)
-        scan_max = m_prev_max;
-    if (scan_min > m_prev_min)
-        scan_min = m_prev_min;
+     // Find the extreme max and min for the entire scan ( would probably cause an issue with the first line because prev min is set to -2*4095 and prev max is 2*4095)
+     if (m_prev_max < m_prev_min) { // we need to do this check since the first iteration has m_prev_min and m_prev_max at positive/negative 2 * 4095
+         if (scan_max < m_prev_max)
+             scan_max = m_prev_max;
+         if (scan_min > m_prev_min)
+             scan_min = m_prev_min;
+     }
 
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
+
      double range = scan_max - scan_min;
      qDebug() << range << scan_max << scan_min;
      for (int i = 0; i < m_num_rows; i++) {

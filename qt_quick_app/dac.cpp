@@ -43,7 +43,7 @@ void DAC::cmd_read_value() {
 }
 
 void DAC::callback_read_value(QByteArray return_bytes) {
-    set_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * DAC::SCALE_FACTOR, false);
+    set_value(bytes_to_word(return_bytes.at(0), return_bytes.at(1)) * DAC::SCALE_FACTOR, false);
 }
 
 void DAC::cmd_set_value() {

@@ -1,4 +1,4 @@
- define(["jquery" ,"react", "jsx!pages/sweep_graphs", "jsx!pages/inline_sweep_controls"], function($, React, Graphs, InlineSweepControls) {
+ define(["jquery" ,"react", "jsx!pages/sweep_graphs", "jsx!pages/inline_sweep_controls"], function($, React, SweepGraphs, InlineSweepControls) {
 	var Sweep = React.createClass({
 		componentWillReceiveProps : function(nextProps) {
 			if (nextProps.showStep === false) {
@@ -46,7 +46,7 @@
 			return (
 				<div className="wrapper" id="sweep-wrapper">
 					<div className="left-flexbox">
-						<Graphs ref='graphs'/>
+						<SweepGraphs ref='graphs' advanced={this.state.advanced}/>
 					</div>
 					<div className="right-flexbox">
 						<div className="step-name">Frequency Sweep</div>

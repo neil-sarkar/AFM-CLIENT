@@ -41,6 +41,7 @@ const QString AFM_Get_Resistances = "AFM_Get_Resistances";
 const QString Scanner_Set_Num_Averages = "Scanner_Set_Num_Averages";
 const QString Scanner_Set_Send_Back_Count = "Scanner_Set_Send_Back_Count";
 const QString Scanner_Set_Leveling_Direction = "Scanner_Set_Leveling_Direction";
+const QString AFM_Get_Auto_Approach_State	= "AFM_Get_Auto_Approach_State";
 
 const char Message_Delimiter = 0x0A;
 const char Newline_Character = 0x0A;

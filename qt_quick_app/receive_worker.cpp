@@ -26,13 +26,15 @@ void ReceiveWorker::build_working_response() {
     if (response_byte_queue.isEmpty()) // this could happen when we have a hard MCU reset where we have pending signals trying to call this slot after the queue is emptied in another operation
         return;
     quint8 byte = response_byte_queue.dequeue();
-//    qDebug() << byte;
     if (byte == Escape_Character && !escape) {
+//        qDebug() << "GOT ESCAPE";
         escape = true;
         return;
     }
     if (escape) { // previous char was escape character
+//        qDebug() << byte;
         byte &= ~Mask_Character; // unmask byte
+//        qDebug() << byte;
         escape = false;
         working_response += byte;
         return;

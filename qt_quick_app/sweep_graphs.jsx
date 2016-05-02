@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
+define(["jquery", "react", "dom", "highcharts", "console", "constants"], function($, React, ReactDOM, highcharts, console, Constants) {
     var SweepGraph = React.createClass({
         renderChart: function() {
             var component = this;
@@ -9,7 +9,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             jQuery(function ($) {
             $(node).highcharts({
                 chart: {
-                    plotBackgroundColor: '#EFEFEF',
+                    plotBackgroundColor: Constants.Graph_Background_Color,
                     height: 300,
                     type: 'line',
                     zoomType: 'x',
@@ -102,7 +102,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 max_x = data[i] > max_x  ? data[i] : max_x;
                 two_dimensional_data.push([data[i], data[i+1]]); // parse x, y coordinates 
             }
-            this.add_series(two_dimensional_data);
+
+            // var color = $(node).highcharts().series.length < 3 ? "blue" : "black";
+            this.add_series(two_dimensional_data, "black");
             
             // TODO: check if this does anything
             this.state.model.push([]);
@@ -111,10 +113,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             var node = this.refs.chartNode;
             $(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);
         },
-        add_series: function(data) {
+        add_series: function(data, color) {
             var series = {
                 data: data,
-                color: "#000",
+                color: color,
             };
             var node = this.refs.chartNode;
             $(node).highcharts().addSeries(series);
@@ -155,9 +157,11 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.refs.phase_graph.update_tooltip(index, series, e);
         },
         handle_click: function(frequency, index, series) {
-            sweeper.set_frequency_on_select(frequency);
-            var amplitude_graph_point = this.refs.amplitude_graph.get_point(index, series);
-            pid.set_setpoint(amplitude_graph_point.y / 2);
+            if (this.props.advanced == true) {
+                sweeper.set_frequency_on_select(frequency);
+                var amplitude_graph_point = this.refs.amplitude_graph.get_point(index, series);
+                pid.set_setpoint(amplitude_graph_point.y / 2);
+            }
         },
         render: function() {
             return (

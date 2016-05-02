@@ -12,6 +12,7 @@
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
+    port->setReadBufferSize(0);
 }
 
 SerialPort::~SerialPort() { // Destructor - handle all cleanup
@@ -100,10 +101,13 @@ int SerialPort::write_bytes(QByteArray bytes) { // This method is the only one t
 }
 
 void SerialPort::on_ready_read() {
-    QByteArray q = port->readAll();
-    qDebug() << "On serial read all" << q;
-    for (char byte : q) {
-        emit byte_received(byte);
+    while (port->bytesAvailable() > 0) {
+        QByteArray q = port->readAll();
+        port->flush();
+        qDebug() << "On serial read all" << q << q.length();
+        for (char byte : q) {
+            emit byte_received(byte);
+        }
     }
 }
 

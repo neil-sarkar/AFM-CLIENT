@@ -36,7 +36,7 @@ void ADC::cmd_read() {
 }
 
 void ADC::callback_read(QByteArray return_bytes) {
-    update_value(bytes_to_word(return_bytes.at(1), return_bytes.at(2)) * ADC::SCALE_FACTOR);
+    update_value(bytes_to_word(return_bytes.at(0), return_bytes.at(1)) * ADC::SCALE_FACTOR);
 }
 
 void ADC::init() {
@@ -54,17 +54,7 @@ ADC::callback_return_type ADC::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-// TODO put these in spreadsheet
-const int ADC::X_1 = 4;
-const int ADC::X_2 = 1;
-const int ADC::Y_1 = 2;
-const int ADC::Y_2 = 3;
-const int ADC::Z = 23;
-const int ADC::Z_Piezoresistor_Amplitude = 0;
-const int ADC::Phase = 10;
-
-
-const double ADC::MAX_VOLTAGE = 2.5;
+const double ADC::MAX_VOLTAGE = 3.3;
 const int ADC::RESOLUTION = 4095;
 const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 
