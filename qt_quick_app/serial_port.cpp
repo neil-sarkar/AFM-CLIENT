@@ -101,13 +101,10 @@ int SerialPort::write_bytes(QByteArray bytes) { // This method is the only one t
 }
 
 void SerialPort::on_ready_read() {
-    while (port->bytesAvailable() > 0) {
-        QByteArray q = port->readAll();
-        port->flush();
-        qDebug() << "On serial read all" << q << q.length();
-        for (char byte : q) {
-            emit byte_received(byte);
-        }
+    QByteArray q = port->readAll();
+    qDebug() << "On serial read all" << q << q.length();
+    for (char byte : q) {
+        emit byte_received(byte);
     }
 }
 

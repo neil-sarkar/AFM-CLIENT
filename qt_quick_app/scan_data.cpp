@@ -95,7 +95,7 @@ bool ScanData::append(coordinate x, coordinate y, point z) {
 
 void ScanData::print() {
     for (int i = 0; i < 1; i++) {
-        qDebug() << raw_data[i]->drawn << raw_data[i]->min << raw_data[i]->max;
+//        qDebug() << raw_data[i]->drawn << raw_data[i]->min << raw_data[i]->max;
         for (int j = 0; j < m_num_columns; j++)
             qDebug() << raw_data[i]->data[j];
     }
@@ -109,9 +109,9 @@ QString ScanData::generate_png() {
      double scan_max = -2 * ADC::RESOLUTION, scan_min = 2 * ADC::RESOLUTION;
 
      // Find the max and min of the lines we've yet draw -- assumes that we add lines to the raw_data sequentially (index 0 to n, not the other way)
-     for (int i = raw_data.size() - 1; i >= 0; i--) {
-        if (raw_data[i]->drawn)
-            break;
+     for (int i = 0; i < m_num_rows; i++) {
+//        if (raw_data[i]->size == 0)
+//            break;
         if (raw_data[i]->size == 0)
             continue;
         if (raw_data[i]->max - raw_data[i]->average > scan_max) {
@@ -121,9 +121,10 @@ QString ScanData::generate_png() {
             scan_min = raw_data[i]->min - raw_data[i]->average;
         }
     }
+     qDebug() << scan_max << scan_min << m_prev_max << m_prev_min;
 
      // Find the extreme max and min for the entire scan ( would probably cause an issue with the first line because prev min is set to -2*4095 and prev max is 2*4095)
-     if (m_prev_max < m_prev_min) { // we need to do this check since the first iteration has m_prev_min and m_prev_max at positive/negative 2 * 4095
+     if (m_prev_max > m_prev_min) { // we need to do this check since the first iteration has m_prev_min and m_prev_max at positive/negative 2 * 4095
          if (scan_max < m_prev_max)
              scan_max = m_prev_max;
          if (scan_min > m_prev_min)
