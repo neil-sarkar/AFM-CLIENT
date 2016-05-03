@@ -152,7 +152,12 @@ void Scanner::receive_data() {
     }
     else {
         emit all_data_received();
+        qDebug() << "Forward Offset";
         fwd_offset_data->print();
+        qDebug() << "Forward Phase";
+        fwd_phase_data->print();
+        qDebug() << "Forward Error";
+        fwd_error_data->print();
     }
 }
 
@@ -245,12 +250,12 @@ void Scanner::callback_step_scan(QByteArray payload) {
          future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
          watcher_re.setFuture(future);
 
-         emit new_forward_offset_profile(current_fwd_offset_line_profile);
-         emit new_forward_error_profile(current_fwd_error_line_profile);
-         emit new_forward_phase_profile(current_fwd_phase_line_profile);
-         emit new_reverse_offset_profile(current_fwd_offset_line_profile);
-         emit new_reverse_error_profile(current_fwd_error_line_profile);
-         emit new_reverse_phase_profile(current_fwd_phase_line_profile);
+//         emit new_forward_offset_profile(current_fwd_offset_line_profile);
+//         emit new_forward_error_profile(current_fwd_error_line_profile);
+//         emit new_forward_phase_profile(current_fwd_phase_line_profile);
+//         emit new_reverse_offset_profile(current_fwd_offset_line_profile);
+//         emit new_reverse_error_profile(current_fwd_error_line_profile);
+//         emit new_reverse_phase_profile(current_fwd_phase_line_profile);
      }
 }
 
