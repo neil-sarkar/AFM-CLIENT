@@ -3,23 +3,23 @@
 
 #include "afm.h"
 #include "web_file_dialog.h"
-#include <QWebView>
-#include <QWebElementCollection>
+#include <QWebEngineView>
+//#include <QWebElementCollection>
 #include <QNetworkDiskCache>
 
 
-class CustomPage: public QWebPage
+class CustomPage: public QWebEnginePage
 {
     Q_OBJECT
 public:
     CustomPage();
-    void javaScriptAlert(QWebFrame * frame, const QString & msg); // doesn't work
+    void javaScriptAlert(const QString & msg); // doesn't work
 public slots:
         void downloadRequestedHandler(const QNetworkRequest & request);
         void handle(QNetworkReply* msg);
 };
 
-class MainWindow : public QWebView
+class MainWindow : public QWebEngineView
 {
 Q_OBJECT
 public:
@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
     Q_INVOKABLE void load_main_app_page();
     Q_INVOKABLE void load_home_page();
-    Q_INVOKABLE QWebView* createWindow(CustomPage*);
+    Q_INVOKABLE QWebEngineView* createWindow(CustomPage*);
     Q_INVOKABLE void pop_out_force_curve_page();
     AFM* m_afm;
 
@@ -37,7 +37,6 @@ private slots:
 
 private:
     void set_global_web_settings();
-    QNetworkAccessManager * m_network;
     QNetworkDiskCache * m_cache;
     CustomPage m_welcome_page;
     CustomPage m_main_app_page;

@@ -5,7 +5,6 @@
 #define WEBFILEDIALOG_H
 
 #include <QObject>
-#include <QWebElement>
 #include <QFileDialog>
 #include <QDebug>
 

@@ -18,7 +18,7 @@
 #include "command_node.h"
 #include "mainwindow.h"
 #include "web_file_dialog.h"
-#include <QWebView>
+#include <QWebEngineView>
 #include <QDir>
 #include <QApplication>
 #include <QDesktopWidget>

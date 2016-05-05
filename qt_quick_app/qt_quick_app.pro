@@ -4,7 +4,7 @@ QT += qml quick
 QT += serialport
 QT += concurrent
 QT += testlib
-QT += network webkitwidgets widgets
+QT += network webenginewidgets widgets
 QT += script
 CONFIG += c++11
 
