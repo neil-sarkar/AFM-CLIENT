@@ -22,8 +22,8 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     addJSObject(&m_welcome_page);
     addJSObject(&m_main_app_page);
     addJSObject(&m_force_curve_page);
-    m_welcome_page.(QUrl("qrc:/html/home.html"));
-    m_main_app_page.(QUrl("qrc:/html/main.html"));
+    m_welcome_page.load(QUrl("qrc:/html/home.html"));
+    m_main_app_page.load(QUrl("qrc:/html/main.html"));
     setPage(&m_welcome_page);
 
     set_global_web_settings();
@@ -33,9 +33,9 @@ void MainWindow::set_global_web_settings() {
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, true);
 
-    QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled, true);
+    //QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::DeveloperExtrasEnabled, true);
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::JavascriptCanAccessClipboard, true);
-    QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+    //QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
 //    QWebEngineSettings::clearMemoryCaches();
 }
@@ -43,7 +43,7 @@ void MainWindow::set_global_web_settings() {
 MainWindow::MainWindow(CustomPage* custom_page) {
     setPage(custom_page);
     set_global_web_settings();
-    QObject::connect(page()->, SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
+    QObject::connect(page(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
 }
 
 void MainWindow::addJSObject(CustomPage* page) {
@@ -72,7 +72,7 @@ void MainWindow::addJSObject(CustomPage* page) {
         QString name = "adc_" + i.key();
         page->addToJavaScriptWindowObject(name, i.value());
     }
-    page->settings()->setMaximumPagesInCache(0);
+    //page->settings()->setMaximumPagesInCache(0);
 }
 
 void MainWindow::log_cpp(QString text) {
@@ -80,8 +80,8 @@ void MainWindow::log_cpp(QString text) {
 }
 
 void MainWindow::load_main_app_page() {
-    if (m_main_app_page.baseUrl().isEmpty())
-        m_main_app_page.(QUrl("qrc:/html/main.html"));
+    if (m_main_app_page.url().isEmpty())
+        m_main_app_page.setUrl(QUrl("qrc:/html/main.html"));
     setPage(&m_main_app_page);
 }
 
@@ -97,8 +97,8 @@ void MainWindow::pop_out_force_curve_page() {
 QWebEngineView* MainWindow::createWindow(CustomPage* page) {
     MainWindow *webView= new MainWindow(page);
     webView->m_afm = m_afm;
-    if (page->baseUrl().isEmpty())
-        webView->page()->(QUrl("qrc:/html/force_curve.html"));
+    if (page->url().isEmpty())
+        webView->page()->setUrl(QUrl("qrc:/html/force_curve.html"));
     webView->setAttribute(Qt::WA_DeleteOnClose, true);
     webView->show();
     return webView;
