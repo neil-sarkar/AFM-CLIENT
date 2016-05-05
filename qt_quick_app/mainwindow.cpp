@@ -111,13 +111,17 @@ CustomPage::CustomPage() {
 }
 
 void CustomPage::javaScriptAlert(QWebFrame *frame, const QString &msg) {
+    Q_UNUSED(frame);
+    Q_UNUSED(msg);
     qDebug() << "js alert";
 }
 
 void CustomPage::handle(QNetworkReply* msg) {
+    Q_UNUSED(msg);
     qDebug() << "handling unsupported content";
 }
 
 void CustomPage::downloadRequestedHandler(const QNetworkRequest & request) {
+    Q_UNUSED(request);
     qDebug() << "download requested"; // request.url has the image of interest from the download buttons of highcharts.
 }

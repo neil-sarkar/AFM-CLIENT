@@ -108,6 +108,7 @@ void AFM::callback_set_dac_table(QByteArray buffer) {
 }
 
 void AFM::cmd_set_dac_table(int block_number) {
+    Q_UNUSED(block_number);
 //    QByteArray payload;
 //    int start_byte_index = block_number * AFM::DAC_Table_Block_Size;
 //    for (int i = start_byte_index; i < start_byte_index + AFM::DAC_Table_Block_Size; i++) {

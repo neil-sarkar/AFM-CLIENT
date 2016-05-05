@@ -50,6 +50,7 @@ Approacher::callback_return_type Approacher::bind(callback_type method) {
 }
 
 void Approacher::handle_auto_approach_info_message(QByteArray working_response) {
+    Q_UNUSED(working_response);
 //     double adc_value = double(quint16((quint8(working_response.at(2)) << 8)| quint8(working_response.at(1)))) * ADC::SCALE_FACTOR;
 //     m_state = working_response.at(0);
 //     m_adc->update_value(adc_value);

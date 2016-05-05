@@ -42,7 +42,7 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
 }
 
 ScanData::~ScanData() {
-    for (int i = 0; i < raw_data.size(); i++) {
+    for (unsigned int i = 0; i < raw_data.size(); i++) {
         delete raw_data[i];
     }
 }
@@ -78,7 +78,7 @@ bool ScanData::is_almost_full() {
     return (size() == max_size() - m_num_columns);
 }
 
-quint64 ScanData::size() { //
+qint64 ScanData::size() { //
     return m_current_size;
 }
 

@@ -135,6 +135,7 @@ void Builder::generate_command_nodes() {
 }
 
 int Builder::bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base) {
+    Q_UNUSED(line);
     bytes = bytes.simplified(); // remove any newlines or carriage returns [MIGHT CAUSE ISSUES]
     bool conversion_successful; // need this to call toInt() method below
     int result = bytes.toInt(&conversion_successful, base);
@@ -166,6 +167,7 @@ QColor Builder::interpolate_color(double percent, QVector<QColor> colors) {
         int mixed_b = b1 * (1-factor) + b0 * factor;
         return QColor(std::min(mixed_r, 255), std::min(mixed_g, 255), std::min(mixed_b, 255));
     }
+    return colors.back();
 }
 
 void Builder::generate_color_map() {

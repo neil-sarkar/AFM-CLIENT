@@ -401,8 +401,9 @@ void Scanner::cmd_set_leveling_direction() {
 }
 
 void Scanner::save_raw_data(QString save_folder) {
-    if (!fwd_offset_data)
-        return;
+    Q_UNUSED(save_folder);
+//    if (!fwd_offset_data)
+//        return;
 
 //        QString folder_path = save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
 //        QDir().mkdir(folder_path);
@@ -452,13 +453,14 @@ int Scanner::get_delta_x_from_ratio() {
     // should enum the scan ratios
     switch (m_ratio) {
         case 1:
-            return 1;
         case 2:
             return 1;
         case 3:
             return 3;
         case 4:
             return 7;
+        default:
+            return 0;
     }
 }
 
@@ -468,11 +470,11 @@ int Scanner::get_delta_y_from_ratio() {
         case 1:
             return 0;
         case 2:
-            return 1;
         case 3:
-            return 1;
         case 4:
             return 1;
+        default:
+            return 0;
     }
 }
 

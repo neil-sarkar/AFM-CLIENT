@@ -11,7 +11,7 @@
 template<class T> class ThreadSafeQueue
 {
 public:
-    ThreadSafeQueue(long int maxSize = 100000000000) : _semFree(maxSize), _semUsed(0)
+    ThreadSafeQueue(int maxSize = INT_MAX) : _semFree(maxSize), _semUsed(0)
     {
 
     }

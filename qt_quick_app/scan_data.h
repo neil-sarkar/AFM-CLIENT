@@ -16,7 +16,7 @@ public:
     bool append(coordinate x, coordinate y, point z);
     bool is_full();
     bool is_almost_full();
-    quint64 size();
+    qint64 size();
     void print();
     int max_size();
     std::vector<ScanLine*> raw_data;
@@ -37,7 +37,7 @@ private:
     int m_delta_y;
     double m_prev_min;
     double m_prev_max;
-    quint64 m_current_size;
+    qint64 m_current_size;
     QImage m_image;
 };
 
