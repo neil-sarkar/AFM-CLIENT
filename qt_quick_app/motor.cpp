@@ -8,6 +8,8 @@ Motor::Motor() {
     m_speed = 0;
     m_direction = 0;
     m_state = 0;
+    m_microstep = 0;
+    timeout_timer = NULL;
 }
 
 int Motor::speed() {
