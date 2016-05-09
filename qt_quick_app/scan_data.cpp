@@ -102,7 +102,7 @@ void ScanData::print() {
 }
 
 QString ScanData::generate_png() {
-     double percentage;
+     int color_index;
      QColor color;
 
      // Step 1: Compute the max and the min of the leveled image
@@ -121,7 +121,6 @@ QString ScanData::generate_png() {
             scan_min = raw_data[i]->min - raw_data[i]->average;
         }
     }
-     qDebug() << scan_max << scan_min << m_prev_max << m_prev_min;
 
      // Find the extreme max and min for the entire scan ( would probably cause an issue with the first line because prev min is set to -2*4095 and prev max is 2*4095)
      if (m_prev_max > m_prev_min) { // we need to do this check since the first iteration has m_prev_min and m_prev_max at positive/negative 2 * 4095
@@ -134,7 +133,6 @@ QString ScanData::generate_png() {
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
 
      double range = scan_max - scan_min;
-     qDebug() << range << scan_max << scan_min;
      for (int i = 0; i < m_num_rows; i++) {
          if (raw_data[i]->size == 0) {
              continue;
@@ -147,15 +145,18 @@ QString ScanData::generate_png() {
          for (int j = 0; j < raw_data[i]->size; j++) {
              double z_value = raw_data[i]->data[j] - raw_data[i]->average;
              if (scan_max == scan_min)
-                 percentage = 0;
+                 color_index = 0;
              else {
-                 percentage = double(z_value - scan_min)  / range * 100;
+                 color_index = (int)((z_value - scan_min)*color_map.size() / range);
              }
-             color = color_map[int(percentage * 100)];
+             if(color_index >= color_map.size()) color_index = color_map.size() - 1;
+             if(color_index < 0) color_index = 0;
+             color = color_map[color_index];
              m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
          }
          raw_data[i]->drawn = true;
      }
+
      m_prev_min = scan_min;
      m_prev_max = scan_max;
      QByteArray ba;
