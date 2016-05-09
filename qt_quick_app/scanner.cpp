@@ -19,6 +19,13 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     pid = pid_;
     fine_z = static_cast<DAC*>(dac_fine_z_);
     m_should_pause = false;
+    fwd_offset_data = NULL;
+    fwd_phase_data = NULL;
+    fwd_error_data = NULL;
+    rev_offset_data = NULL;
+    rev_phase_data = NULL;
+    rev_error_data = NULL;
+
     connect(&watcher_fo, SIGNAL(finished()), this, SLOT(handleFinished_fo()));
     connect(&watcher_ro, SIGNAL(finished()), this, SLOT(handleFinished_ro()));
     connect(&watcher_fp, SIGNAL(finished()), this, SLOT(handleFinished_fp()));
