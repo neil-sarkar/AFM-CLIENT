@@ -103,10 +103,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         set_img_size: function() {
             if (this.state.num_rows > this.state.num_columns) {
                 $(".scan-image").height(384);
-                $(".scan-image").width(384 / 1024 * this.state.num_columns);
+                $(".scan-image").width(384 / this.state.num_rows * this.state.num_columns);
             } else if (this.state.num_rows < this.state.num_columns) {
                 $(".scan-image").width(384);
-                $(".scan-image").height(384 / 1024 * this.state.num_rows);
+                $(".scan-image").height(384 / this.state.num_columns * this.state.num_rows);
             } else {
                 $(".scan-image").width(384);
                 $(".scan-image").height(384);
