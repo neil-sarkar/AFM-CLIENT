@@ -26,6 +26,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
     m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
     setPage(&m_welcome_page);
+    setMinimumSize(640, 480);
 
     set_global_web_settings();
 }
