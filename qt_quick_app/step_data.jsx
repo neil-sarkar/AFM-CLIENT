@@ -5,7 +5,7 @@ define(["react", "jsx!pages/setup", "jsx!pages/sweep", "jsx!pages/approach", "js
 		},
 		render: function() {
 			return (
-				<div>
+                                <div id="step-data">
 					<Setup ref="first_step" showStep={this.props.step == 0} 
 						   go_to_next_step={this.props.go_to_next_step} />
 					<Sweep 	showStep={this.props.step == 1} 

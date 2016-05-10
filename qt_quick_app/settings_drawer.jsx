@@ -29,68 +29,66 @@
 
 			$("#settings-drawer-wrapper").css('visibility', 'hidden');
 		},
-		render: function() {
-			var self = this;
+                render: function() {
+                        var self = this;
 				return (
-					<div>
-						<div id="settings-drawer-wrapper">
-							<p className="setting-section-name">Motor Control</p>
-							<MotorControl />
-							<p className="setting-section-name">PID Control</p>
-							<PIDControl />
-							<p className="setting-section-name">DACs (/3.3V)</p>
-							<div className="settings-container">
-								<DACController name="Z Amplitude" qt_object={dac_z_offset_fine}/>
-								<DACController name="X1" qt_object={dac_x_1}/>
-								<DACController name="X2" qt_object={dac_x_2}/>
-								<DACController name="Y1" qt_object={dac_y_1}/>
-								<DACController name="Y2" qt_object={dac_y_2}/>
-								<DACController name="Leveling" qt_object={dac_leveling}/>
-								<DACController name="Tip" qt_object={dac_tip}/>
-								<DACController name="Z Fine" qt_object={dac_z_offset_fine} slider={true}/>
-								<DACController name="Z Coarse" qt_object={dac_z_offset_coarse} slider={true}/>
-							</div>
-							<p className="setting-section-name">PGAs (/100%)</p>
-							<div className="settings-container">
-								<PGAController name="X1" qt_object={pga_x_1}/>
-								<PGAController name="X2" qt_object={pga_x_2}/>
-								<PGAController name="Y1" qt_object={pga_y_1}/>
-								<PGAController name="Y2" qt_object={pga_y_2}/>
-								<PGAController name="Z Fine" qt_object={pga_fine_z}/>
-								<PGAController name="Z Coarse" qt_object={pga_coarse_z}/>
-								<PGAController name="DDS" qt_object={pga_dds}/>
-								<PGAController name="Leveling" qt_object={pga_leveling}/>
-							</div>
-                                                        <p className="setting-section-name">ADCs (/3.3V)</p>
-							<div className="settings-container">
-								<ADCController name="X1" qt_object={adc_x_1}/>
-								<ADCController name="X2" qt_object={adc_x_2}/>
-								<ADCController name="Y1" qt_object={adc_y_1}/>
-								<ADCController name="Y2" qt_object={adc_y_2}/>
-								<ADCController name="Z" qt_object={adc_z_1}/>
-								<ADCController name="Z Piezo" qt_object={adc_z_piezoresistor_amplitude}/>
-								<ADCController name="Phase" qt_object={adc_phase}/>
-							</div>
-							<button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
-							<p className="setting-section-name">Resistances (Ohm)</p>
-							<div className="settings-container">
-								<ADCController name="X1" qt_object={adc_x_1} resistance={true}/>
-								<ADCController name="X2" qt_object={adc_x_2} resistance={true}/>
-								<ADCController name="Y1" qt_object={adc_y_1} resistance={true}/>
-								<ADCController name="Y2" qt_object={adc_y_2} resistance={true}/>
-								<ADCController name="Z" qt_object={adc_z_1} resistance={true}/>
-							</div>
-							<p className="setting-section-name">DDS (Hz)</p>
-							<DDSControl />
-							<p className="setting-section-name">Save Options</p>
-							<SaveFolderPicker />
-							<button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
-							<button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Reistances</button>
-							<button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
-							<button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
-							<button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
-						</div>
-					</div>
+                                            <div id="settings-drawer-wrapper">
+                                                    <p className="setting-section-name">Motor Control</p>
+                                                    <MotorControl />
+                                                    <p className="setting-section-name">PID Control</p>
+                                                    <PIDControl />
+                                                    <p className="setting-section-name">DACs (/3.3V)</p>
+                                                    <div className="settings-container">
+                                                            <DACController name="Z Amplitude" qt_object={dac_z_offset_fine}/>
+                                                            <DACController name="X1" qt_object={dac_x_1}/>
+                                                            <DACController name="X2" qt_object={dac_x_2}/>
+                                                            <DACController name="Y1" qt_object={dac_y_1}/>
+                                                            <DACController name="Y2" qt_object={dac_y_2}/>
+                                                            <DACController name="Leveling" qt_object={dac_leveling}/>
+                                                            <DACController name="Tip" qt_object={dac_tip}/>
+                                                            <DACController name="Z Fine" qt_object={dac_z_offset_fine} slider={true}/>
+                                                            <DACController name="Z Coarse" qt_object={dac_z_offset_coarse} slider={true}/>
+                                                    </div>
+                                                    <p className="setting-section-name">PGAs (/100%)</p>
+                                                    <div className="settings-container">
+                                                            <PGAController name="X1" qt_object={pga_x_1}/>
+                                                            <PGAController name="X2" qt_object={pga_x_2}/>
+                                                            <PGAController name="Y1" qt_object={pga_y_1}/>
+                                                            <PGAController name="Y2" qt_object={pga_y_2}/>
+                                                            <PGAController name="Z Fine" qt_object={pga_fine_z}/>
+                                                            <PGAController name="Z Coarse" qt_object={pga_coarse_z}/>
+                                                            <PGAController name="DDS" qt_object={pga_dds}/>
+                                                            <PGAController name="Leveling" qt_object={pga_leveling}/>
+                                                    </div>
+                                                    <p className="setting-section-name">ADCs (/3.3V)</p>
+                                                    <div className="settings-container">
+                                                            <ADCController name="X1" qt_object={adc_x_1}/>
+                                                            <ADCController name="X2" qt_object={adc_x_2}/>
+                                                            <ADCController name="Y1" qt_object={adc_y_1}/>
+                                                            <ADCController name="Y2" qt_object={adc_y_2}/>
+                                                            <ADCController name="Z" qt_object={adc_z_1}/>
+                                                            <ADCController name="Z Piezo" qt_object={adc_z_piezoresistor_amplitude}/>
+                                                            <ADCController name="Phase" qt_object={adc_phase}/>
+                                                    </div>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button adc-read-button" onClick={afm.read_all_ADCs}>Read All</button>
+                                                    <p className="setting-section-name">Resistances (Ohm)</p>
+                                                    <div className="settings-container">
+                                                            <ADCController name="X1" qt_object={adc_x_1} resistance={true}/>
+                                                            <ADCController name="X2" qt_object={adc_x_2} resistance={true}/>
+                                                            <ADCController name="Y1" qt_object={adc_y_1} resistance={true}/>
+                                                            <ADCController name="Y2" qt_object={adc_y_2} resistance={true}/>
+                                                            <ADCController name="Z" qt_object={adc_z_1} resistance={true}/>
+                                                    </div>
+                                                    <p className="setting-section-name">DDS (Hz)</p>
+                                                    <DDSControl />
+                                                    <p className="setting-section-name">Save Options</p>
+                                                    <SaveFolderPicker />
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Reistances</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
+                                            </div>
 				);
 		},
 	})

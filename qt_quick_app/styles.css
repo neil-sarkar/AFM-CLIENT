@@ -10,12 +10,20 @@
 body {
     margin: 0;
     padding: 0;
+    height: 100%;
+}
+
+.app {
+    height: 100%;
+    display: -webkit-flex;
+    -webkit-flex-flow: column;
 }
 
 .action-button {
     font-family: 'Rubik-Regular';
     border: solid black 2px;
     background-color: white;
+    outline: 0;
     margin: 2.5% auto;
     width: 175px;
     /*width is absolute px value (not a percentage) bc flex boxes don't
@@ -121,8 +129,7 @@ body {
 }
 
 .progress-bar {
-    top: 0;
-    height: 6%;
+    -webkit-flex: 0 1 6%;
     border-bottom: 1px solid gray;
     margin: 1%;
     text-align: center;
@@ -151,18 +158,23 @@ body {
 
 }
 
+#step-data {
+    -webkit-flex: auto;
+    overflow-y: auto;
+}
+
 #settings-drawer-wrapper {
     background-color: white;
     height: 100%;
     max-width: 15%;
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
     padding-left: 2%;
     padding-bottom: 0;
     padding-right: 3%;
     box-shadow: 10px 0px 8px 8px black;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .setting-section-name:first-of-type {
@@ -181,7 +193,7 @@ body {
   right: 20px;
   top: 25px;
   z-index: 1;
-  cursor: pointer; 
+  cursor: pointer;
   padding: 10px 35px 16px 0;
 }
 
@@ -495,7 +507,7 @@ body {
 }
 #progressbar li:first-child:after {
     /*connector not needed before the first step*/
-    content: none; 
+    content: none;
 }
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
