@@ -109,3 +109,5 @@ assets/
 development\ logs/
 lib/
 gui-review-20141215.txt
+*.Debug
+*.Release

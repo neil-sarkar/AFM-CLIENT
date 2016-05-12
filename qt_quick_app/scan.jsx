@@ -152,7 +152,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.pause_scanning();
             scanner.reset();
             $(".scan-image").each(function(i) {
-                $('.scan-image').eq(i).src = ""; // Delete the images
+                $('.scan-image')[i].src = ""; // Delete the images
             });
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {

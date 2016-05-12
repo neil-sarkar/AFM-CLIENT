@@ -32,7 +32,7 @@ bool SerialPort::auto_connect() {
 //            if (connected_ports[i].manufacturer() == AFM_Port_Name) // check if the port is the AFM
         qDebug() << connected_ports[i].portName();
         qDebug() << connected_ports[i].manufacturer();
-        return open(connected_ports[1].portName(), AFM_Baud_Rate);
+        return open(connected_ports[i].portName(), AFM_Baud_Rate);
     }
     return false;
 }
