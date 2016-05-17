@@ -37,7 +37,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                 },
                 yAxis: {
                     title: {
-                        text: 'Amplitude (V)'
+                        text: component.props.ylabel
                     },
                 },
                 legend: {
@@ -166,8 +166,8 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} data_connection={sweeper.new_amplitude_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} data_connection={sweeper.new_phase_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} ylabel={"Amplitude (V)"} data_connection={sweeper.new_amplitude_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="phase_graph" title={"Phase"} ylabel={"Phase (degrees)"} data_connection={sweeper.new_phase_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
                 </div>
             );
         }
