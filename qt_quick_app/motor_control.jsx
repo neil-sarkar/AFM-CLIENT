@@ -92,17 +92,21 @@ define(["react"], function(React) {
         componentDidMount: function() {
             var self = this;
             $('.approach-button, .retract-button').mousedown(function() {
-                if ($(this).hasClass('approach-button'))
+                if ($(this).hasClass('approach-button')) {
                     self.setState({ approach_button_pressed: true });
-                else if ($(this).hasClass('retract-button'))
-                    self.setState({ retract_button_pressed: true });        
+                    self.approach();
+                }
+                else if ($(this).hasClass('retract-button')) {
+                    self.setState({ retract_button_pressed: true });
+                    self.retract();
+                }
             });
-            $('.approach-button, .retract-button').mouseup(function() {
+            $(document).mouseup(function() {
                 self.setState({
                     approach_button_pressed: false,
                     retract_button_pressed: false
-
-                })
+                });
+                self.stop_motor();
             });
         },
         approach: function() {
@@ -131,8 +135,8 @@ define(["react"], function(React) {
             return (
                 <div className="motor-control">
                     <SpeedSlider />
-                    <button className="settings-drawer-button approach-button" onMouseDown={this.approach} onMouseUp={this.stop_motor}>Approach</button>
-                    <button className="settings-drawer-button retract-button" onMouseDown={this.retract} onMouseUp={this.stop_motor}>Retract</button>
+                    <button className="settings-drawer-button approach-button">Approach</button>
+                    <button className="settings-drawer-button retract-button">Retract</button>
                 </div>
             );
         }
