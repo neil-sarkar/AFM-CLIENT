@@ -9,8 +9,8 @@ ScanLine::ScanLine(coordinate capacity_) {
     size = 0;
     sum = 0;
     average = 0;
-    max = -ADC::RESOLUTION * 2;
-    min = ADC::RESOLUTION * 2;
+    this->max = INT32_MIN;
+    this->min = INT32_MAX;
 
     data = new point[capacity];
 

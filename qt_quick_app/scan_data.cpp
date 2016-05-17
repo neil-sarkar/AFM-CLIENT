@@ -20,8 +20,8 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_delta_x = delta_x;
     m_delta_y = delta_y;
 
-    m_prev_max = -ADC::RESOLUTION * 2;
-    m_prev_min = ADC::RESOLUTION * 2;
+    m_prev_max = INT32_MIN;
+    m_prev_min = INT32_MAX;
 
     raw_data.reserve(m_num_rows + 1);
     for (int i = 0; i < m_num_rows; i++)
@@ -106,13 +106,13 @@ QString ScanData::generate_png() {
      QColor color;
 
      // Step 1: Compute the max and the min of the leveled image
-     double scan_max = -2 * ADC::RESOLUTION, scan_min = 2 * ADC::RESOLUTION;
+     double scan_max = INT32_MIN, scan_min = INT32_MAX;
 
      // Find the max and min of the lines we've yet draw -- assumes that we add lines to the raw_data sequentially (index 0 to n, not the other way)
      for (int i = 0; i < m_num_rows; i++) {
-//        if (raw_data[i]->size == 0)
-//            break;
         if (raw_data[i]->size == 0)
+            break;
+        if (raw_data[i]->drawn)
             continue;
         if (raw_data[i]->max - raw_data[i]->average > scan_max) {
             scan_max = raw_data[i]->max - raw_data[i]->average;
@@ -122,14 +122,13 @@ QString ScanData::generate_png() {
         }
     }
 
-     // Find the extreme max and min for the entire scan ( would probably cause an issue with the first line because prev min is set to -2*4095 and prev max is 2*4095)
-     if (m_prev_max > m_prev_min) { // we need to do this check since the first iteration has m_prev_min and m_prev_max at positive/negative 2 * 4095
-         if (scan_max < m_prev_max)
-             scan_max = m_prev_max;
-         if (scan_min > m_prev_min)
-             scan_min = m_prev_min;
+     // Find the extreme max and min for the entire scan
+     if (scan_max < m_prev_max) {
+         scan_max = m_prev_max;
      }
-
+     if (scan_min > m_prev_min) {
+         scan_min = m_prev_min;
+     }
      bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
 
      double range = scan_max - scan_min;
