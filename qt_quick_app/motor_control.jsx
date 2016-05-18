@@ -102,11 +102,13 @@ define(["react"], function(React) {
                 }
             });
             $(document).mouseup(function() {
-                self.setState({
-                    approach_button_pressed: false,
-                    retract_button_pressed: false
-                });
-                self.stop_motor();
+                if (self.state.approach_button_pressed || self.state.retract_button_pressed) {
+                    self.setState({
+                        approach_button_pressed: false,
+                        retract_button_pressed: false
+                    });
+                    self.stop_motor();
+                }
             });
         },
         approach: function() {
