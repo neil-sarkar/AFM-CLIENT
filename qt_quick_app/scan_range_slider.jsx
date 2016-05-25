@@ -6,7 +6,7 @@ define(["react"], function(React) {
         },
         getInitialState: function() {
             return {
-                value: this.props.qt_objects[0].value
+                value: this.props.qt_objects[0].value()
             };
         },
         getDefaultProps: function() {
@@ -18,9 +18,9 @@ define(["react"], function(React) {
         },
         update_value_from_backend_change: function(value) {
             // Get the max of the different values and display that
-            var max_value = this.props.qt_objects[0].value;
+            var max_value = this.props.qt_objects[0].value();
             for (var i = 1; i < this.props.qt_objects.length; i++) {
-                max_value = Math.max(max_value, this.props.qt_objects[i].value);
+                max_value = Math.max(max_value, this.props.qt_objects[i].value());
             }
             
             this.setState({
@@ -46,7 +46,7 @@ define(["react"], function(React) {
                                         min={this.props.min} 
                                         max={this.props.max} 
                                         step={this.props.step} 
-                                        value={this.state.value} 
+                                        value={this.state.value}
                                         onInput={this.update_value_from_slider_input}/>
                     <span>  {this.state.value}%</span>
                 </div>

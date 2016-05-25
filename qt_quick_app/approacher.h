@@ -11,7 +11,7 @@ class Approacher : public AFMObject
 
 {
     Q_OBJECT
-//    Q_PROPERTY(int state READ state NOTIFY new_data)
+//    Q_PROPERTY(int m_state READ state NOTIFY new_data)
 public:
     explicit Approacher(PID*, AFMObject*);
     void init();

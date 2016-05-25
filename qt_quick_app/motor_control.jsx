@@ -49,7 +49,7 @@ define(["react"], function(React) {
             });
         },
         update_value_from_backend_change: function(speed) {
-            slider_position = this.calculate_slider_position(speed, motor.microstep);
+            slider_position = this.calculate_slider_position(speed, motor.microstep());
             this.setState({
                 speed: speed,
                 slider_position: slider_position,

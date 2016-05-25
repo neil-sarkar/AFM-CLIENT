@@ -6,6 +6,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
         componentDidMount: function() {
             $(this.refs.dropdown_content).hide();
             this.props.notify_signal.connect(this.update_value_from_backend_change);
+            this.update_value_from_backend_change(this.props.get_value());
         },
         handle_menu_click: function() {
             $(this.refs.dropdown_content).toggle();

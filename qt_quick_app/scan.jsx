@@ -251,6 +251,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     ]}
                                     selection_method={scanner.set_num_columns}
                                     notify_signal={scanner.num_columns_changed}
+                                    get_value={scanner.num_columns}
                                     title="Number of pixels per line"/>
                             <Dropdown options_list={[
                                         {text: "8", cmd_number: 8},
@@ -264,6 +265,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     ]}
                                     selection_method={scanner.set_num_rows}
                                     notify_signal={scanner.num_rows_changed}
+                                    get_value={scanner.num_rows}
                                     title="Number of lines"/>
                             <NumberInput value_type="scan"
                                         name="Number of averages taken at each point"
@@ -271,7 +273,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         max={255} 
                                         step={1} 
                                         notify_signal={scanner.num_averages_changed} 
-                                        get_value={scanner.num_averages} 
+                                        get_value={scanner.num_averages}
                                         set_value={scanner.set_num_averages} />
                             <NumberInput value_type="scan" 
                                         name="Time spent at each point (ms)"
@@ -279,7 +281,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         max={255}
                                         step={1} 
                                         notify_signal={scanner.dwell_time_changed} 
-                                        get_value={scanner.dwell_time} 
+                                        get_value={scanner.dwell_time}
                                         set_value={scanner.set_dwell_time} />
                             <TextInput name="File name base" 
                                         notify_signal={scanner.base_file_name_changed}

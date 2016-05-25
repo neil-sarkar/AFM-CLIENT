@@ -8,11 +8,11 @@
 class PID : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(float proportional READ proportional WRITE set_proportional NOTIFY proportional_changed)
-    Q_PROPERTY(float integral READ integral WRITE set_integral NOTIFY integral_changed)
-    Q_PROPERTY(float derivative READ derivative WRITE set_derivative NOTIFY derivative_changed)
-    Q_PROPERTY(float setpoint READ setpoint WRITE set_setpoint NOTIFY setpoint_changed)
-    Q_PROPERTY(bool enabled READ enabled WRITE set_enabled NOTIFY enabled_changed)
+    Q_PROPERTY(float m_proportional READ proportional WRITE set_proportional NOTIFY proportional_changed)
+    Q_PROPERTY(float m_integral READ integral WRITE set_integral NOTIFY integral_changed)
+    Q_PROPERTY(float m_derivative READ derivative WRITE set_derivative NOTIFY derivative_changed)
+    Q_PROPERTY(float m_setpoint READ setpoint WRITE set_setpoint NOTIFY setpoint_changed)
+    Q_PROPERTY(bool m_enabled READ enabled WRITE set_enabled NOTIFY enabled_changed)
 
 public:
     explicit PID();

@@ -272,7 +272,7 @@ void Scanner::end_scan_state_machine() {
     move_to_starting_point();
 }
 
-quint8 Scanner::num_averages() {
+quint16 Scanner::num_averages() {
     return m_num_averages;
 }
 
@@ -357,7 +357,7 @@ void Scanner::cmd_set_send_back_count() {
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Send_Back_Count], payload));
 }
 
-quint8 Scanner::dwell_time() {
+quint16 Scanner::dwell_time() {
     return m_dwell_time;
 }
 

@@ -5,7 +5,7 @@ define(["react"], function(React) {
 		},
 		getInitialState: function() {
 			return {
-				value: this.props.qt_object.value
+                                value: this.props.qt_object.value()
 			};
 		},
 		getDefaultProps: function() {
@@ -26,7 +26,7 @@ define(["react"], function(React) {
 				this.setState({
 					value: new_value
 				});
-				this.props.qt_object.value = new_value; // calls set_value due to Q_PROPERTY
+                                this.props.qt_object.set_value(new_value);
 			}
 		},
 		render: function() {

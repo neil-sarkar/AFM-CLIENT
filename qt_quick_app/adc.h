@@ -8,7 +8,7 @@
 class ADC : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(double value READ value NOTIFY value_changed)
+    Q_PROPERTY(double m_value READ value NOTIFY value_changed)
 public:
     explicit ADC(qint8 id);
     void init();

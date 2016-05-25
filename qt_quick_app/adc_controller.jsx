@@ -11,7 +11,7 @@ define(["react"], function(React) {
 		},
 		getInitialState: function() {
 			return {
-				value: this.props.qt_object.value
+                                value: this.props.qt_object.value()
 			};
 		},
 		render: function() {

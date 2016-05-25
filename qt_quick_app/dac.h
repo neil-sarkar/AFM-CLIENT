@@ -9,8 +9,8 @@
 class DAC : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(double value READ value WRITE set_value NOTIFY value_changed)
-    Q_PROPERTY(int id READ id WRITE set_id NOTIFY id_changed)
+    Q_PROPERTY(double m_value READ value WRITE set_value NOTIFY value_changed)
+    Q_PROPERTY(int m_id READ id WRITE set_id NOTIFY id_changed)
 
 public:
     explicit DAC(qint8 id);

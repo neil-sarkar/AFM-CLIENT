@@ -12,8 +12,8 @@
 class Scanner : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(quint8 m_num_averages READ num_averages WRITE set_num_averages NOTIFY num_averages_changed)
-    Q_PROPERTY(quint8 m_dwell_time READ dwell_time WRITE set_dwell_time NOTIFY dwell_time_changed)
+    Q_PROPERTY(quint16 m_num_averages READ num_averages WRITE set_num_averages NOTIFY num_averages_changed)
+    Q_PROPERTY(quint16 m_dwell_time READ dwell_time WRITE set_dwell_time NOTIFY dwell_time_changed)
     Q_PROPERTY(quint16 m_send_back_count READ send_back_count WRITE set_send_back_count NOTIFY send_back_count_changed)
     Q_PROPERTY(quint16 m_num_rows READ num_rows WRITE set_num_rows NOTIFY num_rows_changed)
     Q_PROPERTY(quint16 m_num_columns READ num_columns WRITE set_num_columns NOTIFY num_columns_changed)
@@ -28,9 +28,9 @@ public:
     PID* pid;
     DAC* fine_z;
 
-    Q_INVOKABLE quint8 num_averages();
+    Q_INVOKABLE quint16 num_averages();
     Q_INVOKABLE void set_num_averages(int num_averages);
-    Q_INVOKABLE quint8 dwell_time();
+    Q_INVOKABLE quint16 dwell_time();
     Q_INVOKABLE void set_dwell_time(int dwell_time);
     Q_INVOKABLE quint16 send_back_count();
     Q_INVOKABLE void set_send_back_count(int send_back_count);
@@ -103,9 +103,9 @@ private:
     QStateMachine m_state_machine;
     quint16 m_num_rows;
     quint16 m_num_columns;
-    quint8 m_ratio;
-    quint8 m_dwell_time;
-    quint8 m_num_averages;
+    int m_ratio;
+    quint16 m_dwell_time;
+    quint16 m_num_averages;
     quint16 m_send_back_count;
     double m_rms_threshold;
     QChar m_leveling_direction;

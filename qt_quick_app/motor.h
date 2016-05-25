@@ -11,10 +11,10 @@
 class Motor : public AFMObject
 {
     Q_OBJECT
-    Q_PROPERTY(int speed READ speed WRITE set_speed NOTIFY speed_changed)
-    Q_PROPERTY(int direction READ direction WRITE set_direction NOTIFY direction_changed)
-    Q_PROPERTY(int state READ state WRITE set_state NOTIFY state_changed)
-    Q_PROPERTY(int microstep READ microstep WRITE set_microstep NOTIFY microstep_changed)
+    Q_PROPERTY(int m_speed READ speed WRITE set_speed NOTIFY speed_changed)
+    Q_PROPERTY(int m_direction READ direction WRITE set_direction NOTIFY direction_changed)
+    Q_PROPERTY(int m_state READ state WRITE set_state NOTIFY state_changed)
+    Q_PROPERTY(int m_microstep READ microstep WRITE set_microstep NOTIFY microstep_changed)
 
 public:
     explicit Motor();
