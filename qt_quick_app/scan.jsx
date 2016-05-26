@@ -93,6 +93,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var img_str = "data:image/jpg;base64," + new_data;
                 $('#' + scan_view.dom_id).data("imgsrc", img_str);
                 element.src = $('#' + scan_view.dom_id).data('imgsrc');
+                element.style.paddingBottom = 0;
             }
         },
         change_num_rows: function (num_rows) {
@@ -111,14 +112,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         },
         set_img_size: function() {
             if (this.state.num_rows > this.state.num_columns) {
-                $(".scan-image").height(384);
-                $(".scan-image").width(384 / this.state.num_rows * this.state.num_columns);
-            } else if (this.state.num_rows < this.state.num_columns) {
-                $(".scan-image").width(384);
-                $(".scan-image").height(384 / this.state.num_columns * this.state.num_rows);
+                $(".scan-image").css("width", String(100 * this.state.num_columns / this.state.num_rows).concat('%'));
             } else {
-                $(".scan-image").width(384);
-                $(".scan-image").height(384);
+                $(".scan-image").css("width", "100%");
             }
         },
         tally_new_data: function(obj, x, y, z) {
@@ -176,6 +172,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             $(".scan-image").each(function(i) {
                 $('.scan-image')[i].src = ""; // Delete the images
             });
+            $('.scan-image').css("padding-bottom", "100%");
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
