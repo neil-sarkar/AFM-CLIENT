@@ -173,12 +173,41 @@ QColor Builder::interpolate_color(double percent, QVector<QColor> colors) {
     return colors.back();
 }
 
+
+//rotate/flip a quadrant appropriately
+static void hilbert_rot(int n, int *x, int *y, int rx, int ry) {
+    if (ry == 0) {
+        if (rx == 1) {
+            *x = n-1 - *x;
+            *y = n-1 - *y;
+        }
+
+        //Swap x and y
+        int t  = *x;
+        *x = *y;
+        *y = t;
+    }
+}
+
+//convert d to (x,y)
+static void hilbert(int n, int d, int *x, int *y) {
+    int rx, ry, s;
+    *x = *y = 0;
+    for (s=1; s<n; s*=2) {
+        rx = 1 & (d/2);
+        ry = 1 & (d ^ rx);
+        hilbert_rot(s, x, y, rx, ry);
+        *x += s * rx;
+        *y += s * ry;
+        d /= 4;
+    }
+}
+
 void Builder::generate_color_map() {
-    QVector<QColor> colors;
-    colors.append(QColor(88,28,0));
-    colors.append(QColor(188,128,0));
-    colors.append(QColor(252,252,128));
-    for (int i = 0; i < 10000; i += 1) {
-        color_map.push_back(interpolate_color(double(i)/100, colors));
+    int n = 1<<7;
+    for (int i = 0; i < n*n; i++) {
+        int x, y;
+        hilbert(n, i, &x, &y);
+        color_map.push_back(QColor(x*2, 255-(i>>6), y*2));
     }
 }
