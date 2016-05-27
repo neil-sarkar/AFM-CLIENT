@@ -41,6 +41,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     y: 36,
                     x: 53
                 },
+                exporting: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
                 series: [],
             });
         });
@@ -117,7 +123,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             force_curve_generator.new_approaching_phase_data.connect(this.handle_new_approaching_phase_data);
             force_curve_generator.new_retracting_amplitude_data.connect(this.handle_new_retracting_amplitude_data);
             force_curve_generator.new_retracting_phase_data.connect(this.handle_new_retracting_phase_data);
-            $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {
             return (React.DOM.div({className: "chart", ref: "chartNode"}));

@@ -43,6 +43,12 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                 legend: {
                     enabled: false
                 },
+                exporting: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
                 series: series,
                 plotOptions: {
                     series: {
@@ -91,7 +97,6 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
         componentDidMount: function() {
             this.renderChart();
             this.props.data_connection.connect(this.handle_new_data);
-            $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         handle_new_data: function(data) {
             var two_dimensional_data = [];

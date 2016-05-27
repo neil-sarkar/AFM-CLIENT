@@ -45,6 +45,12 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                             }
                         }
                     },
+                    exporting: {
+                        enabled: false
+                    },
+                    credits: {
+                        enabled: false
+                    },
                     series: [],
                 });
             });
@@ -128,7 +134,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             this.setState({
                 chart: chart,
             });
-            $('text:contains("Highcharts.com")').hide(); // remove the annoying marketing plug
         },
         render: function() {
             return (React.DOM.div({className: "chart profile", ref: "lineProfileNode"}));
