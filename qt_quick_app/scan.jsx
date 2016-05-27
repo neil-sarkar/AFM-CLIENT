@@ -50,6 +50,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 $('#scan-wrapper').hide();
             } else {
                 $('#scan-wrapper').show();
+                this.refs.line_profile.reflow();
             }
         },
         pause_scanning: function() {

@@ -17,6 +17,11 @@ body {
     position: static !important; /* prevent shadow rendering bug in webkit */
 }
 
+.chart-profile {
+    width: 90%;
+    min-height: 200px;
+}
+
 .app {
     height: 100%;
     display: -webkit-flex;

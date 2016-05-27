@@ -11,8 +11,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 $(node).highcharts({
                     chart: {
                         plotBackgroundColor: '#EFEFEF',
-                        height: 200,
-                        width: 600,
                         type: 'line',
                         zoomType: 'x',
                     },
@@ -93,6 +91,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         redraw: function() {
             this.state.chart.series[this.state.chart.series.length - 2].hide(); // automatically redraws
         },
+        reflow: function() {
+            this.state.chart.reflow();
+        },
         print_series: function() {
             console.log("deprecated method");
         },
@@ -136,7 +137,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             });
         },
         render: function() {
-            return (React.DOM.div({className: "chart profile", ref: "lineProfileNode"}));
+            return (
+                <div className="chart-profile" ref="lineProfileNode" />
+            );
         }
     });
     return LineProfile;
