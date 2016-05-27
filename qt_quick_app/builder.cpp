@@ -103,7 +103,7 @@ void Builder::generate_command_nodes() {
        qDebug() << file.errorString();
 
     char delimiter = 0x9; // delimit with a tab in our tab separated values file
-    int message_index, in_use_index, id_index, num_send_bytes_index, num_receive_bytes_index;
+    int message_index = 0, in_use_index = 0, id_index = 0, num_send_bytes_index = 0, num_receive_bytes_index = 0;
     QList<QByteArray> header_line = file.readLine().split(delimiter); // read the first line of the file to understand how the csv is laid out
     // In the worst way possible, extract the indices of the important information
     for (int i = 0; i < header_line.length(); i++) {
