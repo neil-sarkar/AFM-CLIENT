@@ -37,7 +37,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             return {
                 scanning: false,
                 starting_fresh_scan: true,
-                current_view: 0,
+                current_dom_id: "fo_image",
                 num_rows: 16,
                 num_columns: 16,
                 advanced: false,
@@ -116,11 +116,17 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             obj.data[y][x] = z;
         },
         prepare_line_profile: function (scan_view, data) {
-            scan_data = [];
-            for (var i = 0; i < data.length; i += 3) {
-                scan_data.push({x: data[i], y: data[i+2]});
+            if (scan_view.dom_id.charAt(1) == this.state.current_dom_id.charAt(1)) {
+                var scan_data = [];
+                for (var i = 0; i < data.length; i += 3) {
+                    scan_data.push({x: data[i], y: data[i+2]});
+                }
+                if (scan_view.dom_id.charAt(0) == 'f') {
+                    this.refs.line_profile.set_data(scan_data, null);
+                } else {
+                    this.refs.line_profile.set_data(null, scan_data);
+                }
             }
-            this.refs.line_profile.set_data(scan_data);
         },
         push_data_to_view: function(scan_view, is_switching_views) {
             this.refs.line_profile.set_data(scan_view.forward_data.most_recent_line_profile(), scan_view.reverse_data.most_recent_line_profile());
@@ -188,6 +194,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
 
             $(".scan-image").hide();
             $("#" + dom_id_of_image).show();
+            this.setState({current_dom_id: dom_id_of_image});
         },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);

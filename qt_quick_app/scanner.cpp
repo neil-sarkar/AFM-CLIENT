@@ -195,15 +195,12 @@ void Scanner::callback_step_scan(QByteArray payload) {
         m_x_index = (m_x_index + 1) % (m_num_columns * 2);
         if (m_x_index == 0) {
             m_y_index += 1;
-            if (scanning_forward) {
-                current_fwd_offset_line_profile.clear();
-                current_fwd_error_line_profile.clear();
-                current_fwd_phase_line_profile.clear();
-            } else {
-                current_rev_offset_line_profile.clear();
-                current_rev_error_line_profile.clear();
-                current_rev_phase_line_profile.clear();
-            }
+            current_fwd_offset_line_profile.clear();
+            current_fwd_error_line_profile.clear();
+            current_fwd_phase_line_profile.clear();
+            current_rev_offset_line_profile.clear();
+            current_rev_error_line_profile.clear();
+            current_rev_phase_line_profile.clear();
         }
 
         z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
@@ -242,28 +239,33 @@ void Scanner::callback_step_scan(QByteArray payload) {
         scanning_forward = is_scanning_forward();
     }
     // This condition checks to see if we should send data (should be after every line is done - fwd and rev)
-     if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
+    if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
+        watcher_fo.waitForFinished();
+        QFuture<QString> future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
+        watcher_fo.setFuture(future);
+        watcher_ro.waitForFinished();
+        future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
+        watcher_ro.setFuture(future);
+        watcher_fp.waitForFinished();
+        future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
+        watcher_fp.setFuture(future);
+        watcher_rp.waitForFinished();
+        future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
+        watcher_rp.setFuture(future);
+        watcher_fe.waitForFinished();
+        future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
+        watcher_fe.setFuture(future);
+        watcher_re.waitForFinished();
+        future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
+        watcher_re.setFuture(future);
 
-         QFuture<QString> future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
-         watcher_fo.setFuture(future);
-         future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
-         watcher_ro.setFuture(future);
-         future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
-         watcher_fp.setFuture(future);
-         future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
-         watcher_rp.setFuture(future);
-         future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
-         watcher_fe.setFuture(future);
-         future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
-         watcher_re.setFuture(future);
-
-//         emit new_forward_offset_profile(current_fwd_offset_line_profile);
-//         emit new_forward_error_profile(current_fwd_error_line_profile);
-//         emit new_forward_phase_profile(current_fwd_phase_line_profile);
-//         emit new_reverse_offset_profile(current_fwd_offset_line_profile);
-//         emit new_reverse_error_profile(current_fwd_error_line_profile);
-//         emit new_reverse_phase_profile(current_fwd_phase_line_profile);
-     }
+        emit new_forward_offset_profile(current_fwd_offset_line_profile);
+        emit new_forward_error_profile(current_fwd_error_line_profile);
+        emit new_forward_phase_profile(current_fwd_phase_line_profile);
+        emit new_reverse_offset_profile(current_rev_offset_line_profile);
+        emit new_reverse_error_profile(current_rev_error_line_profile);
+        emit new_reverse_phase_profile(current_rev_phase_line_profile);
+    }
 }
 
 void Scanner::end_scan_state_machine() {
