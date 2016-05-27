@@ -11,10 +11,6 @@ define(["react", "dom"], function(React, ReactDOM) {
             transition_condition: afm.init_complete,
         },
         {
-            text: "Checking resistances...",
-            transition_condition: afm.chip_mounted_ok,
-        },
-        {
             text: "AFM ready.",
         }
     ];

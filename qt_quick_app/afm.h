@@ -55,7 +55,6 @@ class AFM : public AFMObject
         
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
-        void chip_mounted_ok();
         void setting_dac_table();
         void disconnected();
 

@@ -74,12 +74,6 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
     static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
     static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
     static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
-
-    if (ADC::is_actuator_connected(z_voltage) && ADC::is_actuator_connected(x_1_voltage) && ADC::is_actuator_connected(y_1_voltage)) {
-        emit chip_mounted_ok();
-    }
-//    else
-//        cmd_get_resistances();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
