@@ -118,7 +118,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         prepare_line_profile: function (scan_view, data) {
             if (scan_view.dom_id.charAt(1) == this.state.current_dom_id.charAt(1)) {
                 var scan_data = [];
-                for (var i = 0; i < data.length; i += 3) {
+                var count_by = Math.ceil(data.length / 256); // limit resolution to 256
+                for (var i = 0; i < data.length; i += 3*count_by) {
                     scan_data.push({x: data[i], y: data[i+2]});
                 }
                 if (scan_view.dom_id.charAt(0) == 'f') {

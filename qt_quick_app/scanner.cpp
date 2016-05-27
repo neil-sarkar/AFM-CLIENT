@@ -226,15 +226,15 @@ void Scanner::callback_step_scan(QByteArray payload) {
             rev_offset_data->append(x_coord, m_y_index, z_offset);
             rev_phase_data->append(x_coord, m_y_index, z_phase);
             rev_error_data->append(x_coord, m_y_index, z_error);
-            current_rev_offset_line_profile.append(x_coord);
-            current_rev_offset_line_profile.append(m_y_index);
-            current_rev_offset_line_profile.append(z_offset);
-            current_rev_phase_line_profile.append(x_coord);
-            current_rev_phase_line_profile.append(m_y_index);
-            current_rev_phase_line_profile.append(z_phase);
-            current_rev_error_line_profile.append(x_coord);
-            current_rev_error_line_profile.append(m_y_index);
-            current_rev_error_line_profile.append(z_error);
+            current_rev_offset_line_profile.prepend(z_offset);
+            current_rev_offset_line_profile.prepend(m_y_index);
+            current_rev_offset_line_profile.prepend(x_coord);
+            current_rev_phase_line_profile.prepend(z_phase);
+            current_rev_phase_line_profile.prepend(m_y_index);
+            current_rev_phase_line_profile.prepend(x_coord);
+            current_rev_error_line_profile.prepend(z_error);
+            current_rev_error_line_profile.prepend(m_y_index);
+            current_rev_error_line_profile.prepend(x_coord);
         }
         scanning_forward = is_scanning_forward();
     }
