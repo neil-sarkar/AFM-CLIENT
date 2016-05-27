@@ -29,6 +29,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     setMinimumSize(640, 480);
 
     set_global_web_settings();
+    QObject::connect(m_welcome_page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(welcomePageLoadFinished()));
 }
 
 void MainWindow::set_global_web_settings() {
@@ -75,6 +76,10 @@ void MainWindow::addJSObject(CustomPage* page) {
         page->mainFrame()->addToJavaScriptWindowObject(name, i.value());
     }
     page->settings()->setMaximumPagesInCache(0);
+}
+
+void MainWindow::welcomePageLoadFinished() {
+    emit loadFinished();
 }
 
 void MainWindow::log_cpp(QString text) {

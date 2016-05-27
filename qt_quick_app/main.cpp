@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
     receive_worker->moveToThread(receiver_thread);
 
     // Thread start
-    serial_thread->start();
-    sender_thread->start();
-    receiver_thread->start();
+    QObject::connect(&m, SIGNAL(loadFinished()), serial_thread, SLOT(start()));
+    QObject::connect(&m, SIGNAL(loadFinished()), sender_thread, SLOT(start()));
+    QObject::connect(&m, SIGNAL(loadFinished()), receiver_thread, SLOT(start()));
 
     // Cleanup
     engine.quit();

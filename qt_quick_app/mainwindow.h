@@ -32,8 +32,12 @@ public:
     Q_INVOKABLE void pop_out_force_curve_page();
     AFM* m_afm;
 
+signals:
+    void loadFinished(void);
+
 private slots:
     void addJSObject(CustomPage* page);
+    void welcomePageLoadFinished();
 
 private:
     void set_global_web_settings();
