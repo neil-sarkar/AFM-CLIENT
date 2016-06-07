@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE quint32 start_frequency();
     Q_INVOKABLE quint16 step_size();
     Q_INVOKABLE quint32 end_frequency();
+    Q_INVOKABLE double calculate_num_steps();
 
     DDS* dds;
     PID* pid;
@@ -80,7 +81,6 @@ private:
     callback_return_type bind(callback_type method);
     void callback_cmd_frequency_sweep(QByteArray return_bytes);
     void set_stable_frequency();
-    double calculate_num_steps();
     static const QString settings_group_name;
     const quint16 MinStepSize;
 };

@@ -1,7 +1,7 @@
 define(["react", "jsx!pages/number_input", "jsx!pages/dropdown"], function(React, NumberInput, Dropdown) {
 	var InlineSweepControls = React.createClass({
 		getInitialState: function() {
-			return {num_steps: 0};
+                        return {num_steps: Math.floor(sweeper.calculate_num_steps())};
 		},
 		componentDidMount: function() {
 			sweeper.num_steps_changed.connect(this.update_num_steps);
