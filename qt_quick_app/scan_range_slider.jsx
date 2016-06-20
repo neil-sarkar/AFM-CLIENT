@@ -47,7 +47,7 @@ define(["react"], function(React) {
                                         max={this.props.max} 
                                         step={this.props.step} 
                                         value={this.state.value}
-                                        onInput={this.update_value_from_slider_input}/>
+                                        onChange={this.update_value_from_slider_input}/>
                     <span>  {this.state.value}%</span>
                 </div>
             );
