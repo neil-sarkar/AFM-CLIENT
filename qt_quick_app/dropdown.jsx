@@ -20,7 +20,9 @@ define(["react", "console", "underscore"], function(React, console, _) {
         },
         update_value_from_backend_change: function(value) {
             var option = $.grep(this.props.options_list, function(e){ return e.cmd_number == value; })[0];
-            this.setState({text: option.text});
+            if (option) {
+                this.setState({text: option.text});
+            }
         },
         render: function() {
             return (
