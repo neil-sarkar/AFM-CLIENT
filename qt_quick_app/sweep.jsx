@@ -22,14 +22,16 @@
 			});
 		},
 		manual_sweep: function() {
-			pid.set_disabled();
+                        pid.set_disabled();
+                        dac_z_offset_fine.set_value(1.5);
 			setTimeout(function() {
 				sweeper.start_manual_sweep(); // TODO: probably don't need this settimeout
 			}, 200);
 		},
 		auto_sweep: function() {
 			this.clear();
-			pid.set_disabled();
+                        pid.set_disabled();
+                        dac_z_offset_fine.set_value(1.5);
 			setTimeout(function() {
 				sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout
 			}, 200);

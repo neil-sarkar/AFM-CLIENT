@@ -41,14 +41,14 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			this.setState({
 				status: approacher_state,
 			});
-			if (approach_complete) {
+                        if (approach_complete && !this.state.approach_complete) {
 				this.setState({
 					approach_complete: true
 				}, function() {
 					setTimeout(function() {
-						pid.set_enabled();
+                                                pid.set_enabled();
 						this.allow_dangerous_user_input();
-					}.bind(this), 300);
+                                        }.bind(this), 300)
 				});
 			}
 			if (this.state.approach_complete && approacher_state == 1) {
@@ -100,8 +100,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		},
 		start_approaching : function() {
 			// this.prevent_dangerous_user_input();
-			pid.set_disabled();
-			dac_z_offset_fine.set_value(1.5);
+                        pid.set_disabled();
+                        dac_z_offset_fine.set_value(1.5);
 			approacher.cmd_start_auto_approach();
 			motor_status_opacity = 0.5;
 			warning_interval = setInterval(function () {
