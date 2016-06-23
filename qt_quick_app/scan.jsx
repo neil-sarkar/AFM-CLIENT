@@ -198,6 +198,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 }
             });
         },
+        handle_image_mouse_move: function(e) {
+            if (!this.state.scanning && this.state.starting_fresh_scan) {
+                var img = $('.scan-image');
+                var y = Math.floor((e.pageY - img.offset().top) * img[0].naturalHeight / img[0].clientHeight);
+                scanner.fetch_line_profiles(y);
+            }
+        },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
@@ -232,7 +239,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                 <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
                             </div>
                             <div className="scan-images-container">
-                                <img src={empty_image_str} className="scan-image" />
+                                <img src={empty_image_str} className="scan-image" onMouseMove={this.handle_image_mouse_move} />
                             </div>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>

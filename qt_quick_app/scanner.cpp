@@ -184,6 +184,53 @@ bool Scanner::is_scanning_forward() {
     return scanning_forward;
 }
 
+void Scanner::fetch_line_profiles(int y) {
+    if (!rev_offset_data->is_full()) {
+        // don't do this unless the scan is finished
+        return;
+    }
+
+    if (y < 0) y = 0;
+    if (y > m_num_rows - 1) y = m_num_rows - 1;
+
+    current_fwd_offset_line_profile.clear();
+    current_fwd_error_line_profile.clear();
+    current_fwd_phase_line_profile.clear();
+    current_rev_offset_line_profile.clear();
+    current_rev_error_line_profile.clear();
+    current_rev_phase_line_profile.clear();
+
+    for (int x = 0; x < m_num_columns; x++) {
+        current_fwd_offset_line_profile.append(x);
+        current_fwd_error_line_profile.append(x);
+        current_fwd_phase_line_profile.append(x);
+        current_rev_offset_line_profile.append(x);
+        current_rev_error_line_profile.append(x);
+        current_rev_phase_line_profile.append(x);
+
+        current_fwd_offset_line_profile.append(y);
+        current_fwd_error_line_profile.append(y);
+        current_fwd_phase_line_profile.append(y);
+        current_rev_offset_line_profile.append(y);
+        current_rev_error_line_profile.append(y);
+        current_rev_phase_line_profile.append(y);
+
+        current_fwd_offset_line_profile.append(fwd_offset_data->raw_data[y]->data[x]);
+        current_fwd_error_line_profile.append(fwd_error_data->raw_data[y]->data[x]);
+        current_fwd_phase_line_profile.append(fwd_phase_data->raw_data[y]->data[x]);
+        current_rev_offset_line_profile.append(rev_offset_data->raw_data[y]->data[x]);
+        current_rev_error_line_profile.append(rev_error_data->raw_data[y]->data[x]);
+        current_rev_phase_line_profile.append(rev_phase_data->raw_data[y]->data[x]);
+    }
+
+    emit new_forward_offset_profile(current_fwd_offset_line_profile);
+    emit new_forward_error_profile(current_fwd_error_line_profile);
+    emit new_forward_phase_profile(current_fwd_phase_line_profile);
+    emit new_reverse_offset_profile(current_rev_offset_line_profile);
+    emit new_reverse_error_profile(current_rev_error_line_profile);
+    emit new_reverse_phase_profile(current_rev_phase_line_profile);
+}
+
 void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
