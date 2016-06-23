@@ -3,6 +3,7 @@
 #include "assert.h"
 #include "globals.h"
 #include <QDebug>
+#include <algorithm> // for std::nth_element
 
 ScanLine::ScanLine(coordinate capacity_) {
     capacity = capacity_;
@@ -40,8 +41,13 @@ void ScanLine::add_point(coordinate x, point z) {
 }
 
 void ScanLine::compute_average() {
-    if (this->size != 0)
-        this->average = double(this->sum) / this->size;
+    if (size != 0)
+        average = double(sum) / size;
+    if (size != 0) {
+        std::vector<point> data_vector(data, data + size);
+        std::nth_element(data_vector.begin(), data_vector.begin() + size/2, data_vector.end());
+        average = data_vector[size/2];
+    }
 }
 
 ScanLine ScanLine::generate_leveled_line() {
