@@ -368,6 +368,7 @@ body {
 
 .scan-top {
     margin-bottom: 10%;
+    -webkit-flex-flow: row !important;
 }
 
 .selected-scan-view {
@@ -427,7 +428,6 @@ body {
 
 .scan-image {
     width: 100%; /* expand to fit space */
-    padding-bottom: 100%;
     border: 1px solid gray;
     image-rendering: optimizeSpeed;             /*                     */
     image-rendering: -moz-crisp-edges;          /* Firefox             */
@@ -438,6 +438,7 @@ body {
 }
 
 .scan-images-container {
+    position: relative;
     -webkit-flex: auto;
     /* center the image inside the container */
     display: -webkit-flex;

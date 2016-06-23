@@ -1,37 +1,22 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text_input", "jsx!pages/save_folder"], function(React, HeatmapCanvas, LineProfile, InlineScanControls, NumberInput, Dropdown, TextInput, SaveFolderPicker) {
-    function two_d_matrix_generator(rows, cols) {
-        var matrix = new Array();
-        for(var i=0; i < rows; i++) {
-            matrix.push([]);
-            for (var j = 0; j < cols; j++) {
-                matrix[i].push("-1"); // TODO: put "-1" as a constant in constants.js
-            }
-        }
-        return matrix;
-    }
-    var img_str = "";
+    var empty_image_str = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     
-    function ScanView(name, render_signal, dom_id, data_source) {
+    function ScanView(name, render_signal, data_source) {
         this.name = name;
         this.data_source = data_source;
-        this.dom_id = dom_id;
         this.render_signal = render_signal;
-        this.data = null;
+        this.data = empty_image_str;
         this.image_ready = true;
         this.line_view_ready = true;
     }
 
-    ScanView.prototype.init_data = function (num_rows, num_columns) {
-        this.data = two_d_matrix_generator(num_rows, num_columns);
-    };
-
     var scan_views = [];
-    scan_views.push(new ScanView("Forward Offset", scanner.new_forward_offset_data, "fo_image",scanner.new_forward_offset_profile));
-    scan_views.push(new ScanView("Forward Error", scanner.new_forward_error_data, "fe_image", scanner.new_forward_error_profile));
-    scan_views.push(new ScanView("Forward Phase",  scanner.new_forward_phase_data, "fp_image", scanner.new_forward_phase_profile));
-    scan_views.push(new ScanView("Reverse Offset",  scanner.new_reverse_offset_data, "ro_image",scanner.new_reverse_offset_profile));
-    scan_views.push(new ScanView("Reverse Error",  scanner.new_reverse_error_data, "re_image", scanner.new_reverse_error_profile));
-    scan_views.push(new ScanView("Reverse Phase",  scanner.new_reverse_phase_data, "rp_image", scanner.new_reverse_phase_profile));
+    scan_views.push(new ScanView("Forward Offset", scanner.new_forward_offset_data,scanner.new_forward_offset_profile));
+    scan_views.push(new ScanView("Forward Error", scanner.new_forward_error_data, scanner.new_forward_error_profile));
+    scan_views.push(new ScanView("Forward Phase",  scanner.new_forward_phase_data, scanner.new_forward_phase_profile));
+    scan_views.push(new ScanView("Reverse Offset",  scanner.new_reverse_offset_data, scanner.new_reverse_offset_profile));
+    scan_views.push(new ScanView("Reverse Error",  scanner.new_reverse_error_data, scanner.new_reverse_error_profile));
+    scan_views.push(new ScanView("Reverse Phase",  scanner.new_reverse_phase_data, scanner.new_reverse_phase_profile));
 
 
     var Scan = React.createClass({
@@ -39,7 +24,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             return {
                 scanning: false,
                 starting_fresh_scan: true,
-                current_dom_id: "fo_image",
+                current_image: "Forward Offset",
                 num_rows: 16,
                 num_columns: 16,
                 advanced: false,
@@ -74,28 +59,30 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
 
             // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
-                var bound_method = this.render_png.bind(this, scan_views[i]);
+                var bound_method = this.save_png_data.bind(this, scan_views[i]);
                 scan_views[i].render_signal.connect(bound_method);
                 bound_method = this.prepare_line_profile.bind(this, scan_views[i]);
                 scan_views[i].data_source.connect(bound_method);
             }
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
-            $('.scan-image').hide();
-            $('.scan-image').first().show();
         },
-        render_png: function(scan_view, new_data) {
-            var element = document.getElementById(scan_view.dom_id);
-            if (scan_view.image_ready) {
-                scan_view.image_ready = false;
-                setTimeout(function(){
-                    scan_view.image_ready = true;
-                }, 100);
-                var img_str = "data:image/jpg;base64," + new_data;
-                $('#' + scan_view.dom_id).data("imgsrc", img_str);
-                element.src = $('#' + scan_view.dom_id).data('imgsrc');
-                element.style.paddingBottom = 0;
+        save_png_data: function(scan_view, new_data) {
+            scan_view.data = "data:image/png;base64," + new_data;
+            if (scan_view.name == this.state.current_image) {
+                if (scan_view.image_ready) {
+                    scan_view.image_ready = false;
+                    setTimeout(function(){
+                        scan_view.image_ready = true;
+                    }, 125);
+                    this.update_image(scan_view.data);
+                }
             }
+        },
+        update_image: function(data) {
+            var element = $('.scan-image');
+            element.data("imgsrc", data);
+            element[0].src = element.data('imgsrc');
         },
         change_num_rows: function (num_rows) {
             this.setState({
@@ -118,26 +105,25 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 $(".scan-image").css("width", "100%");
             }
         },
-        tally_new_data: function(obj, x, y, z) {
-            obj.data[y][x] = z;
-        },
         prepare_line_profile: function (scan_view, data) {
-            if (scan_view.dom_id.charAt(1) == this.state.current_dom_id.charAt(1)) {
+            if (scan_view.name.charAt(8) == this.state.current_image.charAt(8)) {
                 if (scan_view.line_view_ready) {
                     scan_view.line_view_ready = false;
                     setTimeout(function(){
                         scan_view.line_view_ready = true;
                     }, 200);
-                    var scan_data = [];
-                    var count_by = Math.ceil(data.length / 256); // limit resolution to 256
-                    for (var i = 0; i < data.length; i += 3*count_by) {
-                        scan_data.push({x: data[i], y: data[i+2]});
-                    }
-                    if (scan_view.dom_id.charAt(0) == 'f') {
-                        this.refs.line_profile.set_data(scan_data, null);
-                    } else {
-                        this.refs.line_profile.set_data(null, scan_data);
-                    }
+                    setTimeout(function(){
+                        var scan_data = [];
+                        var count_by = Math.ceil(data.length / 256); // limit resolution to 256
+                        for (var i = 0; i < data.length; i += 3*count_by) {
+                            scan_data.push({x: data[i], y: data[i+2]});
+                        }
+                        if (scan_view.name.charAt(0) == 'F') {
+                            this.refs.line_profile.set_data(scan_data, null);
+                        } else {
+                            this.refs.line_profile.set_data(null, scan_data);
+                        }
+                    }.bind(this), 0);
                 }
             }
         },
@@ -156,27 +142,25 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 if (this.state.starting_fresh_scan) {
                     scanner.start_state_machine();
                     for (var i = 0; i < scan_views.length; i++) {
-                        scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
+                        scan_views[i].data = empty_image_str;
                     }
+                    this.setState({
+                        starting_fresh_scan: false
+                    });
                 } else {
                     scanner.resume_state_machine();
                 }
-                this.refs.line_profile.clear_plotlines();
-                this.setState({
-                    starting_fresh_scan: false
-                });
             });
         },
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
             $(".scan-image").each(function(i) {
-                $('.scan-image')[i].src = ""; // Delete the images
+                $('.scan-image')[i].src = empty_image_str;
             });
-            $('.scan-image').css("padding-bottom", "100%");
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
-                    scan_views[i].init_data(this.state.num_rows, this.state.num_columns);
+                    scan_views[i].data = empty_image_str;
                 }
                 this.refs.line_profile.erase_data();
                 this.set_scan_complete();
@@ -195,7 +179,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             // this.refs.heatmap.eliminate_outliers(current_heatmap, min, max);
             this.refs.line_profile.draw_outlier_plotlines(min, max);
         },
-        handle_view_selector_click: function(dom_id_of_image, e) {
+        handle_view_selector_click: function(image_name, e) {
             // Set style of selected name
             var target = $(e.target);
             $('.view-selector-button').removeClass('selected-scan-view');
@@ -206,9 +190,13 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 target.parent().addClass("selected-scan-view");
             }
 
-            $(".scan-image").hide();
-            $("#" + dom_id_of_image).show();
-            this.setState({current_dom_id: dom_id_of_image});
+            this.setState({current_image: image_name}, function() {
+                for(i=0; i<scan_views.length; i++) {
+                    if (scan_views[i].name == this.state.current_image) {
+                        this.update_image(scan_views[i].data);
+                    }
+                }
+            });
         },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
@@ -236,20 +224,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     <div className="left-flexbox">
                         <div className="top-row scan-top">
                             <div className="scan-view-selector-container">
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fo_image")}> Forward Offset</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "ro_image")}> Reverse Offset</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fp_image")}> Forward Phase</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "rp_image")}> Reverse Phase</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "fe_image")}> Foward Error</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "re_image")}> Reverse Error</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Offset")}> Forward Topo</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Offset")}> Reverse Topo</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Phase")}> Forward Phase</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Phase")}> Reverse Phase</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Error")}> Foward Error</p>
+                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
                             </div>
                             <div className="scan-images-container">
-                                <img src="" id="fo_image" className="scan-image" />
-                                <img src="" id="ro_image" className="scan-image" />
-                                <img src="" id="fp_image" className="scan-image" />
-                                <img src="" id="rp_image" className="scan-image" />
-                                <img src="" id="fe_image" className="scan-image" />
-                                <img src="" id="re_image" className="scan-image" />
+                                <img src={empty_image_str} className="scan-image" />
                             </div>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>
