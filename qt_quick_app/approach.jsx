@@ -147,7 +147,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 											chart_title="Fine Z" 
 											data_update_signal={dac_z_offset_fine.value_changed} 
 											prompt_read={dac_z_offset_fine.cmd_read_value} 
-											num_points_displayed={Constants.Approach_Num_Points_Displayed} 
+                                                                                        num_points_displayed={Constants.Z_Fine_Num_Points_Displayed}
 											poll_rate={Constants.Z_Fine_Poll_Rate}
 											max_value={3.3} />
 					</div>
