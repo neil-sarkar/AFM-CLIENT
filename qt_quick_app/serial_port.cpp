@@ -57,17 +57,9 @@ void SerialPort::reset_mcu() {
     // super important, because the UI creation will try to call a bunch of setters
     QByteArray message;
     message += 'M';
-//    message += 'A';
-//    message += 'B';
-//    message += 'C';
-//    message += 'D';
+    message += 'M';
+    message += 'M';
     write_bytes(message);
-//    QTest::qSleep(10000);
-//    write_byte('M');
-//    write_byte('A');
-//    write_byte('B');
-//    write_byte('C');
-//    write_byte('D');
 }
 
 void SerialPort::initialize_reading() {
