@@ -28,6 +28,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 num_rows: 16,
                 num_columns: 16,
                 advanced: false,
+                line_profile_width: 1,
+                line_profile_y: 0
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -144,6 +146,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     for (var i = 0; i < scan_views.length; i++) {
                         scan_views[i].data = empty_image_str;
                     }
+                    $('.scan-image-inverter').css({
+                        "margin-top": 0,
+                        "margin-bottom": "100%"
+                    });
                     this.setState({
                         starting_fresh_scan: false
                     });
@@ -155,13 +161,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
-            $(".scan-image").each(function(i) {
-                $('.scan-image')[i].src = empty_image_str;
-            });
+            $('.scan-image')[0].src = empty_image_str;
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = empty_image_str;
                 }
+                $('.scan-image-inverter').css({
+                    "margin-top": 0,
+                    "margin-bottom": "100%"
+                });
                 this.refs.line_profile.erase_data();
                 this.set_scan_complete();
             }.bind(this), 200); // give time for the scnaner to actually pause 
@@ -201,9 +209,43 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         handle_image_mouse_move: function(e) {
             if (!this.state.scanning && this.state.starting_fresh_scan) {
                 var img = $('.scan-image');
-                var y = Math.floor((e.pageY - img.offset().top) * img[0].naturalHeight / img[0].clientHeight);
-                scanner.fetch_line_profiles(y);
+                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
+                var offsetY = e.pageY - img.offset().top;
+
+                this.setState({line_profile_y: offsetY*aspect_ratio}, function(){
+                    scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
+                    $('.scan-image-inverter').css({
+                        "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
+                        "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)
+                    });
+                });
             }
+        },
+        handle_image_mouse_wheel: function(e) {
+            if (!this.state.scanning && this.state.starting_fresh_scan) {
+                var new_width = this.state.line_profile_width;
+                if (e.deltaY < 0) new_width += 2; // scrolling up
+                if (e.deltaY > 0) new_width -= 2; // scrolling down
+                if (new_width < 1) new_width = 1;
+
+                var img = $('.scan-image');
+                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
+                var offsetY = this.state.line_profile_y/aspect_ratio;
+
+                this.setState({line_profile_width: new_width}, function(){
+                    scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
+                    $('.scan-image-inverter').css({
+                        "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
+                        "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)
+                    });
+                });
+            }
+        },
+        handle_image_mouse_leave: function(e) {
+            $('.scan-image-inverter').css({
+                "margin-top": 0,
+                "margin-bottom": "100%"
+            });
         },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
@@ -239,7 +281,12 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                 <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
                             </div>
                             <div className="scan-images-container">
-                                <img src={empty_image_str} className="scan-image" onMouseMove={this.handle_image_mouse_move} />
+                                <img src={empty_image_str} className="scan-image"
+                                    onMouseMove={this.handle_image_mouse_move}
+                                    onWheel={this.handle_image_mouse_wheel}
+                                    onMouseLeave={this.handle_image_mouse_leave}
+                                />
+                                <div className="scan-image-inverter" />
                             </div>
                         </div>
                         <LineProfile ref="line_profile" chart_name={this.props.name}/>

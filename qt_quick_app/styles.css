@@ -437,6 +437,19 @@ body {
     -ms-interpolation-mode: nearest-neighbor;   /* IE8+                */
 }
 
+.scan-image-inverter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin-top: 0;
+    margin-bottom: 100%;
+    background-color: white;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .scan-images-container {
     position: relative;
     -webkit-flex: auto;

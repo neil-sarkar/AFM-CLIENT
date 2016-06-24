@@ -184,14 +184,22 @@ bool Scanner::is_scanning_forward() {
     return scanning_forward;
 }
 
-void Scanner::fetch_line_profiles(int y) {
-    if (!rev_offset_data->is_full()) {
+void Scanner::fetch_line_profiles(int y, int y_averages) {
+    if (!rev_error_data || !rev_error_data->is_full()) {
         // don't do this unless the scan is finished
         return;
     }
 
-    if (y < 0) y = 0;
-    if (y > m_num_rows - 1) y = m_num_rows - 1;
+    // sanitize input
+    if (y_averages < 1) y_averages = 1;
+    // find limits
+    int y_start = y - (y_averages+1)/2;
+    int y_end = y + y_averages/2;
+    // sanitize limits
+    if (y_start < 0) y_start = 0;
+    if (y_end > m_num_rows - 1) y_end = m_num_rows - 1;
+    // recalculate number of averages
+    y_averages = y_end - y_start + 1;
 
     current_fwd_offset_line_profile.clear();
     current_fwd_error_line_profile.clear();
@@ -215,12 +223,21 @@ void Scanner::fetch_line_profiles(int y) {
         current_rev_error_line_profile.append(y);
         current_rev_phase_line_profile.append(y);
 
-        current_fwd_offset_line_profile.append(fwd_offset_data->raw_data[y]->data[x]);
-        current_fwd_error_line_profile.append(fwd_error_data->raw_data[y]->data[x]);
-        current_fwd_phase_line_profile.append(fwd_phase_data->raw_data[y]->data[x]);
-        current_rev_offset_line_profile.append(rev_offset_data->raw_data[y]->data[x]);
-        current_rev_error_line_profile.append(rev_error_data->raw_data[y]->data[x]);
-        current_rev_phase_line_profile.append(rev_phase_data->raw_data[y]->data[x]);
+        point acc[6] = {0};
+        for (int yy = y_start; yy <= y_end; yy++) {
+            acc[0] += fwd_offset_data->raw_data[yy]->data[x];
+            acc[1] += fwd_error_data->raw_data[yy]->data[x];
+            acc[2] += fwd_phase_data->raw_data[yy]->data[x];
+            acc[3] += rev_offset_data->raw_data[yy]->data[x];
+            acc[4] += rev_error_data->raw_data[yy]->data[x];
+            acc[5] += rev_phase_data->raw_data[yy]->data[x];
+        }
+        current_fwd_offset_line_profile.append(acc[0]/y_averages);
+        current_fwd_error_line_profile.append(acc[1]/y_averages);
+        current_fwd_phase_line_profile.append(acc[2]/y_averages);
+        current_rev_offset_line_profile.append(acc[3]/y_averages);
+        current_rev_error_line_profile.append(acc[4]/y_averages);
+        current_rev_phase_line_profile.append(acc[5]/y_averages);
     }
 
     emit new_forward_offset_profile(current_fwd_offset_line_profile);
@@ -252,7 +269,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
         z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
         z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
-        z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
+        z_phase = 0x8000 - bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         z_error = pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude;
 
         if (scanning_forward) {

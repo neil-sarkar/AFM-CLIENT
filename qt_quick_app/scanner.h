@@ -46,7 +46,7 @@ public:
     Q_INVOKABLE void set_base_file_name(QString);
     Q_INVOKABLE QChar leveling_direction();
     Q_INVOKABLE void set_leveling_direction (QChar);
-    Q_INVOKABLE void fetch_line_profiles(int y);
+    Q_INVOKABLE void fetch_line_profiles(int y, int y_averages);
 
     void set_settings();
     void save_raw_data(QString save_folder);
