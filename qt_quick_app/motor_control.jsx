@@ -90,15 +90,13 @@ define(["react"], function(React) {
         },
         componentDidMount: function() {
             var self = this;
-            $('.approach-button, .retract-button').mousedown(function() {
-                if ($(this).hasClass('approach-button')) {
-                    self.setState({ approach_button_pressed: true });
-                    self.approach();
-                }
-                else if ($(this).hasClass('retract-button')) {
-                    self.setState({ retract_button_pressed: true });
-                    self.retract();
-                }
+            $(this.refs.approach_button).mousedown(function() {
+                self.setState({ approach_button_pressed: true });
+                self.approach();
+            });
+            $(this.refs.retract_button).mousedown(function() {
+                self.setState({ retract_button_pressed: true });
+                self.retract();
             });
             $(document).mouseup(function() {
                 if (self.state.approach_button_pressed || self.state.retract_button_pressed) {
@@ -111,6 +109,8 @@ define(["react"], function(React) {
             });
         },
         approach: function() {
+            motor.set_microstep(motor_settings_map[this.refs.speed_slider.state.slider_position].microstep);
+            motor.set_speed(motor_settings_map[this.refs.speed_slider.state.slider_position].speed);
             motor.set_direction(1);
             motor.set_state(1);
             motor.cmd_single_step();
@@ -121,6 +121,8 @@ define(["react"], function(React) {
             }, 50);
         },
         retract: function() {
+            motor.set_microstep(motor_settings_map[this.refs.speed_slider.state.slider_position].microstep);
+            motor.set_speed(motor_settings_map[this.refs.speed_slider.state.slider_position].speed);
             motor.set_direction(0);
             motor.set_state(1);
             motor.cmd_single_step();
@@ -135,9 +137,9 @@ define(["react"], function(React) {
         render: function() {
             return (
                 <div className="motor-control">
-                    <SpeedSlider />
-                    <button className="settings-drawer-button approach-button">Approach</button>
-                    <button className="settings-drawer-button retract-button">Retract</button>
+                    <SpeedSlider ref="speed_slider" />
+                    <button className="settings-drawer-button" ref="approach_button">Approach</button>
+                    <button className="settings-drawer-button" ref="retract_button">Retract</button>
                 </div>
             );
         }
