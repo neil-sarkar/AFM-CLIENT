@@ -228,19 +228,6 @@ define(["jquery", "react", "dom"], function($, React, ReactDOM) {
                 ctx.fillStyle = color;
             ctx.fillRect(x * pixel_size, y * pixel_size, pixel_size, pixel_size); // actually draw on the canvas
         },
-        dummy_data: function () {
-            this.change_pixel_size(size,size, function() {
-                var matrix = [];
-                for (var i = 0; i < 32; i++) {
-                    matrix[i] = new Array(64);
-                }
-                for (var i = 0; i < 32; i++)
-                    for (var j = 0; j < 64; j++)
-                        matrix[i][j] = i * j;
-
-                this.receive_data(matrix, 0, (32 -1)*(64 -1), 32 * 64, false);
-            }.bind(this));
-        },
         erase_data: function() {
             this.replaceState(this.getInitialState());
             var ctx = this.get_context();

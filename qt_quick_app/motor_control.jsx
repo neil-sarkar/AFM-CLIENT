@@ -89,24 +89,23 @@ define(["react"], function(React) {
             }
         },
         componentDidMount: function() {
-            var self = this;
             $(this.refs.approach_button).mousedown(function() {
-                self.setState({ approach_button_pressed: true });
-                self.approach();
-            });
+                setState({ approach_button_pressed: true });
+                approach();
+            }.bind(this));
             $(this.refs.retract_button).mousedown(function() {
-                self.setState({ retract_button_pressed: true });
-                self.retract();
-            });
+                this.setState({ retract_button_pressed: true });
+                this.retract();
+            }.bind(this));
             $(document).mouseup(function() {
-                if (self.state.approach_button_pressed || self.state.retract_button_pressed) {
-                    self.setState({
+                if (this.state.approach_button_pressed || this.state.retract_button_pressed) {
+                    this.setState({
                         approach_button_pressed: false,
                         retract_button_pressed: false
                     });
-                    self.stop_motor();
+                    this.stop_motor();
                 }
-            });
+            }.bind(this));
         },
         approach: function() {
             motor.set_microstep(motor_settings_map[this.refs.speed_slider.state.slider_position].microstep);
@@ -114,11 +113,10 @@ define(["react"], function(React) {
             motor.set_direction(1);
             motor.set_state(1);
             motor.cmd_single_step();
-            var self = this;
             setTimeout(function() {
-                if (self.state.approach_button_pressed)
+                if (this.state.approach_button_pressed)
                     motor.run_continuous();
-            }, 50);
+            }.bind(this), 50);
         },
         retract: function() {
             motor.set_microstep(motor_settings_map[this.refs.speed_slider.state.slider_position].microstep);

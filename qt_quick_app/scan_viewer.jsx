@@ -17,17 +17,6 @@ define(["react", "dom", "heatmap", "jsx!pages/line_profile", "jsx!pages/scan_hea
             console.log(line_profile_data.length);
             this.refs.line_profile.set_data(line_profile_data);
         },
-        dispatch_data: function(x, y, z, new_series) {
-            var self = this;
-            setTimeout(function() {
-                if (new_series)
-                    self.refs.line_profile.addSeries();
-                self.refs.heatmap.asyncAddPoint(x, y, z);
-            }, 0);
-            setTimeout(function() {
-                self.refs.line_profile.asyncAddPoint(x, z);
-            }, 0);
-        },
         handle_tooltip_select: function(series_index) {
             this.refs.line_profile.select_series_to_display(series_index);
         },

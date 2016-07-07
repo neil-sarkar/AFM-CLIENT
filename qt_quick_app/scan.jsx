@@ -250,9 +250,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
-        dummy_data: function (argument) {
-            // this.refs.heatmap.dummy_data();
-        },
         handle_heatmap_click: function(x, y) {
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
             this.refs.line_profile.set_data(current_data_set.forward_data.profile[y], current_data_set.reverse_data.profile[y]);

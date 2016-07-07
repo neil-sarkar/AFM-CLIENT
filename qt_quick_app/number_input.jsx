@@ -2,17 +2,16 @@ define(["react", "console", "underscore"], function(React, console, _) {
     var NumberInput = React.createClass({
         componentDidMount: function() {
             this.props.notify_signal.connect(this.update_value_from_backend_change);
-            var component = this;
             $(this.refs.input).keydown(function(e){
                 var key = e.which;
                 // we should update the value on enter (13), down arrow (40), and up arrow (38)
                 if (_.some([13, 40, 38], function(key_code) {return key == key_code;})) {
-                    component.send_value_to_backend();
+                    this.send_value_to_backend();
                 }
-            });
+            }.bind(this));
             $(this.refs.input).focusout(function() {
-                component.send_value_to_backend();
-            });
+                this.send_value_to_backend();
+            }.bind(this));
             this.setState({
                 value: this.validate_input_and_format(this.props.get_value())
             });
