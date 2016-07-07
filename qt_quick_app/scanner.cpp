@@ -25,6 +25,7 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     rev_offset_data = NULL;
     rev_phase_data = NULL;
     rev_error_data = NULL;
+    m_z_actuator_scale_factor = 1.0;
 
     connect(&watcher_fo, SIGNAL(finished()), this, SLOT(handleFinished_fo()));
     connect(&watcher_ro, SIGNAL(finished()), this, SLOT(handleFinished_ro()));
@@ -52,6 +53,10 @@ void Scanner::handleFinished_fe() {
 }
 void Scanner::handleFinished_re() {
     emit new_reverse_error_data(watcher_re.future());
+}
+
+void Scanner::update_z_actuator_scale_factor(double fine_z_pga_value) {
+    m_z_actuator_scale_factor = fine_z_pga_value / 20.0;
 }
 
 void Scanner::pause_state_machine() {
@@ -232,10 +237,10 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
             acc[4] += rev_error_data->raw_data[yy]->data[x];
             acc[5] += rev_phase_data->raw_data[yy]->data[x];
         }
-        current_fwd_offset_line_profile.append(acc[0]/y_averages);
+        current_fwd_offset_line_profile.append(z_fine_dac_to_nm(acc[0]/y_averages));
         current_fwd_error_line_profile.append(acc[1]/y_averages);
         current_fwd_phase_line_profile.append(acc[2]/y_averages);
-        current_rev_offset_line_profile.append(acc[3]/y_averages);
+        current_rev_offset_line_profile.append(z_fine_dac_to_nm(acc[3]/y_averages));
         current_rev_error_line_profile.append(acc[4]/y_averages);
         current_rev_phase_line_profile.append(acc[5]/y_averages);
     }
@@ -252,7 +257,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
     receive_data();
-    double z_amplitude, z_offset, z_phase, z_error;
+    double z_amplitude, z_offset, z_phase, z_error, z_offset_nm;
     qDebug() << "LINE" << m_y_index;
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back per point
 
@@ -271,6 +276,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
         z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
         z_phase = 0x8000 - bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         z_error = pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude;
+        z_offset_nm = z_fine_dac_to_nm(z_offset);
 
         if (scanning_forward) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
@@ -278,7 +284,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             fwd_error_data->append(m_x_index, m_y_index, z_error);
             current_fwd_offset_line_profile.append(m_x_index);
             current_fwd_offset_line_profile.append(m_y_index);
-            current_fwd_offset_line_profile.append(z_offset);
+            current_fwd_offset_line_profile.append(z_offset_nm);
             current_fwd_phase_line_profile.append(m_x_index);
             current_fwd_phase_line_profile.append(m_y_index);
             current_fwd_phase_line_profile.append(z_phase);
@@ -290,7 +296,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             rev_offset_data->append(x_coord, m_y_index, z_offset);
             rev_phase_data->append(x_coord, m_y_index, z_phase);
             rev_error_data->append(x_coord, m_y_index, z_error);
-            current_rev_offset_line_profile.prepend(z_offset);
+            current_rev_offset_line_profile.prepend(z_offset_nm);
             current_rev_offset_line_profile.prepend(m_y_index);
             current_rev_offset_line_profile.prepend(x_coord);
             current_rev_phase_line_profile.prepend(z_phase);
@@ -510,7 +516,12 @@ void Scanner::save_raw_data(QString save_folder) {
                 for (int x = 0; x < data_container->raw_data[y]->size; x++) {
                     out << QString::number(x) << " ";
                     out << QString::number(y) << " ";
-                    out << QString::number(data_container->raw_data[y]->data[x]);
+                    if (specific_file_names[i][0] == 'o') {
+                        // this is an offset. save value in nanometers
+                        out << QString::number(z_fine_dac_to_nm(data_container->raw_data[y]->data[x]));
+                    } else {
+                        out << QString::number(data_container->raw_data[y]->data[x]);
+                    }
                     out << "\n";
                 }
             }
@@ -550,6 +561,11 @@ int Scanner::get_delta_y_from_ratio() {
         default:
             return 0;
     }
+}
+
+double Scanner::z_fine_dac_to_nm(double dac_value) {
+    // TODO: de-magic-ify
+    return dac_value * DAC::SCALE_FACTOR * 3990.52 * m_z_actuator_scale_factor;
 }
 
 QString Scanner::base_file_name() {

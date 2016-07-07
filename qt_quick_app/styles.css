@@ -308,7 +308,7 @@ body {
 }
 
 .dropdown-option {
-    padding-left: 2%;
+    padding-left: 2ch;
     cursor: pointer;
 }
 

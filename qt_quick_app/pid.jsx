@@ -15,7 +15,11 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
 			return (
 				<div>
 					<div> Status: {this.state.enabled ? "Enabled" : "Disabled"}</div>
-					<button className="pid-enable-button settings-drawer-button" style={{position: 'relative'}} onClick={this.state.enabled ? pid.set_disabled : pid.set_enabled}>{this.state.enabled ? "Disable" : "Enable"}</button>
+                                        <button className="pid-enable-button settings-drawer-button"
+                                                style={{position: 'relative'}}
+                                                onClick={this.state.enabled ? pid.set_disabled : pid.set_enabled}>
+                                            {this.state.enabled ? "Disable" : "Enable"}
+                                        </button>
 				</div>
 			);
 		}

@@ -90,8 +90,8 @@ define(["react"], function(React) {
         },
         componentDidMount: function() {
             $(this.refs.approach_button).mousedown(function() {
-                setState({ approach_button_pressed: true });
-                approach();
+                this.setState({ approach_button_pressed: true });
+                this.approach();
             }.bind(this));
             $(this.refs.retract_button).mousedown(function() {
                 this.setState({ retract_button_pressed: true });

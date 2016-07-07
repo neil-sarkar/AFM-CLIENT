@@ -3,6 +3,7 @@ define(["react"], function(React) {
         componentDidMount: function() {
             for (var i = 0; i < this.props.qt_objects.length; i++)
                 this.props.qt_objects[i].value_changed.connect(this.update_value_from_backend_change);
+            this.props.is_line_changed.connect(this.update_value_from_backend_change);
         },
         getInitialState: function() {
             return {
@@ -14,9 +15,10 @@ define(["react"], function(React) {
                 min: 0,
                 max: 196,
                 step: 1,
+                is_line: function(){ return false; }
             };
         },
-        update_value_from_backend_change: function(value) {
+        update_value_from_backend_change: function() {
             // Get the max of the different values and display that
             var max_value = this.props.qt_objects[0].value();
             for (var i = 1; i < this.props.qt_objects.length; i++) {
@@ -50,7 +52,7 @@ define(["react"], function(React) {
                                         step={this.props.step} 
                                         value={this.state.value}
                                         onChange={this.update_value_from_slider_input}/>
-                    <span>  {Math.round(this.state.value)}%</span>
+                    <span>  {Math.round((this.props.is_line() ? 4 : 1)*this.state.value*14/10)/10} um</span>
                 </div>
             );
         }

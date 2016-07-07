@@ -99,6 +99,7 @@ public slots:
     void handleFinished_rp();
     void handleFinished_fe();
     void handleFinished_re();
+    void update_z_actuator_scale_factor(double fine_z_pga_value);
 
 private:
     QStateMachine m_state_machine;
@@ -113,6 +114,8 @@ private:
 
     int m_x_index;
     int m_y_index;
+
+    double m_z_actuator_scale_factor;
     
     void cmd_set_signal_generator();
     void cmd_start_scan();
@@ -126,6 +129,7 @@ private:
     bool is_scanning_forward();
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();
+    double z_fine_dac_to_nm(double dac_value);
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);

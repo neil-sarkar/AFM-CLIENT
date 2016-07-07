@@ -3,9 +3,9 @@ TARGET = "nGauge"
 QT += qml quick
 QT += serialport
 QT += concurrent
-QT += testlib
 QT += network webkitwidgets widgets
 QT += script
+
 CONFIG += c++11
 
 DESTDIR = $$PWD
@@ -77,3 +77,5 @@ HEADERS += \
 
 DISTFILES += \
     test.html
+
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT

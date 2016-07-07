@@ -36,8 +36,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			// }.bind(this);
 		},
 		handle_new_data: function(approacher_state, approach_complete) {
-			approacher_state = parseInt(approacher_state);
-			console.log(approach_complete);
+                        approacher_state = parseInt(approacher_state);
+                        var approach_in_progress = (approacher_state != 0);
 			this.setState({
 				status: approacher_state,
 			});
@@ -50,14 +50,13 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						this.allow_dangerous_user_input();
                                         }.bind(this), 300)
 				});
-			}
-			if (this.state.approach_complete && approacher_state == 1) {
+                        } else if (this.state.approach_complete && approach_in_progress) {
 				this.setState({
 					approach_complete: false
 				});
 			}
 			this.setState({
-				approach_in_progress: (approacher_state !== 0)
+                                approach_in_progress: approach_in_progress
 			}, function (argument) {
 				if (!this.state.approach_in_progress) {
 					clearInterval(warning_interval);
@@ -137,7 +136,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 											data_update_signal={adc_z_1.value_changed}
 											prompt_read={adc_z_1.read}
 											num_points_displayed={Constants.Approach_Num_Points_Displayed}
-											plotline_default={pid.setpoint}
+                                                                                        plotline_default={pid.setpoint()}
 											plotline_update_signal={pid.setpoint_changed}
 											poll_rate={Constants.Approach_Poll_Rate}
 											max_value={3.3} />
