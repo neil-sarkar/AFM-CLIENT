@@ -7,50 +7,48 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
         },
         renderChart: function() {
             var node = this.refs.lineProfileNode;
-            jQuery(function ($) {
-                $(node).highcharts({
-                    chart: {
-                        plotBackgroundColor: '#EFEFEF',
-                        type: 'line',
-                        zoomType: 'x',
-                    },
+            $(node).highcharts({
+                chart: {
+                    plotBackgroundColor: '#EFEFEF',
+                    type: 'line',
+                    zoomType: 'x',
+                },
+                title: {
+                    text: "Line Profile"
+                },
+                tooltip: { crosshairs: [true, true] },
+                xAxis: {
+                    type: 'linear',
+                },
+                yAxis: {
                     title: {
-                        text: "Line Profile"
+                        text: 'Amplitude (V)'
                     },
-                    tooltip: { crosshairs: [true, true] },
-                    xAxis: {
-                        type: 'linear',
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Amplitude (V)'
-                        },
-                    },
-                    legend: {
-                        layout: 'vertical',
-                        align: 'left',
-                        verticalAlign: 'top',
-                        borderWidth: 0,
-                        floating: true,
-                        y: 36,
-                        x: 53
-                    },
-                    plotOptions: {
-                        series: {
-                            animation: false,
-                            marker: {
-                                enabled: false
-                            }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    borderWidth: 0,
+                    floating: true,
+                    y: 36,
+                    x: 53
+                },
+                plotOptions: {
+                    series: {
+                        animation: false,
+                        marker: {
+                            enabled: false
                         }
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    series: [],
-                });
+                    }
+                },
+                exporting: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                series: [],
             });
         },
         asyncAddPoint: function(y, z) {

@@ -2,7 +2,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
     var ForceCurve = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode;
-            jQuery(function ($) {
             $(node).highcharts({
                 chart: {
                     plotBackgroundColor: Constants.Graph_Background_Color,
@@ -49,7 +48,6 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 },
                 series: [],
             });
-        });
         },
         add_series: function() {
             return {

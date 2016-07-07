@@ -18,10 +18,9 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             };
         },
         init_chart: function() {
-            var self = this;
             var chart = new CanvasJS.Chart(this.refs.chartNode, {
                 title: {
-                    text: self.props.chart_title,
+                    text: this.props.chart_title,
                     fontFamily: Constants.System_Font,
                     fontSize: Constants.Approach_Amplitude_Font_Size,
                     padding: 5
@@ -29,12 +28,12 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                 data: [{
                     type: "line",
                     color: Constants.Approach_Amplitude_Data_Color,
-                    dataPoints: self.state.data,
+                    dataPoints: this.state.data,
                     markerType: "none",
                 }],
                 axisY: {
                     stripLines: [{
-                        value: self.props.plotline_default,
+                        value: this.props.plotline_default,
                         color: Constants.Approach_Amplitude_Strip_Line_Color,
                         lineDashType: "dash",
                         label: "Setpoint",
@@ -48,7 +47,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                     }],
                     labelFontFamily: Constants.System_Font,
                     labelFontSize: 11,
-                    maximum: self.props.max_value,
+                    maximum: this.props.max_value,
                     gridColor: Constants.Graph_Grid_Color,
                     gridThickness: 1,
                     tickLength: 0,

@@ -51,17 +51,14 @@ define(["react", "console", "underscore"], function(React, console, _) {
             return Math.round(value * Math.pow(10, this.rounding_factor())) / Math.pow(10, this.rounding_factor());
         },
         update_value_from_backend_change: function(value) {
-            var that = this;
             this.setState({
-                value: that.validate_input_and_format(value)
+                value: this.validate_input_and_format(value)
             });
         },
         render_text: function(e) {
-            var text_to_render = e.target.value;
             this.setState({
-                value: text_to_render
+                value: e.target.value
             });
-            // this.send_value_to_backend();
         },
         validate_input_and_format: function(num) {
             num = this.round(num);
@@ -70,14 +67,7 @@ define(["react", "console", "underscore"], function(React, console, _) {
             return num.toFixed(this.rounding_factor());
         },
         send_value_to_backend: function() {
-            var that = this;
-            setTimeout( function() {
-                var new_value = that.validate_input_and_format(parseFloat(that.refs.input.value));
-                that.setState({
-                    value: new_value
-                });
-                that.props.set_value(parseFloat(new_value));
-            }, 100); // this is in a settimeout to order to let the input value actually change
+            this.props.set_value(parseFloat(this.state.value));
         },
         render: function() {
             return (

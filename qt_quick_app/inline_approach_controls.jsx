@@ -1,5 +1,5 @@
-        define(["react", "jsx!pages/motor_control", "jsx!pages/dac_controller", "jsx!pages/pid"], function(React, MotorControl, DACController, PIDControl) {
-        var InlineScanControls = React.createClass({
+define(["react", "jsx!pages/motor_control", "jsx!pages/dac_controller", "jsx!pages/pid"], function(React, MotorControl, DACController, PIDControl) {
+        var InlineApproachControls = React.createClass({
                 render: function() {
                         return (
                                 <div className="top-row">
@@ -10,5 +10,5 @@
                         )
                 }
         });
-        return InlineScanControls;
-    });
+        return InlineApproachControls;
+});

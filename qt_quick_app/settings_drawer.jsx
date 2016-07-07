@@ -30,7 +30,6 @@
 			$("#settings-drawer-wrapper").css('visibility', 'hidden');
 		},
                 render: function() {
-                        var self = this;
 				return (
                                             <div id="settings-drawer-wrapper">
                                                     <p className="setting-section-name">Motor Control</p>

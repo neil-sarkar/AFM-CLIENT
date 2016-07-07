@@ -36,20 +36,19 @@ define(["react"], function(React) {
             motor.speed_changed.connect(this.update_value_from_backend_change);
         },
         update_value_from_slider_input: function(e) {
-            var slider_input = parseInt(e.target.value);
-            var speed = motor_settings_map[slider_input].speed;
-            var microstep = motor_settings_map[slider_input].microstep;
-            var slider_position = this.calculate_slider_position(speed, microstep);
+            var slider_position = parseInt(e.target.value);
+            var speed = motor_settings_map[slider_position].speed;
+            var microstep = motor_settings_map[slider_position].microstep;
             this.setState({
                 speed: speed,
-                slider_position: slider_position,
+                slider_position: slider_position
             }, function() {
                 motor.set_microstep(microstep);
                 motor.set_speed(speed);
             });
         },
         update_value_from_backend_change: function(speed) {
-            slider_position = this.calculate_slider_position(speed, motor.microstep());
+            var slider_position = this.calculate_slider_position(speed, motor.microstep());
             this.setState({
                 speed: speed,
                 slider_position: slider_position,

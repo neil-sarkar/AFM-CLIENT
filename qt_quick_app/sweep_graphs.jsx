@@ -1,12 +1,10 @@
 define(["jquery", "react", "dom", "highcharts", "console", "constants"], function($, React, ReactDOM, highcharts, console, Constants) {
     var SweepGraph = React.createClass({
         renderChart: function() {
-            var component = this;
             var node = this.refs.chartNode;
             var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
             var dataSeries = this.state.model;
             var series = this.generate_initial_series();
-            jQuery(function ($) {
             $(node).highcharts({
                 chart: {
                     plotBackgroundColor: Constants.Graph_Background_Color,
@@ -15,7 +13,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                     zoomType: 'x',
                 },
                 title: {
-                    text: component.props.title
+                    text: this.props.title
                 },
                 tooltip: { crosshairs: [true, true] },
                 xAxis: {
@@ -37,7 +35,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                 },
                 yAxis: {
                     title: {
-                        text: component.props.ylabel
+                        text: this.props.ylabel
                     },
                 },
                 legend: {
@@ -58,17 +56,16 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                                     // sync the tooltips of all sibling graphs
                                     var index = this.index;
                                     var series = this.series._i;
-                                    component.props.emit_tooltip(index, series, e);
+                                    this.props.emit_tooltip(index, series, e);
                                 },
                                 click: function(e) {
-                                    component.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
-                                },
-                           }
-                       },
+                                    this.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
+                                }
+                            }
+                        }
                     }
                 }
             });
-        });
         },
         generate_initial_series : function() {
             var series_skeleton = {

@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QTimer>
 #include <QTextCodec>
-#include <QTest>
 #include <assert.h>
 #include "globals.h"
 #include "constants.h"
