@@ -12,7 +12,7 @@ define(["react"], function(React) {
         getDefaultProps: function() {
             return {
                 min: 0,
-                max: 140,
+                max: 196,
                 step: 1,
             };
         },
@@ -24,7 +24,7 @@ define(["react"], function(React) {
             }
             
             this.setState({
-                value: max_value
+                value: max_value * max_value / 100
             });
         },
         update_value_from_slider_input: function(e) {
@@ -34,7 +34,9 @@ define(["react"], function(React) {
                     value: new_value
                 });
                 for (var i = 0; i < this.props.qt_objects.length; i++) {
-                    this.props.qt_objects[i].set_value(new_value); // Set all the values to value of the slider
+                    // Set all the values to value of the slider
+                    // Use sqrt in order to linearize the scale
+                    this.props.qt_objects[i].set_value(Math.sqrt(new_value*100));
                 }
             }
         },
@@ -48,7 +50,7 @@ define(["react"], function(React) {
                                         step={this.props.step} 
                                         value={this.state.value}
                                         onChange={this.update_value_from_slider_input}/>
-                    <span>  {this.state.value}%</span>
+                    <span>  {Math.round(this.state.value)}%</span>
                 </div>
             );
         }
