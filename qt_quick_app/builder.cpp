@@ -39,7 +39,7 @@ AFM* Builder::build_afm() {
     // PGA
     peripheral_collection pga_collection;
     for (int i = 0; i < p.pga_array.length(); i++) {
-        pga_collection[p.pga_array[i].name] = new PGA(p.pga_array[i].id);
+        pga_collection[p.pga_array[i].name] = new PGA(p.pga_array[i].id, p.pga_array[i].default_value);
     }
 
     PID* pid = new PID();

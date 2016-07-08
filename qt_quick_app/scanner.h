@@ -130,6 +130,7 @@ private:
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();
     double z_fine_dac_to_nm(double dac_value);
+    void normalize_offset_line_profiles(void);
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);

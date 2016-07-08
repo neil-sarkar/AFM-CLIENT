@@ -71,10 +71,10 @@ void Scanner::resume_state_machine() {
 void Scanner::set_settings() {
     settings.beginGroup(settings_group_name);
     set_num_averages(settings.contains("num_averages") ? settings.value("num_averages").toInt() : 5);
-    set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 32);
-    set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 2);
-    set_num_columns(settings.contains("num_columns") ? settings.value("num_columns").toInt() : 16);
-    set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 16);
+    set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 256);
+    set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 50);
+    set_num_columns(settings.contains("num_columns") ? settings.value("num_columns").toInt() : 256);
+    set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 256);
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
@@ -245,6 +245,8 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
         current_rev_phase_line_profile.append(acc[5]/y_averages);
     }
 
+    normalize_offset_line_profiles();
+
     emit new_forward_offset_profile(current_fwd_offset_line_profile);
     emit new_forward_error_profile(current_fwd_error_line_profile);
     emit new_forward_phase_profile(current_fwd_phase_line_profile);
@@ -310,6 +312,8 @@ void Scanner::callback_step_scan(QByteArray payload) {
     }
     // This condition checks to see if we should send data (should be after every line is done - fwd and rev)
     if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
+        normalize_offset_line_profiles();
+
         QFuture<QString> future;
         if(!watcher_fo.isRunning()) {
             future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
@@ -566,6 +570,28 @@ int Scanner::get_delta_y_from_ratio() {
 double Scanner::z_fine_dac_to_nm(double dac_value) {
     // TODO: de-magic-ify
     return dac_value * DAC::SCALE_FACTOR * 3990.52 * m_z_actuator_scale_factor;
+}
+
+void Scanner::normalize_offset_line_profiles(void) {
+    QVariant minimum = z_fine_dac_to_nm(DAC::RESOLUTION);
+    for (int i = 2; i < current_fwd_offset_line_profile.size(); i += 3) {
+        if (current_fwd_offset_line_profile[i] < minimum) {
+            minimum = current_fwd_offset_line_profile[i];
+        }
+    }
+    for (int i = 2; i < current_fwd_offset_line_profile.size(); i += 3) {
+        current_fwd_offset_line_profile[i] = current_fwd_offset_line_profile[i].toDouble() - minimum.toDouble();
+    }
+
+    minimum = z_fine_dac_to_nm(DAC::RESOLUTION);
+    for (int i = 2; i < current_rev_offset_line_profile.size(); i += 3) {
+        if (current_rev_offset_line_profile[i] < minimum) {
+            minimum = current_rev_offset_line_profile[i];
+        }
+    }
+    for (int i = 2; i < current_rev_offset_line_profile.size(); i += 3) {
+        current_rev_offset_line_profile[i] = current_rev_offset_line_profile[i].toDouble() - minimum.toDouble();
+    }
 }
 
 QString Scanner::base_file_name() {

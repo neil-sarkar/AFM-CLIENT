@@ -80,8 +80,8 @@ void PID::set_disabled() {
 
 void PID::set_settings() {
     settings.beginGroup(settings_group_name);
-    set_proportional(settings.contains("proportional") ? settings.value("proportional").toFloat() : 0.1);
-    set_integral(settings.contains("integral") ? settings.value("integral").toFloat() : 200);
+    set_proportional(settings.contains("proportional") ? settings.value("proportional").toFloat() : 5);
+    set_integral(settings.contains("integral") ? settings.value("integral").toFloat() : 5000);
     set_derivative(settings.contains("derivative") ? settings.value("derivative").toFloat() : 0);
     set_setpoint(settings.contains("setpoint") ? settings.value("setpoint").toFloat() : 0.7);
     settings.endGroup();

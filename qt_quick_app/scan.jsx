@@ -198,6 +198,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 target.parent().addClass("selected-scan-view");
             }
 
+            if (image_name.charAt(8) == 'O') {
+                // offset
+                this.refs.line_profile.set_y_label("Offset (nm)", true);
+            } else {
+                // generic
+                this.refs.line_profile.set_y_label("Magnitude", true);
+            }
+
             this.setState({current_image: image_name}, function() {
                 for(i=0; i<scan_views.length; i++) {
                     if (scan_views[i].name == this.state.current_image) {
@@ -322,14 +330,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     notify_signal={scanner.num_rows_changed}
                                     get_value={scanner.num_rows}
                                     title="Number of lines"/>
-                            <NumberInput value_type="scan"
-                                        name="Number of averages taken at each point"
-                                        min={0}
-                                        max={255} 
-                                        step={1} 
-                                        notify_signal={scanner.num_averages_changed} 
-                                        get_value={scanner.num_averages}
-                                        set_value={scanner.set_num_averages} />
                             <NumberInput value_type="scan" 
                                         name="Time spent at each point (ms)"
                                         min={0}

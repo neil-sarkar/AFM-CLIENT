@@ -22,7 +22,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                 },
                 yAxis: {
                     title: {
-                        text: 'Amplitude (V)'
+                        text: 'Offset (nm)'
                     },
                 },
                 legend: {
@@ -107,6 +107,9 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
             }
             if(forward_data != null) this.state.chart.series[0].setData(forward_data, false);
             if(reverse_data != null) this.state.chart.series[1].setData(reverse_data, true, {duration: 190});
+        },
+        set_y_label: function(label, redraw) {
+            this.state.chart.yAxis[0].setTitle({text: label}, redraw);
         },
         componentDidMount: function() {
             this.renderChart();

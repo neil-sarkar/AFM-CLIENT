@@ -3,8 +3,9 @@
 #include "constants.h"
 #include <math.h>
 
-PGA::PGA(qint8 id) {
+PGA::PGA(qint8 id, double default_value) {
     m_id = id;
+    m_default_value = default_value;
 }
 
 void PGA::set_value(double value) {
@@ -19,7 +20,7 @@ void PGA::set_value(double value) {
 
 void PGA::set_settings() {
     settings.beginGroup(settings_group_name);
-    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : 0);
+    set_value(settings.contains(QString::number(m_id)) ? settings.value(QString::number(m_id)).toDouble() : m_default_value);
     settings.endGroup();
 }
 
