@@ -117,7 +117,6 @@ void ReceiveWorker::handle_hardware_reset() {
     port_writing_command = false;
     mutex.unlock();
     flush();
-    emit prompt_dac_table_reset();
 }
 
 void ReceiveWorker::handle_asynchronous_message() {

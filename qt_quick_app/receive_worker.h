@@ -20,7 +20,6 @@ signals:
     void mcu_reset_message_received();
     void receive_returned();
     void auto_approach_info_received(QByteArray);
-    void prompt_dac_table_reset();
 
 public slots:
     void enqueue_command(CommandNode*);

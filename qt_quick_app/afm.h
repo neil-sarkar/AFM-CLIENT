@@ -33,7 +33,6 @@ class AFM : public AFMObject
         Scanner* scanner;
         ForceCurveGenerator* force_curve_generator;
 
-        void callback_set_dac_table(QByteArray buffer);
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
         Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
@@ -48,31 +47,27 @@ class AFM : public AFMObject
 
     signals:
         void command_generated(CommandNode*);
-        void dac_table_set();
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
         
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
-        void setting_dac_table();
+        void initializing();
         void disconnected();
 
     public slots:
         void init();
-        void set_dac_table();
 
     private:
         // typedefs
         callback_return_type bind(void (AFM::*method)(QByteArray));
         typedef void (AFM::*callback_type)(QByteArray);
 
-        void cmd_set_dac_table(int block_number);
         void set_save_folder(QString);
         void set_settings();
         double voltage_resistance_equation(double);
 
-        int dac_table_page_count;
         bool is_initializing;
         QString m_save_folder;
         static const QString settings_group_name;

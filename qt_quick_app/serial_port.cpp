@@ -28,10 +28,11 @@ bool SerialPort::auto_connect() {
     if (!connected_ports.size()) // if there are no ports available
         return false;
     for (int i = 0; i < connected_ports.size(); i++){ // iterate through the ports
-//            if (connected_ports[i].manufacturer() == AFM_Port_Name) // check if the port is the AFM
         qDebug() << connected_ports[i].portName();
         qDebug() << connected_ports[i].manufacturer();
-        return open(connected_ports[i].portName(), AFM_Baud_Rate);
+        if (open(connected_ports[i].portName(), AFM_Baud_Rate)) {
+            return true;
+        }
     }
     return false;
 }
@@ -55,9 +56,7 @@ void SerialPort::reset_mcu() {
     emit resetting_mcu(); // this connects to the flushing of the buffers
     // super important, because the UI creation will try to call a bunch of setters
     QByteArray message;
-    message += 'M';
-    message += 'M';
-    message += 'M';
+    message += "MMM";
     write_bytes(message);
 }
 
@@ -102,10 +101,10 @@ void SerialPort::on_ready_read() {
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
     qDebug() << "Checking connection";
     char temp_buffer[1]; // Create a buffer that will store the first char of data that the serial port has waiting for us
-    if (port->peek(temp_buffer, sizeof(temp_buffer)) == -1) // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
+    if (!port->isOpen() || port->peek(temp_buffer, sizeof(temp_buffer)) == -1) // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
         auto_connect(); // call auto_connect() since we're not connected
     else {
-       on_ready_read(); // ensure that any bytes missed by the last read operation get processed
+        on_ready_read(); // ensure that any bytes missed by the last read operation get processed
     }
 }
 
@@ -139,7 +138,6 @@ void SerialPort::execute_command(CommandNode* command_node) {
     emit message_sent(command_node);
 }
 
-const QString SerialPort::AFM_Port_Name = "FTDI";
 const int SerialPort::AFM_Baud_Rate = 115200;
 const int SerialPort::AFM_Success = 0;
 const int SerialPort::AFM_Fail = -1;

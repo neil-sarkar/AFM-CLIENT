@@ -4,7 +4,7 @@ define(["react", "dom"], function(React, ReactDOM) {
             enter_condition: afm.disconnected, // this won't do anything for now, 
             // because we never check to see if our connection is still live
             text: "Waiting for serial connection...",
-            transition_condition: afm.setting_dac_table,
+            transition_condition: afm.initializing,
         },
         {
             text: "Initializing hardware...",
