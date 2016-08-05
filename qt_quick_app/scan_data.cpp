@@ -30,14 +30,6 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     // Initialize the image to be all white
     m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
     m_image.fill(Qt::white);
-    QPainter p;
-    p.begin(&m_image);
-    p.drawText(0,0,"hello");
-    // for (int i = 0; i < m_num_columns; i++) {
-    //     for (int j = 0; j < m_num_rows; j++) {
-    //         m_image.setPixel(i, j, qRgb(255,255,255));
-    //     }
-    // }
     m_current_size = 0;
 }
 

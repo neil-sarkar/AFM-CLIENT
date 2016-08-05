@@ -46,7 +46,6 @@ class AFM : public AFMObject
         static const int DAC_Table_Block_Size;
 
     signals:
-        void command_generated(CommandNode*);
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);

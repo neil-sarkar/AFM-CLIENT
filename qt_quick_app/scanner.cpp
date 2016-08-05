@@ -544,9 +544,9 @@ int Scanner::get_delta_x_from_ratio() {
         case 1:
         case 2:
             return 1;
-        case 3:
-            return 3;
         case 4:
+            return 3;
+        case 8:
             return 7;
         default:
             return 0;
@@ -559,8 +559,8 @@ int Scanner::get_delta_y_from_ratio() {
         case 1:
             return 0;
         case 2:
-        case 3:
         case 4:
+        case 8:
             return 1;
         default:
             return 0;

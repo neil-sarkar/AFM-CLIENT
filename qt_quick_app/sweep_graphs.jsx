@@ -5,6 +5,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
             var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
             var dataSeries = this.state.model;
             var series = this.generate_initial_series();
+            var self = this;
             $(node).highcharts({
                 chart: {
                     plotBackgroundColor: Constants.Graph_Background_Color,
@@ -56,10 +57,10 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                                     // sync the tooltips of all sibling graphs
                                     var index = this.index;
                                     var series = this.series._i;
-                                    this.props.emit_tooltip(index, series, e);
+                                    self.props.emit_tooltip(index, series, e);
                                 },
                                 click: function(e) {
-                                    this.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
+                                    self.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
                                 }
                             }
                         }
