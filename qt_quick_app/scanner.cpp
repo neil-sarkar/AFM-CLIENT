@@ -26,6 +26,8 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     rev_phase_data = NULL;
     rev_error_data = NULL;
     m_z_actuator_scale_factor = 1.0;
+    m_x_actuator_scale_factor = 1.0;
+    m_y_actuator_scale_factor = 1.0;
 
     connect(&watcher_fo, SIGNAL(finished()), this, SLOT(handleFinished_fo()));
     connect(&watcher_ro, SIGNAL(finished()), this, SLOT(handleFinished_ro()));
@@ -57,6 +59,14 @@ void Scanner::handleFinished_re() {
 
 void Scanner::update_z_actuator_scale_factor(double fine_z_pga_value) {
     m_z_actuator_scale_factor = fine_z_pga_value / 20.0;
+}
+
+void Scanner::update_x_actuator_scale_factor(double fine_x_1_pga_value) {
+    m_x_actuator_scale_factor = fine_x_1_pga_value * fine_x_1_pga_value * 0.0001;
+}
+
+void Scanner::update_y_actuator_scale_factor(double fine_y_1_pga_value) {
+    m_y_actuator_scale_factor = fine_y_1_pga_value * fine_y_1_pga_value * 0.0001;
 }
 
 void Scanner::pause_state_machine() {
@@ -511,22 +521,50 @@ void Scanner::save_raw_data(QString save_folder) {
         }
     }
 
+    int x_scale = m_num_rows/m_num_columns;
+    int y_scale = m_num_columns/m_num_rows;
+    if (x_scale == 0) x_scale = 1;
+    if (y_scale == 0) y_scale = 1;
+
     for (int i = 0; i < full_paths.length(); i++) {
         ScanData* data_container = scan_data[i];
         QFile file(full_paths[i]);
         if (file.open(QIODevice::Append)) {
-            QTextStream out(&file);   // we will serialize the data into the file
+            // Serialize header data
+            QTextStream outtxt(&file);
+            outtxt << "Gwyddion Simple Field 1.0\n";
+            outtxt << "XRes = " << QString::number(m_num_columns) << "\n";
+            outtxt << "YRes = " << QString::number(m_num_rows) << "\n";
+            outtxt << "XReal = " << QString::number(x_index_to_m(m_num_columns)) << "\n";
+            outtxt << "YReal = " << QString::number(y_index_to_m(m_num_rows)) << "\n";
+            outtxt << "XYUnits = m\n";
+            switch (specific_file_names[i][0].unicode()) {
+                case 'o':
+                    outtxt << "ZUnits = m\n";
+                break;
+                case 'p':
+                case 'e':
+                    outtxt << "ZUnits = V\n";
+                break;
+            }
+            outtxt << "Title = " << m_base_file_name << " " << specific_file_names[i] << "\n";
+            outtxt << "Date = " << QDateTime::currentDateTime().toString() << "\n";
+            outtxt << "DwellTime = " << QString::number(m_dwell_time) << "\n";
+            outtxt.flush();
+
+            // Serialize binary data
+            QDataStream outraw(&file);
+            outraw.setFloatingPointPrecision(QDataStream::SinglePrecision);
+            outraw.setByteOrder(QDataStream::LittleEndian);
+            outraw.writeRawData("\0\0\0\0", 4 - (file.pos()%4));
             for (int y = 0; y < m_num_rows; y++) {
                 for (int x = 0; x < data_container->raw_data[y]->size; x++) {
-                    out << QString::number(x) << " ";
-                    out << QString::number(y) << " ";
                     if (specific_file_names[i][0] == 'o') {
-                        // this is an offset. save value in nanometers
-                        out << QString::number(z_fine_dac_to_nm(data_container->raw_data[y]->data[x]));
+                        // this is an offset. save value in meters
+                        outraw << z_fine_dac_to_nm(data_container->raw_data[y]->data[x]) * 1e-9;
                     } else {
-                        out << QString::number(data_container->raw_data[y]->data[x]);
+                        outraw << data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR;
                     }
-                    out << "\n";
                 }
             }
         }
@@ -570,6 +608,14 @@ int Scanner::get_delta_y_from_ratio() {
 double Scanner::z_fine_dac_to_nm(double dac_value) {
     // TODO: de-magic-ify
     return dac_value * DAC::SCALE_FACTOR * 3990.52 * m_z_actuator_scale_factor;
+}
+
+double Scanner::x_index_to_m(int x) {
+    return (double)x / m_num_columns * 14e-6 * m_x_actuator_scale_factor * ((m_ratio == 1) ? 4 : 1);
+}
+
+double Scanner::y_index_to_m(int y) {
+    return (double)((m_ratio == 1) ? 1 : y) / m_num_rows * 14e-6 * m_y_actuator_scale_factor;
 }
 
 void Scanner::normalize_offset_line_profiles(void) {

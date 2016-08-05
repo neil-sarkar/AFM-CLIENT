@@ -90,6 +90,8 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(send_worker, SIGNAL(command_dequeued(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
     QObject::connect(receive_worker, SIGNAL(resend_command(CommandNode*)), serial_port, SLOT(execute_command(CommandNode*)));
     QObject::connect((PGA*)afm->PGA_collection[QString("fine_z")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_z_actuator_scale_factor(double)));
+    QObject::connect((PGA*)afm->PGA_collection[QString("x_1")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_x_actuator_scale_factor(double)));
+    QObject::connect((PGA*)afm->PGA_collection[QString("y_1")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_y_actuator_scale_factor(double)));
 
     // Internal object connections
     QObject::connect(receive_worker, SIGNAL(response_byte_received()), receive_worker, SLOT(build_working_response()));
