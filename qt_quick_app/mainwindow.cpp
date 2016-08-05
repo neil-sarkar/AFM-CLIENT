@@ -25,6 +25,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     addJSObject(&m_force_curve_page);
     m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
     m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
+    m_force_curve_page.mainFrame()->load(QUrl("qrc/html/force_curve.html"));
     setPage(&m_welcome_page);
     setMinimumSize(640, 480);
 
@@ -46,7 +47,7 @@ void MainWindow::set_global_web_settings() {
 MainWindow::MainWindow(CustomPage* custom_page) {
     setPage(custom_page);
     set_global_web_settings();
-    QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
+    //QObject::connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject()));
 }
 
 void MainWindow::addJSObject(CustomPage* page) {

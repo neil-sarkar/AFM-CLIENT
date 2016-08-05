@@ -1,4 +1,4 @@
-define(["jquery", "react", "dom", "highcharts", "console"], function($, React, ReactDOM, highcharts, console) {
+define(["jquery", "react", "dom", "highcharts", "console", "constants"], function($, React, ReactDOM, highcharts, console, Constants) {
     var ForceCurve = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode;

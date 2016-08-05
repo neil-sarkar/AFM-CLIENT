@@ -70,7 +70,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
      QObject::connect(afm->sweeper, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
      QObject::connect(afm->sweeper->dds, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
      QObject::connect(afm->approacher, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
-     QObject::connect(afm->force_curve_generator, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)));
+     QObject::connect(afm->force_curve_generator, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
      wire_hash_command_generated(afm->ADC_collection, send_worker);
      wire_hash_command_generated(afm->DAC_collection, send_worker);
      wire_hash_command_generated(afm->PGA_collection, send_worker);

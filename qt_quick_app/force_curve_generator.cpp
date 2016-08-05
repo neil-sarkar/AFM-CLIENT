@@ -20,9 +20,10 @@ void ForceCurveGenerator::clear_buffers() {
 }
 
 void ForceCurveGenerator::cmd_generate_force_curve() {
+    qDebug() << "Generating force curve...";
     emit command_generated(new CommandNode(command_hash[AFM_Generate_Force_Curve], bind(&ForceCurveGenerator::callback_generate_force_curve)));
     mutex.lock();
-    is_approaching = true;
+    //is_approaching = true;
     mutex.unlock();
 }
 
@@ -30,18 +31,18 @@ void ForceCurveGenerator::callback_generate_force_curve(QByteArray return_bytes)
     clear_buffers();
     int half_resp_length = return_bytes.length() / 2;
     for (int i = 0; i < half_resp_length; i += 4) {
-        QVariant z_value = double(Initial_Z - Step_Size * i/4) * DAC::SCALE_FACTOR;
+        QVariant z_value = double(Initial_Z - Step_Size * i/4) * ADC::SCALE_FACTOR;
         m_approaching_amplitude.append(z_value);
-        m_approaching_amplitude.append(bytes_to_word(return_bytes.at(i), return_bytes.at(i+1)) * DAC::SCALE_FACTOR);
+        m_approaching_amplitude.append(bytes_to_word(return_bytes.at(i), return_bytes.at(i+1)) * ADC::SCALE_FACTOR);
         m_approaching_phase.append(z_value);
-        m_approaching_phase.append(qRadiansToDegrees(bytes_to_word(return_bytes.at(i+2), return_bytes.at(i+3)) * DAC::SCALE_FACTOR));
+        m_approaching_phase.append(qRadiansToDegrees(bytes_to_word(return_bytes.at(i+2), return_bytes.at(i+3)) * ADC::SCALE_FACTOR));
 
         int j = half_resp_length + i;
-        z_value = double(Step_Size * i/4) * DAC::SCALE_FACTOR;
+        z_value = double(Step_Size * i/4) * ADC::SCALE_FACTOR;
         m_retracting_amplitude.append(z_value);
-        m_retracting_amplitude.append(bytes_to_word(return_bytes.at(j), return_bytes.at(j+1)) * DAC::SCALE_FACTOR);
+        m_retracting_amplitude.append(bytes_to_word(return_bytes.at(j), return_bytes.at(j+1)) * ADC::SCALE_FACTOR);
         m_retracting_phase.append(z_value);
-        m_retracting_phase.append(qRadiansToDegrees(bytes_to_word(return_bytes.at(j+2), return_bytes.at(j+3)) * DAC::SCALE_FACTOR));
+        m_retracting_phase.append(qRadiansToDegrees(bytes_to_word(return_bytes.at(j+2), return_bytes.at(j+3)) * ADC::SCALE_FACTOR));
     }
     emit new_approaching_amplitude_data(m_approaching_amplitude);
     emit new_approaching_phase_data(m_approaching_phase);
