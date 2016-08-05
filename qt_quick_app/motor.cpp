@@ -9,7 +9,8 @@ Motor::Motor() {
     m_direction = 0;
     m_state = 0;
     m_microstep = 0;
-    timeout_timer = NULL;
+    timeout_timer.setSingleShot(true);
+    timeout_timer.setInterval(Motor::Timeout_Milliseconds);
 }
 
 int Motor::speed() {
@@ -56,6 +57,15 @@ void Motor::set_microstep(int microstep) {
     cmd_set_micro_step();
 }
 
+void Motor::cancel_timeout_timer(bool sleep) {
+    if (timeout_timer.isActive()) {
+        timeout_timer.stop();
+    }
+    if (sleep) {
+        cmd_set_state_asleep();
+    }
+}
+
 void Motor::init() {
     cmd_set_direction();
     cmd_set_speed();
@@ -68,17 +78,18 @@ void Motor::run_continuous() {
 }
 
 void Motor::cmd_run_continuous() {
+    cancel_timeout_timer(false);
     emit command_generated(new CommandNode(command_hash[Motor_Run_Continuous]));
-    if (timeout_timer)
-        timeout_timer->stop();
 }
 
 void Motor::cmd_stop_continuous() {
-    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous], bind(&Motor::reset_timeout_timer)));
+    emit command_generated(new CommandNode(command_hash[Motor_Stop_Continuous]));
+    reset_timeout_timer();
 }
 
 void Motor::cmd_single_step() {
-    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step], bind(&Motor::reset_timeout_timer)));
+    emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step]));
+    reset_timeout_timer();
 }
 
 void Motor::cmd_set_speed() {
@@ -116,14 +127,9 @@ void Motor::cmd_set_micro_step() {
     emit command_generated(new CommandNode(command_hash[Motor_Set_Microstep], payload));
 }
 
-void Motor::reset_timeout_timer(QByteArray result) {
-    Q_UNUSED(result);
-    if (timeout_timer)
-        timeout_timer->stop();
-    timeout_timer = new QTimer();
-    timeout_timer->setSingleShot(true);
-    QObject::connect(timeout_timer, SIGNAL(timeout()), this, SLOT(cmd_set_state_asleep()));
-    timeout_timer->start(Motor::Timeout_Milliseconds);
+void Motor::reset_timeout_timer() {
+    QObject::connect(&timeout_timer, SIGNAL(timeout()), this, SLOT(cmd_set_state_asleep()));
+    timeout_timer.start();
 }
 
 Motor::callback_return_type Motor::bind(callback_type method) {

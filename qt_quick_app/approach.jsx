@@ -99,6 +99,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		},
 		start_approaching : function() {
 			// this.prevent_dangerous_user_input();
+                        motor.cancel_timeout_timer(true);
                         pid.set_disabled();
                         dac_z_offset_fine.set_value(1.5);
 			approacher.cmd_start_auto_approach();

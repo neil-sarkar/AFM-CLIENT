@@ -31,6 +31,7 @@ public:
     Q_INVOKABLE void set_speed(int speed);
     Q_INVOKABLE void set_state(int state);
     Q_INVOKABLE void set_microstep(int microstep);
+    Q_INVOKABLE void cancel_timeout_timer(bool sleep);
 
 signals:
     void speed_changed(int);
@@ -50,10 +51,10 @@ private:
     void cmd_set_direction();
     void cmd_set_state_awake();
     void cmd_run_continuous();
-    void reset_timeout_timer(QByteArray result);
+    void reset_timeout_timer();
     callback_return_type bind(void (Motor::*method)(QByteArray));
     typedef void (Motor::*callback_type)(QByteArray);
-    QTimer* timeout_timer;
+    QTimer timeout_timer;
 
     struct PayloadConstants {
         const unsigned char MotorApproach = 0x62;
