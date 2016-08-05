@@ -268,8 +268,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         save_data: function () {
-            afm.launch_folder_picker();
-            afm.save_scan_data();
+            if(afm.launch_folder_picker()) {
+                afm.save_scan_data();
+            }
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   

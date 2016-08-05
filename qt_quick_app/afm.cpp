@@ -91,10 +91,13 @@ void AFM::restore_defaults() {
         i.value()->set_settings();
 }
 
-void AFM::launch_folder_picker() {
+bool AFM::launch_folder_picker() {
     QString path = QFileDialog::getExistingDirectory(0,"", m_save_folder);
-    if (!path.isEmpty())
-        set_save_folder(path);
+    if (path.isEmpty()) {
+        return false;
+    }
+    set_save_folder(path);
+    return true;
 }
 
 QString AFM::save_folder() {
