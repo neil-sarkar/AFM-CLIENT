@@ -10,8 +10,7 @@ class ReceiveWorker : public QObject
     Q_OBJECT
 public:
     explicit ReceiveWorker(QObject *parent = 0);
-    static const unsigned char MCU_Reset_Message[5];
-    static const int MCU_Reset_Message_Length;
+    static const unsigned char MCU_heartbeat_message[5];
     ThreadSafeQueue<CommandNode*> receive_command_queue;
 
 signals:
@@ -20,6 +19,7 @@ signals:
     void mcu_reset_message_received();
     void receive_returned();
     void auto_approach_info_received(QByteArray);
+    void resend_command(CommandNode*);
 
 public slots:
     void enqueue_command(CommandNode*);
@@ -34,14 +34,14 @@ private:
     QByteArray working_response;
     bool complete_message;
     void process_working_response();
-    bool is_mcu_reset_message(); // must be a better way to check equality of two qbyteararys
+    bool is_mcu_heartbeat_message();
     bool is_auto_approach_info();
     bool is_auto_approach_stopped_message();
     bool is_response_valid(CommandNode* node, unsigned char tag, unsigned char id, int length);
     void handle_auto_approach_stopped_message();
     void handle_hardware_reset();
     void handle_asynchronous_message();
-    void handle_invalid_response();
+    void handle_invalid_response(CommandNode *node);
     bool escape;
 
 

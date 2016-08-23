@@ -20,7 +20,6 @@ void SendWorker::handle_receive_return() {
 }
 
 void SendWorker::enqueue_command(CommandNode* command_node) {
-//    qDebug() << "Enqueueing" << command_node->id;
     command_node->tag = iterate_tag(); // assign tag then increment
     assert (send_command_queue.isFull() == false);
 
@@ -41,15 +40,13 @@ void SendWorker::dequeue_command() {
         return;
 
     CommandNode* command_node = send_command_queue.dequeue();
-//    qDebug() << "Dequeueing" << command_node->id;
     populate_send_bytes(command_node);
     emit command_dequeued(command_node);
-//    qDebug() << "Done dequeuing";
 }
 
 void SendWorker::populate_send_bytes(CommandNode* command_node) {
     validate_send_length(command_node); // Check if the payload given has the right number of bytes
-//    mask_special_characters(command_node);
+    mask_special_characters(command_node);
     command_node->payload.insert(0, command_node->id);
     command_node->payload.insert(0, command_node->tag);
 }
@@ -64,7 +61,7 @@ int SendWorker::iterate_tag() {
 void SendWorker::validate_send_length(CommandNode* command_node) {
     if (command_node->payload.length() != command_node->num_send_bytes - Num_Meta_Data_Bytes)
         qDebug() << command_node->id << command_node->payload.length() << command_node->num_send_bytes - Num_Meta_Data_Bytes;
-        assert (command_node->payload.length() == command_node->num_send_bytes - Num_Meta_Data_Bytes);
+    assert (command_node->payload.length() == command_node->num_send_bytes - Num_Meta_Data_Bytes);
     // we haven't added the tag or id yet, hence subtract num_meta_data_bytes
 }
 

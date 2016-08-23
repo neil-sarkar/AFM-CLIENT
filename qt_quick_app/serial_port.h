@@ -32,7 +32,11 @@ Q_OBJECT
         int write_bytes(QByteArray bytes);
         void execute_command(CommandNode*);
         void reset_mcu();
+        bool detect_afm();
         void initialize_reading();
+
+    private slots:
+        void handle_error(QSerialPort::SerialPortError error);
 
     private:
         QTimer* port_scan_timer;

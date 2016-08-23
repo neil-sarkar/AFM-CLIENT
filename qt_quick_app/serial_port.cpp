@@ -12,12 +12,21 @@
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     port = new QSerialPort(this);
     port->setReadBufferSize(0);
+    connect(port, SIGNAL(error(QSerialPort::SerialPortError)), this,
+            SLOT(handle_error(QSerialPort::SerialPortError)));
 }
 
 SerialPort::~SerialPort() { // Destructor - handle all cleanup
     close();
     emit disconnected();
     delete port_scan_timer;
+}
+
+void SerialPort::handle_error(QSerialPort::SerialPortError error) {
+    if (error == QSerialPort::ResourceError) {
+        // crashes for some reason (QT sucks)
+        //close();
+    }
 }
 
 bool SerialPort::auto_connect() {
@@ -42,11 +51,14 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
     port->setPortName(port_name);
     port->setBaudRate(baud_rate);
     if (port->open(QIODevice::ReadWrite)) {
-        emit connected();
-        port_scan_timer->stop();
-        is_connected = true;
-        initialize_reading();
-        reset_mcu();
+        if (detect_afm()) {
+            port_scan_timer->stop();
+            is_connected = true;
+            initialize_reading();
+            emit connected();
+        } else {
+            close();
+        }
     }
     return is_connected;
 }
@@ -60,12 +72,27 @@ void SerialPort::reset_mcu() {
     write_bytes(message);
 }
 
+bool SerialPort::detect_afm() {
+    if(port->waitForReadyRead(1000)) {
+        // check for AFM heartbeat packet content
+        QByteArray data = port->readAll();
+        qDebug() << "data on port:" << data;
+        return data.contains("\xF2""afm!");
+    } else {
+        qDebug() << "no data on port";
+        return false;
+    }
+}
+
 void SerialPort::initialize_reading() {
     qDebug() << "Data left on port from before" << port->readAll(); // Read any data left on the port
     QObject::connect(port, SIGNAL(readyRead()), this, SLOT(on_ready_read()));
 }
 
 void SerialPort::close() {
+    if (is_connected) {
+        reset_mcu();
+    }
     port->close();
     qDebug() << "Closing port";
     is_connected = false;
@@ -116,21 +143,16 @@ void SerialPort::scan_for_ports() { // this method starts a timer that will call
 }
 
 void SerialPort::execute_command(CommandNode* command_node) {
-    qDebug() << "Tag: " << command_node->tag << "Id: " << char(command_node->id) << "Payload:" << command_node->payload;
     int result = 0; // this variable stores a negative number indicating the number of bytes that failed to send.
 
     QByteArray message;
-//    message += Message_Delimiter;
 
-//    result += write_byte(Message_Delimiter); // delimit the message
-//    for (char payload_byte : command_node->payload)  // send all the associated data with the command
-//        message += payload_byte
-
+    // delimit with newlines
+    message += '\n';
     for (int i = 0; i < command_node->payload.length(); i++) {
         message += command_node->payload[i];
     }
-//        result += write_byte(payload_byte);
-//    message += Message_Delimiter; // delimit the message
+    message += '\n';
 
     write_bytes(message);
     // TODO:: throw graceful exception

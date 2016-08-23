@@ -68,25 +68,20 @@ void ReceiveWorker::process_working_response() {
     CommandNode* node = receive_command_queue.dequeue();
     
     if (!is_response_valid(node, response_tag, response_id, working_response.length())) { // check temporal order is correct
-        handle_invalid_response();
-    } else if (node->process_callback) {
-        node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes)); // maybe run in separate thread to avoid blocking
+        handle_invalid_response(node);
+    } else {
+        if (node->process_callback) {
+            // maybe run in separate thread to avoid blocking
+            node->process_callback(working_response.right(working_response.length() - Num_Meta_Data_Bytes));
+        }
+        emit receive_returned();
+        delete node;
     }
-
-    emit receive_returned();
-    delete node;
 }
 
-void ReceiveWorker::handle_invalid_response() {
-    qDebug() << "Invalid response received";
-    // one possible reason for an invalid response is that we had a hard reset button reset in the process
-    // iterate through receive_command_queue to see if that was the case
-    while (response_byte_queue.count()) {
-        if (static_cast<unsigned char>(response_byte_queue.dequeue()) == Special_Message_Character) {
-            qDebug() << "Special message character found; resetting";
-            handle_hardware_reset();
-        }
-    }
+void ReceiveWorker::handle_invalid_response(CommandNode *node) {
+    qDebug() << "Invalid response received. Retrying...";
+    emit resend_command(node);
 }
 
 bool ReceiveWorker::is_response_valid(CommandNode* node, unsigned char tag, unsigned char id, int length) {
@@ -120,14 +115,13 @@ void ReceiveWorker::handle_hardware_reset() {
 }
 
 void ReceiveWorker::handle_asynchronous_message() {
-    qDebug() << "Received async message" << working_response;
-    if (is_mcu_reset_message())
-        handle_hardware_reset();
-    else if (is_auto_approach_info())
+    if (is_mcu_heartbeat_message()) {
+        //qDebug() << "heartbeat";
+    } else if (is_auto_approach_info()) {
         emit auto_approach_info_received(working_response.right(working_response.length() - 2));
-    else if (is_auto_approach_stopped_message())
+    } else if (is_auto_approach_stopped_message()) {
         handle_auto_approach_stopped_message();
-    else if (static_cast<unsigned char>(working_response.at(1)) == 0xaa) {
+    } else if (static_cast<unsigned char>(working_response.at(1)) == 0xaa) {
         qDebug() << "BUFFER FULL";
         assert(false); // not sure what we should do here. this could happen if we spam the reset button infinitely.
     } else {
@@ -135,10 +129,10 @@ void ReceiveWorker::handle_asynchronous_message() {
     }
 }
 
-bool ReceiveWorker::is_mcu_reset_message() {
-    if (MCU_Reset_Message_Length == working_response.length()) {
-        for (int i = 0; i < MCU_Reset_Message_Length; i++) {
-            if (MCU_Reset_Message[i] != static_cast<unsigned char>(working_response[i]))
+bool ReceiveWorker::is_mcu_heartbeat_message() {
+    if (sizeof(MCU_heartbeat_message) == working_response.length()) {
+        for (int i = 0; i < sizeof(MCU_heartbeat_message); i++) {
+            if (MCU_heartbeat_message[i] != static_cast<unsigned char>(working_response[i]))
                 return false;
         }
         return true;
@@ -182,5 +176,4 @@ void ReceiveWorker::flush() {
         response_byte_queue.dequeue();
 }
 
-const unsigned char ReceiveWorker::MCU_Reset_Message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};
-const int ReceiveWorker::MCU_Reset_Message_Length = 5;
+const unsigned char ReceiveWorker::MCU_heartbeat_message[5] = {0xF2, 0x61, 0x66, 0x6d, 0x21};
