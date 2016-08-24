@@ -141,8 +141,10 @@ private:
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();
     double z_fine_dac_to_nm(double dac_value);
-    double x_index_to_m(int x);
-    double y_index_to_m(int y);
+    double x_range_in_m();
+    double y_range_in_m();
+    double x_offset_in_m();
+    double y_offset_in_m();
     void normalize_offset_line_profiles(void);
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));

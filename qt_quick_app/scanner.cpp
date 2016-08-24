@@ -569,8 +569,10 @@ void Scanner::save_raw_data(QString save_folder) {
             outtxt << "Gwyddion Simple Field 1.0\n";
             outtxt << "XRes = " << QString::number(m_num_columns) << "\n";
             outtxt << "YRes = " << QString::number(m_num_rows) << "\n";
-            outtxt << "XReal = " << QString::number(x_index_to_m(m_num_columns)) << "\n";
-            outtxt << "YReal = " << QString::number(y_index_to_m(m_num_rows)) << "\n";
+            outtxt << "XReal = " << QString::number(x_range_in_m()) << "\n";
+            outtxt << "YReal = " << QString::number(y_range_in_m()) << "\n";
+            outtxt << "XOffset = " << QString::number(x_offset_in_m()) << "\n";
+            outtxt << "YOffset = " << QString::number(y_offset_in_m()) << "\n";
             outtxt << "XYUnits = m\n";
             switch (specific_file_names[i][0].unicode()) {
                 case 'o':
@@ -644,12 +646,20 @@ double Scanner::z_fine_dac_to_nm(double dac_value) {
     return dac_value * DAC::SCALE_FACTOR * 3990.52 * m_z_actuator_scale_factor;
 }
 
-double Scanner::x_index_to_m(int x) {
-    return (double)x / m_num_columns * 14e-6 * m_x_actuator_scale_factor * m_zoom_scale * ((m_ratio == 1) ? 4 : 1);
+double Scanner::x_range_in_m() {
+    return 14e-6 * m_x_actuator_scale_factor * m_zoom_scale * ((m_ratio == 1) ? 4 : 1);
 }
 
-double Scanner::y_index_to_m(int y) {
-    return (double)((m_ratio == 1) ? 1 : y) / m_num_rows * 14e-6 * m_y_actuator_scale_factor * m_zoom_scale;
+double Scanner::y_range_in_m() {
+    return ((m_ratio == 1) ? (1.0/m_num_rows) : 1.0) * 14e-6 * m_y_actuator_scale_factor * m_zoom_scale;
+}
+
+double Scanner::x_offset_in_m() {
+    return 14e-6 * m_x_actuator_scale_factor * m_x_offset * ((m_ratio == 1) ? 4 : 1);
+}
+
+double Scanner::y_offset_in_m() {
+    return ((m_ratio == 1) ? 0 : (14e-6 * m_y_actuator_scale_factor * m_y_offset));
 }
 
 void Scanner::normalize_offset_line_profiles(void) {
