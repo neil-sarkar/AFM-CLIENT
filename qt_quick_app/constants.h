@@ -43,6 +43,7 @@ extern const QString Scanner_Set_Dwell_Time;
 extern const QString Scanner_Set_Num_Averages;
 extern const QString Scanner_Set_Send_Back_Count;
 extern const QString Scanner_Set_Leveling_Direction;
+extern const QString Scanner_Set_Zoom;
 extern const QString AFM_Get_Auto_Approach_State;
 
 extern const char Message_Delimiter;

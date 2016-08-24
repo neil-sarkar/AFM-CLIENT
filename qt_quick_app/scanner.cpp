@@ -28,6 +28,9 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     m_z_actuator_scale_factor = 1.0;
     m_x_actuator_scale_factor = 1.0;
     m_y_actuator_scale_factor = 1.0;
+    m_x_offset = 0.0;
+    m_y_offset = 0.0;
+    m_zoom_scale = 1.0;
 
     connect(&watcher_fo, SIGNAL(finished()), this, SLOT(handleFinished_fo()));
     connect(&watcher_ro, SIGNAL(finished()), this, SLOT(handleFinished_ro()));
@@ -265,6 +268,20 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
     emit new_reverse_phase_profile(current_rev_phase_line_profile);
 }
 
+void Scanner::zoom(float x, float y, float size) {
+    m_x_offset += x*m_zoom_scale;
+    m_y_offset += y*m_zoom_scale;
+    m_zoom_scale *= size;
+    cmd_set_zoom();
+}
+
+void Scanner::reset_zoom() {
+    m_x_offset = 0.0;
+    m_y_offset = 0.0;
+    m_zoom_scale = 1.0;
+    cmd_set_zoom();
+}
+
 void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
@@ -499,6 +516,23 @@ void Scanner::cmd_set_leveling_direction() {
     emit command_generated (new CommandNode(command_hash[Scanner_Set_Leveling_Direction], payload));
 }
 
+void Scanner::cmd_set_zoom() {
+    QByteArray payload;
+    quint16 x1 = qBound(0.f, m_x_offset, 1.f) * UINT16_MAX;
+    quint16 y1 = qBound(0.f, m_y_offset, 1.f) * UINT16_MAX;
+    quint16 x2 = qBound(m_x_offset, m_x_offset + m_zoom_scale, 1.f) * UINT16_MAX;
+    quint16 y2 = qBound(m_y_offset, m_y_offset + m_zoom_scale, 1.f) * UINT16_MAX;
+    payload += (x1 & 0xFF);
+    payload += ((x1 & 0xFF00) >> 8);
+    payload += (y1 & 0xFF);
+    payload += ((y1 & 0xFF00) >> 8);
+    payload += (x2 & 0xFF);
+    payload += ((x2 & 0xFF00) >> 8);
+    payload += (y2 & 0xFF);
+    payload += ((y2 & 0xFF00) >> 8);
+    emit command_generated (new CommandNode(command_hash[Scanner_Set_Zoom], payload));
+}
+
 void Scanner::save_raw_data(QString save_folder) {
     Q_UNUSED(save_folder);
     if (!fwd_offset_data)
@@ -611,11 +645,11 @@ double Scanner::z_fine_dac_to_nm(double dac_value) {
 }
 
 double Scanner::x_index_to_m(int x) {
-    return (double)x / m_num_columns * 14e-6 * m_x_actuator_scale_factor * ((m_ratio == 1) ? 4 : 1);
+    return (double)x / m_num_columns * 14e-6 * m_x_actuator_scale_factor * m_zoom_scale * ((m_ratio == 1) ? 4 : 1);
 }
 
 double Scanner::y_index_to_m(int y) {
-    return (double)((m_ratio == 1) ? 1 : y) / m_num_rows * 14e-6 * m_y_actuator_scale_factor;
+    return (double)((m_ratio == 1) ? 1 : y) / m_num_rows * 14e-6 * m_y_actuator_scale_factor * m_zoom_scale;
 }
 
 void Scanner::normalize_offset_line_profiles(void) {

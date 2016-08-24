@@ -1,6 +1,7 @@
 message	in use	Calling Object	Specific Property	Action	Board Version	# Actuators	decimal_id	id	ASCII equiv	Applicable	Direction	Send byte length	Send payload	Reply msg length	Status Byte	Receiver reply payload	Remark
 DAC_Set_Max_Value	1	DAC	Max Value	set			38	26	&		1	5	(DAC#, val byte 1, val byte 2)	3	Y	1 byes (status byte)
 Scanner_Set_Leveling_Direction	1	Scanner	leveling direction	set			40	28	(		1	3	u8 - 'f' for forward, any other char for reverse	2
+Scanner_Set_Zoom	1	Scanner	refinement zoom	set			41	29	)		1	10	u16 x1, y1, x2, y2	2	N
 Motor_Set_Microstep	1	Motor	microstep	set			48	30	0		1	3	microsteps byte Enum: 0: full steps, 1: 2 microsteps, 2: 4 microsteps, 3: 8; 4: 16; 5: 32 microsteps	2	N
 Motor_Set_Single_Step	1	Motor	single step	set			49	31	1		1	2	None	2	N
 Motor_Set_Speed	1	Motor	Speed	set			50	32	2		1	4	(Speed byte1, Speed byte2). Very slow 0x0000 (DEC0) to Very fast 0x66BC (DEC26300)	2	N

@@ -29,7 +29,11 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 num_columns: 16,
                 advanced: false,
                 line_profile_width: 1,
-                line_profile_y: 0
+                line_profile_y: 0,
+                zoom_set: false,
+                dragging: false,
+                mouse_start_x: 0,
+                mouse_start_y: 0,
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -68,6 +72,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
+            $(document).mouseup(this.handle_mouse_up);
         },
         save_png_data: function(scan_view, new_data) {
             scan_view.data = "data:image/png;base64," + new_data;
@@ -217,20 +222,34 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         handle_image_mouse_move: function(e) {
             if (!this.state.scanning && this.state.starting_fresh_scan) {
                 var img = $('.scan-image');
-                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
-                var offsetY = e.pageY - img.offset().top;
+                if(!this.state.dragging) {
+                    // line profile
+                    var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
+                    var offsetY = e.pageY - img.offset().top;
 
-                this.setState({line_profile_y: offsetY*aspect_ratio}, function(){
-                    scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
-                    $('.scan-image-inverter').css({
-                        "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
-                        "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)
+                    this.setState({line_profile_y: offsetY*aspect_ratio}, function(){
+                        scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
+                        $('.scan-image-inverter').css({
+                            "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
+                            "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)
+                        });
                     });
-                });
+                } else {
+                    // zoom
+                    var offsetX = e.pageX - img.offset().left;
+                    var offsetY = e.pageY - img.offset().top;
+                    var square_size = Math.max(offsetX - this.state.mouse_start_x, offsetY - this.state.mouse_start_y);
+                    if (square_size > 0) {
+                        $('.scan-image-inverter').css({
+                            "margin-bottom": Math.max(img[0].clientHeight - (this.state.mouse_start_y + square_size), 0),
+                            "margin-right": Math.max(img[0].clientWidth - (this.state.mouse_start_x + square_size), 0)
+                        });
+                    }
+                }
             }
         },
         handle_image_mouse_wheel: function(e) {
-            if (!this.state.scanning && this.state.starting_fresh_scan) {
+            if (!this.state.scanning && this.state.starting_fresh_scan && !this.state.dragging) {
                 var new_width = this.state.line_profile_width;
                 if (e.deltaY < 0) new_width += 2; // scrolling up
                 if (e.deltaY > 0) new_width -= 2; // scrolling down
@@ -250,10 +269,53 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }
         },
         handle_image_mouse_leave: function(e) {
-            $('.scan-image-inverter').css({
-                "margin-top": 0,
-                "margin-bottom": "100%"
-            });
+            if (!this.state.dragging) {
+                $('.scan-image-inverter').css({
+                    "margin-top": 0,
+                    "margin-bottom": "100%"
+                });
+            }
+        },
+        handle_image_mouse_down: function(e) {
+            if (!this.state.scanning && this.state.starting_fresh_scan) {
+                var img = $('.scan-image');
+                var offsetX = e.pageX - img.offset().left;
+                var offsetY = e.pageY - img.offset().top;
+                this.setState({dragging: true,
+                               mouse_start_x: offsetX,
+                               mouse_start_y: offsetY}, function(){
+                    $('.scan-image-inverter').css({
+                        "margin-top": offsetY,
+                        "margin-bottom": img[0].clientHeight - offsetY,
+                        "margin-left": offsetX,
+                        "margin-right": img[0].clientWidth - offsetX
+                    });
+                });
+            }
+        },
+        handle_mouse_up: function(e) {
+            if (!this.state.scanning && this.state.starting_fresh_scan && this.state.dragging) {
+                var img = $('.scan-image');
+                var offsetX = e.pageX - img.offset().left;
+                var offsetY = e.pageY - img.offset().top;
+                offsetX = Math.min(offsetX, img[0].clientWidth);
+                offsetY = Math.min(offsetY, img[0].clientHeight);
+                var square_size = Math.max(offsetX - this.state.mouse_start_x, offsetY - this.state.mouse_start_y);
+                if (square_size > 0) {
+                    scanner.zoom(this.state.mouse_start_x / img[0].clientWidth,
+                                 this.state.mouse_start_y / img[0].clientHeight,
+                                 square_size / img[0].clientWidth);
+                    this.setState({zoom_set: true});
+                }
+                this.setState({dragging: false}, function() {
+                    $('.scan-image-inverter').css({
+                        "margin-top": 0,
+                        "margin-bottom": "100%",
+                        "margin-left": 0,
+                        "margin-right": 0
+                    });
+                });
+            }
         },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
@@ -271,6 +333,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             if(afm.launch_folder_picker()) {
                 afm.save_scan_data();
             }
+        },
+        reset_zoom: function () {
+            scanner.reset_zoom();
+            this.setState({zoom_set:false});
         },
         render: function() {
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
@@ -291,6 +357,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     onMouseMove={this.handle_image_mouse_move}
                                     onWheel={this.handle_image_mouse_wheel}
                                     onMouseLeave={this.handle_image_mouse_leave}
+                                    onMouseDown={this.handle_image_mouse_down}
+                                    draggable="false"
                                 />
                                 <div className="scan-image-inverter" />
                             </div>
@@ -348,6 +416,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Reset</button>
                             <button className="action-button" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
+                            <button className="action-button" onClick={this.reset_zoom} disabled={!this.state.zoom_set}>Reset Zoom</button>
                         </div>
                         <div className="nav-buttons-wrapper">
                             <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>

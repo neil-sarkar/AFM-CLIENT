@@ -47,6 +47,8 @@ public:
     Q_INVOKABLE QChar leveling_direction();
     Q_INVOKABLE void set_leveling_direction (QChar);
     Q_INVOKABLE void fetch_line_profiles(int y, int y_averages);
+    Q_INVOKABLE void zoom(float x, float y, float size);
+    Q_INVOKABLE void reset_zoom();
 
     void set_settings();
     void save_raw_data(QString save_folder);
@@ -120,6 +122,10 @@ private:
     double m_z_actuator_scale_factor;
     double m_x_actuator_scale_factor;
     double m_y_actuator_scale_factor;
+
+    float m_x_offset;
+    float m_y_offset;
+    float m_zoom_scale;
     
     void cmd_set_signal_generator();
     void cmd_start_scan();
@@ -128,6 +134,7 @@ private:
     void cmd_set_num_averages();
     void cmd_set_send_back_count();
     void cmd_set_leveling_direction();
+    void cmd_set_zoom();
     void callback_step_scan(QByteArray payload);
     void move_to_starting_point();
     bool is_scanning_forward();
