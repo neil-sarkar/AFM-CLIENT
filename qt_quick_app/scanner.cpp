@@ -286,7 +286,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
     receive_data();
-    double z_amplitude, z_offset, z_phase, z_error, z_offset_nm;
+    double z_amplitude, z_offset, z_phase, z_error, z_offset_nm, z_phase_deg;
     qDebug() << "LINE" << m_y_index;
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back per point
 
@@ -306,6 +306,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
         z_phase = 0x8000 - bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         z_error = pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude;
         z_offset_nm = z_fine_dac_to_nm(z_offset);
+        z_phase_deg = z_phase*(-360.0/32768);
 
         if (scanning_forward) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
@@ -316,7 +317,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             current_fwd_offset_line_profile.append(z_offset_nm);
             current_fwd_phase_line_profile.append(m_x_index);
             current_fwd_phase_line_profile.append(m_y_index);
-            current_fwd_phase_line_profile.append(z_phase);
+            current_fwd_phase_line_profile.append(z_phase_deg);
             current_fwd_error_line_profile.append(m_x_index);
             current_fwd_error_line_profile.append(m_y_index);
             current_fwd_error_line_profile.append(z_error);
@@ -328,7 +329,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
             current_rev_offset_line_profile.prepend(z_offset_nm);
             current_rev_offset_line_profile.prepend(m_y_index);
             current_rev_offset_line_profile.prepend(x_coord);
-            current_rev_phase_line_profile.prepend(z_phase);
+            current_rev_phase_line_profile.prepend(z_phase_deg);
             current_rev_phase_line_profile.prepend(m_y_index);
             current_rev_phase_line_profile.prepend(x_coord);
             current_rev_error_line_profile.prepend(z_error);
@@ -579,6 +580,8 @@ void Scanner::save_raw_data(QString save_folder) {
                     outtxt << "ZUnits = m\n";
                 break;
                 case 'p':
+                    outtxt << "ZUnits = deg\n";
+                break;
                 case 'e':
                     outtxt << "ZUnits = V\n";
                 break;
@@ -594,10 +597,15 @@ void Scanner::save_raw_data(QString save_folder) {
             outraw.setByteOrder(QDataStream::LittleEndian);
             outraw.writeRawData("\0\0\0\0", 4 - (file.pos()%4));
             for (int y = 0; y < m_num_rows; y++) {
-                for (int x = 0; x < data_container->raw_data[y]->size; x++) {
-                    if (specific_file_names[i][0] == 'o') {
+                for (int x = 0; x < m_num_columns; x++) {
+                    if (x >= data_container->raw_data[y]->size) {
+                        // incomplete scan: fill with zeros
+                        outraw << 0.f;
+                    } else if (specific_file_names[i][0] == 'o') {
                         // this is an offset. save value in meters
                         outraw << z_fine_dac_to_nm(data_container->raw_data[y]->data[x]) * 1e-9;
+                    } else if (specific_file_names[i][0] == 'p') {
+                        outraw << data_container->raw_data[y]->data[x]*(-360.0/32768);
                     } else {
                         outraw << data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR;
                     }
