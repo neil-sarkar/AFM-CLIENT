@@ -12,6 +12,7 @@ class PID : public AFMObject
     Q_PROPERTY(float m_integral READ integral WRITE set_integral NOTIFY integral_changed)
     Q_PROPERTY(float m_derivative READ derivative WRITE set_derivative NOTIFY derivative_changed)
     Q_PROPERTY(float m_setpoint READ setpoint WRITE set_setpoint NOTIFY setpoint_changed)
+    Q_PROPERTY(bool m_pm READ phase_modulated WRITE set_phase_modulated NOTIFY pm_changed)
     Q_PROPERTY(bool m_enabled READ enabled WRITE set_enabled NOTIFY enabled_changed)
 
 public:
@@ -21,11 +22,13 @@ public:
     Q_INVOKABLE float derivative();
     Q_INVOKABLE float setpoint();
     Q_INVOKABLE bool enabled();
+    Q_INVOKABLE bool phase_modulated();
     Q_INVOKABLE void set_proportional(float p);
     Q_INVOKABLE void set_integral(float i);
     void set_derivative(float d);
     Q_INVOKABLE void set_setpoint(float s);
     void init();
+    Q_INVOKABLE void set_phase_modulated(bool pm);
     Q_INVOKABLE void set_enabled(bool e = true);
     Q_INVOKABLE void set_disabled();
     void set_settings();
@@ -36,6 +39,7 @@ signals:
     void integral_changed(float);
     void derivative_changed(float);
     void setpoint_changed(float);
+    void pm_changed(bool);
     void enabled_changed(bool);
 
 public slots:
@@ -45,11 +49,13 @@ private:
     float m_integral;
     float m_derivative;
     float m_setpoint;
+    bool m_pm;
     bool m_enabled;
     void cmd_set_proportional();
     void cmd_set_integral();
     void cmd_set_derivative();
     void cmd_set_setpoint();
+    void cmd_set_pm();
     void cmd_enable();
     void cmd_disable();
     static const QString settings_group_name;

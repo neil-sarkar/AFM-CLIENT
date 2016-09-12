@@ -31,6 +31,7 @@ const QString PGA_Set = "PGA_Set";
 const QString PID_Disable = "PID_Disable";
 const QString PID_Enable = "PID_Enable";
 const QString PID_Set_Derivative = "PID_Set_Derivative";
+const QString PID_Set_PM = "PID_Set_PM";
 const QString PID_Set_Integral = "PID_Set_Integral";
 const QString PID_Set_Proportional = "PID_Set_Proportional";
 const QString PID_Set_Setpoint = "PID_Set_Setpoint";

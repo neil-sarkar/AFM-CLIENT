@@ -25,6 +25,10 @@ bool PID::enabled() {
     return m_enabled;
 }
 
+bool PID::phase_modulated() {
+    return m_pm;
+}
+
 void PID::set_proportional(float proportional) {
     if (m_proportional != proportional) {
         m_proportional = proportional;
@@ -65,6 +69,16 @@ void PID::set_setpoint(float setpoint) {
     }
 }
 
+void PID::set_phase_modulated(bool pm) {
+    if (m_pm != pm) {
+        set_disabled(); // disable PID first, in case bad things happen
+        m_pm = pm;
+        qDebug() << "Setting PID phase modulated to " << m_pm;
+        emit pm_changed(m_pm);
+        cmd_set_pm();
+    }
+}
+
 void PID::set_enabled(bool enabled) {
     if (m_enabled != enabled) {
         m_enabled = enabled;
@@ -89,6 +103,7 @@ void PID::set_settings() {
 
 void PID::init() {
     set_disabled();
+    set_phase_modulated(false);
     set_settings();
 }
 
@@ -119,6 +134,13 @@ void PID::cmd_set_setpoint() {
     payload += (setpoint & 0xFF);
     payload += ((setpoint & 0xFF00) >> 8);
     emit command_generated(new CommandNode(command_hash[PID_Set_Setpoint], payload));
+}
+
+void PID::cmd_set_pm() {
+    quint8 pm = m_pm;
+    QByteArray payload;
+    payload += pm;
+    emit command_generated(new CommandNode(command_hash[PID_Set_PM], payload));
 }
 
 void PID::cmd_enable() {

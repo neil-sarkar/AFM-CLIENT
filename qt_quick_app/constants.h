@@ -34,6 +34,7 @@ extern const QString PGA_Set;
 extern const QString PID_Disable;
 extern const QString PID_Enable;
 extern const QString PID_Set_Derivative;
+extern const QString PID_Set_PM;
 extern const QString PID_Set_Integral;
 extern const QString PID_Set_Proportional;
 extern const QString PID_Set_Setpoint;

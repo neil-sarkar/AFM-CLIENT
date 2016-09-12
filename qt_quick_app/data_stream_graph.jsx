@@ -42,7 +42,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
                     },
                     {  // just for a background color effect
                         startValue: -5,
-                        endValue: 5,
+                        endValue: 40,
                         color: Constants.Graph_Background_Color,
                     }],
                     labelFontFamily: Constants.System_Font,
@@ -97,6 +97,15 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants", "canvasj
             if (typeof this.props.plotline_update_signal !== 'undefined')
                 this.props.plotline_update_signal.connect(this.update_plotline);
             $('#' + this.props.dom_id).find('canvas').eq(1).hide(); // for some reason it generates two canvases. the second one takes up space but is not visible...
+        },
+        componentWillReceiveProps: function(nextProps) {
+            if(nextProps.max_value != this.props.max_value) {
+                this.state.chart.options.axisY.maximum = nextProps.max_value;
+            }
+            if(nextProps.data_update_signal != this.props.data_update_signal) {
+                this.props.data_update_signal.disconnect(this.handle_new_data);
+                nextProps.data_update_signal.connect(this.handle_new_data);
+            }
         },
         start_streaming: function() {
             var stream_interval_id = setInterval(function() {

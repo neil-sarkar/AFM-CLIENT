@@ -22,6 +22,7 @@ DAC_Write	1	DAC		write			97	61	a		1	5	(DAC#, val byte 1, val byte 2)	3	Y	1 byte 
 DAC_Read	1	DAC		read			98	62	b		1	3	(DAC#)	4	N	3 bytes (DAC#, DAC val byte 1, DAC val byte 2)
 ADC_Read	1	ADC		read			99	63	c		1	3	(ADC#)	4	N	2 bytes (ADC val byte 1, ADC val byte 2)
 PID_Set_Derivative	1	PID	derivative	set			100	64	d		1	6		2	N	Nothing
+PID_Set_PM	1	PID	Phase Modulation	set			109	6D	m		1	3	Bool: 0 for AM, 1 for PM	2	N	Nothing
 AFM_Read_Signal_Phase_Offset	1	AFM	Signal Phase Offset	read			101	65	e		1	2		8	N	6 bytes (ADC Amplitude byte1, ADC Amplitude byte2, DAC Z Offset byte1, DAC Z Offset byte2, ADC PHASE byte1, ADC PHASE byte2)	read DAC8 and ADC5 and Phase
 PID_Enable	1	PID		enable			103	67	g		1	2		2	N	Nothing
 PID_Disable	1	PID		disable			104	68	h		1	2		2	N	Nothing

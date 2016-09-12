@@ -134,13 +134,13 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						<DataStreamGraph 	ref="approach_graph"
 											dom_id="approach-graph"
 											chart_title="Amplitude"
-											data_update_signal={adc_z_1.value_changed}
-											prompt_read={adc_z_1.read}
+                                                                                        data_update_signal={pid.phase_modulated() ? adc_phase.value_changed : adc_z_1.value_changed}
+                                                                                        prompt_read={pid.phase_modulated() ? adc_phase.read : adc_z_1.read}
 											num_points_displayed={Constants.Approach_Num_Points_Displayed}
                                                                                         plotline_default={pid.setpoint()}
 											plotline_update_signal={pid.setpoint_changed}
 											poll_rate={Constants.Approach_Poll_Rate}
-											max_value={3.3} />
+                                                                                        max_value={pid.phase_modulated() ? 26.4 : 3.3} />
 
 						<DataStreamGraph 	ref="z_fine_graph" 
 											dom_id="z-fine-graph" 
