@@ -38,7 +38,6 @@
                                                     <PIDControl />
                                                     <p className="setting-section-name">DACs (/3.3V)</p>
                                                     <div className="settings-container">
-                                                            <DACController name="Z Amplitude" qt_object={dac_z_offset_fine}/>
                                                             <DACController name="X1" qt_object={dac_x_1}/>
                                                             <DACController name="X2" qt_object={dac_x_2}/>
                                                             <DACController name="Y1" qt_object={dac_y_1}/>

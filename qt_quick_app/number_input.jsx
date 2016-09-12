@@ -5,11 +5,19 @@ define(["react", "console", "underscore"], function(React, console, _) {
             $(this.refs.input).keydown(function(e){
                 var key = e.which;
                 // we should update the value on enter (13), down arrow (40), and up arrow (38)
-                if (_.some([13, 40, 38], function(key_code) {return key == key_code;})) {
+                if (key == 13) {
+                    this.send_value_to_backend();
+                    $(this.refs.input).blur();
+                }
+                if (key == 40 || key == 38) {
                     this.send_value_to_backend();
                 }
             }.bind(this));
+            $(this.refs.input).focus(function() {
+                this.setState({has_focus: true});
+            }.bind(this));
             $(this.refs.input).focusout(function() {
+                this.setState({has_focus: false});
                 this.send_value_to_backend();
             }.bind(this));
             this.setState({
@@ -18,14 +26,15 @@ define(["react", "console", "underscore"], function(React, console, _) {
         },
         getInitialState: function() {
             return {
-                value: this.validate_input_and_format(this.props.get_value())
+                value: this.validate_input_and_format(this.props.get_value()),
+                has_focus: false
             };
         },
         getDefaultProps: function() {
             return {
                 min: 0,
                 max: 100,
-                step: 1,
+                step: 1
             };
         },
         compressed_name: function() {
@@ -49,9 +58,11 @@ define(["react", "console", "underscore"], function(React, console, _) {
             return Math.round(value * Math.pow(10, this.rounding_factor())) / Math.pow(10, this.rounding_factor());
         },
         update_value_from_backend_change: function(value) {
-            this.setState({
-                value: this.validate_input_and_format(value)
-            });
+            if (!this.state.has_focus) {
+                this.setState({
+                    value: this.validate_input_and_format(value)
+                });
+            }
         },
         render_text: function(e) {
             this.setState({

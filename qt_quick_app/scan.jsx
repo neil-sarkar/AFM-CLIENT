@@ -415,8 +415,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Reset</button>
-                            <button className="action-button" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
                             <button className="action-button" onClick={this.reset_zoom} disabled={!this.state.zoom_set}>Reset Zoom</button>
+                            <button className="action-button" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
                         </div>
                         <div className="nav-buttons-wrapper">
                             <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
@@ -425,7 +425,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
                         <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>
                             <InlineScanControls />
-                            <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning}>Clean</button>
+                            <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning || !this.state.starting_fresh_scan}>Clean</button>
                         </div>
                     </div>
                 </div>

@@ -2,10 +2,16 @@ define(["react"], function(React) {
 	var Slider = React.createClass({
 		componentDidMount: function() {
 			this.props.qt_object.value_changed.connect(this.update_value_from_backend_change);
+            $(document).mouseup(function() {
+                if(this.state.dragging) {
+                    this.setState({dragging: false});
+                }
+            });
 		},
 		getInitialState: function() {
 			return {
-                                value: this.props.qt_object.value()
+                value: this.props.qt_object.value(),
+                dragging: false
 			};
 		},
 		getDefaultProps: function() {
@@ -16,9 +22,11 @@ define(["react"], function(React) {
 			};
 		},
 		update_value_from_backend_change: function(value) {
-			this.setState({
-				value: value
-			});
+            if (!this.state.dragging) {
+                this.setState({
+                    value: value
+                });
+            }
 		},
 		update_value_from_slider_input: function(e) {
 			var new_value = e.target.value;
@@ -26,7 +34,7 @@ define(["react"], function(React) {
 				this.setState({
 					value: new_value
 				});
-                                this.props.qt_object.set_value(new_value);
+                this.props.qt_object.set_value(new_value);
 			}
 		},
 		render: function() {
@@ -37,8 +45,9 @@ define(["react"], function(React) {
 										min={this.props.min} 
 										max={this.props.max} 
 										step={this.props.step} 
-										value={this.state.value} 
-                                                                                onChange={this.update_value_from_slider_input}/>
+                                        value={this.state.value}
+                                        onMouseDown={function(){ this.setState({dragging: true}); }}
+                                        onChange={this.update_value_from_slider_input}/>
 				</div>
 			);
 		}
