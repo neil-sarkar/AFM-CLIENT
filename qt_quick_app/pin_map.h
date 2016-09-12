@@ -34,7 +34,7 @@ struct PinMap {
             adc_array.push_back(Peripheral(QString("x_2"), 1));
             adc_array.push_back(Peripheral(QString("y_1"), 2));
             adc_array.push_back(Peripheral(QString("y_2"), 3));
-            adc_array.push_back(Peripheral(QString("z_1"), 23));
+            adc_array.push_back(Peripheral(QString("z_1"), 13));
             adc_array.push_back(Peripheral(QString("z_piezoresistor_amplitude"), 0));
             adc_array.push_back(Peripheral(QString("phase"), 10));
 
