@@ -22,6 +22,19 @@ class Scanner : public AFMObject
     Q_PROPERTY(QString m_base_file_name READ base_file_name WRITE set_base_file_name NOTIFY base_file_name_changed)
     Q_PROPERTY(QChar m_leveling_direction READ leveling_direction WRITE set_leveling_direction NOTIFY leveling_direction_changed)
 
+    struct scan_metadata
+    {
+        quint16 num_columns;
+        quint16 num_rows;
+        double x_range_m;
+        double y_range_m;
+        double x_offset_m;
+        double y_offset_m;
+        double z_actuator_scale_factor;
+        quint16 dwell_time;
+        QString scan_completion_time;
+    };
+
 public:
     explicit Scanner(PID*, AFMObject* dac);
     void init();
@@ -116,6 +129,8 @@ private:
     double m_rms_threshold;
     QChar m_leveling_direction;
 
+    scan_metadata completed_scan_metadata;
+
     int m_x_index;
     int m_y_index;
 
@@ -137,10 +152,12 @@ private:
     void cmd_set_zoom();
     void callback_step_scan(QByteArray payload);
     void move_to_starting_point();
+    void record_metadata();
     bool is_scanning_forward();
     int get_delta_x_from_ratio();
     int get_delta_y_from_ratio();
     double z_fine_dac_to_nm(double dac_value);
+    double z_fine_dac_to_nm(double dac_value, double z_actuator_scale_factor);
     double x_range_in_m();
     double y_range_in_m();
     double x_offset_in_m();

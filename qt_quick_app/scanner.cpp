@@ -378,7 +378,20 @@ void Scanner::callback_step_scan(QByteArray payload) {
 void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done";
+    record_metadata();
     move_to_starting_point();
+}
+
+void Scanner::record_metadata() {
+    completed_scan_metadata.num_columns = m_num_columns;
+    completed_scan_metadata.num_rows = m_num_rows;
+    completed_scan_metadata.dwell_time = m_dwell_time;
+    completed_scan_metadata.x_range_m = x_range_in_m();
+    completed_scan_metadata.y_range_m = y_range_in_m();
+    completed_scan_metadata.x_offset_m = x_offset_in_m();
+    completed_scan_metadata.y_offset_m = y_offset_in_m();
+    completed_scan_metadata.scan_completion_time = QDateTime::currentDateTime().toString();
+    completed_scan_metadata.z_actuator_scale_factor = m_z_actuator_scale_factor;
 }
 
 quint16 Scanner::num_averages() {
@@ -555,8 +568,8 @@ void Scanner::save_raw_data(QString save_folder) {
         }
     }
 
-    int x_scale = m_num_rows/m_num_columns;
-    int y_scale = m_num_columns/m_num_rows;
+    int x_scale = completed_scan_metadata.num_rows/completed_scan_metadata.num_columns;
+    int y_scale = completed_scan_metadata.num_columns/completed_scan_metadata.num_rows;
     if (x_scale == 0) x_scale = 1;
     if (y_scale == 0) y_scale = 1;
 
@@ -567,12 +580,12 @@ void Scanner::save_raw_data(QString save_folder) {
             // Serialize header data
             QTextStream outtxt(&file);
             outtxt << "Gwyddion Simple Field 1.0\n";
-            outtxt << "XRes = " << QString::number(m_num_columns) << "\n";
-            outtxt << "YRes = " << QString::number(m_num_rows) << "\n";
-            outtxt << "XReal = " << QString::number(x_range_in_m()) << "\n";
-            outtxt << "YReal = " << QString::number(y_range_in_m()) << "\n";
-            outtxt << "XOffset = " << QString::number(x_offset_in_m()) << "\n";
-            outtxt << "YOffset = " << QString::number(y_offset_in_m()) << "\n";
+            outtxt << "XRes = " << QString::number(completed_scan_metadata.num_columns) << "\n";
+            outtxt << "YRes = " << QString::number(completed_scan_metadata.num_rows) << "\n";
+            outtxt << "XReal = " << QString::number(completed_scan_metadata.x_range_m) << "\n";
+            outtxt << "YReal = " << QString::number(completed_scan_metadata.y_range_m) << "\n";
+            outtxt << "XOffset = " << QString::number(completed_scan_metadata.x_offset_m) << "\n";
+            outtxt << "YOffset = " << QString::number(completed_scan_metadata.y_offset_m) << "\n";
             outtxt << "XYUnits = m\n";
             switch (specific_file_names[i][0].unicode()) {
                 case 'o':
@@ -584,8 +597,8 @@ void Scanner::save_raw_data(QString save_folder) {
                 break;
             }
             outtxt << "Title = " << m_base_file_name << " " << specific_file_names[i] << "\n";
-            outtxt << "Date = " << QDateTime::currentDateTime().toString() << "\n";
-            outtxt << "DwellTime = " << QString::number(m_dwell_time) << "\n";
+            outtxt << "Date = " << completed_scan_metadata.scan_completion_time << "\n";
+            outtxt << "DwellTime = " << QString::number(completed_scan_metadata.dwell_time) << "\n";
             outtxt.flush();
 
             // Serialize binary data
@@ -593,11 +606,11 @@ void Scanner::save_raw_data(QString save_folder) {
             outraw.setFloatingPointPrecision(QDataStream::SinglePrecision);
             outraw.setByteOrder(QDataStream::LittleEndian);
             outraw.writeRawData("\0\0\0\0", 4 - (file.pos()%4));
-            for (int y = 0; y < m_num_rows; y++) {
+            for (int y = 0; y < completed_scan_metadata.num_rows; y++) {
                 for (int x = 0; x < data_container->raw_data[y]->size; x++) {
                     if (specific_file_names[i][0] == 'o') {
                         // this is an offset. save value in meters
-                        outraw << z_fine_dac_to_nm(data_container->raw_data[y]->data[x]) * 1e-9;
+                        outraw << z_fine_dac_to_nm(data_container->raw_data[y]->data[x], completed_scan_metadata.z_actuator_scale_factor) * 1e-9;
                     } else {
                         outraw << data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR;
                     }
@@ -644,6 +657,11 @@ int Scanner::get_delta_y_from_ratio() {
 double Scanner::z_fine_dac_to_nm(double dac_value) {
     // TODO: de-magic-ify
     return dac_value * DAC::SCALE_FACTOR * 3990.52 * m_z_actuator_scale_factor;
+}
+
+double Scanner::z_fine_dac_to_nm(double dac_value, double z_actuator_scale_factor) {
+    // TODO: de-magic-ify
+    return dac_value * DAC::SCALE_FACTOR * 3990.52 * z_actuator_scale_factor;
 }
 
 double Scanner::x_range_in_m() {
