@@ -35,6 +35,8 @@ private:
     int m_ratio;
     int m_delta_x;
     int m_delta_y;
+    int m_aspect_portrait;
+    int m_aspect_landscape;
     double m_prev_min;
     double m_prev_max;
     qint64 m_current_size;

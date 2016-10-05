@@ -224,11 +224,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var img = $('.scan-image');
                 if(!this.state.dragging) {
                     // line profile
-                    var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
+                    var aspect_ratio = img[0].naturalHeight / img[0].clientHeight / Math.max(this.state.num_columns/this.state.num_rows,1);
                     var offsetY = e.pageY - img.offset().top;
-
                     this.setState({line_profile_y: offsetY*aspect_ratio}, function(){
-                        scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
+                        scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y), this.state.line_profile_width);
                         $('.scan-image-inverter').css({
                             "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
                             "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)
@@ -256,11 +255,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 if (new_width < 1) new_width = 1;
 
                 var img = $('.scan-image');
-                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight;
+                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight / Math.max(this.state.num_columns/this.state.num_rows,1);
                 var offsetY = this.state.line_profile_y/aspect_ratio;
-
                 this.setState({line_profile_width: new_width}, function(){
-                    scanner.fetch_line_profiles(this.state.line_profile_y, this.state.line_profile_width);
+                    scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y ), this.state.line_profile_width);
                     $('.scan-image-inverter').css({
                         "margin-top": Math.max(offsetY - this.state.line_profile_width/aspect_ratio/2, 0),
                         "margin-bottom": Math.max(img[0].clientHeight - offsetY - this.state.line_profile_width/aspect_ratio/2, 0)

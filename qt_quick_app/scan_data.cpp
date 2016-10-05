@@ -20,6 +20,9 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_delta_x = delta_x;
     m_delta_y = delta_y;
 
+    m_aspect_portrait = (num_rows/num_columns == 0) ? 1 : num_rows/num_columns;
+    m_aspect_landscape = (num_columns/num_rows == 0) ? 1: num_columns/num_rows;
+
     m_prev_max = INT32_MIN;
     m_prev_min = INT32_MAX;
 
@@ -28,7 +31,8 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
         raw_data[i] = new ScanLine(m_num_columns);
 
     // Initialize the image to be all white
-    m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
+    m_image = QImage(m_num_columns*m_aspect_portrait, m_num_rows*m_aspect_landscape, QImage::Format_RGB32);
+    //m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
     m_image.fill(Qt::white);
     m_current_size = 0;
 }
@@ -132,18 +136,22 @@ QString ScanData::generate_png() {
          if (same_range && raw_data[i]->drawn) {
              continue;
          }
-
          for (int j = 0; j < raw_data[i]->size; j++) {
-             double z_value = raw_data[i]->data[j] - raw_data[i]->average;
-             if (scan_max == scan_min)
-                 color_index = 0;
-             else {
-                 color_index = (int)((z_value - scan_min)*color_map.size() / range);
-             }
-             if(color_index >= color_map.size()) color_index = color_map.size() - 1;
-             if(color_index < 0) color_index = 0;
-             color = color_map[color_index];
-             m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
+            double z_value = raw_data[i]->data[j] - raw_data[i]->average;
+            if (scan_max == scan_min)
+                color_index = 0;
+            else {
+                color_index = (int)((z_value - scan_min)*color_map.size() / range);
+            }
+            if(color_index >= color_map.size()) color_index = color_map.size() - 1;
+            if(color_index < 0) color_index = 0;
+            color = color_map[color_index];
+            for (int row_rep = 0; row_rep < m_aspect_landscape; row_rep++) {
+               for (int col_rep = 0; col_rep < m_aspect_portrait; col_rep++) {
+                  m_image.setPixel(j*m_aspect_portrait+col_rep, i*m_aspect_landscape+row_rep, qRgb(color.red(),color.green(),color.blue()));
+               }
+            }
+            //m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
          }
          raw_data[i]->drawn = true;
      }
@@ -153,6 +161,7 @@ QString ScanData::generate_png() {
      QByteArray ba;
      QBuffer buffer(&ba);
      buffer.open(QIODevice::WriteOnly);
+     //m_image = m_image.scaled(m_num_columns*m_aspect_portrait, m_num_rows*m_aspect_landscape);
      m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
      return ba.toBase64();
 }

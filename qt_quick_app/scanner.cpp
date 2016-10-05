@@ -207,7 +207,6 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
         // don't do this unless the scan is finished
         return;
     }
-
     // sanitize input
     if (y_averages < 1) y_averages = 1;
     // find limits
@@ -431,6 +430,7 @@ quint16 Scanner::num_rows() {
 void Scanner::set_num_rows(int num_rows) {
     m_num_rows = num_rows;
     qDebug() << "Changing num rows to " << m_num_rows;
+    qDebug() << m_ratio;
     emit num_rows_changed(static_cast<int>(m_num_rows));
     update_settings(settings_group_name, "num_rows", QVariant(m_num_rows));
     cmd_set_signal_generator();
