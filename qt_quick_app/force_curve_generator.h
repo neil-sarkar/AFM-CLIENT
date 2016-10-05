@@ -2,12 +2,13 @@
 #define FORCECURVEGENERATOR_H
 
 #include "afm_object.h"
+#include "pid.h"
 
 class ForceCurveGenerator : public AFMObject
 {
     Q_OBJECT
 public:
-    ForceCurveGenerator();
+    ForceCurveGenerator(PID*);
     Q_INVOKABLE void cmd_generate_force_curve();
     void save_raw_data(QString save_folder);
     void init();
@@ -26,6 +27,7 @@ private:
     void clear_buffers();
     const int Initial_Z;
     const int Step_Size;
+    PID* m_pid;
 };
 
 #endif // FORCECURVEGENERATOR_H

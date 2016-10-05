@@ -48,7 +48,7 @@ AFM* Builder::build_afm() {
     Approacher* approacher = new Approacher(pid, adc_collection["z_piezoresistor_amplitude"]);
     Sweeper* sweeper = new Sweeper(pid);
     sweeper->dds = new DDS();
-    ForceCurveGenerator* force_curve_generator = new ForceCurveGenerator();
+    ForceCurveGenerator* force_curve_generator = new ForceCurveGenerator(pid);
 
     return new AFM(pga_collection, dac_collection, adc_collection, motor, sweeper, approacher, scanner, force_curve_generator);
 }

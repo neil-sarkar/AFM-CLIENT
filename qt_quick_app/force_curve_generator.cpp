@@ -2,11 +2,13 @@
 #include "adc.h"
 #include "dac.h"
 #include "constants.h"
+#include "pid.h"
 #include <QFile>
 #include <QDateTime>
 #include <QtMath>
 
-ForceCurveGenerator::ForceCurveGenerator() : Initial_Z(2500), Step_Size(5) {
+ForceCurveGenerator::ForceCurveGenerator(PID* pid) : Initial_Z(2500), Step_Size(5) {
+    m_pid = pid;
 }
 
 void ForceCurveGenerator::init() {
@@ -51,6 +53,7 @@ void ForceCurveGenerator::callback_generate_force_curve(QByteArray return_bytes)
     mutex.lock();
     is_approaching = false;
     mutex.unlock();
+    m_pid->set_enabled(true);
 }
 
 ForceCurveGenerator::callback_return_type ForceCurveGenerator::bind(callback_type method) {
