@@ -257,6 +257,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var img = $('.scan-image');
                 var aspect_ratio = img[0].naturalHeight / img[0].clientHeight / Math.max(this.state.num_columns/this.state.num_rows,1);
                 var offsetY = this.state.line_profile_y/aspect_ratio;
+                e.preventDefault();
                 this.setState({line_profile_width: new_width}, function(){
                     scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y ), this.state.line_profile_width);
                     $('.scan-image-inverter').css({
