@@ -43,6 +43,9 @@ const QString Scanner_Set_Send_Back_Count = "Scanner_Set_Send_Back_Count";
 const QString Scanner_Set_Leveling_Direction = "Scanner_Set_Leveling_Direction";
 const QString Scanner_Set_Zoom = "Scanner_Set_Zoom";
 const QString AFM_Get_Auto_Approach_State	= "AFM_Get_Auto_Approach_State";
+const QString AFM_Start_Auto_Retract_Disengage = "AFM_Start_Auto_Retract_Disengage";
+const QString AFM_Start_Auto_Retract_Fast = "AFM_Start_Auto_Retract_Fast";
+
 
 const char Message_Delimiter = 0x0A;
 const char Newline_Character = 0x0A;
