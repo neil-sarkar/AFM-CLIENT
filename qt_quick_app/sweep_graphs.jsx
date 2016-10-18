@@ -2,6 +2,8 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
     var SweepGraph = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode;
+            if( typeof merp == 'undefined') {merp = [];}
+            merp.push(node);
             var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
             var dataSeries = this.state.model;
             var series = this.generate_initial_series();
@@ -16,7 +18,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                 title: {
                     text: this.props.title
                 },
-                tooltip: { crosshairs: [true, true] },
+                tooltip: { crosshairs: [true, true], valueDecimals: 4 },
                 xAxis: {
                     type: 'linear',
                     title: { text: "Frequency (Hz)" },
@@ -58,6 +60,9 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
                                     var index = this.index;
                                     var series = this.series._i;
                                     self.props.emit_tooltip(index, series, e);
+                                },
+                                mouseOut: function(e) {
+                                    self.props.emit_tooltip_hide();
                                 },
                                 click: function(e) {
                                     self.props.handle_click(e.point.x, this.index, this.series._i); // capture the y value
@@ -151,6 +156,11 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
             chart.xAxis[0].drawCrosshair(e, point);
             chart.yAxis[0].drawCrosshair(e, point);
         },
+        hide_tooltip: function() {
+            var node = this.refs.chartNode;
+            var chart = $(node).highcharts();
+            chart.tooltip.hide(chart.tooltip.hideTimer);
+        },
         clear: function() {
             var node = this.refs.chartNode;
             var chart = $(node).highcharts();
@@ -173,6 +183,10 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
             this.refs.amplitude_graph.update_tooltip(index, series, e);
             this.refs.phase_graph.update_tooltip(index, series, e);
         },
+        emit_tooltip_hide: function() {
+            this.refs.amplitude_graph.hide_tooltip();
+            this.refs.phase_graph.hide_tooltip();
+        },
         handle_click: function(frequency, index, series) {
             if (this.props.advanced == true) {
                 sweeper.set_frequency_on_select(frequency);
@@ -183,8 +197,8 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} ylabel={"Amplitude (V)"} data_connection={sweeper.new_amplitude_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} ylabel={"Phase (degrees)"} data_connection={sweeper.new_phase_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} ylabel={"Amplitude (V)"} data_connection={sweeper.new_amplitude_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} emit_tooltip_hide={this.emit_tooltip_hide} handle_click={this.handle_click}/>
+                    <SweepGraph ref="phase_graph" title={"Phase"} ylabel={"Phase (degrees)"} data_connection={sweeper.new_phase_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} emit_tooltip_hide={this.emit_tooltip_hide} handle_click={this.handle_click}/>
                 </div>
             );
         }
