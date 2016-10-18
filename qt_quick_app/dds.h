@@ -29,6 +29,7 @@ signals:
     void start_frequency_changed(int);
     void step_size_changed(int);
     void end_frequency_changed(int);
+    void stable_frequency_set(int);
 
 public slots:
 

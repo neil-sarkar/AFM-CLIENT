@@ -95,6 +95,7 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
         componentDidMount: function() {
             this.renderChart();
             this.props.data_connection.connect(this.handle_new_data);
+            this.props.DDS_set.connect(this.handle_new_DDS_freq);
         },
         handle_new_data: function(data) {
             var two_dimensional_data = [];
@@ -112,9 +113,22 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
             // TODO: check if this does anything
             this.state.model.push([]);
             (this.state.model[this.state.model.length - 1]).push(two_dimensional_data);
-
-            var node = this.refs.chartNode;
             $(node).highcharts().xAxis[0].setExtremes(min_x - this.props.zoom_buffer, max_x + this.props.zoom_buffer);
+        },
+        handle_new_DDS_freq: function(data) {
+            var node = this.refs.chartNode;
+            $(node).highcharts().xAxis[0].removePlotLine('DDS-Frequency-Indicator');
+            $(node).highcharts().xAxis[0].addPlotLine({
+                value: data,
+                color: "grey",
+                width: 2,
+                id: 'DDS-Frequency-Indicator',
+                dashStyle: 'ShortDash',
+                label: {text: data.toString(),
+                        verticalAlign: 'bottom',
+                        y:-30,
+                        style: {color: 'grey'}}
+            });
         },
         add_series: function(data, color) {
             var series = {
@@ -169,8 +183,8 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
         render: function() {
             return (
                 <div>
-                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} ylabel={"Amplitude (V)"} data_connection={sweeper.new_amplitude_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
-                    <SweepGraph ref="phase_graph" title={"Phase"} ylabel={"Phase (degrees)"} data_connection={sweeper.new_phase_data} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="amplitude_graph" title={"Amplitude"} ylabel={"Amplitude (V)"} data_connection={sweeper.new_amplitude_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
+                    <SweepGraph ref="phase_graph" title={"Phase"} ylabel={"Phase (degrees)"} data_connection={sweeper.new_phase_data} DDS_set={dds.stable_frequency_set} emit_tooltip={this.emit_tooltip} handle_click={this.handle_click}/>
                 </div>
             );
         }

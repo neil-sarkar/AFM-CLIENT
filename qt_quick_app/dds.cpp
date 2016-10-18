@@ -79,6 +79,9 @@ void DDS::cmd_set() {
     payload += qint8(_num_steps);
     payload += qint8(_num_steps >> 8);
     emit command_generated(new CommandNode(command_hash[DDS_Set_AD9837], payload));
+    if(m_step_size == 0){
+        emit stable_frequency_set(static_cast<int>(m_start_frequency));
+    }
 }
 
 const QString DDS::settings_group_name = "dds";
