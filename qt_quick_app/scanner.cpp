@@ -41,23 +41,23 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 }
 
 void Scanner::handleFinished_fo() {
-    emit new_forward_offset_data(watcher_fo.future());
+    emit new_forward_offset_data(watcher_fo.future().result());
 }
 
 void Scanner::handleFinished_ro() {
-    emit new_reverse_offset_data(watcher_ro.future());
+    emit new_reverse_offset_data(watcher_ro.future().result());
 }
 void Scanner::handleFinished_fp() {
-    emit new_forward_phase_data(watcher_fp.future());
+    emit new_forward_phase_data(watcher_fp.future().result());
 }
 void Scanner::handleFinished_rp() {
-    emit new_reverse_phase_data(watcher_rp.future());
+    emit new_reverse_phase_data(watcher_rp.future().result());
 }
 void Scanner::handleFinished_fe() {
-    emit new_forward_error_data(watcher_fe.future());
+    emit new_forward_error_data(watcher_fe.future().result());
 }
 void Scanner::handleFinished_re() {
-    emit new_reverse_error_data(watcher_re.future());
+    emit new_reverse_error_data(watcher_re.future().result());
 }
 
 void Scanner::update_z_actuator_scale_factor(double fine_z_pga_value) {
@@ -152,12 +152,12 @@ void Scanner::initialize_scan_state_machine() {
         delete rev_error_data;
     }
 
-    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
+    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm");
+    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg");
+    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"V");
+    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm");
+    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg");
+    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"V");
 }
 
 void Scanner::set_signal_generator() {
@@ -340,34 +340,34 @@ void Scanner::callback_step_scan(QByteArray payload) {
     if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
         normalize_offset_line_profiles();
 
-        QFuture<QString> future;
+        QFuture<QVariantList> future;
         if(!watcher_fo.isRunning()) {
-            future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_all);
             watcher_fo.setFuture(future);
             emit new_forward_offset_profile(current_fwd_offset_line_profile);
         }
         if(!watcher_ro.isRunning()) {
-            future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_all);
             watcher_ro.setFuture(future);
             emit new_reverse_offset_profile(current_rev_offset_line_profile);
         }
         if(!watcher_fp.isRunning()) {
-            future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_all);
             watcher_fp.setFuture(future);
             emit new_forward_phase_profile(current_fwd_phase_line_profile);
         }
         if(!watcher_rp.isRunning()) {
-            future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_all);
             watcher_rp.setFuture(future);
             emit new_reverse_phase_profile(current_rev_phase_line_profile);
         }
         if(!watcher_fe.isRunning()) {
-            future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_all);
             watcher_fe.setFuture(future);
             emit new_forward_error_profile(current_fwd_error_line_profile);
         }
         if(!watcher_re.isRunning()) {
-            future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
+            future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_all);
             watcher_re.setFuture(future);
             emit new_reverse_error_profile(current_rev_error_line_profile);
         }

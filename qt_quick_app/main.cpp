@@ -24,6 +24,7 @@
 #include <QDesktopWidget>
 #include <QImage>
 #include <QBuffer>
+#include <QFontDatabase>
 #include "safe_application.h"
 
 int main(int argc, char *argv[])
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("ICSPI");
     SafeApplication app(argc, argv); // init app
     QQmlApplicationEngine engine;
+    QFontDatabase::addApplicationFont(":/fonts/roboto/Roboto-Thin.ttf");
 
     // Thread declarations
     QThread* serial_thread = new QThread();
@@ -47,6 +49,7 @@ int main(int argc, char *argv[])
     builder->wire(afm, serial_port, send_worker, receive_worker);
     builder->generate_command_nodes();
     builder->generate_color_map();
+    builder->generate_color_bar();
 
     // Thread connections
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));

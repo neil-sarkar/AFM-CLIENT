@@ -71,12 +71,12 @@ signals:
     void set_signal_generator_done();
     void all_data_received();
     void reset();
-    void new_forward_offset_data(QString);
-    void new_forward_phase_data(QString);
-    void new_forward_error_data(QString);
-    void new_reverse_offset_data(QString);
-    void new_reverse_phase_data(QString);
-    void new_reverse_error_data(QString);
+    void new_forward_offset_data(QVariantList);
+    void new_forward_phase_data(QVariantList);
+    void new_forward_error_data(QVariantList);
+    void new_reverse_offset_data(QVariantList);
+    void new_reverse_phase_data(QVariantList);
+    void new_reverse_error_data(QVariantList);
     void started_scan_state_machine();
 
     // property changes
@@ -177,12 +177,12 @@ private:
     ScanData* rev_phase_data;
     ScanData* rev_error_data;
 
-    QFutureWatcher<QString> watcher_fo;
-    QFutureWatcher<QString> watcher_ro;
-    QFutureWatcher<QString> watcher_fp;
-    QFutureWatcher<QString> watcher_rp;
-    QFutureWatcher<QString> watcher_fe;
-    QFutureWatcher<QString> watcher_re;
+    QFutureWatcher<QVariantList> watcher_fo;
+    QFutureWatcher<QVariantList> watcher_ro;
+    QFutureWatcher<QVariantList> watcher_fp;
+    QFutureWatcher<QVariantList> watcher_rp;
+    QFutureWatcher<QVariantList> watcher_fe;
+    QFutureWatcher<QVariantList> watcher_re;
 
     QVariantList current_fwd_offset_line_profile;
     QVariantList current_rev_offset_line_profile;

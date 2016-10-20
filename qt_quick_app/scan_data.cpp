@@ -11,8 +11,9 @@
 #include <QtMath>
 #include <QPainter>
 
-ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y)
+ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y, QString unit)
 {
+    m_unit = unit;
     m_num_columns = num_columns;
     m_num_rows = num_rows;
 
@@ -20,8 +21,11 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_delta_x = delta_x;
     m_delta_y = delta_y;
 
-    m_aspect_portrait = (num_rows/num_columns == 0) ? 1 : num_rows/num_columns;
-    m_aspect_landscape = (num_columns/num_rows == 0) ? 1: num_columns/num_rows;
+    m_same_range = false;
+
+    // force image size of 1024x1024
+    m_scale_x = display_image_dimensions/num_columns;
+    m_scale_y = display_image_dimensions/num_rows;
 
     m_prev_max = INT32_MIN;
     m_prev_min = INT32_MAX;
@@ -31,8 +35,8 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
         raw_data[i] = new ScanLine(m_num_columns);
 
     // Initialize the image to be all white
-    m_image = QImage(m_num_columns*m_aspect_portrait, m_num_rows*m_aspect_landscape, QImage::Format_RGB32);
-    //m_image = QImage(m_num_columns, m_num_rows, QImage::Format_RGB32);
+    //m_image = QImage(m_num_columns*m_aspect_portrait, m_num_rows*m_aspect_landscape, QImage::Format_RGB32);
+    m_image = QImage(display_image_dimensions, display_image_dimensions, QImage::Format_RGB32);
     m_image.fill(Qt::white);
     m_current_size = 0;
 }
@@ -97,6 +101,36 @@ void ScanData::print() {
     }
 }
 
+QVariantList ScanData::generate_all() {
+    QVariantList results;
+    results.append(generate_png());
+    if(!m_same_range)
+    {
+        qDebug() << "z_bar update initiated";
+        results.append(generate_z_bar());
+    }
+    else
+    {
+        results.append("");
+    }
+    return results;
+}
+
+QString ScanData::generate_z_bar() {
+    QImage z_bar = color_bar.copy();
+    QPainter painter(&z_bar);
+    QString format = "%1 %2";
+    painter.setFont(QFont("Roboto-Thin", 12));
+    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_prev_max,'g',3), m_unit));
+    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_prev_min,'g',3), m_unit));
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    z_bar.save(&buffer, "PNG"); // writes image into ba in PNG format
+    buffer.close();
+    return ba.toBase64();
+}
+
 QString ScanData::generate_png() {
      int color_index;
      QColor color;
@@ -125,7 +159,7 @@ QString ScanData::generate_png() {
      if (scan_min > m_prev_min) {
          scan_min = m_prev_min;
      }
-     bool same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
+     m_same_range = (m_prev_max == scan_max && m_prev_min == scan_min);
 
      double range = scan_max - scan_min;
      for (int i = 0; i < m_num_rows; i++) {
@@ -133,7 +167,7 @@ QString ScanData::generate_png() {
              continue;
          }
 
-         if (same_range && raw_data[i]->drawn) {
+         if (m_same_range && raw_data[i]->drawn) {
              continue;
          }
          for (int j = 0; j < raw_data[i]->size; j++) {
@@ -146,9 +180,9 @@ QString ScanData::generate_png() {
             if(color_index >= color_map.size()) color_index = color_map.size() - 1;
             if(color_index < 0) color_index = 0;
             color = color_map[color_index];
-            for (int row_rep = 0; row_rep < m_aspect_landscape; row_rep++) {
-               for (int col_rep = 0; col_rep < m_aspect_portrait; col_rep++) {
-                  m_image.setPixel(j*m_aspect_portrait+col_rep, i*m_aspect_landscape+row_rep, qRgb(color.red(),color.green(),color.blue()));
+            for (int row_rep = 0; row_rep < m_scale_y; row_rep++) {
+               for (int col_rep = 0; col_rep < m_scale_x; col_rep++) {
+                  m_image.setPixel(j*m_scale_x+col_rep, i*m_scale_y+row_rep, qRgb(color.red(),color.green(),color.blue()));
                }
             }
             //m_image.setPixel(j, i, qRgb(color.red(),color.green(),color.blue()));
@@ -163,5 +197,6 @@ QString ScanData::generate_png() {
      buffer.open(QIODevice::WriteOnly);
      //m_image = m_image.scaled(m_num_columns*m_aspect_portrait, m_num_rows*m_aspect_landscape);
      m_image.save(&buffer, "PNG"); // writes image into ba in PNG format
+     buffer.close();
      return ba.toBase64();
 }
