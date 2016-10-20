@@ -14,7 +14,8 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     zoomType: 'x',
                 },
                 title: {
-                    text: "Line Profile"
+                    text: "Line Profile",
+                    y: 20,
                 },
                 tooltip: { crosshairs: [true, true] },
                 xAxis: {

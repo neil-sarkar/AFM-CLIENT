@@ -341,16 +341,16 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
              // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
             return (
                 <div className="wrapper" id="scan-wrapper">
-                    <div className="left-flexbox">
-                        <div className="top-row scan-top">
-                            <div className="scan-view-selector-container">
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Offset")}> Forward Topo</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Offset")}> Reverse Topo</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Phase")}> Forward Phase</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Phase")}> Reverse Phase</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Error")}> Foward Error</p>
-                                <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
-                            </div>
+                    <div className="left-flexbox flexbox-row">
+                        <div className="scan-view-selector-container">
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Offset")}> Forward Topo</p>
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Offset")}> Reverse Topo</p>
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Phase")}> Forward Phase</p>
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Phase")}> Reverse Phase</p>
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Error")}> Foward Error</p>
+                            <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
+                        </div>
+                        <div className="flex-column">
                             <div className="scan-images-container">
                                 <img src={empty_image_str} className="scan-image"
                                     onMouseMove={this.handle_image_mouse_move}
@@ -361,8 +361,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                 />
                                 <div className="scan-image-inverter" />
                             </div>
+                            <LineProfile ref="line_profile" chart_name={this.props.name}/>
                         </div>
-                        <LineProfile ref="line_profile" chart_name={this.props.name}/>
                     </div>
                     <div className="right-flexbox">
                         <div className="step-name">Scan</div>

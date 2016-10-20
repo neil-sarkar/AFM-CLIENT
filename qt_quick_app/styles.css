@@ -18,8 +18,8 @@ body {
 }
 
 .chart-profile {
-    width: 90%;
-    min-height: 200px;
+    width: 100%;
+    min-height: 180px;
 }
 
 .app {
@@ -92,6 +92,10 @@ body {
     padding: 2%;
 }
 
+.flexbox-row {
+    -webkit-flex-flow: row !important;
+}
+
 .right-flexbox {
     -webkit-flex: 1;
     display: -webkit-flex;
@@ -106,6 +110,16 @@ body {
     display: -webkit-flex;
     -webkit-flex: 1;
     -webkit-flex-flow: row wrap;
+    -webkit-justify-content: space-around;
+    -webkit-align-self: center;
+    margin: auto;
+    width: 100%;
+}
+
+.flex-column {
+    display: -webkit-flex;
+    -webkit-flex: 1;
+    -webkit-flex-flow: column;
     -webkit-justify-content: space-around;
     -webkit-align-self: center;
     margin: auto;
@@ -316,6 +330,7 @@ body {
     text-align: right;
     -webkit-flex: none;
     margin-right: 5%;
+    -webkit-align-self: flex-start;
 }
 
 .view-selector-button {
