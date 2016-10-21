@@ -162,6 +162,7 @@ private:
     double y_range_in_m();
     double x_offset_in_m();
     double y_offset_in_m();
+    double x_index_in_um(int x_index);
     void normalize_offset_line_profiles(void);
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));

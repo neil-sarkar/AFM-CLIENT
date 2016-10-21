@@ -226,12 +226,12 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
     current_rev_phase_line_profile.clear();
 
     for (int x = 0; x < m_num_columns; x++) {
-        current_fwd_offset_line_profile.append(x);
-        current_fwd_error_line_profile.append(x);
-        current_fwd_phase_line_profile.append(x);
-        current_rev_offset_line_profile.append(x);
-        current_rev_error_line_profile.append(x);
-        current_rev_phase_line_profile.append(x);
+        current_fwd_offset_line_profile.append(x_index_in_um(x));
+        current_fwd_error_line_profile.append(x_index_in_um(x));
+        current_fwd_phase_line_profile.append(x_index_in_um(x));
+        current_rev_offset_line_profile.append(x_index_in_um(x));
+        current_rev_error_line_profile.append(x_index_in_um(x));
+        current_rev_phase_line_profile.append(x_index_in_um(x));
 
         current_fwd_offset_line_profile.append(y);
         current_fwd_error_line_profile.append(y);
@@ -310,13 +310,13 @@ void Scanner::callback_step_scan(QByteArray payload) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
             fwd_phase_data->append(m_x_index, m_y_index, z_phase);
             fwd_error_data->append(m_x_index, m_y_index, z_error);
-            current_fwd_offset_line_profile.append(m_x_index);
+            current_fwd_offset_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_offset_line_profile.append(m_y_index);
             current_fwd_offset_line_profile.append(z_offset_nm);
-            current_fwd_phase_line_profile.append(m_x_index);
+            current_fwd_phase_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_phase_line_profile.append(m_y_index);
             current_fwd_phase_line_profile.append(z_phase);
-            current_fwd_error_line_profile.append(m_x_index);
+            current_fwd_error_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_error_line_profile.append(m_y_index);
             current_fwd_error_line_profile.append(z_error);
         } else {
@@ -326,13 +326,13 @@ void Scanner::callback_step_scan(QByteArray payload) {
             rev_error_data->append(x_coord, m_y_index, z_error);
             current_rev_offset_line_profile.prepend(z_offset_nm);
             current_rev_offset_line_profile.prepend(m_y_index);
-            current_rev_offset_line_profile.prepend(x_coord);
+            current_rev_offset_line_profile.prepend(x_index_in_um(x_coord));
             current_rev_phase_line_profile.prepend(z_phase);
             current_rev_phase_line_profile.prepend(m_y_index);
-            current_rev_phase_line_profile.prepend(x_coord);
+            current_rev_phase_line_profile.prepend(x_index_in_um(x_coord));
             current_rev_error_line_profile.prepend(z_error);
             current_rev_error_line_profile.prepend(m_y_index);
-            current_rev_error_line_profile.prepend(x_coord);
+            current_rev_error_line_profile.prepend(x_index_in_um(x_coord));
         }
         scanning_forward = is_scanning_forward();
     }
@@ -665,6 +665,7 @@ double Scanner::z_fine_dac_to_nm(double dac_value, double z_actuator_scale_facto
 }
 
 double Scanner::x_range_in_m() {
+    // TODO: de-magic-ify 14e-6 => max square scan range with PGA 100%
     return 14e-6 * m_x_actuator_scale_factor * m_zoom_scale * ((m_ratio == 1) ? 4 : 1);
 }
 
@@ -678,6 +679,10 @@ double Scanner::x_offset_in_m() {
 
 double Scanner::y_offset_in_m() {
     return ((m_ratio == 1) ? 0 : (14e-6 * m_y_actuator_scale_factor * m_y_offset));
+}
+
+double Scanner::x_index_in_um(int x_index) {
+    return (x_offset_in_m() + x_index/((double) m_num_columns)*x_range_in_m())*1e6;
 }
 
 void Scanner::normalize_offset_line_profiles(void) {

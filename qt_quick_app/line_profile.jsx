@@ -17,7 +17,10 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     text: "Line Profile",
                     y: 20,
                 },
-                tooltip: { crosshairs: [true, true] },
+                tooltip: {
+                    crosshairs: [true, true],
+                    headerFormat: '<span style="font-size: 10px">{point.key:.4f}</span><br/>'
+                },
                 xAxis: {
                     type: 'linear',
                 },
