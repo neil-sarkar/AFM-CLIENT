@@ -11,7 +11,7 @@ class ScanData : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanData(int num_columns, int num_points, int ratio, int delta_x, int delta_y, QString unit);
+    explicit ScanData(int num_columns, int num_points, int ratio, int delta_x, int delta_y, QString unit, bool use_level, double scale_value);
     ~ScanData();
     bool append(coordinate x, coordinate y, point z);
     bool is_full();
@@ -20,11 +20,12 @@ public:
     void print();
     int max_size();
     std::vector<ScanLine*> raw_data;
-    
+    double **leveled_lines;
     QVector<ScanLine> leveled_data;
     QString generate_png();
-    QString generate_z_bar();
-    QVariantList generate_all();
+    QString generate_leveled_png(int curret_line);
+    QString generate_z_bar(double min_value, double max_value);
+    QVariantList generate_all(int current_line);
     QVariantList get_latest_line();
 
 signals:
@@ -41,9 +42,14 @@ private:
     int m_scale_y;
     double m_prev_min;
     double m_prev_max;
+    double m_leveled_min;
+    double m_leveled_max;
+    double m_scale_value;
     bool m_same_range;
+    bool m_use_level;
     qint64 m_current_size;
     QImage m_image;
+    QImage m_leveled_image;
     QString m_unit;
 };
 

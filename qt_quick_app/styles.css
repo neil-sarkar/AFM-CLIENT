@@ -474,6 +474,10 @@ body {
     width: 100%;
 }
 
+#use_level_checkbox {
+    -webkit-user-select: none;
+    cursor: pointer;
+}
 /*progressbar*/
 #progressbar {
     margin-bottom: 30px;
