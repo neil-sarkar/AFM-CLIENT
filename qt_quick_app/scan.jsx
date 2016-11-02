@@ -1,6 +1,6 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text_input", "jsx!pages/save_folder"], function(React, HeatmapCanvas, LineProfile, InlineScanControls, NumberInput, Dropdown, TextInput, SaveFolderPicker) {
     var empty_image_str = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    
+
     function ScanView(name, render_signal, data_source) {
         this.name = name;
         this.data_source = data_source;
@@ -34,6 +34,11 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 dragging: false,
                 mouse_start_x: 0,
                 mouse_start_y: 0,
+                save_folder: "",
+                save_message: "",
+                auto_save: false,
+                continuous_scan: false,
+                save_png: false,
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -57,12 +62,21 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 starting_fresh_scan: true,
             });
         },
+        handle_all_processing_done: function() {
+            if(this.state.auto_save){
+                this.save_data();
+            }
+            if(this.state.continuous_scan){
+                this.start_or_resume_scanning();
+            }
+        },
         componentDidMount: function() {
 
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
             scanner.all_data_received.connect(this.set_scan_complete);
-
+            scanner.all_processing_done.connect(this.handle_all_processing_done);
+            afm.save_folder_changed.connect(this.save_folder_changed);
             // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
                 var bound_method = this.save_png_data.bind(this, scan_views[i]);
@@ -177,8 +191,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 });
                 this.refs.line_profile.erase_data();
                 this.set_scan_complete();
-            }.bind(this), 200); // give time for the scnaner to actually pause 
-            // so data doesn't get rendered 
+            }.bind(this), 200); // give time for the scnaner to actually pause
+            // so data doesn't get rendered
             // (maybe this should happen on a signal) or have a "accepting data" state check before dispatching
         },
         eliminate_outliers: function() {
@@ -329,16 +343,47 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         save_data: function () {
-            if(afm.launch_folder_picker()) {
-                afm.save_scan_data();
+            if(this.state.save_folder && scanner.base_file_name()) {
+                status_message = afm.save_scan_data();
+                this.set_save_message_with_clear(status_message);
             }
+            else {
+                this.set_save_message_with_clear("Please specify save folder and file name base");
+            }
+        },
+        set_save_message_with_clear: function(msg) {
+            this.setState(
+                {save_message: msg},
+                function() {
+                    $(".save-message").fadeTo("fast",1);
+                    setTimeout(function() {
+                        $(".save-message").fadeTo("slow",0);
+                    }.bind(this), 2000);
+                }.bind(this)
+            );
+        },
+        save_folder_changed: function(data) {
+            this.setState({save_folder: data});
+        },
+        handle_auto_save_change: function(e) {
+            this.setState({auto_save: e.target.checked});
+        },
+        handle_save_png_change: function(e) {
+            this.setState(
+                {save_png: e.target.checked},
+                function() {
+                    scanner.set_save_png(this.state.save_png);
+                });
+        },
+        handle_continuous_scan_change: function(e) {
+            this.setState({continuous_scan: e.target.checked});
         },
         reset_zoom: function () {
             scanner.reset_zoom();
             this.setState({zoom_set:false});
         },
         render: function() {
-             // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)   
+             // the states will need fixing - clean button should be disabled until scanning completely done (should edit how states work)
             return (
                 <div className="wrapper" id="scan-wrapper">
                     <div className="left-flexbox flexbox-row">
@@ -369,7 +414,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <div className="step-description">
                             Press "Scan" to begin imaging.
                         </div>
-                        <div>
+                        <div id="scan-dropdown-container">
                             <Dropdown options_list={[
                                         {text: "8", cmd_number: 8},
                                         {text: "16", cmd_number: 16},
@@ -398,24 +443,37 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                     notify_signal={scanner.num_rows_changed}
                                     get_value={scanner.num_rows}
                                     title="Number of lines"/>
-                            <NumberInput value_type="scan" 
+                            <NumberInput value_type="scan"
                                         name="Time spent at each point (ms)"
                                         min={0}
                                         max={255}
-                                        step={1} 
-                                        notify_signal={scanner.dwell_time_changed} 
+                                        step={1}
+                                        notify_signal={scanner.dwell_time_changed}
                                         get_value={scanner.dwell_time}
                                         set_value={scanner.set_dwell_time} />
-                            <TextInput name="File name base" 
+                        </div>
+                        <div className="save-row">
+                            <div className="flex-resize">
+                                <div className="pointer-cursor overflow-hidden" onClick={afm.launch_folder_picker}>
+                                    Path: {this.state.save_folder}
+                                </div>
+                                <TextInput name="File name base"
                                         notify_signal={scanner.base_file_name_changed}
                                         get_value={scanner.base_file_name}
                                         set_value={scanner.set_base_file_name} />
+                            </div>
+                            <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
                         </div>
+                        <div className="save-row justify-space-between">
+                            <label className="checkbox"><input type="checkbox" onChange={this.handle_auto_save_change} checked={this.state.auto_save}/> Auto-Save</label>
+                            <label className="checkbox"><input type="checkbox" onChange={this.handle_continuous_scan_change} checked={this.state.continuous_scan}/> Continuous Scan</label>
+                            <label className="checkbox"><input type="checkbox" onChange={this.handle_save_png_change} checked={this.state.save_png}/> Save PNG</label>
+                        </div>
+                        <div className="save-message overflow-hidden flex-no-resize">{this.state.save_message}&nbsp;</div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Reset</button>
                             <button className="action-button" onClick={this.reset_zoom} disabled={!this.state.zoom_set}>Reset Zoom</button>
-                            <button className="action-button" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
                         </div>
                         <div className="nav-buttons-wrapper">
                             <button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
