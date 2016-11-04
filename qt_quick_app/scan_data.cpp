@@ -282,12 +282,46 @@ QString ScanData::generate_z_bar(double min_value, double max_value) {
         max_val = max_value;
     }
     painter.setFont(QFont("Roboto-Thin", 12));
-    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'g',3), m_unit));
-    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'g',3), m_unit));
+    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
+    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
     z_bar.save(&buffer, "PNG"); // writes image into ba in PNG format
     buffer.close();
     return ba.toBase64();
+}
+
+void ScanData::save_png(QString path_and_name)
+{
+    QImage image;
+    double min_val;
+    double max_val;
+    if(m_use_level)
+    {
+        image = m_leveled_image;
+        min_val = 0;
+        max_val = m_leveled_max-m_leveled_min;
+    }
+    else
+    {
+        image = m_image;
+        min_val = m_prev_min;
+        max_val = m_prev_max;
+    }
+
+    QImage z_bar = color_bar.copy();
+    QPainter painter(&z_bar);
+    QString format = "%1 %2";
+    painter.setFont(QFont("Roboto-Thin", 12));
+    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
+    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
+
+    //merge image
+    QImage result = QImage(image.width() + z_bar.width(), image.height(), QImage::Format_RGB32);
+    QPainter merge(&result);
+    merge.drawImage(0,0,image);
+    merge.drawImage(image.width(),0,z_bar);
+
+    result.save(path_and_name+".png",0,100);
 }

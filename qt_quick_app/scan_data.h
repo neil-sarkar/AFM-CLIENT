@@ -27,6 +27,7 @@ public:
     QString generate_z_bar(double min_value, double max_value);
     QVariantList generate_all(int current_line);
     QVariantList get_latest_line();
+    void save_png(QString path_and_name);
 
 signals:
 

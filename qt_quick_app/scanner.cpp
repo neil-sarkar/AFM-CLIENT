@@ -689,7 +689,7 @@ void Scanner::save_raw_data(QString folder_path, QString timestamp) {
     specific_file_names << "offset forward" << "phase forward" << "error forward" << "offset reverse" << "phase reverse" << "error reverse";
     scan_data << fwd_offset_data << fwd_phase_data << fwd_error_data << rev_offset_data << rev_phase_data << rev_error_data;
     for (int i = 0; i < specific_file_names.length(); i++) {
-        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i] + " " + timestamp);
+        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i] + " " + timestamp + ".gsf");
         if (file.open(QIODevice::WriteOnly)) {
             qDebug() << "file created" << file.fileName();
             full_paths.append(file.fileName());
@@ -751,7 +751,12 @@ void Scanner::save_raw_data(QString folder_path, QString timestamp) {
 }
 
 void Scanner::save_png_data(QString folder_path, QString timestamp) {
-
+    fwd_offset_data->save_png(folder_path + "/" + m_base_file_name + " " + "offset forward" + " " + timestamp);
+    fwd_phase_data->save_png(folder_path + "/" + m_base_file_name + " " + "phase forward" + " " + timestamp);
+    fwd_error_data->save_png(folder_path + "/" + m_base_file_name + " " + "error forward" + " " + timestamp);
+    rev_offset_data->save_png(folder_path + "/" + m_base_file_name + " " + "offset reverse" + " " + timestamp);
+    rev_phase_data->save_png(folder_path + "/" + m_base_file_name + " " + "phase reverse" + " " + timestamp);
+    rev_error_data->save_png(folder_path + "/" + m_base_file_name + " " + "error reverse" + " " + timestamp);
 }
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
