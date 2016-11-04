@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE void cmd_start_auto_approach();
     Q_INVOKABLE void cmd_stop_auto_approach();
     Q_INVOKABLE void cmd_get_state();
+    Q_INVOKABLE void cmd_start_disengage();
+    Q_INVOKABLE void cmd_start_retract_fast();
     int state();
 
 signals:

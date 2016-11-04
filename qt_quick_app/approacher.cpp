@@ -61,3 +61,15 @@ void Approacher::handle_auto_approach_info_message(QByteArray working_response) 
 //     }
 //     emit new_data(m_state, adc_value);
 }
+
+void Approacher::cmd_start_disengage() {
+    emit command_generated(new CommandNode(command_hash[AFM_Start_Auto_Retract_Disengage]));
+}
+
+void Approacher::cmd_start_retract_fast(){
+    quint16 duration = 2000;
+    QByteArray payload;
+    payload += (duration & 0xFF);
+    payload += ((duration & 0xFF00) >> 8);
+    emit command_generated(new CommandNode(command_hash[AFM_Start_Auto_Retract_Fast], payload));
+}

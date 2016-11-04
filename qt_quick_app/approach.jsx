@@ -11,6 +11,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		8: "slowing down",
 		9: "approaching slowly",
 		10: "reached setpoint",
+                11: "disengaging",
+                12: "retracting quickly"
 	};
 	var warning_interval;
 	var Approach = React.createClass({
@@ -31,13 +33,13 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			// 	this.refs.approach_graph.stop_streaming();
 			// }.bind(this);
 			// window.onfocus = function() {
-			// 	this.refs.z_fine_graph.start_streaming();
+                        // 	this.refs.z_fine_graph.start_streaming();
 			// 	this.refs.approach_graph.start_streaming();
 			// }.bind(this);
 		},
 		handle_new_data: function(approacher_state, approach_complete) {
                         approacher_state = parseInt(approacher_state);
-                        var approach_in_progress = (approacher_state != 0);
+                        var action_in_progress = (approacher_state != 0);
 			this.setState({
 				status: approacher_state,
 			});
@@ -50,13 +52,13 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						this.allow_dangerous_user_input();
                                         }.bind(this), 300)
 				});
-                        } else if (this.state.approach_complete && approach_in_progress) {
+                        } else if (this.state.approach_complete && action_in_progress) {
 				this.setState({
 					approach_complete: false
 				});
 			}
 			this.setState({
-                                approach_in_progress: approach_in_progress
+                                approach_in_progress: action_in_progress
 			}, function (argument) {
 				if (!this.state.approach_in_progress) {
 					clearInterval(warning_interval);
@@ -73,7 +75,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 				$('#approach-wrapper').show();
 				this.refs.z_fine_graph.start_streaming();
 				this.refs.approach_graph.start_streaming();
-				this.start_streaming();
+                                this.start_streaming();
 			}
 		},
 		start_streaming: function (argument) {
@@ -120,6 +122,31 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			clearInterval(warning_interval);
 			$(".motor-status").fadeTo("fast", 1);
 		},
+                start_disengage: function() {
+                        motor.cancel_timeout_timer(true);
+                        pid.set_disabled();
+                        if(dac_z_offset_fine.value() < 1.5) {
+                            dac_z_offset_fine.set_value(1.5);
+                        }
+                        approacher.cmd_start_disengage();
+                        motor_status_opacity = 0.5;
+                        warning_interval = setInterval(function () {
+                                $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+                                        motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+                                });
+                        }, 300);
+                },
+                start_retract_fast: function() {
+                        motor.cancel_timeout_timer(true);
+                        pid.set_disabled();
+                        approacher.cmd_start_retract_fast();
+                        motor_status_opacity = 0.5;
+                        warning_interval = setInterval(function () {
+                                $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+                                        motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+                                });
+                        }, 300);
+                },
 		toggle_advanced_controls: function () {
 			this.setState({
 				advanced: !this.state.advanced
@@ -158,9 +185,12 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						</div>
 						<div className="approacher-status">
 							<p className={"motor-status " + motor_status_style}><span className="bold-label">Motor status:</span> {status_map[this.state.status]}</p>
-							<p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete. Click next.</span> : <span>sample not in contact</span>}</p>
+                                                        <p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete.</span> : <span>sample not in contact</span>}</p>
 						</div>
-						<button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+                                                <div className="auto-approach-retract-buttons-wrapper">
+                                                    <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+                                                    <button className="action-button" id="disengage-retract-button" onClick={this.state.approach_complete ? this.start_disengage : this.start_retract_fast} disabled={this.state.approach_in_progress}>{this.state.approach_complete ? "Disengage" : "Retract"}</button>
+                                                </div>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
