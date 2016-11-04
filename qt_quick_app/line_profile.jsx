@@ -28,6 +28,7 @@ define(["jquery", "react", "dom", "highcharts", "console"], function($, React, R
                     title: {
                         text: 'Offset (nm)'
                     },
+                    opposite: true,
                 },
                 legend: {
                     layout: 'vertical',
