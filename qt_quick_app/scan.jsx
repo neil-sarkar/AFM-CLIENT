@@ -39,6 +39,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 auto_save: false,
                 continuous_scan: false,
                 save_png: false,
+                data_saved: false,
             };
         },
         componentWillReceiveProps : function(nextProps) {
@@ -162,6 +163,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             }, function(){
                 if (this.state.starting_fresh_scan) {
                     scanner.start_state_machine();
+                    this.setState({data_saved: false});
                     for (var i = 0; i < scan_views.length; i++) {
                         scan_views[i].data = empty_image_str;
                     }
@@ -181,6 +183,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.pause_scanning();
             scanner.reset();
             $('.scan-image')[0].src = empty_image_str;
+            this.setState({data_saved: false});
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = empty_image_str;
@@ -346,6 +349,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             if(this.state.save_folder && scanner.base_file_name()) {
                 status_message = afm.save_scan_data();
                 this.set_save_message_with_clear(status_message);
+                if(status_message == "Save success")
+                    this.setState({data_saved: true});
             }
             else {
                 this.set_save_message_with_clear("Please specify save folder and file name base");
@@ -462,7 +467,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         get_value={scanner.base_file_name}
                                         set_value={scanner.set_base_file_name} />
                             </div>
-                            <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning}>Save</button>
+                            <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning} style={{outline: (this.state.data_saved? "rgb(216, 189, 49) solid 3px": "none")}}>Save</button>
                         </div>
                         <div className="save-row justify-space-between">
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_auto_save_change} checked={this.state.auto_save}/> Auto-Save</label>

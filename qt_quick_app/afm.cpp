@@ -104,12 +104,10 @@ QString AFM::save_folder() {
 }
 
 void AFM::set_save_folder(QString save_folder) {
-    if (m_save_folder != save_folder) {
-        m_save_folder = save_folder;
-        qDebug() << "Setting save folder to " << m_save_folder;
-        emit save_folder_changed(m_save_folder);
-        update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
-    }
+    m_save_folder = save_folder;
+    qDebug() << "Setting save folder to " << m_save_folder;
+    emit save_folder_changed(m_save_folder);
+    update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
 }
 
 QString AFM::save_scan_data() {
