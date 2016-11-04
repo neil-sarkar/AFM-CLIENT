@@ -91,13 +91,12 @@ void AFM::restore_defaults() {
         i.value()->set_settings();
 }
 
-bool AFM::launch_folder_picker() {
+void AFM::launch_folder_picker() {
     QString path = QFileDialog::getExistingDirectory(0,"", m_save_folder);
     if (path.isEmpty()) {
-        return false;
+        return;
     }
     set_save_folder(path);
-    return true;
 }
 
 QString AFM::save_folder() {
@@ -105,16 +104,15 @@ QString AFM::save_folder() {
 }
 
 void AFM::set_save_folder(QString save_folder) {
-    if (m_save_folder != save_folder) {
-        m_save_folder = save_folder;
-        qDebug() << "Setting save folder to " << m_save_folder;
-        emit save_folder_changed(m_save_folder);
-        update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
-    }
+    m_save_folder = save_folder;
+    qDebug() << "Setting save folder to " << m_save_folder;
+    emit save_folder_changed(m_save_folder);
+    update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
 }
 
-void AFM::save_scan_data() {
-    scanner->save_raw_data(m_save_folder);
+QString AFM::save_scan_data() {
+    QString status_message = scanner->save_data(m_save_folder);
+    return status_message;
 }
 
 void AFM::save_force_curve_data() {

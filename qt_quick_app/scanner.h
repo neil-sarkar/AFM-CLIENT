@@ -64,14 +64,18 @@ public:
     Q_INVOKABLE void fetch_latest_offset_profiles();
     Q_INVOKABLE void zoom(float x, float y, float size);
     Q_INVOKABLE void reset_zoom();
+    Q_INVOKABLE void set_save_png(bool b_save_png);
 
     void set_settings();
-    void save_raw_data(QString save_folder);
+    QString save_data(QString save_folder);
+    void save_raw_data(QString folder_path, QString timestamp);
+    void save_png_data(QString folder_path, QString timestamp);
 
 signals:
     void scanner_initialization_done();
     void set_signal_generator_done();
     void all_data_received();
+    void all_processing_done();
     void reset();
     void new_forward_offset_data(QVariantList);
     void new_forward_phase_data(QVariantList);
@@ -89,6 +93,7 @@ signals:
     void num_columns_changed(int);
     void rms_threshold_changed(double);
     void ratio_changed(int);
+    void auto_increment_file_name_changed(bool);
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
     void use_level_changed(bool);
@@ -132,6 +137,7 @@ private:
     double m_rms_threshold;
     QChar m_leveling_direction;
     bool m_use_level;
+    bool m_save_png;
 
     scan_metadata completed_scan_metadata;
 
@@ -168,13 +174,16 @@ private:
     double y_offset_in_m();
     double x_index_in_um(int x_index);
     void normalize_offset_line_profiles(void);
+    bool check_all_watchers_finish();
+    void handle_last_line_process_complete();
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
     bool scanning_forward;
     bool m_should_pause;
+    bool m_last_row;
     QString m_base_file_name;
-
+    uint m_file_name_count;
     ScanData* fwd_offset_data;
     ScanData* fwd_phase_data;
     ScanData* fwd_error_data;

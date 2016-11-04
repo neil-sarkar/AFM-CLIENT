@@ -37,9 +37,9 @@ class AFM : public AFMObject
         Q_INVOKABLE void cmd_get_resistances();
         Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
         Q_INVOKABLE void restore_defaults();
-        Q_INVOKABLE bool launch_folder_picker();
+        Q_INVOKABLE void launch_folder_picker();
         Q_INVOKABLE QString save_folder();
-        Q_INVOKABLE void save_scan_data();
+        Q_INVOKABLE QString save_scan_data();
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
 
@@ -49,7 +49,7 @@ class AFM : public AFMObject
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
-        
+
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
         void initializing();
@@ -69,6 +69,7 @@ class AFM : public AFMObject
 
         bool is_initializing;
         QString m_save_folder;
+
         static const QString settings_group_name;
 };
 

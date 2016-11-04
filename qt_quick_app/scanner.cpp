@@ -19,6 +19,7 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
     pid = pid_;
     fine_z = static_cast<DAC*>(dac_fine_z_);
     m_should_pause = false;
+    m_last_row = false;
     fwd_offset_data = NULL;
     fwd_phase_data = NULL;
     fwd_error_data = NULL;
@@ -64,6 +65,7 @@ void Scanner::handleFinished_fo() {
         current_fwd_offset_line_profile[i] = current_fwd_offset_line_profile[i].toDouble() - minimum.toDouble();
     }
     emit new_forward_offset_profile(current_fwd_offset_line_profile);
+    handle_last_line_process_complete();
 }
 
 void Scanner::handleFinished_ro() {
@@ -90,18 +92,41 @@ void Scanner::handleFinished_ro() {
         current_rev_offset_line_profile[i] = current_rev_offset_line_profile[i].toDouble() - minimum.toDouble();
     }
     emit new_reverse_offset_profile(current_rev_offset_line_profile);
+    handle_last_line_process_complete();
 }
+
 void Scanner::handleFinished_fp() {
     emit new_forward_phase_data(watcher_fp.future().result());
+    handle_last_line_process_complete();
 }
+
 void Scanner::handleFinished_rp() {
     emit new_reverse_phase_data(watcher_rp.future().result());
+    handle_last_line_process_complete();
 }
+
 void Scanner::handleFinished_fe() {
     emit new_forward_error_data(watcher_fe.future().result());
+    handle_last_line_process_complete();
 }
+
 void Scanner::handleFinished_re() {
     emit new_reverse_error_data(watcher_re.future().result());
+    handle_last_line_process_complete();
+}
+
+void Scanner::handle_last_line_process_complete(){
+    if(m_last_row && check_all_watchers_finish()) {
+        qDebug() << "All processing done for image";
+        m_last_row = false;
+        emit all_processing_done();
+    }
+}
+
+bool Scanner::check_all_watchers_finish(){
+    return watcher_fo.isFinished() && watcher_ro.isFinished() && \
+            watcher_fp.isFinished() && watcher_rp.isFinished() && \
+              watcher_fe.isFinished() && watcher_re.isFinished();
 }
 
 void Scanner::update_z_actuator_scale_factor(double fine_z_pga_value) {
@@ -182,6 +207,7 @@ void Scanner::initialize_scan_state_machine() {
     // Old code used to set PGAs here, but we really don't need to - they should already have been set
     qDebug() << "Initializing";
     m_should_pause = false;
+    m_last_row = false;
     scanning_forward = true;
     m_x_index = -1;
     m_y_index = -1;
@@ -221,6 +247,7 @@ bool Scanner::receive_data() {
          cmd_step_scan();
     }
     else {
+        record_metadata();
         emit all_data_received();
         last_line = true;
         qDebug() << "Forward Offset";
@@ -422,7 +449,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
     }
     // This condition checks to see if we should send data (should be after every line is done - fwd and rev)
     if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
-        //normalize_offset_line_profiles();
+        m_last_row = m_y_index == (m_num_rows - 1);
         QFuture<QVariantList> future;
         if(!watcher_fo.isRunning() || last_line) {
             future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_all,m_y_index);
@@ -460,7 +487,6 @@ void Scanner::callback_step_scan(QByteArray payload) {
 void Scanner::end_scan_state_machine() {
     m_should_pause = false;
     qDebug() << "scanning done";
-    record_metadata();
     move_to_starting_point();
 }
 
@@ -634,20 +660,36 @@ void Scanner::cmd_set_zoom() {
     emit command_generated (new CommandNode(command_hash[Scanner_Set_Zoom], payload));
 }
 
-void Scanner::save_raw_data(QString save_folder) {
+QString Scanner::save_data(QString save_folder) {
     Q_UNUSED(save_folder);
     if (!fwd_offset_data)
-        return;
+        return "Nothing to save";
+    QRegExp rx("^[\\w\\-\\s]+$");
+    if(!rx.exactMatch(m_base_file_name))
+        return "Invalid file name base, please use: A-Z,a-z,0-9, ,-,_";
+    QString timestamp = QString::number(QDateTime::currentMSecsSinceEpoch());
 
-    QString folder_path = save_folder + "/" + m_base_file_name + "_"  + QString::number(QDateTime::currentMSecsSinceEpoch());
-    QDir().mkdir(folder_path);
+    // Save in subfolders
+    //QString folder_path = save_folder + "/" + m_base_file_name + "_"  + timestamp;
+    //QDir().mkdir(folder_path);
+
+    // Save in same folder
+    QString folder_path = save_folder;
+
+    save_raw_data(folder_path,timestamp);
+    if(m_save_png)
+        save_png_data(folder_path,timestamp);
+    return "Save success";
+}
+
+void Scanner::save_raw_data(QString folder_path, QString timestamp) {
     QList<QString> specific_file_names;
     QList<QString> full_paths;
     QList<ScanData*> scan_data;
     specific_file_names << "offset forward" << "phase forward" << "error forward" << "offset reverse" << "phase reverse" << "error reverse";
     scan_data << fwd_offset_data << fwd_phase_data << fwd_error_data << rev_offset_data << rev_phase_data << rev_error_data;
     for (int i = 0; i < specific_file_names.length(); i++) {
-        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i]);
+        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i] + " " + timestamp);
         if (file.open(QIODevice::WriteOnly)) {
             qDebug() << "file created" << file.fileName();
             full_paths.append(file.fileName());
@@ -684,7 +726,7 @@ void Scanner::save_raw_data(QString save_folder) {
                     outtxt << "ZUnits = V\n";
                 break;
             }
-            outtxt << "Title = " << m_base_file_name << " " << specific_file_names[i] << "\n";
+            outtxt << "Title = " << m_base_file_name << " " << specific_file_names[i] << " " << timestamp << "\n";
             outtxt << "Date = " << completed_scan_metadata.scan_completion_time << "\n";
             outtxt << "DwellTime = " << QString::number(completed_scan_metadata.dwell_time) << "\n";
             outtxt.flush();
@@ -708,6 +750,9 @@ void Scanner::save_raw_data(QString save_folder) {
     }
 }
 
+void Scanner::save_png_data(QString folder_path, QString timestamp) {
+
+}
 
 Scanner::callback_return_type Scanner::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
@@ -806,5 +851,10 @@ void Scanner::set_base_file_name(QString base_file_name) {
     update_settings(settings_group_name, "base_file_name", QVariant(m_base_file_name));
 }
 
+void Scanner::set_save_png(bool b_save_png)
+{
+    m_save_png = b_save_png;
+}
+
 const QString Scanner::settings_group_name = "scanner";
-    
+
