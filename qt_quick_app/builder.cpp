@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <QFinalState>
 #include <QImage>
+#include <QPainter>
 #include <QBuffer>
 #include "pin_map.h"
 
@@ -181,4 +182,26 @@ void Builder::generate_color_map() {
     for (int i = 0; i < 10000; i += 1) {
         color_map.push_back(interpolate_color(double(i)/100, colors));
     }
+}
+
+void Builder::generate_color_bar() {
+    color_bar = QImage(128,display_image_dimensions,QImage::Format_RGB32);
+    color_bar.fill(Qt::white);
+    int color_index;
+    QColor color;
+    for (int row = 0; row < color_bar.height(); row++)
+    {
+        color_index = (int)((display_image_dimensions - row)/ ((double)display_image_dimensions) *color_map.size()) - 1;
+        color = color_map[color_index];
+        for (int col = 0; col < 26 ; col ++)
+        {
+            color_bar.setPixel(col, row, qRgb(color.red(),color.green(),color.blue()));
+        }
+    }
+    QPainter color_bar_painter(&color_bar);
+    color_bar_painter.fillRect(0,0,39,2,Qt::black);
+    color_bar_painter.fillRect(0,display_image_dimensions-2,39,2,Qt::black);
+    color_bar_painter.fillRect(0,0,2,display_image_dimensions,Qt::black);
+    color_bar_painter.fillRect(24,0,2,display_image_dimensions,Qt::black);
+    color_bar_painter.end();
 }

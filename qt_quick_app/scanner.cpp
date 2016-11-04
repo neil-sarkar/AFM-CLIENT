@@ -41,23 +41,67 @@ Scanner::Scanner(PID* pid_, AFMObject* dac_fine_z_)
 }
 
 void Scanner::handleFinished_fo() {
-    emit new_forward_offset_data(watcher_fo.future());
+    QVariantList result = watcher_fo.future().result();
+    emit new_forward_offset_data(result);
+
+    current_fwd_offset_line_profile.clear();
+    int y = result[0].toInt(); //index of new line
+    for(int x = 0; x < m_num_columns; x++) {
+        current_fwd_offset_line_profile.append(x_index_in_um(x));
+        current_fwd_offset_line_profile.append(y);
+        if(m_use_level)
+            current_fwd_offset_line_profile.append(z_fine_dac_to_nm(fwd_offset_data->leveled_lines[y][x]));
+        else
+            current_fwd_offset_line_profile.append(z_fine_dac_to_nm(fwd_offset_data->raw_data[y]->data[x]));
+    }
+    QVariant minimum = z_fine_dac_to_nm(DAC::RESOLUTION);
+    for (int i = 2; i < current_fwd_offset_line_profile.size(); i += 3) {
+        if (current_fwd_offset_line_profile[i] < minimum) {
+            minimum = current_fwd_offset_line_profile[i];
+        }
+    }
+    for (int i = 2; i < current_fwd_offset_line_profile.size(); i += 3) {
+        current_fwd_offset_line_profile[i] = current_fwd_offset_line_profile[i].toDouble() - minimum.toDouble();
+    }
+    emit new_forward_offset_profile(current_fwd_offset_line_profile);
 }
 
 void Scanner::handleFinished_ro() {
-    emit new_reverse_offset_data(watcher_ro.future());
+    QVariantList result = watcher_ro.future().result();
+    emit new_reverse_offset_data(result);
+
+    current_rev_offset_line_profile.clear();
+    int y = result[0].toInt(); //index of new line
+    for(int x = 0; x < m_num_columns; x++) {
+        current_rev_offset_line_profile.append(x_index_in_um(x));
+        current_rev_offset_line_profile.append(y);
+        if(m_use_level)
+            current_rev_offset_line_profile.append(z_fine_dac_to_nm(rev_offset_data->leveled_lines[y][x]));
+        else
+            current_rev_offset_line_profile.append(z_fine_dac_to_nm(rev_offset_data->raw_data[y]->data[x]));
+    }
+    QVariant minimum = z_fine_dac_to_nm(DAC::RESOLUTION);
+    for (int i = 2; i < current_rev_offset_line_profile.size(); i += 3) {
+        if (current_rev_offset_line_profile[i] < minimum) {
+            minimum = current_rev_offset_line_profile[i];
+        }
+    }
+    for (int i = 2; i < current_rev_offset_line_profile.size(); i += 3) {
+        current_rev_offset_line_profile[i] = current_rev_offset_line_profile[i].toDouble() - minimum.toDouble();
+    }
+    emit new_reverse_offset_profile(current_rev_offset_line_profile);
 }
 void Scanner::handleFinished_fp() {
-    emit new_forward_phase_data(watcher_fp.future());
+    emit new_forward_phase_data(watcher_fp.future().result());
 }
 void Scanner::handleFinished_rp() {
-    emit new_reverse_phase_data(watcher_rp.future());
+    emit new_reverse_phase_data(watcher_rp.future().result());
 }
 void Scanner::handleFinished_fe() {
-    emit new_forward_error_data(watcher_fe.future());
+    emit new_forward_error_data(watcher_fe.future().result());
 }
 void Scanner::handleFinished_re() {
-    emit new_reverse_error_data(watcher_re.future());
+    emit new_reverse_error_data(watcher_re.future().result());
 }
 
 void Scanner::update_z_actuator_scale_factor(double fine_z_pga_value) {
@@ -152,12 +196,12 @@ void Scanner::initialize_scan_state_machine() {
         delete rev_error_data;
     }
 
-    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
-    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio());
+    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
+    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, 1);
+    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"V", false, 1);
+    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
+    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, 1);
+    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"V", false, 1);
 }
 
 void Scanner::set_signal_generator() {
@@ -166,9 +210,10 @@ void Scanner::set_signal_generator() {
     emit set_signal_generator_done();
 }
 
-void Scanner::receive_data() {
+bool Scanner::receive_data() {
+    bool last_line = false;
     if (m_should_pause) {
-        return;
+        return last_line;
     }
 
     if (m_x_index < m_num_columns - 1 || m_y_index < m_num_rows - 1) {
@@ -177,6 +222,7 @@ void Scanner::receive_data() {
     }
     else {
         emit all_data_received();
+        last_line = true;
         qDebug() << "Forward Offset";
         fwd_offset_data->print();
         qDebug() << "Forward Phase";
@@ -184,6 +230,7 @@ void Scanner::receive_data() {
         qDebug() << "Forward Error";
         fwd_error_data->print();
     }
+    return last_line;
 }
 
 void Scanner::cmd_step_scan() {
@@ -242,10 +289,18 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
 
         point acc[6] = {0};
         for (int yy = y_start; yy <= y_end; yy++) {
-            acc[0] += fwd_offset_data->raw_data[yy]->data[x];
+            if(m_use_level)
+            {
+                acc[0] += fwd_offset_data->leveled_lines[yy][x];
+                acc[3] += rev_offset_data->leveled_lines[yy][x];
+            }
+            else
+            {
+                acc[0] += fwd_offset_data->raw_data[yy]->data[x];
+                acc[3] += rev_offset_data->raw_data[yy]->data[x];
+            }
             acc[1] += fwd_error_data->raw_data[yy]->data[x];
             acc[2] += fwd_phase_data->raw_data[yy]->data[x];
-            acc[3] += rev_offset_data->raw_data[yy]->data[x];
             acc[4] += rev_error_data->raw_data[yy]->data[x];
             acc[5] += rev_phase_data->raw_data[yy]->data[x];
         }
@@ -256,7 +311,6 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
         current_rev_error_line_profile.append(acc[4]/y_averages);
         current_rev_phase_line_profile.append(acc[5]/y_averages);
     }
-
     normalize_offset_line_profiles();
 
     emit new_forward_offset_profile(current_fwd_offset_line_profile);
@@ -265,6 +319,36 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
     emit new_reverse_offset_profile(current_rev_offset_line_profile);
     emit new_reverse_error_profile(current_rev_error_line_profile);
     emit new_reverse_phase_profile(current_rev_phase_line_profile);
+}
+
+void Scanner::fetch_latest_offset_profiles()
+{
+    int y_fwd = current_fwd_offset_line_profile[1].toInt();
+    int y_rev = current_rev_offset_line_profile[1].toInt();
+    qDebug() << "fetch latest " << y_fwd << " " << y_rev;
+    current_fwd_offset_line_profile.clear();
+    current_rev_offset_line_profile.clear();
+    for (int x = 0; x < m_num_columns; x++) {
+        current_fwd_offset_line_profile.append(x);
+        current_rev_offset_line_profile.append(x);
+
+        current_fwd_offset_line_profile.append(y_fwd);
+        current_rev_offset_line_profile.append(y_rev);
+
+        if(m_use_level)
+        {
+            current_fwd_offset_line_profile.append(z_fine_dac_to_nm(fwd_offset_data->leveled_lines[y_fwd][x]));
+            current_rev_offset_line_profile.append(z_fine_dac_to_nm(rev_offset_data->leveled_lines[y_rev][x]));
+        }
+        else
+        {
+            current_fwd_offset_line_profile.append(z_fine_dac_to_nm(fwd_offset_data->raw_data[y_fwd]->data[x]));
+            current_rev_offset_line_profile.append(z_fine_dac_to_nm(rev_offset_data->raw_data[y_rev]->data[x]));
+        }
+    }
+    normalize_offset_line_profiles();
+    emit new_forward_offset_profile(current_fwd_offset_line_profile);
+    emit new_reverse_offset_profile(current_rev_offset_line_profile);
 }
 
 void Scanner::zoom(float x, float y, float size) {
@@ -284,18 +368,18 @@ void Scanner::reset_zoom() {
 void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
-    receive_data();
+    bool last_line = receive_data();
     double z_amplitude, z_offset, z_phase, z_error, z_offset_nm;
-    qDebug() << "LINE" << m_y_index;
+    qDebug() << "Processing LINE" << m_y_index;
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back per point
 
         m_x_index = (m_x_index + 1) % (m_num_columns * 2);
         if (m_x_index == 0) {
             m_y_index += 1;
-            current_fwd_offset_line_profile.clear();
+            //current_fwd_offset_line_profile.clear();
             current_fwd_error_line_profile.clear();
             current_fwd_phase_line_profile.clear();
-            current_rev_offset_line_profile.clear();
+            //current_rev_offset_line_profile.clear();
             current_rev_error_line_profile.clear();
             current_rev_phase_line_profile.clear();
         }
@@ -310,9 +394,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
             fwd_phase_data->append(m_x_index, m_y_index, z_phase);
             fwd_error_data->append(m_x_index, m_y_index, z_error);
-            current_fwd_offset_line_profile.append(x_index_in_um(m_x_index));
+            /*current_fwd_offset_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_offset_line_profile.append(m_y_index);
-            current_fwd_offset_line_profile.append(z_offset_nm);
+            current_fwd_offset_line_profile.append(z_offset_nm);*/
             current_fwd_phase_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_phase_line_profile.append(m_y_index);
             current_fwd_phase_line_profile.append(z_phase);
@@ -324,9 +408,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
             rev_offset_data->append(x_coord, m_y_index, z_offset);
             rev_phase_data->append(x_coord, m_y_index, z_phase);
             rev_error_data->append(x_coord, m_y_index, z_error);
-            current_rev_offset_line_profile.prepend(z_offset_nm);
+            /*current_rev_offset_line_profile.prepend(z_offset_nm);
             current_rev_offset_line_profile.prepend(m_y_index);
-            current_rev_offset_line_profile.prepend(x_index_in_um(x_coord));
+            current_rev_offset_line_profile.prepend(x_index_in_um(x_coord));*/
             current_rev_phase_line_profile.prepend(z_phase);
             current_rev_phase_line_profile.prepend(m_y_index);
             current_rev_phase_line_profile.prepend(x_index_in_um(x_coord));
@@ -338,36 +422,35 @@ void Scanner::callback_step_scan(QByteArray payload) {
     }
     // This condition checks to see if we should send data (should be after every line is done - fwd and rev)
     if (rev_offset_data->size() == fwd_offset_data->size() && rev_offset_data->size() % m_num_columns == 0) {
-        normalize_offset_line_profiles();
-
-        QFuture<QString> future;
-        if(!watcher_fo.isRunning()) {
-            future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_png);
+        //normalize_offset_line_profiles();
+        QFuture<QVariantList> future;
+        if(!watcher_fo.isRunning() || last_line) {
+            future = QtConcurrent::run(this->fwd_offset_data, &ScanData::generate_all,m_y_index);
             watcher_fo.setFuture(future);
-            emit new_forward_offset_profile(current_fwd_offset_line_profile);
+            //emit new_forward_offset_profile(current_fwd_offset_line_profile);
         }
-        if(!watcher_ro.isRunning()) {
-            future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_png);
+        if(!watcher_ro.isRunning() || last_line) {
+            future = QtConcurrent::run(this->rev_offset_data, &ScanData::generate_all,m_y_index);
             watcher_ro.setFuture(future);
-            emit new_reverse_offset_profile(current_rev_offset_line_profile);
+            //emit new_reverse_offset_profile(current_rev_offset_line_profile);
         }
-        if(!watcher_fp.isRunning()) {
-            future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_png);
+        if(!watcher_fp.isRunning() || last_line) {
+            future = QtConcurrent::run(this->fwd_phase_data, &ScanData::generate_all,m_y_index);
             watcher_fp.setFuture(future);
             emit new_forward_phase_profile(current_fwd_phase_line_profile);
         }
-        if(!watcher_rp.isRunning()) {
-            future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_png);
+        if(!watcher_rp.isRunning() || last_line) {
+            future = QtConcurrent::run(this->rev_phase_data, &ScanData::generate_all,m_y_index);
             watcher_rp.setFuture(future);
             emit new_reverse_phase_profile(current_rev_phase_line_profile);
         }
-        if(!watcher_fe.isRunning()) {
-            future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_png);
+        if(!watcher_fe.isRunning() || last_line) {
+            future = QtConcurrent::run(this->fwd_error_data, &ScanData::generate_all,m_y_index);
             watcher_fe.setFuture(future);
             emit new_forward_error_profile(current_fwd_error_line_profile);
         }
-        if(!watcher_re.isRunning()) {
-            future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_png);
+        if(!watcher_re.isRunning() || last_line) {
+            future = QtConcurrent::run(this->rev_error_data, &ScanData::generate_all,m_y_index);
             watcher_re.setFuture(future);
             emit new_reverse_error_profile(current_rev_error_line_profile);
         }
@@ -395,6 +478,11 @@ void Scanner::record_metadata() {
 
 quint16 Scanner::num_averages() {
     return m_num_averages;
+}
+
+void Scanner::set_use_level(bool use_level) {
+    m_use_level = use_level;
+    qDebug() << "Use_level: " << use_level;
 }
 
 void Scanner::set_num_averages(int num_averages) {

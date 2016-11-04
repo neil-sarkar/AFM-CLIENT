@@ -9,6 +9,7 @@ ScanLine::ScanLine(coordinate capacity_) {
     size = 0;
     sum = 0;
     average = 0;
+    this->slope = 0;
     this->max = INT32_MIN;
     this->min = INT32_MAX;
 
@@ -42,6 +43,24 @@ void ScanLine::add_point(coordinate x, point z) {
 void ScanLine::compute_average() {
     if (this->size != 0)
         this->average = double(this->sum) / this->size;
+}
+
+double ScanLine::compute_slope() {
+    if (this->size != 0)
+    {
+        double numerator = 0.0;
+        double denominator = 0.0;
+        double x_average = double(this->size - 1)/2;
+        double x_zero_mean;
+        for(int i=0; i<this->size;i++)
+        {
+            x_zero_mean = i - x_average;
+            numerator += x_zero_mean*(data[i]-this->average);
+            denominator += x_zero_mean*x_zero_mean;
+        }
+        this->slope = numerator/denominator;
+    }
+    return this->slope;
 }
 
 ScanLine ScanLine::generate_leveled_line() {

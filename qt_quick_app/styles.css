@@ -453,8 +453,10 @@ body {
 
 .scan-image {
     width: 100%; /* expand to fit space */
-    border: 1px solid gray;
-    image-rendering: -webkit-optimize-contrast;
+}
+
+.scan-z-scalebar {
+    width: 100%;
 }
 
 .scan-image-inverter {
@@ -479,6 +481,28 @@ body {
     -webkit-justify-content: center;
 }
 
+.scan-z-scalebar-container {
+    position: relative;
+    -webkit-flex: auto;
+    /* center the image inside the container */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-justify-content: center;
+}
+
+.scan-window-container {
+    display: -webkit-flex;
+    -webkit-flex: 1;
+    -webkit-justify-content: space-around;
+    -webkit-align-self: center;
+    -webkit-flex-flow: row !important;
+    width: 100%;
+}
+
+#use_level_checkbox {
+    -webkit-user-select: none;
+    cursor: pointer;
+}
 /*progressbar*/
 #progressbar {
     margin-bottom: 30px;

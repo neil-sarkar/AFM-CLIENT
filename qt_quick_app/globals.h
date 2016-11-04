@@ -4,11 +4,14 @@
 #include <QMutex>
 #include <QRgb>
 #include <QColor>
+#include <QImage>
 #include "command_node.h"
 
 class AFMObject;
 extern QHash<QString, CommandNode> command_hash;
 extern QVector<QColor> color_map;
+extern QImage color_bar;
+#define display_image_dimensions 1024
 extern bool port_writing_command;
 extern bool is_approaching;
 extern bool is_scanning;

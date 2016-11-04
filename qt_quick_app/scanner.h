@@ -59,7 +59,9 @@ public:
     Q_INVOKABLE void set_base_file_name(QString);
     Q_INVOKABLE QChar leveling_direction();
     Q_INVOKABLE void set_leveling_direction (QChar);
+    Q_INVOKABLE void set_use_level(bool);
     Q_INVOKABLE void fetch_line_profiles(int y, int y_averages);
+    Q_INVOKABLE void fetch_latest_offset_profiles();
     Q_INVOKABLE void zoom(float x, float y, float size);
     Q_INVOKABLE void reset_zoom();
 
@@ -71,12 +73,12 @@ signals:
     void set_signal_generator_done();
     void all_data_received();
     void reset();
-    void new_forward_offset_data(QString);
-    void new_forward_phase_data(QString);
-    void new_forward_error_data(QString);
-    void new_reverse_offset_data(QString);
-    void new_reverse_phase_data(QString);
-    void new_reverse_error_data(QString);
+    void new_forward_offset_data(QVariantList);
+    void new_forward_phase_data(QVariantList);
+    void new_forward_error_data(QVariantList);
+    void new_reverse_offset_data(QVariantList);
+    void new_reverse_phase_data(QVariantList);
+    void new_reverse_error_data(QVariantList);
     void started_scan_state_machine();
 
     // property changes
@@ -89,6 +91,7 @@ signals:
     void ratio_changed(int);
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
+    void use_level_changed(bool);
     void new_forward_offset_profile(QVariantList);
     void new_forward_error_profile(QVariantList);
     void new_forward_phase_profile(QVariantList);
@@ -101,7 +104,7 @@ public slots:
     // Scan state machine methods
     void initialize_scan_state_machine();
     void set_signal_generator();
-    void receive_data();
+    bool receive_data();
     void end_scan_state_machine();
     Q_INVOKABLE void start_state_machine();
     Q_INVOKABLE void pause_state_machine();
@@ -128,6 +131,7 @@ private:
     quint16 m_send_back_count;
     double m_rms_threshold;
     QChar m_leveling_direction;
+    bool m_use_level;
 
     scan_metadata completed_scan_metadata;
 
@@ -178,12 +182,12 @@ private:
     ScanData* rev_phase_data;
     ScanData* rev_error_data;
 
-    QFutureWatcher<QString> watcher_fo;
-    QFutureWatcher<QString> watcher_ro;
-    QFutureWatcher<QString> watcher_fp;
-    QFutureWatcher<QString> watcher_rp;
-    QFutureWatcher<QString> watcher_fe;
-    QFutureWatcher<QString> watcher_re;
+    QFutureWatcher<QVariantList> watcher_fo;
+    QFutureWatcher<QVariantList> watcher_ro;
+    QFutureWatcher<QVariantList> watcher_fp;
+    QFutureWatcher<QVariantList> watcher_rp;
+    QFutureWatcher<QVariantList> watcher_fe;
+    QFutureWatcher<QVariantList> watcher_re;
 
     QVariantList current_fwd_offset_line_profile;
     QVariantList current_rev_offset_line_profile;

@@ -14,6 +14,7 @@ public:
     bool is_full();
     void add_point(coordinate x, point z);
     void compute_average();
+    double compute_slope();
     ScanLine generate_leveled_line();
     quint16 size;
 
@@ -24,7 +25,7 @@ public:
     bool drawn;
     double_point max; // plus/minus 2*4095
     double_point min;
-
+    double slope;
 };
 
 #endif // SCANLINE_H

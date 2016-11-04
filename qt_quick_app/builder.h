@@ -17,6 +17,7 @@ public:
     void generate_command_nodes();  // pull all the command nodes from .tsv file
     int bytes_to_int(QByteArray bytes, QList<QByteArray> line, int base);
     void generate_color_map();
+    void generate_color_bar();
     QColor interpolate_color(double percent, QVector<QColor> colors);
 
 };

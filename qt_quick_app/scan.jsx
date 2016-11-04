@@ -1,13 +1,17 @@
 define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!pages/inline_scan_controls", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/text_input", "jsx!pages/save_folder"], function(React, HeatmapCanvas, LineProfile, InlineScanControls, NumberInput, Dropdown, TextInput, SaveFolderPicker) {
-    var empty_image_str = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    
+    var empty_image_str = "data:image/gif;base64,R0lGODlhAAQABIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAEALAAAAAAABAAEAAL+jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/AwdLT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsaPIgwocKFDBs6fAgxosSJFCtavIgxo8b+jRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWrVy7ev0KNqzYsWTLmj2LNq3atWzbun0LN67cuXTr2r2LN6/evXz7+v0LOLDgwYQLGz6MOLHixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6NOrXq1axbu34NO7bs2bRr276NO7fu3bx7+/4NPLjw4cSLGz+OPLny5cybO38OPbr06dSrW7+OPbv27dy7e/8OPrz48eTLmz+PPr369ezbu38PP778+fTr27+PP7/+/fz++/v/D2CAAg5IYIEGHohgggouyGCDDj4IYYQSTkhhhRZeiGGGGm7IYYcefghiiCKOSGKJJp6IYooqrshiiy6+CGOMMs5IY4023ohjjjruyGOPPv4IZJBCDklkkUYeiWSSSi7JZJNOPglllFJOSWWVVl6JZZZabslll15+CWaYYo5JZplmnolmmmquyWabbr4JZ5xyzklnnXbeiWeeeu7JZ59+/glooIIOSmihhh6KaKKKLspoo44+Cmmkkk5KaaWWXopppppuymmnnn4Kaqiijkpqqaaeimqqqq7KaquuvgprrLLOSmuttt6Ka6667sprr77+Cmywwg5LbLHGHov+bLLKLstss84+C2200k5LbbXWXottttpuy2233n4Lbrjijktuueaei2666q7LbrvuvgtvvPLOS2+99t6Lb7767stvv/7+C3DAAg9McMEGH4xwwgovzHDDDj8MccQST0xxxRZfjHHGGm/McccefwxyyCKPTHLJJp+Mcsoqr8xyyy6/DHPMMs9Mc80234xzzjrvzHPPPv8MdNBCD0100UYfjXTSSi/NdNNOPw111FJPTXXVVl+NddZab811115/DXbYYo9Ndtlmn4122mqvzXbbbr8Nd9xyz0133XbfjXfeeu/Nd99+/w144IIPTnjhhh+OeOKKL854444/Dnnkkk/+Tnnlll+Oeeaab855555/Dnrooo9Oeummn4566qqvznrrrr8Oe+yyz0577bbfjnvuuu/Oe+++/w588MIPT3zxxh+PfPLKL898884/D3300k9PffXWX4999tpvz3333n8Pfvjij09++eafj3766q/Pfvvuvw9//PLPT3/99t+Pf/76789///7/D8AACnCABCygAQ+IwAQqcIEMbKADHwjBCEpwghSsoAUviMEManCDHOygBz8IwhCKcIQkLKEJT4jCFKpwhSxsoQtfCMMYynCGNKyhDW+IwxzqcIc87KEPfwjEIApxiEQsohGPiMQkKnGJTGyiE58IxShKcYpUrKL+Fa+IxSxqcYtc7KIXvwjGMIpxjGQsoxnPiMY0qnGNbGyjG98IxzjKcY50rKMd74jHPOpxj3zsox//CMhACnKQhCykIQ+JyEQqcpGMbKQjHwnJSEpykpSspCUviclManKTnOykJz8JylCKcpSkLKUpT4nKVKpylaxspStfCctYynKWtKylLW+Jy1zqcpe87KUvfwnMYApzmMQspjGPicxkKnOZzGymM58JzWhKc5rUrKY1r4nNbGpzm9zspje/Cc5winOc5CynOc+JznSqc53sbKc73wnPeMpznvSspz3vic986nOf/OynP/8J0IAKdKAELahBD4rQhCp0oQxtqEPbHwrRiEp0ohStqEUvitGManSjHO2oRz8K0pCKdKQkLalJT4rSlKp0pSxtqUtfCtOYynSmNK2pTW+K05zqdKc87alPfwrUoAp1qEQtqlGPitSkKnWpTG2qU58K1ahKdapUrapVr4rVrGp1q1ztqle/CtawinWsZC2rWc+K1rSqda1sbatb3wrXuMp1rnStq13vite86nWvfO2rX/8K2MAKdrCELaxhD4vYxCp2sYxtrGMfC9nISnaylK2sZS+L2cxqdrOc7axnPwva0Ip2tKQtrWlPi9rUqna1uCsAADs=";
+    var empty_bar_str = "data:image/gif;base64,R0lGODlhgAAABIAAAP///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAEALAAAAACAAAAEAAL+jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/AwdLT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsaPIgwocKFDBs6fAgxosSJFCtavIgxo8b+jRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWrVy7ev0KNqzYsWTLmj2LNq3atWzbun0LN67cuXTr2r2LN6/evXz7+v0LOLDgwYQLGz6MOLHixYwbO34MObLkyZQrW76MObPmzZw7e/4MOrTo0aRLmz6NOrXq1axbu34NO7bs2bRr276NO7fu3bx7+/4NPLjw4cSLGz+OPLny5cybO38OPbr06dSrW7+OPbv27dy7e/8OPrz48eTLmz+PPr369ezbu38PP778+fTr27+PP7/+/fwL+/v/D2CAAg5IUAEAOw==";
     function ScanView(name, render_signal, data_source) {
         this.name = name;
         this.data_source = data_source;
         this.render_signal = render_signal;
         this.data = empty_image_str;
+        this.leveled_data = empty_image_str;
         this.image_ready = true;
         this.line_view_ready = true;
+        this.z_bar_data = empty_bar_str;
+        this.leveled_z_bar_data = empty_bar_str;
+        this.z_bar_ready = true;
     }
 
     var scan_views = [];
@@ -18,6 +22,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
     scan_views.push(new ScanView("Reverse Error",  scanner.new_reverse_error_data, scanner.new_reverse_error_profile));
     scan_views.push(new ScanView("Reverse Phase",  scanner.new_reverse_phase_data, scanner.new_reverse_phase_profile));
 
+    // only apply leveling to topo
+    var level_enable_scans = {};
+    level_enable_scans[scan_views[0].name] = true;
+    level_enable_scans[scan_views[3].name] = true;
 
     var Scan = React.createClass({
         getInitialState: function() {
@@ -25,6 +33,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 scanning: false,
                 starting_fresh_scan: true,
                 current_image: "Forward Offset",
+                level_image: false,
+                current_line: 0,
                 num_rows: 16,
                 num_columns: 16,
                 advanced: false,
@@ -65,7 +75,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
 
             // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
-                var bound_method = this.save_png_data.bind(this, scan_views[i]);
+                var bound_method = this.handle_png_data.bind(this, scan_views[i]);
                 scan_views[i].render_signal.connect(bound_method);
                 bound_method = this.prepare_line_profile.bind(this, scan_views[i]);
                 scan_views[i].data_source.connect(bound_method);
@@ -74,16 +84,47 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             $('.view-selector-button').first().addClass('selected-scan-view');
             $(document).mouseup(this.handle_mouse_up);
         },
-        save_png_data: function(scan_view, new_data) {
-            scan_view.data = "data:image/png;base64," + new_data;
-            if (scan_view.name == this.state.current_image) {
-                if (scan_view.image_ready) {
-                    scan_view.image_ready = false;
-                    setTimeout(function(){
-                        scan_view.image_ready = true;
-                    }, 125);
-                    this.update_image(scan_view.data);
+        handle_png_data: function(scan_view, new_data){
+            if(new_data[0]) {
+                this.setState({ current_line: new_data[0]});
+            }
+            if(new_data[1]) { //raw_png
+                scan_view.data = "data:image/png;base64," + new_data[1];
+            }
+            if(new_data[2]){ //raw_png_z_scale
+                scan_view.z_bar_data = "data:image/png;base64," + new_data[2];
+            }
+            if(new_data[3]) { //leveled_png
+                scan_view.leveled_data = "data:image/png;base64," + new_data[3];
+            }
+            if(new_data[4]){ //leveled_png_z_scale
+                scan_view.leveled_z_bar_data = "data:image/png;base64," + new_data[4];
+            }
+            if(scan_view.name == this.state.current_image){
+                if(new_data[1] || new_data[3]) { //if updated image data
+                    this.schedule_image_update(scan_view);
                 }
+                if(new_data[2] || new_data[4]) { //if updated z_bar
+                    this.schedule_z_bar_update(scan_view);
+                }
+            }
+        },
+        schedule_image_update: function(scan_view) {
+            if (scan_view.image_ready) {
+                scan_view.image_ready = false;
+                setTimeout(function(){
+                    scan_view.image_ready = true;
+                }, 125);
+                this.update_image((this.state.use_level && (scan_view.name in level_enable_scans)) ? scan_view.leveled_data : scan_view.data);
+            }
+        },
+        schedule_z_bar_update: function(scan_view) {
+            if (scan_view.z_bar_ready) {
+                scan_view.z_bar_ready = false;
+                setTimeout(function(){
+                    scan_view.z_bar_ready = true;
+                }, 125);
+                this.update_z_bar((this.state.use_level && (scan_view.name in level_enable_scans)) ? scan_view.leveled_z_bar_data : scan_view.z_bar_data);
             }
         },
         update_image: function(data) {
@@ -91,26 +132,20 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             element.data("imgsrc", data);
             element[0].src = element.data('imgsrc');
         },
+        update_z_bar: function(data) {
+            var bar = $('.scan-z-scalebar');
+            bar.data("imgsrc", data);
+            bar[0].src = bar.data('imgsrc');
+        },
         change_num_rows: function (num_rows) {
             this.setState({
                 num_rows: num_rows,
-            }, function() {
-                this.set_img_size();
             });
         },
         change_num_columns: function (num_cols) {
             this.setState({
                 num_columns: num_cols,
-            }, function() {
-                this.set_img_size();
             });
-        },
-        set_img_size: function() {
-            if (this.state.num_rows > this.state.num_columns) {
-                $(".scan-image").css("width", String(100 * this.state.num_columns / this.state.num_rows).concat('%'));
-            } else {
-                $(".scan-image").css("width", "100%");
-            }
         },
         prepare_line_profile: function (scan_view, data) {
             if (scan_view.name.charAt(8) == this.state.current_image.charAt(8)) {
@@ -150,6 +185,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     scanner.start_state_machine();
                     for (var i = 0; i < scan_views.length; i++) {
                         scan_views[i].data = empty_image_str;
+                        scan_views[i].z_bar_data = empty_bar_str;
+                        scan_views[i].leveled_data = empty_image_str;
+                        scan_views[i].leveled_z_bar_data = empty_bar_str;
                     }
                     $('.scan-image-inverter').css({
                         "margin-top": 0,
@@ -166,11 +204,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         clear_scan: function() {
             this.pause_scanning();
             scanner.reset();
-            $('.scan-image')[0].src = empty_image_str;
             setTimeout(function() {
                 for (var i = 0; i < scan_views.length; i++) {
                     scan_views[i].data = empty_image_str;
+                    scan_views[i].z_bar_data = empty_bar_str;
+                    scan_views[i].leveled_data = empty_image_str;
+                    scan_views[i].leveled_z_bar_data = empty_bar_str;
                 }
+                this.update_image(empty_image_str);
+                this.update_z_bar(empty_bar_str);
                 $('.scan-image-inverter').css({
                     "margin-top": 0,
                     "margin-bottom": "100%"
@@ -214,8 +256,15 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.setState({current_image: image_name}, function() {
                 for(i=0; i<scan_views.length; i++) {
                     if (scan_views[i].name == this.state.current_image) {
-                        this.update_image(scan_views[i].data);
+                        this.update_image((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_data : scan_views[i].data);
+                        this.update_z_bar((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_z_bar_data : scan_views[i].z_bar_data);
                     }
+                }
+                if(this.state.current_image in level_enable_scans){
+                    $("#use_level_checkbox").css("visibility", "visible");
+                }
+                else {
+                    $("#use_level_checkbox").css("visibility", "hidden");
                 }
             });
         },
@@ -224,8 +273,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 var img = $('.scan-image');
                 if(!this.state.dragging) {
                     // line profile
-                    var aspect_ratio = img[0].naturalHeight / img[0].clientHeight / Math.max(this.state.num_columns/this.state.num_rows,1);
+                    var aspect_ratio = this.state.num_rows/ img[0].clientHeight;
                     var offsetY = e.pageY - img.offset().top;
+                    if(offsetY < 0){offsetY = 0;}
                     this.setState({line_profile_y: offsetY*aspect_ratio}, function(){
                         scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y), this.state.line_profile_width);
                         $('.scan-image-inverter').css({
@@ -253,9 +303,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 if (e.deltaY < 0) new_width += 2; // scrolling up
                 if (e.deltaY > 0) new_width -= 2; // scrolling down
                 if (new_width < 1) new_width = 1;
-
+                if (new_width > this.state.num_rows*2 + 1) new_width = this.state.num_rows*2 + 1; // restrict width to cover the entire image at max from one end of image
                 var img = $('.scan-image');
-                var aspect_ratio = img[0].naturalHeight / img[0].clientHeight / Math.max(this.state.num_columns/this.state.num_rows,1);
+                var aspect_ratio = this.state.num_rows / img[0].clientHeight;
                 var offsetY = this.state.line_profile_y/aspect_ratio;
                 e.preventDefault();
                 this.setState({line_profile_width: new_width}, function(){
@@ -316,12 +366,32 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 });
             }
         },
+        handle_level_change: function(e) {
+            this.setState(
+                {use_level: e.target.checked},
+                function() {
+                    scanner.set_use_level(this.state.use_level);
+                    for(i=0; i<scan_views.length; i++) {
+                        if (scan_views[i].name == this.state.current_image) {
+                            this.update_image((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_data : scan_views[i].data);
+                            this.update_z_bar((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_z_bar_data : scan_views[i].z_bar_data);
+                        }
+                    }
+                    if (!this.state.scanning && this.state.starting_fresh_scan) {
+                        scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y ), this.state.line_profile_width);
+                    }
+                    if (!this.state.scanning && !this.state.starting_fresh_scan) {
+                        console.log("js enter fetch latest")
+                        scanner.fetch_latest_offset_profiles();
+                    }
+                });
+        },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
         handle_heatmap_click: function(x, y) {
             var current_data_set = scan_views[Math.floor(this.state.current_view / 2)];
-            this.refs.line_profile.set_data(current_data_set.forward_data.profile[y], current_data_set.reverse_data.profile[y]);
+            this.refs.line_profile.set_data(current_data_set.profile[y], current_data_set.reverse_data.profile[y]);
         },
         toggle_advanced_controls: function () {
             this.setState({
@@ -351,15 +421,20 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
                         </div>
                         <div className="flex-column">
-                            <div className="scan-images-container">
-                                <img src={empty_image_str} className="scan-image"
-                                    onMouseMove={this.handle_image_mouse_move}
-                                    onWheel={this.handle_image_mouse_wheel}
-                                    onMouseLeave={this.handle_image_mouse_leave}
-                                    onMouseDown={this.handle_image_mouse_down}
-                                    draggable="false"
-                                />
-                                <div className="scan-image-inverter" />
+                            <div className="scan-window-container">
+                                <div className="scan-images-container">
+                                    <img src={empty_image_str} className="scan-image"
+                                        onMouseMove={this.handle_image_mouse_move}
+                                        onWheel={this.handle_image_mouse_wheel}
+                                        onMouseLeave={this.handle_image_mouse_leave}
+                                        onMouseDown={this.handle_image_mouse_down}
+                                        draggable="false"
+                                    />
+                                    <div className="scan-image-inverter" />
+                                </div>
+                                <div className="scan-z-scalebar-container">
+                                    <img src={empty_bar_str} className="scan-z-scalebar"/>
+                                </div>
                             </div>
                             <LineProfile ref="line_profile" chart_name={this.props.name}/>
                         </div>
@@ -425,6 +500,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>
                             <InlineScanControls />
                             <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning || !this.state.starting_fresh_scan}>Clean</button>
+                            <label id="use_level_checkbox"><input type="checkbox" onChange={this.handle_level_change} checked={this.state.use_level}/>Level Image</label>
                         </div>
                     </div>
                 </div>
