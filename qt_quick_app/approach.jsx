@@ -185,10 +185,12 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						</div>
 						<div className="approacher-status">
 							<p className={"motor-status " + motor_status_style}><span className="bold-label">Motor status:</span> {status_map[this.state.status]}</p>
-							<p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete. Click next.</span> : <span>sample not in contact</span>}</p>
+                                                        <p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete.</span> : <span>sample not in contact</span>}</p>
 						</div>
-						<button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
-                                                <button className="action-button" id="disengage-retract-button" onClick={this.state.approach_complete ? this.start_disengage : this.start_retract_fast}>{this.state.approach_complete ? "Disengage" : "Retract"}</button>
+                                                <div className="auto-approach-retract-buttons-wrapper">
+                                                    <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+                                                    <button className="action-button" id="disengage-retract-button" onClick={this.state.approach_complete ? this.start_disengage : this.start_retract_fast} disabled={this.state.approach_in_progress}>{this.state.approach_complete ? "Disengage" : "Retract"}</button>
+                                                </div>
 						<div className="nav-buttons-wrapper">
 							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
 							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
