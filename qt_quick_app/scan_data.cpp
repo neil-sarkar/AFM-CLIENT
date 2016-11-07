@@ -281,7 +281,9 @@ QString ScanData::generate_z_bar(double min_value, double max_value) {
         min_val = min_value;
         max_val = max_value;
     }
-    painter.setFont(QFont("Roboto-Thin", 12));
+    QFont font = QFont("Roboto-Thin");
+    font.setPixelSize(18);
+    painter.setFont(font);
     painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
     painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
     QByteArray ba;
