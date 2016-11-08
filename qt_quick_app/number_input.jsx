@@ -10,7 +10,28 @@ define(["react", "console", "underscore"], function(React, console, _) {
                     $(this.refs.input).blur();
                 }
                 if (key == 40 || key == 38) {
-                    this.send_value_to_backend();
+                    input_ele = $(this.refs.input)[0];
+                    if(input_ele.value.indexOf(".") == input_ele.value.lastIndexOf(".")){
+                        e.preventDefault();
+                        sel_pos = Math.min(input_ele.selectionStart,input_ele.selectionEnd);
+                        sep_pos = input_ele.value.indexOf(".");
+                        power = sel_pos;
+                        if((sep_pos > -1) && (sel_pos <= (sep_pos + 1)))
+                            power += 1;
+                        if((sel_pos == 0) && (sep_pos != 0))
+                            power += 1;
+                        power = input_ele.value.length - power;
+                        if( key == 38 )
+                            input_ele.stepUp(parseInt(Math.pow(10,power)));
+                        else
+                            input_ele.stepDown(parseInt(Math.pow(10,power)));
+                        input_ele.setSelectionRange(sel_pos,sel_pos);
+                        this.setState({value : input_ele.value}, function(){
+                            this.send_value_to_backend();
+                        });
+                    }
+                    else
+                        this.send_value_to_backend();
                 }
             }.bind(this));
             $(this.refs.input).focus(function() {
