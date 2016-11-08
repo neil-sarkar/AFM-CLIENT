@@ -143,6 +143,7 @@ void Scanner::update_y_actuator_scale_factor(double fine_y_1_pga_value) {
 
 void Scanner::pause_state_machine() {
     m_should_pause = true;
+    record_metadata();
 }
 
 void Scanner::resume_state_machine() {
