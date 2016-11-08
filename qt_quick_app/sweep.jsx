@@ -58,9 +58,6 @@
 						<div className="top-row">
 							<button className="action-button" onClick={this.auto_sweep}>Sweep</button>
 						</div>
-						<div className="nav-buttons-wrapper">
-							<button className="action-button" id="next-button" disabled={!this.state.can_continue} onClick={this.props.go_to_next_step}>Next</button>
-						</div>
 						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
 						<div className={this.state.advanced ? "visible" : "hidden"}>
 							<p>

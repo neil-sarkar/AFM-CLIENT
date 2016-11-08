@@ -191,10 +191,6 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
                                                     <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
                                                     <button className="action-button" id="disengage-retract-button" onClick={this.state.approach_complete ? this.start_disengage : this.start_retract_fast} disabled={this.state.approach_in_progress}>{this.state.approach_complete ? "Disengage" : "Retract"}</button>
                                                 </div>
-						<div className="nav-buttons-wrapper">
-							<button className="action-button" id="back-button" onClick={this.props.go_to_previous_step}>Back</button>
-							<button className="action-button" id="next-button" onClick={this.props.go_to_next_step}>Next</button>
-						</div>
 						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
                         <div className={this.state.advanced ? "visible" : "hidden"}>
                             <InlineApproachControls />
