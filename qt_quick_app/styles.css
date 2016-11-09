@@ -391,6 +391,7 @@ body {
 
 .save-message {
     opacity: 0;
+    cursor: none;
     /*-webkit-transition: opacity .25s ease-in;*/
 }
 

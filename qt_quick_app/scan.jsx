@@ -545,14 +545,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                         get_value={scanner.base_file_name}
                                         set_value={scanner.set_base_file_name} />
                             </div>
-                            <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning} style={{outline: (this.state.data_saved? "rgb(216, 189, 49) solid 3px": "none")}}>Save</button>
+                            <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning}>{this.state.data_saved? "Save (✓)": "Save "}</button>
                         </div>
                         <div className="save-row justify-space-between">
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_auto_save_change} checked={this.state.auto_save}/> Auto-Save</label>
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_continuous_scan_change} checked={this.state.continuous_scan}/> Continuous Scan</label>
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_save_png_change} checked={this.state.save_png}/> Save PNG</label>
                         </div>
-                        <div className="save-message overflow-hidden flex-no-resize">{this.state.save_message}&nbsp;</div>
+                        <div className="save-message overflow-hidden flex-no-resize"><span style={{"font-family":"Roboto-Medium"}}>{this.state.save_message}</span><span>&nbsp;</span></div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Reset</button>

@@ -14,14 +14,19 @@
 			return {
 				advanced: false,
 				can_continue: false,
+                                is_sweeping: false,
 			};
 		},
 		on_sweep_done: function () {
 			this.setState({
 				can_continue: true,
+                                is_sweeping: false,
 			});
 		},
 		manual_sweep: function() {
+                        this.setState({
+                                is_sweeping: true,
+                        });
                         pid.set_disabled();
                         dac_z_offset_fine.set_value(1.5);
 			setTimeout(function() {
@@ -29,6 +34,9 @@
 			}, 200);
 		},
 		auto_sweep: function() {
+                        this.setState({
+                                is_sweeping: true,
+                        });
 			this.clear();
                         pid.set_disabled();
                         dac_z_offset_fine.set_value(1.5);
@@ -56,7 +64,7 @@
 							Click "Sweep" to find the resonant frequency of the AFM.
 						</div>
 						<div className="top-row">
-							<button className="action-button" onClick={this.auto_sweep}>Sweep</button>
+                                                        <button className="action-button" onClick={this.auto_sweep} disabled={this.state.is_sweeping}>{this.state.is_sweeping? "Sweeping":"Sweep"}</button>
 						</div>
 						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
 						<div className={this.state.advanced ? "visible" : "hidden"}>
@@ -66,7 +74,7 @@
 							 Click and drag on the graphs to zoom in and out.
 							</p>
 							<div className="top-row">
-								<button className="action-button" onClick={this.manual_sweep}>Manual Sweep</button>
+                                                                <button className="action-button" onClick={this.manual_sweep} disabled={this.state.is_sweeping}>Manual Sweep</button>
 								<button className="action-button" onClick={this.clear}>Clear</button>
 							</div>
 							<InlineSweepControls/>
