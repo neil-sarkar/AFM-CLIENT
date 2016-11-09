@@ -42,13 +42,11 @@ define(["react", "dom"], function(React, ReactDOM) {
         render: function() {
             return (
                 <div className="wrapper home-wrapper">
-                    <div className="left-flexbox vertically-centered-column">
-                        <img id="home-image" src="qrc:/images/afm.jpeg"></img>
-                    </div>
-                    <div className="right-flexbox vertically-centered-column">
+                    <img id="home-image" src="qrc:/images/afm.jpeg"></img>
+                    <div className="right-flexbox vertically-centered-column" id="home-right-flexbox">
                         <h1>Welcome to nGauge.</h1>
                         <p>{status_map[this.state.status].text}</p>
-                        <button className="action-button" onClick={main_window.load_main_app_page}>Enter</button>
+                        <button className="action-button" id="home-enter-button"s onClick={main_window.load_main_app_page}>Enter</button>
                      </div>
                 </div>
             )
