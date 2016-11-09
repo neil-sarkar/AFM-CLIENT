@@ -21,11 +21,16 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 				status: 0,
 				approach_complete: false,
 				approach_in_progress: false,
-				advanced: false
+                                advanced: false,
+                                retract_button_pressed: false,
 			};
 		},
 		componentDidMount: function() {
 			approacher.new_state.connect(this.handle_new_data);
+                        $(this.refs.retract_button).mousedown(
+                            this.retract_mousedown.bind(this));
+                        $(document).mouseup(
+                            this.retract_mouseup.bind(this));
 			// hacky way to allow force curve to take precedence and not have the 
 			// streaming commands be queued while the force curve is going
 			// window.onblur = function() {
@@ -38,6 +43,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 			// }.bind(this);
 		},
 		handle_new_data: function(approacher_state, approach_complete) {
+                        if(this.state.retract_button_pressed)
+                            return;
                         approacher_state = parseInt(approacher_state);
                         var action_in_progress = (approacher_state != 0);
 			this.setState({
@@ -147,6 +154,44 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
                                 });
                         }, 300);
                 },
+                retract_mousedown: function() {
+                    this.setState({
+                        retract_button_pressed: true,
+                        status: 12,
+                        });
+                    this.retract();
+                    motor_status_opacity = 0.5;
+                    warning_interval = setInterval(function () {
+                            $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+                                    motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+                            });
+                    }, 300);
+                },
+                retract_mouseup: function() {
+                    if (this.state.retract_button_pressed) {
+                        this.setState({
+                            retract_button_pressed: false,
+                            status: 0,
+                        });
+                        this.stop_motor();
+                        clearInterval(warning_interval);
+                        $(".motor-status").fadeTo("fast", 1);
+                    }
+                },
+                retract: function() {
+                    motor.set_microstep(motor_settings_map[4].microstep);
+                    motor.set_speed(motor_settings_map[4].speed);
+                    motor.set_direction(0);
+                    motor.set_state(1);
+                    motor.cmd_single_step();
+                    setTimeout(function() {
+                        if (this.state.retract_button_pressed)
+                            motor.run_continuous();
+                    }.bind(this), 50);
+                },
+                stop_motor: function() {
+                    motor.cmd_stop_continuous();
+                },
 		toggle_advanced_controls: function () {
 			this.setState({
 				advanced: !this.state.advanced
@@ -154,7 +199,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		},
 		render: function() {
 			var motor_status_style = this.state.approach_complete ? "completion-background" : "warning-background";
-			var approach_status_style = this.state.approach_complete ? "completion-background" : "warning-background";
+                        var approach_status_style = this.state.approach_complete ? "completion-background" : "warning-background";
 			return (
 				<div className="wrapper" id="approach-wrapper">
 					<div className="left-flexbox">
@@ -181,7 +226,7 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 					<div className="right-flexbox">
 						<div className="step-name">Sample Approach</div>
 						<div className="step-description">
-							Click "Approach" to bring the AFM in contact with the sample. The AFM will automatically stop when in contact.
+                                                        Click "Approach" to bring the AFM in contact with the sample. The AFM will automatically stop when in contact. Hold "Retract" to move the sample away from the AFM.
 						</div>
 						<div className="approacher-status">
 							<p className={"motor-status " + motor_status_style}><span className="bold-label">Motor status:</span> {status_map[this.state.status]}</p>
@@ -189,7 +234,8 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 						</div>
                                                 <div className="auto-approach-retract-buttons-wrapper">
                                                     <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
-                                                    <button className="action-button" id="disengage-retract-button" onClick={this.state.approach_complete ? this.start_disengage : this.start_retract_fast} disabled={this.state.approach_in_progress}>{this.state.approach_complete ? "Disengage" : "Retract"}</button>
+                                                    <button className="action-button" id="disengage-button" ref="disengage_button" style={this.state.approach_complete ? {display: "inline"} : {display: "none"}} disabled={this.state.approach_in_progress} onClick={this.start_disengage}>Disengage</button>
+                                                    <button className="action-button" id="retract-button" ref="retract_button" style={this.state.approach_complete ? {display: "none"} : {display: "inline"}} disabled={this.state.approach_in_progress}>Retract</button>
                                                 </div>
 						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
                         <div className={this.state.advanced ? "visible" : "hidden"}>

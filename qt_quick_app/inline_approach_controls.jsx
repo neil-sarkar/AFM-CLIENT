@@ -1,9 +1,8 @@
-define(["react", "jsx!pages/motor_control", "jsx!pages/dac_controller", "jsx!pages/pid"], function(React, MotorControl, DACController, PIDControl) {
+define(["react", "jsx!pages/dac_controller", "jsx!pages/pid"], function(React, DACController, PIDControl) {
         var InlineApproachControls = React.createClass({
                 render: function() {
                         return (
                                 <div className="top-row">
-                                        <MotorControl/>
                                         <PIDControl />
                                         <DACController name="Z Coarse" qt_object={dac_z_offset_coarse}/>
                                 </div>
