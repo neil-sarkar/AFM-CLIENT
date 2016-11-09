@@ -234,6 +234,14 @@ body {
     margin-top: 15%;
 }
 
+#setup-link {
+    cursor: pointer;
+    display: inline-block;
+    position: fixed;
+    left: 80px;
+    top: 38px;
+}
+
 #nav-toggle {
   position: fixed;
   right: 20px;
@@ -601,7 +609,7 @@ body {
     color: black;
     text-transform: uppercase;
     font-size: 0.8em;
-    width: 20%; /* bc there's 5 steps */
+    width: 33%; /* bc there's 5 steps */
     float: left;
     position: relative;
     cursor: pointer;

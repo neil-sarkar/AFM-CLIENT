@@ -13,16 +13,21 @@ define(["react"], function(React) {
     });
 
     var ProgressBar = React.createClass({
+        go_to_setup: function() {
+            this.props.go_to_step(0);
+        },
         render: function() {
             var steps = [];
             for (var step in this.props.step_list) {
-                steps.push(<ProgressBarStep key={step} name={this.props.step_list[step]} this_step={step} go_to_step={this.props.go_to_step} active={this.props.step >= step}/>);
+                if(step != 0)
+                    steps.push(<ProgressBarStep key={step} name={this.props.step_list[step]} this_step={step} go_to_step={this.props.go_to_step} active={this.props.step >= step}/>);
             }
 
             return (
                 <div className="progress-bar-wrapper">
                     <div className="home" onClick={main_window.load_home_page}>
                     </div>
+                    <div id="setup-link" onClick={this.go_to_setup}><span>Setup</span></div>
                     <ul id="progressbar">
                       {steps}
                     </ul>
