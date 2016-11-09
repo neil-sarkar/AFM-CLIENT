@@ -79,3 +79,5 @@ DISTFILES += \
     test.html
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
+RC_ICONS = nGauge_windows.ico
