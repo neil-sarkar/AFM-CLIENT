@@ -105,9 +105,12 @@ define(["react", "console", "underscore"], function(React, console, _) {
             });
         },
         render: function() {
+            var label;
+            if(this.props.name)
+                label = (<label htmlFor={this.props.name}>{this.props.name}: </label>);
             return (
                 <div>
-                    <label htmlFor={this.props.name}>{this.props.name}: </label>
+                    {label}
                     <input type="number" ref="input" 
                                         className={"number-input " + this.compressed_name()}
                                         min={this.props.min} 

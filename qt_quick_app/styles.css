@@ -57,6 +57,16 @@ body {
     cursor: default;
 }
 
+.slider-number::-webkit-inner-spin-button,
+.slider-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.slider-number {
+    text-align: center;
+}
+
 @media (min-width: 1200px) {
   .wrapper {
       display: -webkit-flex;
