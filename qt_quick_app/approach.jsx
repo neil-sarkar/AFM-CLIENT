@@ -28,9 +28,9 @@ define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_grap
 		componentDidMount: function() {
 			approacher.new_state.connect(this.handle_new_data);
                         $(this.refs.retract_button).mousedown(
-                            this.retract_mousedown.bind(this));
+                            this.retract_mousedown);
                         $(document).mouseup(
-                            this.retract_mouseup.bind(this));
+                            this.retract_mouseup);
 			// hacky way to allow force curve to take precedence and not have the 
 			// streaming commands be queued while the force curve is going
 			// window.onblur = function() {
