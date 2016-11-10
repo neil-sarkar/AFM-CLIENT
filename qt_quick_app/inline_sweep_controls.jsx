@@ -18,6 +18,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/pga_
                                                                         min={0}
                                                                         max={100000}
                                                                         step={1}
+                                                                        round={0}
                                                                         notify_signal={sweeper.start_frequency_changed}
                                                                         get_value={sweeper.start_frequency}
                                                                         set_value={sweeper.set_start_frequency} />
@@ -26,6 +27,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/pga_
                                                                         min={0}
                                                                         max={100000}
                                                                         step={1}
+                                                                        round={0}
                                                                         notify_signal={sweeper.end_frequency_changed}
                                                                         get_value={sweeper.end_frequency}
                                                                         set_value={sweeper.set_end_frequency} />
@@ -34,6 +36,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/pga_
                                                                         min={1}
                                                                         max={300}
                                                                         step={1}
+                                                                        round={0}
                                                                         notify_signal={sweeper.step_size_changed}
                                                                         get_value={sweeper.step_size}
                                                                         set_value={sweeper.set_step_size} />

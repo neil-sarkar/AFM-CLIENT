@@ -48,21 +48,22 @@ define(["react", "console", "underscore"], function(React, console, _) {
         getInitialState: function() {
             return {
                 value: this.validate_input_and_format(this.props.get_value()),
-                has_focus: false
+                has_focus: false,
             };
         },
         getDefaultProps: function() {
             return {
                 min: 0,
                 max: 100,
-                step: 1
+                step: 1,
+                round: 0
             };
         },
         compressed_name: function() {
              return (this.props.value_type + "_" + this.props.name).replace(/[^a-zA-Z0-9-:_]/gi, '');
              // SHOULD TEST  accordance with http://xahlee.info/js/html_allowed_chars_in_attribute.html
         },
-        calculate_num_decimal_places: function(num) { // http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
+        /*calculate_num_decimal_places: function(num) { // http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
           var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
           if (!match) { return 0; }
           return Math.max(
@@ -71,9 +72,10 @@ define(["react", "console", "underscore"], function(React, console, _) {
                (match[1] ? match[1].length : 0)
                // Adjust for scientific notation.
                - (match[2] ? +match[2] : 0));
-        },
+        },*/
         rounding_factor: function() {
-            return this.calculate_num_decimal_places(this.props.step);
+            //return this.calculate_num_decimal_places(this.props.step);
+            return this.props.round;
         },
         round: function(value) {
             return Math.round(value * Math.pow(10, this.rounding_factor())) / Math.pow(10, this.rounding_factor());
@@ -94,10 +96,13 @@ define(["react", "console", "underscore"], function(React, console, _) {
             num = this.round(num);
             num = num > this.props.max ? this.props.max : num;
             num = num < this.props.min ? this.props.min : num;
-            return num.toFixed(this.rounding_factor());
+            num = (this.rounding_factor() < 0) ? num : num.toFixed(this.rounding_factor());
+            return num;
         },
         send_value_to_backend: function() {
-            this.props.set_value(parseFloat(this.state.value));
+            this.setState({value: this.validate_input_and_format(this.state.value)}, function() {
+                this.props.set_value(parseFloat(this.state.value));
+            });
         },
         render: function() {
             return (

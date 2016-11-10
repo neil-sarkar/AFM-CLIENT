@@ -22,7 +22,8 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 								set_value={this.props.qt_object.set_value}
 								min={0} 
 								max={3.3} 
-								step={0.001} /> 
+                                                                step={0.001}
+                                                                round={3} />
 				</div>
 			);
 	}

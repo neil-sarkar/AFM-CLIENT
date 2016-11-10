@@ -155,7 +155,7 @@ void Scanner::set_settings() {
     settings.beginGroup(settings_group_name);
     set_num_averages(settings.contains("num_averages") ? settings.value("num_averages").toInt() : 5);
     set_send_back_count(settings.contains("send_back_count") ? settings.value("send_back_count").toInt() : 256);
-    set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 50);
+    set_dwell_time(settings.contains("dwell_time") ? settings.value("dwell_time").toInt() : 500);
     set_num_columns(settings.contains("num_columns") ? settings.value("num_columns").toInt() : 256);
     set_num_rows(settings.contains("num_rows") ? settings.value("num_rows").toInt() : 256);
     set_rms_threshold(settings.contains("rms_threshold") ? settings.value("rms_threshold").toInt() : 1.5);
@@ -646,7 +646,8 @@ void Scanner::cmd_start_scan() {
 
 void Scanner::cmd_set_dwell_time() {
     QByteArray payload;
-    payload += m_dwell_time;
+    //timer with period of of 10 us
+    payload += m_dwell_time/10;
     emit command_generated(new CommandNode(command_hash[Scanner_Set_Dwell_Time], payload));
 }
 

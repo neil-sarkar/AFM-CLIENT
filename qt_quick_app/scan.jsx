@@ -527,10 +527,11 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                       is_line = {function(){ return scanner.ratio() == 1; }}
                                       is_line_changed = {scanner.ratio_changed} />
                             <NumberInput value_type="scan"
-                                        name="Time spent at each point (ms)"
+                                        name="Time spent at each point (us)"
                                         min={0}
-                                        max={255}
-                                        step={1}
+                                        max={2550}
+                                        step={10}
+                                        round={-1}
                                         notify_signal={scanner.dwell_time_changed}
                                         get_value={scanner.dwell_time}
                                         set_value={scanner.set_dwell_time} />
@@ -560,7 +561,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                                 notify_signal={scanner.save_format_changed}
                                 get_value={scanner.save_format}
                                 title="Save format"/>
-                        <div className="save-message overflow-hidden flex-no-resize"><span style={{"font-family":"Roboto-Medium"}}>{this.state.save_message}</span><span>&nbsp;</span></div>
+                        <div className="save-message overflow-hidden flex-no-resize"><span style={{"fontfamily":"Roboto-Medium"}}>{this.state.save_message}</span><span>&nbsp;</span></div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>
                             <button className="action-button" onClick={this.clear_scan}>Reset</button>
