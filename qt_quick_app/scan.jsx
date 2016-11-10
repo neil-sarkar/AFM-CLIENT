@@ -552,6 +552,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_continuous_scan_change} checked={this.state.continuous_scan}/> Continuous Scan</label>
                             <label className="checkbox"><input type="checkbox" onChange={this.handle_save_png_change} checked={this.state.save_png}/> Save PNG</label>
                         </div>
+                        <Dropdown options_list={[
+                                    {text: "gsf", cmd_number: 0},
+                                    {text: "tsv", cmd_number: 1},
+                                ]}
+                                selection_method={scanner.set_save_format}
+                                notify_signal={scanner.save_format_changed}
+                                get_value={scanner.save_format}
+                                title="Save format"/>
                         <div className="save-message overflow-hidden flex-no-resize"><span style={{"font-family":"Roboto-Medium"}}>{this.state.save_message}</span><span>&nbsp;</span></div>
                         <div className="top-row">
                             <button className="action-button" onClick={this.state.scanning ? this.pause_scanning : this.start_or_resume_scanning}>{this.state.scanning ? "Pause" : (this.state.starting_fresh_scan ? "Scan" : "Resume")}</button>

@@ -162,6 +162,7 @@ void Scanner::set_settings() {
     set_ratio(settings.contains("ratio") ? settings.value("ratio").toInt() : 4);
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
     set_leveling_direction(settings.contains("leveling_direction") ? settings.value("leveling_direction").toChar() : 'f');
+    set_save_format(settings.contains("save_format") ? settings.value("save_format").toInt() : gsf);
     settings.endGroup();
 }
 
@@ -606,6 +607,17 @@ void Scanner::set_dwell_time(int dwell_time) {
     cmd_set_dwell_time();
 }
 
+int Scanner::save_format() {
+    return m_save_format;
+}
+
+void Scanner::set_save_format(int format) {
+    m_save_format = ((format >= 0) && (format < SAVE_FORMAT_COUNT))? format: gsf;
+    qDebug() << "Changing save format to " << m_save_format;
+    emit save_format_changed((int)m_save_format);
+    update_settings(settings_group_name, "save_format", QVariant(m_save_format));
+}
+
 int Scanner::ratio() {
     return m_ratio;
 }
@@ -676,14 +688,24 @@ QString Scanner::save_data(QString save_folder) {
 
     // Save in same folder
     QString folder_path = save_folder;
+    switch(static_cast<Save_Format>(m_save_format)) {
+        case gsf:
+            save_raw_data_gsf(folder_path,timestamp);
+        break;
+        case xyz:
+            save_raw_data_xyz(folder_path,timestamp);
+        break;
+        default:
+            save_raw_data_gsf(folder_path,timestamp);
+        break;
+    }
 
-    save_raw_data(folder_path,timestamp);
     if(m_save_png)
         save_png_data(folder_path,timestamp);
     return "Save success";
 }
 
-void Scanner::save_raw_data(QString folder_path, QString timestamp) {
+void Scanner::save_raw_data_gsf(QString folder_path, QString timestamp) {
     QList<QString> specific_file_names;
     QList<QString> full_paths;
     QList<ScanData*> scan_data;
@@ -723,6 +745,8 @@ void Scanner::save_raw_data(QString folder_path, QString timestamp) {
                     outtxt << "ZUnits = m\n";
                 break;
                 case 'p':
+                    outtxt << "ZUnits = deg\n";
+                break;
                 case 'e':
                     outtxt << "ZUnits = V\n";
                 break;
@@ -750,6 +774,74 @@ void Scanner::save_raw_data(QString folder_path, QString timestamp) {
         }
     }
 }
+
+void Scanner::save_raw_data_xyz(QString folder_path, QString timestamp) {
+    QList<QString> specific_file_names;
+    QList<QString> full_paths;
+    QList<ScanData*> scan_data;
+    specific_file_names << "offset forward" << "phase forward" << "error forward" << "offset reverse" << "phase reverse" << "error reverse";
+    scan_data << fwd_offset_data << fwd_phase_data << fwd_error_data << rev_offset_data << rev_phase_data << rev_error_data;
+    for (int i = 0; i < specific_file_names.length(); i++) {
+        QFile file(folder_path + "/" + m_base_file_name + " " + specific_file_names[i] + " " + timestamp + ".tsv");
+        if (file.open(QIODevice::WriteOnly)) {
+            qDebug() << "file created" << file.fileName();
+            full_paths.append(file.fileName());
+        } else {
+            qDebug() << "File failed to create file: " << specific_file_names[i];
+        }
+    }
+
+    int x_scale = completed_scan_metadata.num_rows/completed_scan_metadata.num_columns;
+    int y_scale = completed_scan_metadata.num_columns/completed_scan_metadata.num_rows;
+    if (x_scale == 0) x_scale = 1;
+    if (y_scale == 0) y_scale = 1;
+
+    for (int i = 0; i < full_paths.length(); i++) {
+        ScanData* data_container = scan_data[i];
+        QFile file(full_paths[i]);
+        if (file.open(QIODevice::Append)) {
+            // Serialize header data
+            QTextStream outtxt(&file);
+            outtxt << "#XRes = " << QString::number(completed_scan_metadata.num_columns) << "\n";
+            outtxt << "#YRes = " << QString::number(completed_scan_metadata.num_rows) << "\n";
+            outtxt << "#XReal = " << QString::number(completed_scan_metadata.x_range_m) << "\n";
+            outtxt << "#YReal = " << QString::number(completed_scan_metadata.y_range_m) << "\n";
+            outtxt << "#XOffset = " << QString::number(completed_scan_metadata.x_offset_m) << "\n";
+            outtxt << "#YOffset = " << QString::number(completed_scan_metadata.y_offset_m) << "\n";
+            outtxt << "#XYUnits = m\n";
+            switch (specific_file_names[i][0].unicode()) {
+                case 'o':
+                    outtxt << "#ZUnits = m\n";
+                break;
+                case 'p':
+                    outtxt << "#ZUnits = deg\n";
+                break;
+                case 'e':
+                    outtxt << "#ZUnits = V\n";
+                break;
+            }
+            outtxt << "#Title = " << m_base_file_name << " " << specific_file_names[i] << " " << timestamp << "\n";
+            outtxt << "#Date = " << completed_scan_metadata.scan_completion_time << "\n";
+            outtxt << "#DwellTime = " << QString::number(completed_scan_metadata.dwell_time) << "\n";
+            for (int y = 0; y < completed_scan_metadata.num_rows; y++) {
+                for (int x = 0; x < data_container->raw_data[y]->size; x++) {
+                    if (specific_file_names[i][0] == 'o') {
+                        // this is an offset. save value in meters
+                        outtxt << QString::number(z_fine_dac_to_nm(data_container->raw_data[y]->data[x], completed_scan_metadata.z_actuator_scale_factor) * 1e-9,'e');
+                    } else {
+                        outtxt << QString::number(data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR, 'e');
+                    }
+                    if (x != (data_container->raw_data[y]->size - 1)) {
+                        outtxt << "\t";
+                    }
+                }
+                outtxt << "\n";
+            }
+            outtxt.flush();
+        }
+    }
+}
+
 
 void Scanner::save_png_data(QString folder_path, QString timestamp) {
     fwd_offset_data->save_png(folder_path + "/" + m_base_file_name + " " + "offset forward" + " " + timestamp);

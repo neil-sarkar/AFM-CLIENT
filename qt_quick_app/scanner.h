@@ -21,6 +21,7 @@ class Scanner : public AFMObject
     Q_PROPERTY(int m_ratio READ ratio WRITE set_ratio NOTIFY ratio_changed)
     Q_PROPERTY(QString m_base_file_name READ base_file_name WRITE set_base_file_name NOTIFY base_file_name_changed)
     Q_PROPERTY(QChar m_leveling_direction READ leveling_direction WRITE set_leveling_direction NOTIFY leveling_direction_changed)
+    Q_PROPERTY(int m_save_format READ save_format WRITE set_save_format NOTIFY save_format_changed)
 
     struct scan_metadata
     {
@@ -40,6 +41,12 @@ public:
     void init();
     PID* pid;
     DAC* fine_z;
+
+    enum Save_Format {
+        gsf = 0,
+        xyz,
+        SAVE_FORMAT_COUNT
+    };
 
     Q_INVOKABLE quint16 num_averages();
     Q_INVOKABLE void set_num_averages(int num_averages);
@@ -65,10 +72,13 @@ public:
     Q_INVOKABLE void zoom(float x, float y, float size);
     Q_INVOKABLE void reset_zoom();
     Q_INVOKABLE void set_save_png(bool b_save_png);
+    Q_INVOKABLE int save_format();
+    Q_INVOKABLE void set_save_format(int format);
 
     void set_settings();
     QString save_data(QString save_folder);
-    void save_raw_data(QString folder_path, QString timestamp);
+    void save_raw_data_gsf(QString folder_path, QString timestamp);
+    void save_raw_data_xyz(QString folder_path, QString timestamp);
     void save_png_data(QString folder_path, QString timestamp);
 
 signals:
@@ -97,6 +107,7 @@ signals:
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
     void use_level_changed(bool);
+    void save_format_changed(int);
     void new_forward_offset_profile(QVariantList);
     void new_forward_error_profile(QVariantList);
     void new_forward_phase_profile(QVariantList);
@@ -136,6 +147,7 @@ private:
     quint16 m_send_back_count;
     double m_rms_threshold;
     QChar m_leveling_direction;
+    int m_save_format;
     bool m_use_level;
     bool m_save_png;
 
