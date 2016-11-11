@@ -577,6 +577,8 @@ body {
 #use_level_checkbox {
     -webkit-user-select: none;
     cursor: pointer;
+    padding-right: 10px;
+    border-right: 5px solid transparent;
 }
 /*progressbar*/
 #progressbar {

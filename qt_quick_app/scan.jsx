@@ -475,6 +475,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Phase")}> Reverse Phase</p>
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Error")}> Foward Error</p>
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
+                            <label id="use_level_checkbox"><input type="checkbox" onChange={this.handle_level_change} checked={this.state.use_level}/>Level Image</label>
                         </div>
                         <div className="flex-column">
                             <div className="scan-window-container">
@@ -577,7 +578,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>
                             <InlineScanControls />
                             <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning || !this.state.starting_fresh_scan}>Clean</button>
-                            <label id="use_level_checkbox"><input type="checkbox" onChange={this.handle_level_change} checked={this.state.use_level}/>Level Image</label>
                         </div>
                     </div>
                 </div>
