@@ -436,6 +436,8 @@ body {
 
 .home-wrapper {
     height: 100%;
+    width: 80%;
+    margin: auto auto;
 }
 
 .canvasjs-chart-canvas {
