@@ -136,7 +136,7 @@ void Sweeper::callback_cmd_frequency_sweep(QByteArray return_bytes) {
     for (int i = 0; i < return_bytes.size(); i += 4) {
         current_frequency = m_current_resonant_frequency - m_boundaries[m_repetitions_counter] + m_step_sizes[m_repetitions_counter] * ((i - 2) / 4);
         double amplitude_value = double(bytes_to_word(quint8(return_bytes[i]), quint8(return_bytes[i + 1]))) * ADC::SCALE_FACTOR;
-        double phase_value = double(bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]))) * ADC::SCALE_FACTOR;
+        double phase_value = double(bytes_to_word(quint8(return_bytes[i + 2]), quint8(return_bytes[i + 3]))) * ADC::PHASE_SCALE_FACTOR;
         QPointF amplitude_point(current_frequency, amplitude_value);
         QPointF phase_point(current_frequency, phase_value);
         m_amplitude_data.append(amplitude_point);

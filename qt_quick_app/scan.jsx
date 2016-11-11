@@ -266,7 +266,11 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 // offset
                 this.refs.line_profile.set_y_label("Offset (nm)", true);
             } else if (image_name.charAt(8) == 'E') {
+                // error
                 this.refs.line_profile.set_y_label("Error (mV)", true);
+            } else if (image_name.charAt(8) == 'P') {
+                // phase
+                this.refs.line_profile.set_y_label("Phase (deg)", true);
             } else {
                 // generic
                 this.refs.line_profile.set_y_label("Magnitude", true);

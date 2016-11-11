@@ -30,6 +30,7 @@ public:
     static const double MAX_VOLTAGE;
     static const int RESOLUTION;
     static const double SCALE_FACTOR; // calculated from MAX_VOLTAGE and RESOLUTION
+    static const double PHASE_SCALE_FACTOR; // DAC to degrees. v4.2 drive-sense with signal range of 0 - 1.65 V and 3.3V range ADC.
 
      // if you were to call get resistances, what range of values would be acceptable for us to consider the actuator working
     static const int Min_Resistance;

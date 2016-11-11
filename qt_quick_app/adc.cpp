@@ -57,6 +57,7 @@ ADC::callback_return_type ADC::bind(callback_type method) {
 const double ADC::MAX_VOLTAGE = 3.3;
 const int ADC::RESOLUTION = 4095;
 const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
+const double ADC::PHASE_SCALE_FACTOR = double(180.0*2.0/RESOLUTION);
 
 const int ADC::Min_Resistance = 20;
 const int ADC::Max_Resistance = 700;

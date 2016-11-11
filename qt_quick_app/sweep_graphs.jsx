@@ -2,8 +2,6 @@ define(["jquery", "react", "dom", "highcharts", "console", "constants"], functio
     var SweepGraph = React.createClass({
         renderChart: function() {
             var node = this.refs.chartNode;
-            if( typeof merp == 'undefined') {merp = [];}
-            merp.push(node);
             var siblings = $(node).siblings(); // these are the graphs with which we want to sync our tooltip and zoom
             var dataSeries = this.state.model;
             var series = this.generate_initial_series();

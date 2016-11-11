@@ -225,11 +225,11 @@ void Scanner::initialize_scan_state_machine() {
     }
 
     fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
-    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, 1);
-    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, DAC::SCALE_FACTOR*1e3);
+    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR);
+    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3);
     rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
-    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, 1);
-    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, DAC::SCALE_FACTOR*1e3);
+    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR);
+    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3);
 }
 
 void Scanner::set_signal_generator() {
@@ -334,11 +334,11 @@ void Scanner::fetch_line_profiles(int y, int y_averages) {
             acc[5] += rev_phase_data->raw_data[yy]->data[x];
         }
         current_fwd_offset_line_profile.append(z_fine_dac_to_nm(acc[0]/y_averages));
-        current_fwd_error_line_profile.append(acc[1]/y_averages*DAC::SCALE_FACTOR*1e3);
-        current_fwd_phase_line_profile.append(acc[2]/y_averages);
+        current_fwd_error_line_profile.append(acc[1]/y_averages*ADC::SCALE_FACTOR*1e3);
+        current_fwd_phase_line_profile.append(acc[2]/y_averages*ADC::PHASE_SCALE_FACTOR);
         current_rev_offset_line_profile.append(z_fine_dac_to_nm(acc[3]/y_averages));
-        current_rev_error_line_profile.append(acc[4]/y_averages*DAC::SCALE_FACTOR*1e3);
-        current_rev_phase_line_profile.append(acc[5]/y_averages);
+        current_rev_error_line_profile.append(acc[4]/y_averages*ADC::SCALE_FACTOR*1e3);
+        current_rev_phase_line_profile.append(acc[5]/y_averages*ADC::PHASE_SCALE_FACTOR);
     }
     normalize_offset_line_profiles();
 
@@ -398,7 +398,7 @@ void Scanner::callback_step_scan(QByteArray payload) {
     // Data comes back as amplitude  low, amplitude high, offset low, offset high, phase low, phase high
 
     bool last_line = receive_data();
-    double z_amplitude, z_offset, z_phase, z_error, z_offset_nm;
+    double z_amplitude, z_offset, z_phase, z_error;//, z_offset_nm;
     qDebug() << "Processing LINE" << m_y_index;
     for (int i = 0; i < payload.size(); i += 6) { // 6 bytes passed back per point
 
@@ -415,9 +415,9 @@ void Scanner::callback_step_scan(QByteArray payload) {
 
         z_amplitude = bytes_to_word(payload.at(i), payload.at(i + 1));
         z_offset = bytes_to_word(payload.at(i + 2), payload.at(i + 3));
-        z_phase = 0x8000 - bytes_to_word(payload.at(i + 4), payload.at(i + 5));
+        z_phase = bytes_to_word(payload.at(i + 4), payload.at(i + 5));
         z_error = pid->setpoint() / ADC::SCALE_FACTOR - z_amplitude;
-        z_offset_nm = z_fine_dac_to_nm(z_offset);
+        //z_offset_nm = z_fine_dac_to_nm(z_offset);
 
         if (scanning_forward) {
             fwd_offset_data->append(m_x_index, m_y_index, z_offset);
@@ -428,10 +428,10 @@ void Scanner::callback_step_scan(QByteArray payload) {
             current_fwd_offset_line_profile.append(z_offset_nm);*/
             current_fwd_phase_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_phase_line_profile.append(m_y_index);
-            current_fwd_phase_line_profile.append(z_phase);
+            current_fwd_phase_line_profile.append(z_phase*ADC::PHASE_SCALE_FACTOR);
             current_fwd_error_line_profile.append(x_index_in_um(m_x_index));
             current_fwd_error_line_profile.append(m_y_index);
-            current_fwd_error_line_profile.append(z_error*DAC::SCALE_FACTOR*1e3);
+            current_fwd_error_line_profile.append(z_error*ADC::SCALE_FACTOR*1e3);
         } else {
             int x_coord = 2 * m_num_columns - m_x_index - 1;
             rev_offset_data->append(x_coord, m_y_index, z_offset);
@@ -440,10 +440,10 @@ void Scanner::callback_step_scan(QByteArray payload) {
             /*current_rev_offset_line_profile.prepend(z_offset_nm);
             current_rev_offset_line_profile.prepend(m_y_index);
             current_rev_offset_line_profile.prepend(x_index_in_um(x_coord));*/
-            current_rev_phase_line_profile.prepend(z_phase);
+            current_rev_phase_line_profile.prepend(z_phase*ADC::PHASE_SCALE_FACTOR);
             current_rev_phase_line_profile.prepend(m_y_index);
             current_rev_phase_line_profile.prepend(x_index_in_um(x_coord));
-            current_rev_error_line_profile.prepend(z_error*DAC::SCALE_FACTOR*1e3);
+            current_rev_error_line_profile.prepend(z_error*ADC::SCALE_FACTOR*1e3);
             current_rev_error_line_profile.prepend(m_y_index);
             current_rev_error_line_profile.prepend(x_index_in_um(x_coord));
         }
@@ -767,8 +767,11 @@ void Scanner::save_raw_data_gsf(QString folder_path, QString timestamp) {
                     if (specific_file_names[i][0] == 'o') {
                         // this is an offset. save value in meters
                         outraw << z_fine_dac_to_nm(data_container->raw_data[y]->data[x], completed_scan_metadata.z_actuator_scale_factor) * 1e-9;
+                    } else if (specific_file_names[i][0] == 'p') {
+                        // this is a phase. save value in deg
+                        outraw << data_container->raw_data[y]->data[x] * ADC::PHASE_SCALE_FACTOR;
                     } else {
-                        outraw << data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR;
+                        outraw << data_container->raw_data[y]->data[x] * ADC::SCALE_FACTOR;
                     }
                 }
             }
@@ -829,8 +832,11 @@ void Scanner::save_raw_data_xyz(QString folder_path, QString timestamp) {
                     if (specific_file_names[i][0] == 'o') {
                         // this is an offset. save value in meters
                         outtxt << QString::number(z_fine_dac_to_nm(data_container->raw_data[y]->data[x], completed_scan_metadata.z_actuator_scale_factor) * 1e-9,'e');
+                    } else if (specific_file_names[i][0] == 'p') {
+                        // this is a phase. save value in deg
+                        outtxt << QString::number(data_container->raw_data[y]->data[x] * ADC::PHASE_SCALE_FACTOR, 'e');
                     } else {
-                        outtxt << QString::number(data_container->raw_data[y]->data[x] * DAC::SCALE_FACTOR, 'e');
+                        outtxt << QString::number(data_container->raw_data[y]->data[x] * ADC::SCALE_FACTOR, 'e');
                     }
                     if (x != (data_container->raw_data[y]->size - 1)) {
                         outtxt << "\t";
