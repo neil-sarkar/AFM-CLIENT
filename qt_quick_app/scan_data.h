@@ -48,6 +48,7 @@ private:
     double m_scale_value;
     bool m_same_range;
     bool m_use_level;
+    int m_display_precision;
     qint64 m_current_size;
     QImage m_image;
     QImage m_leveled_image;

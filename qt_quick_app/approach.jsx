@@ -1,4 +1,4 @@
-define(["react", "constants", "jsx!pages/approach_graph", "jsx!pages/z_fine_graph", "jsx!pages/inline_approach_controls", "jsx!pages/data_stream_graph"], function(React, Constants, ApproachGraph, ZFineGraph, InlineApproachControls, DataStreamGraph) {
+define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/data_stream_graph"], function(React, Constants, InlineApproachControls, DataStreamGraph) {
 	var status_map = {
 		0: "motor idle",
 		1: "motor waking up",

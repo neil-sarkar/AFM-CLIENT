@@ -7,6 +7,10 @@
     font-family: "Roboto-Thin";
 }
 
+.roboto-medium {
+    font-family: "Roboto-Medium";
+}
+
 body {
     margin: 0;
     padding: 0;

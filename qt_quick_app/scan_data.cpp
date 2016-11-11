@@ -17,6 +17,8 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_num_columns = num_columns;
     m_num_rows = num_rows;
 
+    m_display_precision = 1;
+
     m_ratio = ratio;
     m_delta_x = delta_x;
     m_delta_y = delta_y;
@@ -284,8 +286,8 @@ QString ScanData::generate_z_bar(double min_value, double max_value) {
     QFont font = QFont("Roboto-Thin");
     font.setPixelSize(18);
     painter.setFont(font);
-    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
-    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
+    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',m_display_precision), m_unit));
+    painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',m_display_precision), m_unit));
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
