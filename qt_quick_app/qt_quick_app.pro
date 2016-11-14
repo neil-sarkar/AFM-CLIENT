@@ -80,4 +80,5 @@ DISTFILES += \
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
+ICON = nGauge_mac.icns
 RC_ICONS = nGauge_windows.ico
