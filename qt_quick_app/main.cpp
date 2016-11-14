@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
 
     // Set up view
     MainWindow m(afm, new WebFileDialog());
-    m.show();
+    m.showMinimized();
+    m.showMaximized();
 
     // Assign objects to threads
     serial_port->moveToThread(serial_thread);
