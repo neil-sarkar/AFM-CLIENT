@@ -21,17 +21,21 @@ define(["react", "console", "underscore"], function(React, console, _) {
                         if((sel_pos == 0) && (sep_pos != 0))
                             power += 1;
                         power = input_ele.value.length - power;
-                        if( key == 38 )
-                            input_ele.stepUp(parseInt(Math.pow(10,power)));
-                        else
-                            input_ele.stepDown(parseInt(Math.pow(10,power)));
-                        input_ele.setSelectionRange(sel_pos,sel_pos);
-                        this.setState({value : input_ele.value}, function(){
-                            this.send_value_to_backend();
-                        });
+                        if(this.props.round < 0)
+                            power += this.props.round;
+                        if(power >= 0) {
+                            if( key == 38 )
+                                input_ele.stepUp(parseInt(Math.pow(10,power)));
+                            else
+                                input_ele.stepDown(parseInt(Math.pow(10,power)));
+                            input_ele.setSelectionRange(sel_pos,sel_pos);
+                            this.setState({value : input_ele.value}, function(){
+                                this.send_value_to_backend();
+                            });
+                        }
                     }
                     else
-                        this.send_value_to_backend();
+                       this.send_value_to_backend();
                 }
             }.bind(this));
             $(this.refs.input).focus(function() {
