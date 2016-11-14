@@ -57,6 +57,9 @@ int main(int argc, char *argv[])
 
     // Set up view
     MainWindow m(afm, new WebFileDialog());
+    QWidget* window = QApplication::desktop()->screen();
+    const int horizontalDpi = window->logicalDpiX();
+    m.setZoomFactor(horizontalDpi/96.0);
     m.showMinimized();
     m.showMaximized();
 
