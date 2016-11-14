@@ -163,6 +163,10 @@ void Scanner::set_settings() {
     set_base_file_name(settings.contains("base_file_name") ? settings.value("base_file_name").toString() : "scan");
     set_leveling_direction(settings.contains("leveling_direction") ? settings.value("leveling_direction").toChar() : 'f');
     set_save_format(settings.contains("save_format") ? settings.value("save_format").toInt() : gsf);
+    set_save_png(settings.contains("save_png") ? settings.value("save_png").toBool() : false);
+    set_use_level(settings.contains("use_level") ? settings.value("use_level").toBool() : false);
+    set_use_auto_save(settings.contains("use_auto_save") ? settings.value("use_auto_save").toBool() : false);
+    set_use_continuous_scan(settings.contains("use_continuous_scan") ? settings.value("use_continuous_scan").toBool() : false);
     settings.endGroup();
 }
 
@@ -506,11 +510,6 @@ void Scanner::record_metadata() {
 
 quint16 Scanner::num_averages() {
     return m_num_averages;
-}
-
-void Scanner::set_use_level(bool use_level) {
-    m_use_level = use_level;
-    qDebug() << "Use_level: " << use_level;
 }
 
 void Scanner::set_num_averages(int num_averages) {
@@ -956,9 +955,48 @@ void Scanner::set_base_file_name(QString base_file_name) {
     update_settings(settings_group_name, "base_file_name", QVariant(m_base_file_name));
 }
 
-void Scanner::set_save_png(bool b_save_png)
-{
+bool Scanner::save_png() {
+    return m_save_png;
+}
+
+void Scanner::set_save_png(bool b_save_png) {
     m_save_png = b_save_png;
+    qDebug() << "Setting save_png to " << m_save_png;
+    emit save_png_changed(m_save_png);
+    update_settings(settings_group_name, "save_png", QVariant(m_save_png));
+}
+
+bool Scanner::use_level() {
+    return m_use_level;
+}
+
+void Scanner::set_use_level(bool b_use_level) {
+    m_use_level = b_use_level;
+    qDebug() << "Setting use_level to " << m_use_level;
+    emit use_level_changed(m_use_level);
+    update_settings(settings_group_name, "use_level", QVariant(m_use_level));
+}
+
+bool Scanner::use_auto_save() {
+    return m_use_auto_save;
+}
+
+void Scanner::set_use_auto_save(bool b_use_auto_save){
+    m_use_auto_save = b_use_auto_save;
+    qDebug() << "Setting use_auto_save to " << m_use_auto_save;
+    emit use_auto_save_changed(m_use_auto_save);
+    update_settings(settings_group_name, "use_auto_save", QVariant(m_use_auto_save));
+}
+
+bool Scanner::use_continuous_scan() {
+    return m_use_continuous_scan;
+}
+
+void Scanner::set_use_continuous_scan(bool b_use_continuous_scan) {
+    m_use_continuous_scan = b_use_continuous_scan;
+    qDebug() << "Setting use_continuous_scan to " << m_use_continuous_scan;
+    emit use_continuous_scan_changed(m_use_continuous_scan);
+    update_settings(settings_group_name, "use_continuous_scan", QVariant(m_use_continuous_scan));
 }
 
 const QString Scanner::settings_group_name = "scanner";

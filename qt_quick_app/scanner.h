@@ -22,6 +22,11 @@ class Scanner : public AFMObject
     Q_PROPERTY(QString m_base_file_name READ base_file_name WRITE set_base_file_name NOTIFY base_file_name_changed)
     Q_PROPERTY(QChar m_leveling_direction READ leveling_direction WRITE set_leveling_direction NOTIFY leveling_direction_changed)
     Q_PROPERTY(int m_save_format READ save_format WRITE set_save_format NOTIFY save_format_changed)
+    Q_PROPERTY(bool m_save_png READ save_png WRITE set_save_png NOTIFY save_png_changed)
+    Q_PROPERTY(bool m_use_auto_save READ use_auto_save WRITE set_use_auto_save NOTIFY use_auto_save_changed)
+    Q_PROPERTY(bool m_use_continuous_scan READ use_continuous_scan WRITE set_use_continuous_scan NOTIFY use_continuous_scan_changed)
+    Q_PROPERTY(bool m_use_level READ use_level WRITE set_use_level NOTIFY use_level_changed)
+
 
     struct scan_metadata
     {
@@ -66,14 +71,20 @@ public:
     Q_INVOKABLE void set_base_file_name(QString);
     Q_INVOKABLE QChar leveling_direction();
     Q_INVOKABLE void set_leveling_direction (QChar);
-    Q_INVOKABLE void set_use_level(bool);
     Q_INVOKABLE void fetch_line_profiles(int y, int y_averages);
     Q_INVOKABLE void fetch_latest_offset_profiles();
     Q_INVOKABLE void zoom(float x, float y, float size);
     Q_INVOKABLE void reset_zoom();
-    Q_INVOKABLE void set_save_png(bool b_save_png);
     Q_INVOKABLE int save_format();
     Q_INVOKABLE void set_save_format(int format);
+    Q_INVOKABLE bool use_level();
+    Q_INVOKABLE void set_use_level(bool b_use_level);
+    Q_INVOKABLE bool save_png();
+    Q_INVOKABLE void set_save_png(bool b_save_png);
+    Q_INVOKABLE bool use_auto_save();
+    Q_INVOKABLE void set_use_auto_save(bool b_use_auto_save);
+    Q_INVOKABLE bool use_continuous_scan();
+    Q_INVOKABLE void set_use_continuous_scan(bool b_use_continuous_scan);
 
     void set_settings();
     QString save_data(QString save_folder);
@@ -107,6 +118,9 @@ signals:
     void base_file_name_changed(QString);
     void leveling_direction_changed(QChar);
     void use_level_changed(bool);
+    void use_continuous_scan_changed(bool);
+    void use_auto_save_changed(bool);
+    void save_png_changed(bool);
     void save_format_changed(int);
     void new_forward_offset_profile(QVariantList);
     void new_forward_error_profile(QVariantList);
@@ -150,6 +164,8 @@ private:
     int m_save_format;
     bool m_use_level;
     bool m_save_png;
+    bool m_use_continuous_scan;
+    bool m_use_auto_save;
 
     scan_metadata completed_scan_metadata;
 

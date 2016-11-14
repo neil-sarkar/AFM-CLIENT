@@ -87,6 +87,10 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             scanner.num_columns_changed.connect(this.change_num_columns);
             scanner.all_data_received.connect(this.set_scan_complete);
             scanner.all_processing_done.connect(this.handle_all_processing_done);
+            scanner.use_auto_save_changed.connect(this.change_auto_save);
+            scanner.use_continuous_scan_changed.connect(this.change_continuous_scan);
+            scanner.use_level_changed.connect(this.change_use_level);
+            scanner.save_png_changed.connect(this.change_save_png);
             afm.save_folder_changed.connect(this.save_folder_changed);
             // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
@@ -389,26 +393,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                 });
             }
         },
-        handle_level_change: function(e) {
-            this.setState(
-                {use_level: e.target.checked},
-                function() {
-                    scanner.set_use_level(this.state.use_level);
-                    for(i=0; i<scan_views.length; i++) {
-                        if (scan_views[i].name == this.state.current_image) {
-                            this.update_image((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_data : scan_views[i].data);
-                            this.update_z_bar((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_z_bar_data : scan_views[i].z_bar_data);
-                        }
-                    }
-                    if (!this.state.scanning && this.state.starting_fresh_scan) {
-                        scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y ), this.state.line_profile_width);
-                    }
-                    if (!this.state.scanning && !this.state.starting_fresh_scan) {
-                        console.log("js enter fetch latest")
-                        scanner.fetch_latest_offset_profiles();
-                    }
-                });
-        },
         get_specific_row_profile: function(data, y_value) {
             return data.slice(y_value * this.state.num_columns, (y_value + 1) * this.state.num_columns);
         },
@@ -446,18 +430,47 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         save_folder_changed: function(data) {
             this.setState({save_folder: data});
         },
+        handle_level_change: function(e) {
+            scanner.set_use_level(e.target.checked);
+            this.change_use_level(e.target.checked);
+        },
+        change_use_level: function(b_use_level) {
+            this.setState({use_level: b_use_level},
+            function() {
+                for(i=0; i<scan_views.length; i++) {
+                    if (scan_views[i].name == this.state.current_image) {
+                        this.update_image((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_data : scan_views[i].data);
+                        this.update_z_bar((this.state.use_level && (this.state.current_image in level_enable_scans)) ? scan_views[i].leveled_z_bar_data : scan_views[i].z_bar_data);
+                    }
+                }
+                if (!this.state.scanning && this.state.starting_fresh_scan) {
+                    scanner.fetch_line_profiles(Math.floor(this.state.line_profile_y ), this.state.line_profile_width);
+                }
+                if (!this.state.scanning && !this.state.starting_fresh_scan) {
+                    scanner.fetch_latest_offset_profiles();
+                }
+            });
+        },
         handle_auto_save_change: function(e) {
-            this.setState({auto_save: e.target.checked});
+            scanner.set_use_auto_save(e.target.checked);
+            this.change_auto_save(e.target.checked);
+        },
+        change_auto_save: function(b_use_auto_save) {
+            this.setState({auto_save: b_use_auto_save});
         },
         handle_save_png_change: function(e) {
-            this.setState(
-                {save_png: e.target.checked},
-                function() {
-                    scanner.set_save_png(this.state.save_png);
-                });
+            scanner.set_save_png(e.target.checked);
+            this.change_save_png(e.target.checked);
+        },
+        change_save_png: function(b_save_png) {
+            this.setState({save_png: b_save_png});
         },
         handle_continuous_scan_change: function(e) {
-            this.setState({continuous_scan: e.target.checked});
+            scanner.set_use_continuous_scan(e.target.checked);
+            this.change_continuous_scan(e.target.checked);
+        },
+        change_continuous_scan: function(b_use_continuous_scan) {
+            this.setState({continuous_scan: b_use_continuous_scan});
         },
         reset_zoom: function () {
             scanner.reset_zoom();
