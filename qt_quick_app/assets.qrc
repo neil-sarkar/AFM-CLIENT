@@ -96,6 +96,8 @@
         <file>scan_range_slider.jsx</file>
         <file>null_step.jsx</file>
         <file>setup.jsx</file>
+        <file>notification_manager.jsx</file>
+        <file>safety_configs.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>exporting.js</file>

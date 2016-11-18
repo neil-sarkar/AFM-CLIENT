@@ -20,10 +20,16 @@ public:
     Q_INVOKABLE void cmd_get_state();
     Q_INVOKABLE void cmd_start_disengage();
     Q_INVOKABLE void cmd_start_retract_fast();
+    Q_INVOKABLE void cmd_set_low_limit();
+    Q_INVOKABLE float signal_low_limit();
+    Q_INVOKABLE void set_signal_low_limit(float low_limit_in_V);
     int state();
+    static const float DEFAULT_SIGNAL_LOW_LIMIT;
 
 signals:
     void new_state(int state, int complete);
+    void approach_low_signal_error();
+    void signal_low_limit_changed(float low_limit);
 
 public slots:
     void handle_auto_approach_info_message(QByteArray working_response);
@@ -31,6 +37,7 @@ public slots:
 private:
     void callback_get_state(QByteArray payload);
     double m_setpoint;
+    float m_low_limit;
     int m_state; // enum in MCU code
     PID* m_pid;
     ADC* m_adc;

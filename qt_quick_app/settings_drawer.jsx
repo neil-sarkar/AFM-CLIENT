@@ -1,4 +1,4 @@
- define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid", "jsx!pages/dds_controller", "jsx!pages/save_folder"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl, DDSControl, SaveFolderPicker) {
+ define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid", "jsx!pages/dds_controller", "jsx!pages/save_folder", "jsx!pages/safety_configs"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl, DDSControl, SaveFolderPicker, SafetyConfigs) {
 	var SettingsDrawer = React.createClass({
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -79,6 +79,8 @@
                                                     </div>
                                                     <p className="setting-section-name">DDS (Hz)</p>
                                                     <DDSControl />
+                                                    <p className="setting-section-name">Safety Configurations</p>
+                                                    <SafetyConfigs />
                                                     <p className="setting-section-name">Save Options</p>
                                                     <SaveFolderPicker />
                                                     <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>

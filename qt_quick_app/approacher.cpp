@@ -12,6 +12,7 @@ Approacher::Approacher(PID* pid, AFMObject* adc)
 
 void Approacher::init() {
     m_pid->init();
+    set_signal_low_limit(Approacher::DEFAULT_SIGNAL_LOW_LIMIT);
 }
 
 void Approacher::cmd_get_state() {
@@ -21,6 +22,9 @@ void Approacher::cmd_get_state() {
 void Approacher::callback_get_state(QByteArray payload) {
     m_state = payload.at(0);
     emit new_state(m_state, payload.at(1));
+    if(payload.at(2) != 0) {
+        emit approach_low_signal_error();
+    }
 }
 
 void Approacher::cmd_start_auto_approach() {
@@ -73,3 +77,25 @@ void Approacher::cmd_start_retract_fast(){
     payload += ((duration & 0xFF00) >> 8);
     emit command_generated(new CommandNode(command_hash[AFM_Start_Auto_Retract_Fast], payload));
 }
+
+void Approacher::cmd_set_low_limit() {
+    quint16 low_limit = m_low_limit/ADC::SCALE_FACTOR;
+    qDebug() << "Cmd setting approach low signal threshold to " << m_low_limit << " V => " << low_limit << " codes";
+    QByteArray payload;
+    payload += (low_limit & 0xFF);
+    payload += ((low_limit & 0xFF00) >> 8);
+    emit command_generated(new CommandNode(command_hash[AFM_Set_Auto_Approach_Low_Limit], payload));
+}
+
+float Approacher::signal_low_limit() {
+    return m_low_limit;
+}
+
+void Approacher::set_signal_low_limit(float low_limit_in_V) {
+    m_low_limit = low_limit_in_V;
+    qDebug() << "Setting signal low limit to " << m_low_limit;
+    emit signal_low_limit_changed(m_low_limit);
+    cmd_set_low_limit();
+}
+
+const float Approacher::DEFAULT_SIGNAL_LOW_LIMIT = 0.7;

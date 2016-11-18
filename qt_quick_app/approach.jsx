@@ -42,7 +42,7 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
 			// 	this.refs.approach_graph.start_streaming();
 			// }.bind(this);
 		},
-		handle_new_data: function(approacher_state, approach_complete) {
+                handle_new_data: function(approacher_state, approach_complete) {
                         if(this.state.retract_button_pressed)
                             return;
                         approacher_state = parseInt(approacher_state);

@@ -45,6 +45,7 @@ const QString Scanner_Set_Zoom = "Scanner_Set_Zoom";
 const QString AFM_Get_Auto_Approach_State	= "AFM_Get_Auto_Approach_State";
 const QString AFM_Start_Auto_Retract_Disengage = "AFM_Start_Auto_Retract_Disengage";
 const QString AFM_Start_Auto_Retract_Fast = "AFM_Start_Auto_Retract_Fast";
+const QString AFM_Set_Auto_Approach_Low_Limit = "AFM_Set_Auto_Approach_Low_Limit";
 
 
 const char Message_Delimiter = 0x0A;
