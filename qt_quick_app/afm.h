@@ -42,6 +42,14 @@ class AFM : public AFMObject
         Q_INVOKABLE QString save_scan_data();
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
+        Q_INVOKABLE void scanner_start_state_machine_initial_checks();
+        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
+        Q_INVOKABLE void auto_sweep_initial_checks();
+        Q_INVOKABLE void callback_auto_sweep_initial_checks(QByteArray return_bytes);
+        Q_INVOKABLE void start_approaching_initial_checks();
+        Q_INVOKABLE void callback_start_approaching_initial_checks(QByteArray return_bytes);
+        Q_INVOKABLE bool check_resistances();
+        Q_INVOKABLE void set_check_resistances(bool check);
 
         static const int DAC_Table_Block_Size;
 
@@ -49,6 +57,11 @@ class AFM : public AFMObject
         void trigger_mcu_reset();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
+        void scanner_start_state_machine_checks_done(bool);
+        void auto_sweep_checks_done(bool);
+        void start_approaching_checks_done(bool);
+        void no_device_or_broken_device_error();
+        void check_resistances_changed(bool);
 
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
@@ -65,9 +78,12 @@ class AFM : public AFMObject
 
         void set_save_folder(QString);
         void set_settings();
+        void generate_get_resistances_command(callback_type method);
+        bool check_resistance_values(QByteArray return_bytes);
         double voltage_resistance_equation(double);
 
         bool is_initializing;
+        bool m_check_resistances;
         QString m_save_folder;
 
         static const QString settings_group_name;

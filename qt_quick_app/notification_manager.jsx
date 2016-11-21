@@ -22,20 +22,23 @@
                 },
                 componentDidMount: function() {
                         approacher.approach_low_signal_error.connect(this.handle_approach_low_signal_error);
+                        afm.no_device_or_broken_device_error.connect(this.handle_no_device_or_broken_device);
+                        window.new_error = this.handle_no_device_or_broken_device.bind(this);
                         $("#notification-manager-wrapper").css('opacity', 0);
-                        window.add_stuff = this.handle_approach_low_signal_error.bind(this);
-                        window.add_error = this.emit_error.bind(this);
                 },
-                message_object: function(a_timestamp, a_message_type, a_message_code, a_timeout) {
+                message_object: function(a_timestamp, a_message_type, a_message_code, a_timeout, a_additional_string) {
                     this.timestamp = a_timestamp;
                     this.message_type = a_message_type;
                     this.message_code = a_message_code;
                     this.timeout = a_timeout;
+                    this.additional_string = a_additional_string;
                 },
                 render_message: function(message, i) {
                     var message_header_class = "bold-label "+message_type_map[message.message_type]+"-Message";
                     var message_header = "[" + message_type_map[message.message_type] + " " + message.timestamp.split(' ').splice(4,2).join(' ') + "]: ";
                     var message_body = error_map[message.message_code];
+                    if(message.additional_string)
+                        message_body = message_body + " " + message.additional_string;
                     return (<p key={i}>
                             <span className={message_header_class}>
                                 {message_header}
@@ -54,26 +57,20 @@
                     $("#notification-manager-wrapper").fadeTo("slow", 0);
                 },
                 push_messages: function(message) {
-                    console.log("Pushing new message");
                     var new_messages = this.state.messages.slice();
                     var message_out;
                     if(new_messages.length > this.props.max_num_messages){
-                        console.log("Shifting out old message");
                         message_out = new_messages.shift();
                         clearTimeout(message_out.timeout);
                     }
-                    console.log("Setting timeout for message duration of " + this.props.message_duration);
                     message.timeout = setTimeout(this.shift_messages, this.props.message_duration);
-                    console.log(message);
                     new_messages.push(message);
                     this.setState({messages: new_messages}, this.reveal_messages);
                 },
                 shift_messages: function() {
-                    console.log("Shifting old message");
                     var new_messages = this.state.messages.slice();
                     var message_out = new_messages.shift();
                     if(new_messages.length == 0) {
-                        console.log("hiding since no messages left");
                         $("#notification-manager-wrapper").fadeTo( "slow", 0, function(){
                             this.setState({messages: new_messages});
                         }.bind(this));
@@ -93,11 +90,18 @@
                     var d = new Date();
                     // message_type = 0 [Error]
                     // message_code = 0 [Low Signal Error]
-                    var message = new this.message_object(d.toLocaleString(), 0, 0, null);
+                    var message = new this.message_object(d.toLocaleString(), 0, 0, null, null);
+                    this.push_messages(message);
+                },
+                handle_no_device_or_broken_device: function() {
+                    var d = new Date();
+                    // message_type = 0 [Error]
+                    // message_code = 0 [no device or broken device error]
+                    var message = new this.message_object(d.toLocaleString(), 0, 1, null, null);
                     this.push_messages(message);
                 },
                 emit_error: function() {
-                    approacher.approach_low_signal_error();
+                    afm.no_device_or_broken_device();
                 },
         })
         return NotificationManager;

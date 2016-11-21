@@ -8,6 +8,7 @@
 			}
 		},
 		componentDidMount: function () {
+                        afm.auto_sweep_checks_done.connect(this.auto_sweep);
 			sweeper.machine_finished.connect(this.on_sweep_done);
 		},
 		getInitialState: function () {
@@ -15,6 +16,7 @@
 				advanced: false,
 				can_continue: false,
                                 is_sweeping: false,
+                                initial_checks_in_progress: false,
 			};
 		},
 		on_sweep_done: function () {
@@ -33,16 +35,26 @@
 				sweeper.start_manual_sweep(); // TODO: probably don't need this settimeout
 			}, 200);
 		},
-		auto_sweep: function() {
+                auto_sweep_initial_checks: function() {
+                        if(!this.state.initial_checks_in_progress) {
+                            this.setState({initial_checks_in_progress: true}, function() {
+                                afm.auto_sweep_initial_checks();
+                            });
+                        }
+                },
+                auto_sweep: function(check_ok) {
+                    if(check_ok) {
                         this.setState({
                                 is_sweeping: true,
                         });
-			this.clear();
+                        this.clear();
                         pid.set_disabled();
                         dac_z_offset_fine.set_value(1.5);
-			setTimeout(function() {
-				sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout
-			}, 200);
+                        setTimeout(function() {
+                                sweeper.start_auto_sweep(); // TODO: probably don't need this settimeout
+                        }, 200);
+                    }
+                    this.setState({initial_checks_in_progress: false});
 		},
 		clear: function() {
 			this.refs.graphs.clear();
@@ -64,7 +76,7 @@
 							Click "Sweep" to find the resonant frequency of the AFM.
 						</div>
 						<div className="top-row">
-                                                        <button className="action-button" onClick={this.auto_sweep} disabled={this.state.is_sweeping}>{this.state.is_sweeping? "Sweeping":"Sweep"}</button>
+                                                        <button className="action-button" onClick={this.auto_sweep_initial_checks} disabled={this.state.is_sweeping}>{this.state.is_sweeping? "Sweeping":"Sweep"}</button>
 						</div>
 						<p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
 						<div className={this.state.advanced ? "visible" : "hidden"}>

@@ -23,10 +23,12 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
 				approach_in_progress: false,
                                 advanced: false,
                                 retract_button_pressed: false,
+                                initial_checks_in_progress: false,
 			};
 		},
 		componentDidMount: function() {
 			approacher.new_state.connect(this.handle_new_data);
+                        afm.start_approaching_checks_done.connect(this.start_approaching);
                         $(this.refs.retract_button).mousedown(
                             this.retract_mousedown);
                         $(document).mouseup(
@@ -106,18 +108,28 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
 			$(":input").prop("disabled", false);
 			$("button").prop("disabled", false);
 		},
-		start_approaching : function() {
-			// this.prevent_dangerous_user_input();
-                        motor.cancel_timeout_timer(true);
-                        pid.set_disabled();
-                        dac_z_offset_fine.set_value(1.5);
-			approacher.cmd_start_auto_approach();
-			motor_status_opacity = 0.5;
-			warning_interval = setInterval(function () {
-				$(".motor-status").fadeTo("fast", motor_status_opacity, function () {
-					motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
-				});
-			}, 300);
+                start_approaching_initial_checks: function() {
+                        if(!this.state.initial_checks_in_progress) {
+                            this.setState({initial_checks_in_progress: true}, function() {
+                                afm.start_approaching_initial_checks();
+                            });
+                        }
+                },
+                start_approaching : function(check_ok) {
+                        if(check_ok) {
+                            // this.prevent_dangerous_user_input();
+                            motor.cancel_timeout_timer(true);
+                            pid.set_disabled();
+                            dac_z_offset_fine.set_value(1.5);
+                            approacher.cmd_start_auto_approach();
+                            motor_status_opacity = 0.5;
+                            warning_interval = setInterval(function () {
+                                    $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+                                            motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+                                    });
+                            }, 300);
+                        }
+                        this.setState({initial_checks_in_progress: false});
 		},
 		stop_approaching: function() {
 			approacher.cmd_stop_auto_approach();
@@ -233,7 +245,7 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
                                                         <p className={"approach-status " + approach_status_style}><span className="bold-label">Approach status:</span> {this.state.approach_complete ? <span>approach complete.</span> : <span>sample not in contact</span>}</p>
 						</div>
                                                 <div className="auto-approach-retract-buttons-wrapper">
-                                                    <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
+                                                    <button className="action-button" id="pause-approach-button" onClick={this.state.approach_in_progress ? this.stop_approaching : this.start_approaching_initial_checks}>{this.state.approach_in_progress ? "Pause" : "Approach"}</button>
                                                     <button className="action-button" id="disengage-button" ref="disengage_button" style={this.state.approach_complete ? {display: "inline"} : {display: "none"}} disabled={this.state.approach_in_progress} onClick={this.start_disengage}>Disengage</button>
                                                     <button className="action-button" id="retract-button" ref="retract_button" style={this.state.approach_complete ? {display: "none"} : {display: "inline"}} disabled={this.state.approach_in_progress}>Retract</button>
                                                 </div>

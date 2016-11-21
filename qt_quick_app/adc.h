@@ -35,6 +35,13 @@ public:
      // if you were to call get resistances, what range of values would be acceptable for us to consider the actuator working
     static const int Min_Resistance;
     static const int Max_Resistance;
+    static const double SENSE_RESISTOR_AMPLIFIER_GAIN;
+    static const double RESISTANCE_SCALE_FACTOR_200MV;
+    static const double RESISTANCE_SCALE_FACTOR_50MV;
+    static const double LATERAL_MAX_RESISTANCE;
+    static const double LATERAL_MIN_RESISTANCE;
+    static const double Z_MAX_RESISTANCE;
+    static const double Z_MIN_RESISTANCE;
 
 signals:
     void value_changed(double);
