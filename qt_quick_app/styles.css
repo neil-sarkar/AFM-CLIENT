@@ -61,6 +61,10 @@ body {
     cursor: default;
 }
 
+.slider > span,input,label {
+    vertical-align: middle;
+}
+
 .slider-number::-webkit-inner-spin-button,
 .slider-number::-webkit-outer-spin-button {
     -webkit-appearance: none;
