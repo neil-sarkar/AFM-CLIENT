@@ -318,7 +318,9 @@ void ScanData::save_png(QString path_and_name)
     QImage z_bar = color_bar.copy();
     QPainter painter(&z_bar);
     QString format = "%1 %2";
-    painter.setFont(QFont("Roboto-Thin", 12));
+    QFont font = QFont("Roboto-Thin");
+    font.setPixelSize(18);
+    painter.setFont(font);
     painter.drawText(27,2,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
     painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
 
