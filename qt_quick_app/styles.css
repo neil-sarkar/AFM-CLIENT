@@ -617,7 +617,13 @@ body {
     cursor: pointer;
     padding-right: 10px;
     border-right: 5px solid transparent;
+    vertical-align: middle;
 }
+
+#use_level_checkbox > span,input {
+    vertical-align: middle;
+}
+
 /*progressbar*/
 #progressbar {
     margin-bottom: 30px;
@@ -723,6 +729,11 @@ body {
 
 .checkbox {
     cursor: pointer;
+    vertical-align: middle;
+}
+
+.checkbox > span,input {
+    vertical-align: middle;
 }
 
 .justify-space-between {
