@@ -621,7 +621,6 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                         <p className="advanced-controls-toggle" onClick={this.toggle_advanced_controls}><span>{this.state.advanced ? "Hide" : "Show"}</span> Advanced Controls</p>
                         <div className={(this.state.advanced ? "visible" : "hidden") + " " + "top-row"}>
                             <InlineScanControls />
-                            <button className="action-button" onClick={this.eliminate_outliers} disabled={this.state.scanning || !this.state.starting_fresh_scan}>Clean</button>
                         </div>
                     </div>
                 </div>
