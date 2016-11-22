@@ -36,6 +36,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_facto
     setMinimumSize(640, 480);
 
     set_global_web_settings();
+    this->setContextMenuPolicy(Qt::NoContextMenu);
     QObject::connect(m_welcome_page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(welcomePageLoadFinished()));
 }
 
@@ -114,6 +115,7 @@ QWebView* MainWindow::createWindow(CustomPage* page) {
     if (page->mainFrame()->baseUrl().isEmpty())
         webView->page()->mainFrame()->load(QUrl("qrc:/html/force_curve.html"));
     webView->setAttribute(Qt::WA_DeleteOnClose, true);
+    webView->setContextMenuPolicy(Qt::NoContextMenu);
     webView->show();
     return webView;
 }
