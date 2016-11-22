@@ -97,6 +97,7 @@ void MainWindow::log_cpp(QString text) {
 void MainWindow::load_main_app_page() {
     if (m_main_app_page.mainFrame()->baseUrl().isEmpty())
         m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
+    clearFocus();
     setPage(&m_main_app_page);
 }
 
