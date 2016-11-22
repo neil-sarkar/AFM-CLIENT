@@ -199,7 +199,6 @@ void Builder::generate_color_bar() {
         }
     }
     QPainter color_bar_painter(&color_bar);
-    color_bar_painter.fillRect(0,0,39,2,Qt::black);
     color_bar_painter.fillRect(0,display_image_dimensions-2,39,2,Qt::black);
     color_bar_painter.fillRect(0,0,2,display_image_dimensions,Qt::black);
     color_bar_painter.fillRect(24,0,2,display_image_dimensions,Qt::black);

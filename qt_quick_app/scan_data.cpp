@@ -11,7 +11,7 @@
 #include <QtMath>
 #include <QPainter>
 
-ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y, QString unit, bool use_level, double scale_value)
+ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int delta_y, QString unit, bool use_level, double scale_value, QImage& lateral_bar)
 {
     m_unit = unit;
     m_num_columns = num_columns;
@@ -52,6 +52,7 @@ ScanData::ScanData(int num_columns, int num_rows, int ratio, int delta_x, int de
     m_leveled_image = QImage(display_image_dimensions, display_image_dimensions, QImage::Format_RGB32);
     m_leveled_image.fill(Qt::white);
     m_current_size = 0;
+    m_lateral_bar = &lateral_bar;
 }
 
 ScanData::~ScanData() {
@@ -286,7 +287,7 @@ QString ScanData::generate_z_bar(double min_value, double max_value) {
     QFont font = QFont("Roboto-Thin");
     font.setPixelSize(18);
     painter.setFont(font);
-    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',m_display_precision), m_unit));
+    painter.drawText(27,2,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',m_display_precision), m_unit));
     painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',m_display_precision), m_unit));
     QByteArray ba;
     QBuffer buffer(&ba);
@@ -318,14 +319,15 @@ void ScanData::save_png(QString path_and_name)
     QPainter painter(&z_bar);
     QString format = "%1 %2";
     painter.setFont(QFont("Roboto-Thin", 12));
-    painter.drawText(27,4,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
+    painter.drawText(27,2,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*max_val,'f',1), m_unit));
     painter.drawText(27,986,99,34,Qt::AlignCenter, format.arg(QLocale::system().toString(m_scale_value*min_val,'f',1), m_unit));
 
     //merge image
-    QImage result = QImage(image.width() + z_bar.width(), image.height(), QImage::Format_RGB32);
+    QImage result = QImage(image.width() + z_bar.width(), image.height() + m_lateral_bar->height(), QImage::Format_RGB32);
     QPainter merge(&result);
-    merge.drawImage(0,0,image);
-    merge.drawImage(image.width(),0,z_bar);
+    merge.drawImage(0,0,*m_lateral_bar);
+    merge.drawImage(0,m_lateral_bar->height(),image);
+    merge.drawImage(image.width(),m_lateral_bar->height(),z_bar);
 
     result.save(path_and_name+".png",0,100);
 }

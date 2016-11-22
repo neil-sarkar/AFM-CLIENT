@@ -560,6 +560,10 @@ body {
     width: 100%;
 }
 
+.scan-lateral-scalebar {
+    width: 100%;
+}
+
 .scan-image-inverter {
     position: absolute;
     left: 0;
@@ -597,6 +601,14 @@ body {
     -webkit-justify-content: space-around;
     -webkit-align-self: center;
     -webkit-flex-flow: row !important;
+    width: 100%;
+}
+
+.scan-lateral-container {
+    display: -webkit-flex;
+    -webkit-flex: 1;
+    -webkit-justify-content: space-around;
+    -webkit-align-self: center;
     width: 100%;
 }
 

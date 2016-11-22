@@ -9,6 +9,9 @@
 #include <QDir>
 #include <QDateTime>
 #include <QTimer>
+#include <QPainter>
+#include <QImage>
+#include <math.h>
 #include "scan_data.h"
 #include "constants.h"
 #include "adc.h"
@@ -226,14 +229,54 @@ void Scanner::initialize_scan_state_machine() {
         delete rev_offset_data;
         delete rev_phase_data;
         delete rev_error_data;
+        delete lateral_bar;
     }
+    draw_lateral_bar(x_range_in_m()*1e6);
+    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1), *lateral_bar);
+    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR, *lateral_bar);
+    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3, *lateral_bar);
+    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1), *lateral_bar);
+    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR, *lateral_bar);
+    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3, *lateral_bar);
+}
 
-    fwd_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
-    fwd_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR);
-    fwd_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3);
-    rev_offset_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"nm", true, z_fine_dac_to_nm(1));
-    rev_phase_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"deg", false, ADC::PHASE_SCALE_FACTOR);
-    rev_error_data = new ScanData(m_num_columns, m_num_rows, m_ratio, get_delta_x_from_ratio(), get_delta_y_from_ratio(),"mV", false, ADC::SCALE_FACTOR*1e3);
+void Scanner::draw_lateral_bar(double lateral_length) {
+    lateral_bar = new QImage(1024+128, 66, QImage::Format_RGB32);
+    lateral_bar->fill(Qt::white);
+    QPainter lateral_bar_painter(lateral_bar);
+    QFont font = QFont("Roboto-Thin");
+    font.setPixelSize(18);
+    lateral_bar_painter.setFont(font);
+    lateral_bar_painter.fillRect(0,lateral_bar->height()-2,lateral_bar->width(),2,Qt::black);
+    const int nice_numbers[3] = {1, 2, 5};
+    const int max_ticks = 6;
+    int exponent = floor(log10(lateral_length));
+    int ticks = max_ticks;
+    int width;
+    double interval;
+    for(int i = exponent-1; i < exponent+1 ; i++) {
+        if(ticks >= max_ticks){
+            for(int j = 0; j < 3; j++) {
+                interval = nice_numbers[j]*pow(10.0,i);
+                ticks = lateral_length/interval;
+                if(ticks<max_ticks)
+                    break;
+            }
+        }
+    }
+    width = interval/lateral_length*display_image_dimensions;
+    for(int i = 0; i <= ticks; i++) {
+        lateral_bar_painter.fillRect(i*width,lateral_bar->height()/2,2,lateral_bar->height()/2,Qt::black);
+        lateral_bar_painter.drawText(i*width+20,lateral_bar->height()/2,66,34,Qt::AlignLeft || Qt::AlignVCenter,
+                                     (i == 0) ? QString("%1 %2").arg(QLocale::system().toString(i*interval,'f',1), "um" ) :
+                                                QLocale::system().toString(i*interval,'f',1));
+    }
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QIODevice::WriteOnly);
+    lateral_bar->save(&buffer, "PNG"); // writes image into ba in PNG format
+    buffer.close();
+    emit new_lateral_scale_bar(ba.toBase64());
 }
 
 void Scanner::set_signal_generator() {

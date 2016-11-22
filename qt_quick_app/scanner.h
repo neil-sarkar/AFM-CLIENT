@@ -128,7 +128,7 @@ signals:
     void new_reverse_offset_profile(QVariantList);
     void new_reverse_error_profile(QVariantList);
     void new_reverse_phase_profile(QVariantList);
-
+    void new_lateral_scale_bar(QString);
 
 public slots:
     // Scan state machine methods
@@ -204,6 +204,7 @@ private:
     void normalize_offset_line_profiles(void);
     bool check_all_watchers_finish();
     void handle_last_line_process_complete();
+    void draw_lateral_bar(double lateral_length);
 
     callback_return_type bind(void (Scanner::*method)(QByteArray));
     typedef void (Scanner::*callback_type)(QByteArray);
@@ -218,6 +219,7 @@ private:
     ScanData* rev_offset_data;
     ScanData* rev_phase_data;
     ScanData* rev_error_data;
+    QImage* lateral_bar;
 
     QFutureWatcher<QVariantList> watcher_fo;
     QFutureWatcher<QVariantList> watcher_ro;

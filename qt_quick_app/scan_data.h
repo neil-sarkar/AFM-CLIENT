@@ -11,7 +11,7 @@ class ScanData : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanData(int num_columns, int num_points, int ratio, int delta_x, int delta_y, QString unit, bool use_level, double scale_value);
+    explicit ScanData(int num_columns, int num_points, int ratio, int delta_x, int delta_y, QString unit, bool use_level, double scale_value, QImage& lateral_bar);
     ~ScanData();
     bool append(coordinate x, coordinate y, point z);
     bool is_full();
@@ -52,6 +52,7 @@ private:
     qint64 m_current_size;
     QImage m_image;
     QImage m_leveled_image;
+    QImage* m_lateral_bar;
     QString m_unit;
 };
 
