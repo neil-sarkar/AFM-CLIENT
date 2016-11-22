@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
 
     // Set up view
-    MainWindow m(afm, new WebFileDialog());
     QWidget* window = QApplication::desktop()->screen();
     const int horizontalDpi = window->logicalDpiX();
-    m.setZoomFactor(horizontalDpi/96.0);
+    qDebug() << "logical DPI x " << horizontalDpi;
+    MainWindow m(afm, new WebFileDialog(), horizontalDpi/108.0);
     m.showMinimized();
     m.showMaximized();
 

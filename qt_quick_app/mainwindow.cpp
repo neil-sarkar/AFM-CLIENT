@@ -8,7 +8,7 @@
 #include <QNetworkRequest>
 #include "web_file_dialog.h"
 
-MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
+MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_factor)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
 
@@ -26,6 +26,12 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker)
     m_welcome_page.mainFrame()->load(QUrl("qrc:/html/home.html"));
     m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
     m_force_curve_page.mainFrame()->load(QUrl("qrc/html/force_curve.html"));
+    // set zoom factor for each page to ensure proper scaling for high DPI displays
+    qDebug() << "Initial Zoom Factor " << m_welcome_page.mainFrame()->zoomFactor();
+    m_welcome_page.mainFrame()->setZoomFactor(zoom_factor);
+    m_main_app_page.mainFrame()->setZoomFactor(zoom_factor);
+    m_force_curve_page.mainFrame()->setZoomFactor(zoom_factor);
+    qDebug() << "New Zoom Factor " << m_welcome_page.mainFrame()->zoomFactor();
     setPage(&m_welcome_page);
     setMinimumSize(640, 480);
 
