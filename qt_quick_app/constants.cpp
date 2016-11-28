@@ -27,6 +27,7 @@ const QString Motor_Set_Speed = "Motor_Set_Speed";
 const QString Motor_Set_State_Asleep = "Motor_Set_State_Asleep";
 const QString Motor_Set_State_Awake = "Motor_Set_State_Awake";
 const QString Motor_Stop_Continuous = "Motor_Stop_Continuous";
+const QString Motor_Set_Limit_Switch = "Motor_Set_Limit_Switch";
 const QString PGA_Set = "PGA_Set";
 const QString PID_Disable = "PID_Disable";
 const QString PID_Enable = "PID_Enable";

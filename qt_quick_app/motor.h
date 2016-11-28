@@ -32,12 +32,15 @@ public:
     Q_INVOKABLE void set_state(int state);
     Q_INVOKABLE void set_microstep(int microstep);
     Q_INVOKABLE void cancel_timeout_timer(bool sleep);
+    Q_INVOKABLE void set_limit_switch_enable(bool enable);
+    Q_INVOKABLE bool limit_switch_enable();
 
 signals:
     void speed_changed(int);
     void direction_changed(int);
     void state_changed(int);
     void microstep_changed(int);
+    void limit_switch_enable_changed(bool);
 
 private slots:
     void cmd_set_state_asleep();
@@ -47,10 +50,12 @@ private:
     int m_state;
     int m_speed;
     int m_microstep;
+    bool m_limit_switch_enable;
     void cmd_set_speed();
     void cmd_set_direction();
     void cmd_set_state_awake();
     void cmd_run_continuous();
+    void cmd_set_limit_switch();
     void reset_timeout_timer();
     callback_return_type bind(void (Motor::*method)(QByteArray));
     typedef void (Motor::*callback_type)(QByteArray);

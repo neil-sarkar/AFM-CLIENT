@@ -10,6 +10,7 @@ Motor_Set_State_Asleep	1	Motor	State Asleep	set			52	34	4		1	2	None	2	N
 Motor_Set_State_Awake	1	Motor	State Awake	set			53	35	5		1	2	None	2	N
 Motor_Set_Direction	1	Motor	Direction	set			54	36	6		1	3	Enum: Forward/Lower platform "f" 0x66, Backward/raise platform "b" 0x62	2	N
 Motor_Stop_Continuous	1	Motor	Continuous	stop			55	37	7		1	2	None	2	N
+Motor_Set_Limit_Switch	1	Motor	Limit Switch	set			56	38	8		1	3	Bool: Enable/Disable Limit Switch	2	N
 AFM_Get_Resistances	1	AFM	resistances	get			74	4A	J		1	2		12		ADC reads : x1, x2, y1, y2, zoffset
 AFM_Generate_Force_Curve	1	AFM	force curve	generate			78	4E	N		1	2	None	4002
 AFM_Set_Signal_Generation	1	AFM	signal generation	set			80	50	P	4ACT	1	7	5 bytes (ratio enum byte, numpoints byte #1, numpoints byte #2, numlines byte#1, numlines byte#2)	2	N	Nothing

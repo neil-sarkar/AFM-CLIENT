@@ -9,6 +9,7 @@ Motor::Motor() {
     m_direction = 0;
     m_state = 0;
     m_microstep = 0;
+    m_limit_switch_enable = true;
     timeout_timer.setSingleShot(true);
     timeout_timer.setInterval(Motor::Timeout_Milliseconds);
 }
@@ -70,6 +71,7 @@ void Motor::init() {
     cmd_set_direction();
     cmd_set_speed();
     cmd_set_state_asleep();
+    cmd_set_limit_switch();
 }
 
 void Motor::run_continuous() {
@@ -90,6 +92,14 @@ void Motor::cmd_stop_continuous() {
 void Motor::cmd_single_step() {
     emit command_generated(new CommandNode(command_hash[Motor_Set_Single_Step]));
     reset_timeout_timer();
+}
+
+void Motor::cmd_set_limit_switch() {
+    qint8 limit_switch = m_limit_switch_enable ? 1 : 0;
+    QByteArray payload;
+    payload.push_back(limit_switch);
+    CommandNode* node = new CommandNode(command_hash[Motor_Set_Limit_Switch], payload);
+    emit command_generated(node);
 }
 
 void Motor::cmd_set_speed() {
@@ -138,5 +148,15 @@ Motor::callback_return_type Motor::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
+bool Motor::limit_switch_enable() {
+    return m_limit_switch_enable;
+}
+
+void Motor::set_limit_switch_enable(bool enable) {
+    m_limit_switch_enable = enable;
+    qDebug() << "Setting limit switch enable to " << m_limit_switch_enable;
+    emit limit_switch_enable_changed(m_limit_switch_enable);
+    cmd_set_limit_switch();
+}
 
 const int Motor::Timeout_Milliseconds = 5000;

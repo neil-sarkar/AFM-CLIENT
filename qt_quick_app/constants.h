@@ -30,6 +30,7 @@ extern const QString Motor_Set_Speed;
 extern const QString Motor_Set_State_Asleep;
 extern const QString Motor_Set_State_Awake;
 extern const QString Motor_Stop_Continuous;
+extern const QString Motor_Set_Limit_Switch;
 extern const QString PGA_Set;
 extern const QString PID_Disable;
 extern const QString PID_Enable;
