@@ -23,7 +23,6 @@
                 componentDidMount: function() {
                         approacher.approach_low_signal_error.connect(this.handle_approach_low_signal_error);
                         afm.no_device_or_broken_device_error.connect(this.handle_no_device_or_broken_device);
-                        window.new_error = this.handle_no_device_or_broken_device.bind(this);
                         $("#notification-manager-wrapper").css('opacity', 0);
                 },
                 message_object: function(a_timestamp, a_message_type, a_message_code, a_timeout, a_additional_string) {

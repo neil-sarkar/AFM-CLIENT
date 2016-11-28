@@ -12,6 +12,12 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 		} else {
 			slider = false;
 		}
+                var max;
+                if (this.props.name == "Z Coarse") {
+                        max = 1.0;
+                } else {
+                        max = 3.3;
+                }
 		return (
 				<div>
 					{slider}
@@ -21,7 +27,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/slider"], function(React, 
 								get_value={this.props.qt_object.value}
 								set_value={this.props.qt_object.set_value}
 								min={0} 
-								max={3.3} 
+                                                                max={max}
                                                                 step={0.001}
                                                                 round={3} />
 				</div>
