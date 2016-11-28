@@ -43,7 +43,7 @@ define(["react", "jsx!pages/number_input", "jsx!pages/dropdown", "jsx!pages/pga_
                                                 <p style={{marginTop: 0.3}}>Total number of steps in sweep: <span>{this.state.num_steps}</span></p>
                                         </div>
                                         <div>
-                                                <PGAController name="DDS Gain" qt_object={pga_dds}/>
+                                                <PGAController name="Cantilever Drive Amplitude (%)" qt_object={pga_dds}/>
                                         </div>
 				</div>
 			)
