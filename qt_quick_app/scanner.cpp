@@ -731,6 +731,11 @@ QString Scanner::save_data(QString save_folder) {
 
     // Save in same folder
     QString folder_path = save_folder;
+    QDir dir(folder_path);
+    if(!dir.exists()) {
+        qDebug() << "Save directory does not exist. Creating " << folder_path;
+        dir.mkpath(".");
+    }
     switch(static_cast<Save_Format>(m_save_format)) {
         case gsf:
             save_raw_data_gsf(folder_path,timestamp);

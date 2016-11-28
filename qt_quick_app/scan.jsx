@@ -105,6 +105,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             // put blue marker on the first button
             $('.view-selector-button').first().addClass('selected-scan-view');
             $(document).mouseup(this.handle_mouse_up);
+            // force update the save folder state to catch situations where save_folder state is not rendered on init
+            this.save_folder_changed(afm.save_folder());
         },
         handle_png_data: function(scan_view, new_data){
             if(new_data[0]) {
