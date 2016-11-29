@@ -27,7 +27,7 @@ define(["react"], function(React) {
                 <div className="progress-bar-wrapper">
                     <div className="home" onClick={main_window.load_home_page}>
                     </div>
-                    <div id="setup-link" onClick={this.go_to_setup}><span>Setup</span></div>
+                    <div id="setup-link" onClick={this.go_to_setup}><img style={{width: "20px"}} src="qrc:/images/wrench_gray.png"></img></div>
                     <ul id="progressbar">
                       {steps}
                     </ul>
