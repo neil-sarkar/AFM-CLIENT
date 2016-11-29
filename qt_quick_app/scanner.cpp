@@ -254,11 +254,12 @@ void Scanner::draw_lateral_bar(double lateral_length) {
     int ticks = max_ticks;
     int width;
     double interval;
+    const double scale_bar_effective_length = lateral_length*1066.0/display_image_dimensions;
     for(int i = exponent-1; i < exponent+1 ; i++) {
         if(ticks >= max_ticks){
             for(int j = 0; j < 3; j++) {
                 interval = nice_numbers[j]*pow(10.0,i);
-                ticks = lateral_length/interval;
+                ticks = scale_bar_effective_length/interval;
                 if(ticks<max_ticks)
                     break;
             }
