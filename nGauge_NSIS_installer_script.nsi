@@ -50,6 +50,8 @@ InstallDir "$PROGRAMFILES\ICSPI\nGauge"
 !define MUI_ICON "${GITHUB_REPOSITORY_LOCATION}\qt_quick_app\nGauge_windows_installer.ico"
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${GITHUB_REPOSITORY_LOCATION}\qt_quick_app\installer_welcome.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${GITHUB_REPOSITORY_LOCATION}\qt_quick_app\installer_welcome.bmp"
 
 !insertmacro MUI_PAGE_WELCOME
 
