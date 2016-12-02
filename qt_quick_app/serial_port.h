@@ -32,6 +32,7 @@ Q_OBJECT
         int write_bytes(QByteArray bytes);
         void execute_command(CommandNode*);
         void reset_mcu();
+        void enter_bootloader();
         bool detect_afm();
         void initialize_reading();
 

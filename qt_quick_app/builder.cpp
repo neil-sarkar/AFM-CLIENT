@@ -82,6 +82,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), receive_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray))); // why isn't this a qt direct connection
     QObject::connect(afm, SIGNAL(trigger_mcu_reset()), serial_port, SLOT(reset_mcu()));
+    QObject::connect(afm, SIGNAL(enter_bootloader()), serial_port, SLOT(enter_bootloader()));
     QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
     QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(disconnected()));
 

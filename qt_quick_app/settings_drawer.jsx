@@ -29,6 +29,9 @@
 
 			$("#settings-drawer-wrapper").css('visibility', 'hidden');
 		},
+                enter_bootloader: function() {
+                    afm.enter_bootloader();
+                },
                 render: function() {
 				return (
                                             <div id="settings-drawer-wrapper">
@@ -88,6 +91,7 @@
                                                     <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={this.enter_bootloader}>Enter Bootloader</button>
                                             </div>
 				);
 		},

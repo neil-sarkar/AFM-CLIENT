@@ -68,7 +68,16 @@ void SerialPort::reset_mcu() {
     emit resetting_mcu(); // this connects to the flushing of the buffers
     // super important, because the UI creation will try to call a bunch of setters
     QByteArray message;
-    message += "MMM";
+    message += "\nMMM\n";
+    write_bytes(message);
+}
+
+void SerialPort::enter_bootloader() {
+    qDebug() << "Entering bootloader";
+    emit resetting_mcu(); // this connects to the flushing of the buffers
+    // super important, because the UI creation will try to call a bunch of setters
+    QByteArray message;
+    message += "\nOOO\n";
     write_bytes(message);
 }
 
