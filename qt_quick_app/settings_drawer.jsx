@@ -79,8 +79,8 @@
                                                             <ADCController name="Y1" qt_object={adc_y_1} resistance={true}/>
                                                             <ADCController name="Y2" qt_object={adc_y_2} resistance={true}/>
                                                             <ADCController name="Z" qt_object={adc_z_1} resistance={true}/>
-                                                            <button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Resistances</button>
                                                     </div>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Resistances</button>
                                                     <p className="setting-section-name">DDS (Hz)</p>
                                                     <DDSControl />
                                                     <p className="setting-section-name">Safety Configurations</p>
