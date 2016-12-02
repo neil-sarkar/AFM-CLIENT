@@ -461,8 +461,8 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             this.setState({save_folder: data});
         },
         handle_level_change: function(e) {
-            scanner.set_use_level(e.target.checked);
-            this.change_use_level(e.target.checked);
+            scanner.set_use_level(!this.state.use_level);
+            this.change_use_level(!this.state.use_level);
         },
         change_use_level: function(b_use_level) {
             this.setState({use_level: b_use_level},
@@ -482,22 +482,22 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         handle_auto_save_change: function(e) {
-            scanner.set_use_auto_save(e.target.checked);
-            this.change_auto_save(e.target.checked);
+            scanner.set_use_auto_save(!this.state.auto_save);
+            this.change_auto_save(!this.state.auto_save);
         },
         change_auto_save: function(b_use_auto_save) {
             this.setState({auto_save: b_use_auto_save});
         },
         handle_save_png_change: function(e) {
-            scanner.set_save_png(e.target.checked);
-            this.change_save_png(e.target.checked);
+            scanner.set_save_png(!this.state.save_png);
+            this.change_save_png(!this.state.save_png);
         },
         change_save_png: function(b_save_png) {
             this.setState({save_png: b_save_png});
         },
         handle_continuous_scan_change: function(e) {
-            scanner.set_use_continuous_scan(e.target.checked);
-            this.change_continuous_scan(e.target.checked);
+            scanner.set_use_continuous_scan(!this.state.continuous_scan);
+            this.change_continuous_scan(!this.state.continuous_scan);
         },
         change_continuous_scan: function(b_use_continuous_scan) {
             this.setState({continuous_scan: b_use_continuous_scan});
@@ -518,7 +518,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Phase")}> Reverse Phase</p>
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Forward Error")}> Foward Error</p>
                             <p className="view-selector-button" onClick={this.handle_view_selector_click.bind(this, "Reverse Error")}> Reverse Error</p>
-                            <label id="use_level_checkbox"><input type="checkbox" onChange={this.handle_level_change} checked={this.state.use_level}/> Level Image</label>
+                            <label id="use_level_checkbox" onClick={this.handle_level_change}>[{this.state.use_level ? "✓":"✗"}] Level Image</label>
                         </div>
                         <div className="flex-column">
                             <div className="scan-lateral-container">
@@ -602,9 +602,9 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                             <button className="action-button save-button flex-no-resize" onClick={this.save_data} disabled={this.state.scanning}>{this.state.data_saved? "Save (✓)": "Save "}</button>
                         </div>
                         <div className="save-row justify-space-between">
-                            <label className="checkbox"><input type="checkbox" onChange={this.handle_auto_save_change} checked={this.state.auto_save}/> Auto-Save</label>
-                            <label className="checkbox"><input type="checkbox" onChange={this.handle_continuous_scan_change} checked={this.state.continuous_scan}/> Continuous Scan</label>
-                            <label className="checkbox"><input type="checkbox" onChange={this.handle_save_png_change} checked={this.state.save_png}/> Save PNG</label>
+                            <label className="checkbox" onClick={this.handle_auto_save_change}>[{this.state.auto_save ? "✓":"✗"}] Auto-Save</label>
+                            <label className="checkbox" onClick={this.handle_continuous_scan_change}>[{this.state.continuous_scan ? "✓":"✗"}] Continuous Scan</label>
+                            <label className="checkbox" onClick={this.handle_save_png_change}>[{this.state.save_png ? "✓":"✗"}] Save PNG</label>
                         </div>
                         <Dropdown options_list={[
                                     {text: "gsf", cmd_number: 0},
