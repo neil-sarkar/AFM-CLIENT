@@ -79,16 +79,14 @@
                                                             <ADCController name="Y1" qt_object={adc_y_1} resistance={true}/>
                                                             <ADCController name="Y2" qt_object={adc_y_2} resistance={true}/>
                                                             <ADCController name="Z" qt_object={adc_z_1} resistance={true}/>
+                                                            <button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Resistances</button>
                                                     </div>
                                                     <p className="setting-section-name">DDS (Hz)</p>
                                                     <DDSControl />
                                                     <p className="setting-section-name">Safety Configurations</p>
                                                     <SafetyConfigs />
-                                                    <p className="setting-section-name">Save Options</p>
-                                                    <SaveFolderPicker />
-                                                    <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
-                                                    <button style={{position: 'relative'}} className="settings-drawer-button get-resistances-button" onClick={afm.cmd_get_resistances}>Resistances</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={this.enter_bootloader}>Enter Bootloader</button>
