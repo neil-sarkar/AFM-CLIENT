@@ -14,6 +14,9 @@
 #include "scanner.h"
 #include "force_curve_generator.h"
 #include <QStateMachine>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 
 // This class is at the top of the object tree for the main gui thread
@@ -24,6 +27,7 @@ class AFM : public AFMObject
     Q_PROPERTY(QString m_save_folder READ save_folder NOTIFY save_folder_changed)
     public:
         explicit AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collection, peripheral_collection ADC_collection, Motor* motor, Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator);
+        ~AFM();
         peripheral_collection PGA_collection;
         peripheral_collection DAC_collection;
         peripheral_collection ADC_collection;
@@ -32,6 +36,7 @@ class AFM : public AFMObject
         Approacher* approacher;
         Scanner* scanner;
         ForceCurveGenerator* force_curve_generator;
+        QNetworkAccessManager* network_manager;
 
         Q_INVOKABLE void read_all_ADCs();
         Q_INVOKABLE void cmd_get_resistances();
@@ -50,6 +55,7 @@ class AFM : public AFMObject
         Q_INVOKABLE void callback_start_approaching_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE bool check_resistances();
         Q_INVOKABLE void set_check_resistances(bool check);
+        Q_INVOKABLE void checkUpdates();
 
         static const int DAC_Table_Block_Size;
 
@@ -62,7 +68,9 @@ class AFM : public AFMObject
         void auto_sweep_checks_done(bool);
         void start_approaching_checks_done(bool);
         void no_device_or_broken_device_error();
+        void network_error();
         void check_resistances_changed(bool);
+        void updatesAvailable(bool);
 
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
@@ -71,6 +79,7 @@ class AFM : public AFMObject
 
     public slots:
         void init();
+        void checkUpdatesReadyRead(QNetworkReply*);
 
     private:
         // typedefs

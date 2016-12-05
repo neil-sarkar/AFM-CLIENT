@@ -21,6 +21,14 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->approacher = approacher;
     this->scanner = scanner;
     this->force_curve_generator = force_curve_generator;
+    this->network_manager = new QNetworkAccessManager(this);
+    connect(network_manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(checkUpdatesReadyRead(QNetworkReply*)));
+    checkUpdates();
+}
+
+AFM::~AFM() {
+    delete this->network_manager;
 }
 
 void AFM::init() {
@@ -219,6 +227,22 @@ void AFM::set_check_resistances(bool check) {
     m_check_resistances = check;
     qDebug() << "Setting check_resistances to " << m_check_resistances;
     emit check_resistances_changed(m_check_resistances);
+}
+
+void AFM::checkUpdates() {
+    network_manager->get(QNetworkRequest(QUrl("https://httpbin.org/ip")));
+}
+
+void AFM::checkUpdatesReadyRead(QNetworkReply * reply) {
+    reply->deleteLater();
+    if(reply->error() == QNetworkReply::NoError){
+        QString data = (QString)reply->readAll();
+        qDebug() << "Network Reply " << data;
+        emit updatesAvailable(true);
+    } else {
+        qDebug() << "Network Error " << reply->error();
+        emit network_error();
+    }
 }
 
 const int AFM::DAC_Table_Block_Size = 256;
