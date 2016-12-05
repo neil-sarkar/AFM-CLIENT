@@ -16,6 +16,26 @@ define(["react"], function(React) {
         go_to_setup: function() {
             this.props.go_to_step(0);
         },
+        getInitialState: function() {
+                return {update_message: ""};
+        },
+        componentDidMount: function() {
+            afm.updatesAvailable.connect(this.updateStatusChanged);
+            afm.network_error.connect(this.networkErrorDetected);
+            afm.checkUpdates();
+        },
+        updateStatusChanged: function(result) {
+            var message;
+            console.log("updateStatusChanged");
+            if(result)
+                this.setState({update_message: (<span style={{color: "red"}}>nGauge is up to date</span>)});
+            else
+                this.setState({update_message: (<span style={{color: "red"}}>Updates available! check icspicorp.com</span>)});
+        },
+        networkErrorDetected: function() {
+            console.log("error detected");
+            this.setState({update_message: (<span style={{color: "red"}}>Network error</span>)});
+        },
         render: function() {
             var steps = [];
             for (var step in this.props.step_list) {
@@ -31,6 +51,7 @@ define(["react"], function(React) {
                     <ul id="progressbar">
                       {steps}
                     </ul>
+                    <div id="update-message">{this.state.update_message}</div>
                     <a id="nav-toggle" href="#"><span></span></a>
                 </div>
             );

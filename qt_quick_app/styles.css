@@ -274,6 +274,14 @@ body {
     top: 38px;
 }
 
+#update-message {
+    cursor: default;
+    display: inline-block;
+    position:fixed;
+    right: 100px;
+    top: 38px;
+}
+
 #nav-toggle {
   position: fixed;
   right: 20px;

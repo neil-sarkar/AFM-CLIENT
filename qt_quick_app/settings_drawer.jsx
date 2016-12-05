@@ -35,6 +35,7 @@
                 render: function() {
 				return (
                                             <div id="settings-drawer-wrapper">
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={afm.checkUpdates}>Check Updates</button>
                                                     <p className="setting-section-name">Motor Control</p>
                                                     <MotorControl />
                                                     <p className="setting-section-name">PID Control</p>
