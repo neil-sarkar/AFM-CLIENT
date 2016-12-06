@@ -49,6 +49,7 @@ extern const QString AFM_Get_Auto_Approach_State;
 extern const QString AFM_Start_Auto_Retract_Disengage;
 extern const QString AFM_Start_Auto_Retract_Fast;
 extern const QString AFM_Set_Auto_Approach_Low_Limit;
+extern const QString AFM_Get_Firmware_Version;
 
 extern const char Message_Delimiter;
 extern const char Newline_Character;
@@ -61,5 +62,7 @@ extern const int Auto_Approach_Stopped_Character;
 extern const int Num_Meta_Data_Bytes;
 extern const int Message_Size_Minimum;
 extern const int Set_Receive_Bytes_Error;
+
+extern const QString Software_Version;
 
 #endif // CONSTANTS_H

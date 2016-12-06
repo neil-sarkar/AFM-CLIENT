@@ -47,6 +47,7 @@ const QString AFM_Get_Auto_Approach_State	= "AFM_Get_Auto_Approach_State";
 const QString AFM_Start_Auto_Retract_Disengage = "AFM_Start_Auto_Retract_Disengage";
 const QString AFM_Start_Auto_Retract_Fast = "AFM_Start_Auto_Retract_Fast";
 const QString AFM_Set_Auto_Approach_Low_Limit = "AFM_Set_Auto_Approach_Low_Limit";
+const QString AFM_Get_Firmware_Version = "AFM_Get_Firmware_Version";
 
 
 const char Message_Delimiter = 0x0A;
@@ -60,4 +61,6 @@ const int Auto_Approach_Stopped_Character = 0x9B;
 const int Num_Meta_Data_Bytes = 2; // tag and id are the only two bytes that are 'metadata'
 const int Message_Size_Minimum = 2; // tag and id make up the minimum message
 const int Set_Receive_Bytes_Error = -1;
+
+const string Software_Version = "1.0.0.0";
 
