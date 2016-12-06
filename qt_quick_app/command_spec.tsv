@@ -39,3 +39,4 @@ AFM_Get_Auto_Approach_State	1	AFM	auto approach state	get			156	9c		PCB3	1	2	Non
 AFM_Set_Auto_Approach_Low_Limit	1	AFM	auto approach	set			158	9d		PCB3	1	4	(low_limit byte 1, low_limit byte 2)	2	N
 AFM_Start_Auto_Retract_Disengage	1	AFM	auto approach	start			157	9e		PCB3	1	2	None	2	N
 AFM_Start_Auto_Retract_Fast	1	AFM	auto approach	start			158	9f		PCB3	1	4	(duration byte 1, duration byte 2)	2	N
+AFM_Get_Firmware_Version	1	AFM	version	get			86	56	V		1	2		6		Version Numbers (u8 x 4) : x.x.x.x

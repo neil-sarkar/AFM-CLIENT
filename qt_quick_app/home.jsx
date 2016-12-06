@@ -17,7 +17,7 @@ define(["react", "dom"], function(React, ReactDOM) {
 
     var HomePage = React.createClass({
         getInitialState: function() {
-            return {status: 0};
+            return {status: 0, version: "x.x.x.x"};
         },
         componentDidMount: function() {
             for (var i = 0; i < status_map.length; i++) {
@@ -28,6 +28,7 @@ define(["react", "dom"], function(React, ReactDOM) {
                 if (typeof status_map[i].enter_condition !== 'undefined')
                     status_map[i].enter_condition.connect(bound_set);
             }
+            afm.new_firmware_version.connect(this.new_fw_v);
         },
         set_state: function(index) {
             this.setState({
@@ -39,6 +40,11 @@ define(["react", "dom"], function(React, ReactDOM) {
                 status: index + 1
             });
         },
+        new_fw_v: function(version_string) {
+            this.setState({
+                version: version_string
+            });
+        },
         render: function() {
             return (
                 <div className="wrapper home-wrapper">
@@ -46,6 +52,7 @@ define(["react", "dom"], function(React, ReactDOM) {
                     <div className="right-flexbox vertically-centered-column" id="home-right-flexbox">
                         <h1>Welcome to nGauge.</h1>
                         <p>{status_map[this.state.status].text}</p>
+                        <p>Firmware Version: {this.state.version}</p>
                         <button className="action-button" id="home-enter-button"s onClick={main_window.load_main_app_page}>Enter</button>
                      </div>
                 </div>

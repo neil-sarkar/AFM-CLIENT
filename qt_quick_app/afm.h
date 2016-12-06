@@ -56,6 +56,8 @@ class AFM : public AFMObject
         Q_INVOKABLE bool check_resistances();
         Q_INVOKABLE void set_check_resistances(bool check);
         Q_INVOKABLE void checkUpdates();
+        Q_INVOKABLE void cmd_get_firmware_version();
+        Q_INVOKABLE void callback_get_firmware_version(QByteArray return_bytes);
 
         static const int DAC_Table_Block_Size;
 
@@ -71,6 +73,7 @@ class AFM : public AFMObject
         void network_error();
         void check_resistances_changed(bool);
         void updatesAvailable(bool);
+        void new_firmware_version(QString);
 
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();

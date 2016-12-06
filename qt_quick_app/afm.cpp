@@ -37,6 +37,7 @@ void AFM::init() {
     set_settings();
     set_check_resistances(true);
     is_initializing = true;
+    cmd_get_firmware_version();
     peripheral_collection::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
@@ -58,6 +59,20 @@ void AFM::read_all_ADCs() {
     peripheral_collection ::iterator i;
     for (i = ADC_collection.begin(); i != ADC_collection.end(); ++i)
         static_cast<ADC*>(i.value())->read();
+}
+
+void AFM::cmd_get_firmware_version() {
+    emit command_generated(new CommandNode(command_hash[AFM_Get_Firmware_Version], bind(&AFM::callback_get_firmware_version)));
+}
+
+void AFM::callback_get_firmware_version(QByteArray return_bytes) {
+    quint8 version_0 = return_bytes.at(0);
+    quint8 version_1 = return_bytes.at(1);
+    quint8 version_2 = return_bytes.at(2);
+    quint8 version_3 = return_bytes.at(3);
+    QString version_string = QString("%1.%2.%3.%4").arg(QString::number(version_0),QString::number(version_1),QString::number(version_2),QString::number(version_3));
+    qDebug() << "Firware Version is " << version_string;
+    emit new_firmware_version(version_string);
 }
 
 void AFM::cmd_get_resistances() {
