@@ -21,6 +21,7 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->approacher = approacher;
     this->scanner = scanner;
     this->force_curve_generator = force_curve_generator;
+    this->m_firmware_version = "";
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(contact_server_reply(QNetworkReply*)));
@@ -34,6 +35,7 @@ AFM::~AFM() {
 void AFM::init() {
     // This method calls the init methods of all the members
     emit initializing();
+    cmd_get_firmware_version();
     set_settings();
     set_check_resistances(true);
     is_initializing = true;
@@ -51,6 +53,10 @@ void AFM::init() {
     scanner->init();
     force_curve_generator->init();
     cmd_get_resistances();
+}
+
+QString AFM::get_firmware_version() {
+    return m_firmware_version;
 }
 
 void AFM::read_all_ADCs() {
@@ -71,6 +77,7 @@ void AFM::callback_get_firmware_version(QByteArray return_bytes) {
     quint8 version_3 = return_bytes.at(3);
     QString version_string = QString("%1.%2.%3.%4").arg(QString::number(version_0),QString::number(version_1),QString::number(version_2),QString::number(version_3));
     qDebug() << "Firware Version is " << version_string;
+    m_firmware_version = version_string;
     emit new_firmware_version(version_string);
 }
 
