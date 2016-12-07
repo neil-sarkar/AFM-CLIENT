@@ -1,5 +1,11 @@
  define(["jquery", "react", "jsx!pages/slider", "jsx!pages/pga_controller", "jsx!pages/dac_controller", "jsx!pages/adc_controller", "jsx!pages/motor_control", "jsx!pages/pid", "jsx!pages/dds_controller", "jsx!pages/save_folder", "jsx!pages/safety_configs"], function($, React, Slider, PGAController, DACController, ADCController, MotorControl, PIDControl, DDSControl, SaveFolderPicker, SafetyConfigs) {
 	var SettingsDrawer = React.createClass({
+                getInitialState: function() {
+                    return {gui_version: afm.get_software_version(),
+                            firmware_version: "",
+                            server_gui_version: "",
+                            server_firmware_version: ""};
+                },
 		componentDidMount: function() {
 			// hide the settings drawer
 			// $('#settings-drawer-wrapper').css('visibility', 'hidden');
@@ -28,14 +34,54 @@
 			});
 
 			$("#settings-drawer-wrapper").css('visibility', 'hidden');
+                        afm.new_firmware_version.connect(this.handle_new_firmware_version);
+                        afm.new_server_data.connect(this.handle_new_server_data);
+                        afm.cmd_get_firmware_version();
+                        afm.contact_server();
 		},
                 enter_bootloader: function() {
                     afm.enter_bootloader();
                 },
+                gui_status: function() {
+                    if(this.state.gui_version && this.state.server_gui_version) {
+                        if(this.state.gui_version == this.state.server_gui_version) {
+                            return (<div>Software Version: {this.state.gui_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                        } else {
+                            return (<div>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available)</span></div>);
+                        }
+                    } else if (this.state.gui_version) {
+                        return (<div>Software Version: {this.state.gui_version}</div>)
+                    } else {
+                        return (<div>Software Version: x.x.x.x</div>)
+                    }
+                },
+                firmware_status: function() {
+                    if(this.state.firmware_version && this.state.server_firmware_version) {
+                        if(this.state.firmware_version == this.state.server_firmware_version) {
+                            return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                        } else {
+                            return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available)</span></div>);
+                        }
+                    } else if (this.state.firmware_version) {
+                        return (<div>Firmware Version: {this.state.firmware_version}</div>)
+                    } else {
+                        return (<div>Firmware Version: x.x.x.x</div>)
+                    }
+                },
+                handle_new_server_data: function(json_data) {
+                    this.setState({
+                        server_gui_version: json_data["versions"]["gui"],
+                        server_firmware_version: json_data["versions"]["firmware"]
+                    });
+                },
+                handle_new_firmware_version: function(version_string) {
+                    this.setState({
+                        firmware_version: version_string
+                    });
+                },
                 render: function() {
 				return (
                                             <div id="settings-drawer-wrapper">
-                                                    <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={afm.checkUpdates}>Check Updates</button>
                                                     <p className="setting-section-name">Motor Control</p>
                                                     <MotorControl />
                                                     <p className="setting-section-name">PID Control</p>
@@ -86,6 +132,12 @@
                                                     <DDSControl />
                                                     <p className="setting-section-name">Safety Configurations</p>
                                                     <SafetyConfigs />
+                                                    <p className="setting-section-name">Updates</p>
+                                                    <div className="settings-container">
+                                                        {this.gui_status()}
+                                                        {this.firmware_status()}
+                                                        <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.contact_server}>Check Updates</button>
+                                                    </div>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" onClick={afm.trigger_mcu_reset}>Reset AFM</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>

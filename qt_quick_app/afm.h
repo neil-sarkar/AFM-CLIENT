@@ -17,6 +17,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 
 
 // This class is at the top of the object tree for the main gui thread
@@ -55,9 +59,10 @@ class AFM : public AFMObject
         Q_INVOKABLE void callback_start_approaching_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE bool check_resistances();
         Q_INVOKABLE void set_check_resistances(bool check);
-        Q_INVOKABLE void checkUpdates();
+        Q_INVOKABLE void contact_server();
         Q_INVOKABLE void cmd_get_firmware_version();
         Q_INVOKABLE void callback_get_firmware_version(QByteArray return_bytes);
+        Q_INVOKABLE QString get_software_version();
 
         static const int DAC_Table_Block_Size;
 
@@ -72,8 +77,9 @@ class AFM : public AFMObject
         void no_device_or_broken_device_error();
         void network_error();
         void check_resistances_changed(bool);
-        void updatesAvailable(bool);
         void new_firmware_version(QString);
+        void new_server_data(QVariant);
+        void new_server_message(QString);
 
         // used strictly for UI updating - helps us show what state we're in in terms of setting up the afm
         void init_complete();
@@ -82,7 +88,7 @@ class AFM : public AFMObject
 
     public slots:
         void init();
-        void checkUpdatesReadyRead(QNetworkReply*);
+        void contact_server_reply(QNetworkReply*);
 
     private:
         // typedefs
