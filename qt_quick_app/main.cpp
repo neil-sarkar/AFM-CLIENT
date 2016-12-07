@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     QWidget* window = QApplication::desktop()->screen();
     const int horizontalDpi = window->logicalDpiX();
     qDebug() << "logical DPI x " << horizontalDpi;
-    MainWindow m(afm, new WebFileDialog(), horizontalDpi/108.0);
+    MainWindow m(afm, new WebFileDialog(), horizontalDpi/72.0);
     m.showMinimized();
     m.showMaximized();
 
