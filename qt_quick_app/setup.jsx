@@ -12,7 +12,7 @@ define(["jquery", "react"], function($, React) {
                 <div className="wrapper" id="setup-wrapper">
                     <div className="setup-step-wrapper">
                         <img src="qrc:/images/chip_load.jpg"></img>
-                        <div className="setup-step-desc">Align the sample underneath the AFM tip.</div>
+                        <div className="setup-step-desc">Carefully place daughter board onto the stage then secure with thumb screw.</div>
                     </div>
                     <div className="setup-step-wrapper">
                         <img src="qrc:/images/sample_load.jpg"></img>
