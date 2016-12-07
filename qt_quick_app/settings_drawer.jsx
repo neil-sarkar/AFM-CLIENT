@@ -36,7 +36,7 @@
 			$("#settings-drawer-wrapper").css('visibility', 'hidden');
                         afm.new_firmware_version.connect(this.handle_new_firmware_version);
                         afm.new_server_data.connect(this.handle_new_server_data);
-                        afm.cmd_get_firmware_version();
+                        afm.initializing.connect(this.get_firmware_version);
                         afm.contact_server();
 		},
                 enter_bootloader: function() {
@@ -78,6 +78,9 @@
                     this.setState({
                         firmware_version: version_string
                     });
+                },
+                get_firmware_version: function() {
+                    afm.cmd_get_firmware_version();
                 },
                 render: function() {
 				return (
