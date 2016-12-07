@@ -17,7 +17,11 @@ define(["react", "dom"], function(React, ReactDOM) {
 
     var HomePage = React.createClass({
         getInitialState: function() {
-            return {status: 0, version: "x.x.x.x"};
+            return {status: 0,
+                    gui_version: afm.get_software_version(),
+                    firmware_version: "",
+                    server_gui_version: "",
+                    server_firmware_version: ""};
         },
         componentDidMount: function() {
             for (var i = 0; i < status_map.length; i++) {
@@ -28,7 +32,10 @@ define(["react", "dom"], function(React, ReactDOM) {
                 if (typeof status_map[i].enter_condition !== 'undefined')
                     status_map[i].enter_condition.connect(bound_set);
             }
-            afm.new_firmware_version.connect(this.new_fw_v);
+            afm.new_firmware_version.connect(this.handle_new_firmware_version);
+            afm.new_server_data.connect(this.handle_new_server_data);
+            //afm.cmd_get_firmware_version();
+            //afm.contact_server();
         },
         set_state: function(index) {
             this.setState({
@@ -40,9 +47,43 @@ define(["react", "dom"], function(React, ReactDOM) {
                 status: index + 1
             });
         },
-        new_fw_v: function(version_string) {
+        gui_status: function() {
+            if(this.state.gui_version && this.state.server_gui_version) {
+                if(this.state.gui_version == this.state.server_gui_version) {
+                    return (<div>Software Version: {this.state.gui_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                } else {
+                    return (<div>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available)</span></div>);
+                }
+            } else if (this.state.gui_version) {
+                return (<div>Software Version: {this.state.gui_version}</div>)
+            } else {
+                return (<div>Software Version: x.x.x.x</div>)
+            }
+        },
+        firmware_status: function() {
+            if(this.state.firmware_version && this.state.server_firmware_version) {
+                if(this.state.firmware_version == this.state.server_firmware_version) {
+                    return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                } else {
+                    return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available)</span></div>);
+                }
+            } else if (this.state.firmware_version) {
+                return (<div>Firmware Version: {this.state.firmware_version}</div>)
+            } else {
+                return (<div>Firmware Version: x.x.x.x</div>)
+            }
+        },
+        handle_new_firmware_version: function(version_string) {
             this.setState({
-                version: version_string
+                firmware_version: version_string
+            });
+        },
+        handle_new_server_data: function(json_data) {
+            console.log("new server data");
+            window.json_data = json_data;
+            this.setState({
+                server_gui_version: json_data["versions"]["gui"],
+                server_firmware_version: json_data["versions"]["firmware"]
             });
         },
         render: function() {
@@ -52,8 +93,9 @@ define(["react", "dom"], function(React, ReactDOM) {
                     <div className="right-flexbox vertically-centered-column" id="home-right-flexbox">
                         <h1>Welcome to nGauge.</h1>
                         <p>{status_map[this.state.status].text}</p>
-                        <p>Firmware Version: {this.state.version}</p>
                         <button className="action-button" id="home-enter-button"s onClick={main_window.load_main_app_page}>Enter</button>
+                        {this.gui_status()}
+                        {this.firmware_status()}
                      </div>
                 </div>
             )

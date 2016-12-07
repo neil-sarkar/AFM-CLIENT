@@ -23,8 +23,8 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->force_curve_generator = force_curve_generator;
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(checkUpdatesReadyRead(QNetworkReply*)));
-    checkUpdates();
+            this, SLOT(contact_server_reply(QNetworkReply*)));
+    contact_server();
 }
 
 AFM::~AFM() {
@@ -37,7 +37,6 @@ void AFM::init() {
     set_settings();
     set_check_resistances(true);
     is_initializing = true;
-    cmd_get_firmware_version();
     peripheral_collection::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
@@ -244,20 +243,35 @@ void AFM::set_check_resistances(bool check) {
     emit check_resistances_changed(m_check_resistances);
 }
 
-void AFM::checkUpdates() {
-    network_manager->get(QNetworkRequest(QUrl("https://httpbin.org/ip")));
+void AFM::contact_server() {
+    if(network_manager->networkAccessible() == QNetworkAccessManager::Accessible) {
+        QNetworkRequest request;
+        request.setUrl(QUrl("http://35.164.23.41/gui_update_check.py"));
+        request.setRawHeader(QByteArray("Accept"), QByteArray("application/json"));
+        network_manager->get(request);
+    } else {
+        emit network_error();
+    }
 }
 
-void AFM::checkUpdatesReadyRead(QNetworkReply * reply) {
+void AFM::contact_server_reply(QNetworkReply * reply) {
     reply->deleteLater();
     if(reply->error() == QNetworkReply::NoError){
-        QString data = (QString)reply->readAll();
-        qDebug() << "Network Reply " << data;
-        emit updatesAvailable(true);
+        QByteArray raw_data = reply->readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(raw_data);
+        QJsonObject json_obj = doc.object();
+        emit new_server_data(doc.toVariant());
+        emit new_server_message(json_obj["message"].toString());
+        qDebug() << "Server Message " << json_obj["message"].toString();
+        qDebug() << "Network Reply " << (QString) raw_data;
     } else {
         qDebug() << "Network Error " << reply->error();
         emit network_error();
     }
+}
+
+QString AFM::get_software_version() {
+    return Software_Version;
 }
 
 const int AFM::DAC_Table_Block_Size = 256;

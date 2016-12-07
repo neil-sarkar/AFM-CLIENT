@@ -62,5 +62,5 @@ const int Num_Meta_Data_Bytes = 2; // tag and id are the only two bytes that are
 const int Message_Size_Minimum = 2; // tag and id make up the minimum message
 const int Set_Receive_Bytes_Error = -1;
 
-const string Software_Version = "1.0.0.0";
+const QString Software_Version = "1.0.0.0";
 
