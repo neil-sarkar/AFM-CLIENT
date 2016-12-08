@@ -21,6 +21,11 @@ body {
     position: static !important; /* prevent shadow rendering bug in webkit */
 }
 
+.home-version {
+    -webkit-margin-before: 0.5em;
+    -webkit-margin-after: 0.5em;
+}
+
 .chart-profile {
     width: 100%;
     min-height: 180px;
