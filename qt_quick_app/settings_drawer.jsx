@@ -14,12 +14,14 @@
 			// taken from http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
                         $(document).mousedown(function (e) {
 			    var container = $("#settings-drawer-wrapper");
+                            var home = $(".home");
 			    if (!container.is(e.target) // if the target of the click isn't the container...
 			        && container.has(e.target).length === 0 // ... nor a descendant of the container
+                                && !home.is(e.target) // if target of click is not home button
 			        && !($('#nav-toggle').is(e.target))) // or we're clicking the close button
-			    {
-			        container.css('visibility', 'hidden');
-			        $('#nav-toggle').removeClass("active");
+                            {
+                                container.css('visibility', 'hidden');
+                                $('#nav-toggle').removeClass("active");
 			    }
 			});
 

@@ -28,7 +28,7 @@ define(["react"], function(React) {
 
             return (
                 <div className="progress-bar-wrapper">
-                    <div className="home" onClick={main_window.load_home_page}>
+                    <div className="home" onMouseDown={main_window.load_home_page}>
                     </div>
                     <div id="setup-link" onClick={this.go_to_setup}><img style={{width: "20px"}} src="qrc:/images/wrench_gray.png"></img></div>
                     <ul id="progressbar">
