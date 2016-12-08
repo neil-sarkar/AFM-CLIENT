@@ -50,27 +50,27 @@ define(["react", "dom"], function(React, ReactDOM) {
         gui_status: function() {
             if(this.state.gui_version && this.state.server_gui_version) {
                 if(this.state.gui_version == this.state.server_gui_version) {
-                    return (<div>Software Version: {this.state.gui_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                    return (<span>Software Version: {this.state.gui_version} <span style={{color:"green"}}>(up to date)</span></span>);
                 } else {
-                    return (<div>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available)</span></div>);
+                    return (<span>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available)</span></span>);
                 }
             } else if (this.state.gui_version) {
-                return (<div>Software Version: {this.state.gui_version}</div>)
+                return (<span>Software Version: {this.state.gui_version}</span>)
             } else {
-                return (<div>Software Version: x.x.x.x</div>)
+                return (<span>Software Version: x.x.x.x</span>)
             }
         },
         firmware_status: function() {
             if(this.state.firmware_version && this.state.server_firmware_version) {
                 if(this.state.firmware_version == this.state.server_firmware_version) {
-                    return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"green"}}>(up to date)</span></div>);
+                    return (<span>Firmware Version: {this.state.firmware_version} <span style={{color:"green"}}>(up to date)</span></span>);
                 } else {
-                    return (<div>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available)</span></div>);
+                    return (<span>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available)</span></span>);
                 }
             } else if (this.state.firmware_version) {
-                return (<div>Firmware Version: {this.state.firmware_version}</div>)
+                return (<span>Firmware Version: {this.state.firmware_version}</span>)
             } else {
-                return (<div>Firmware Version: x.x.x.x</div>)
+                return (<span>Firmware Version: x.x.x.x</span>)
             }
         },
         handle_new_firmware_version: function(version_string) {
@@ -94,8 +94,8 @@ define(["react", "dom"], function(React, ReactDOM) {
                         <h1>Welcome to nGauge.</h1>
                         <p>{status_map[this.state.status].text}</p>
                         <button className="action-button" id="home-enter-button"s onClick={main_window.load_main_app_page}>Enter</button>
-                        {this.gui_status()}
-                        {this.firmware_status()}
+                        <div className="home-version">{this.gui_status()}</div>
+                        <div className="home-version">{this.firmware_status()}</div>
                      </div>
                 </div>
             )
