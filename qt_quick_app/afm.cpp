@@ -2,6 +2,7 @@
 #include "dac.h"
 #include "dds.h"
 #include "adc.h"
+//#include "pga.h"
 #include "afm_object.h"
 #include "constants.h"
 #include "serial_port.h"
@@ -9,6 +10,7 @@
 #include "force_curve_generator.h"
 #include <QFileDialog>
 #include <QStateMachine>
+#include <unordered_map>
 #include <QFinalState>
 #include "globals.h"
 
@@ -82,11 +84,10 @@ void AFM::callback_get_firmware_version(QByteArray return_bytes) {
 }
 
 void AFM::cmd_get_resistances() {
-    bool pid_enabled = this->scanner->pid->enabled();
-    this->scanner->pid->set_disabled();
-    emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
-    if (pid_enabled)
-        this->scanner->pid->set_enabled();
+    Buf_settings buf;
+    transient_config_pga(&buf);
+    generate_get_resistances_command(&AFM::callback_get_resistances);
+    transient_restore_pga(&buf);
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
@@ -94,16 +95,7 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
         emit init_complete();
         is_initializing = false;
     }
-    double x_1_voltage = bytes_to_word(return_bytes.at(0), return_bytes.at(1)) * ADC::SCALE_FACTOR;
-    double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
-    double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
-    double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
-    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage);
-    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage);
-    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
-    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
-    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
+    check_resistance_values(return_bytes);
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
@@ -152,22 +144,27 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
 }
 
 void AFM::scanner_start_state_machine_initial_checks() {
-    qDebug() << "Start scanner state machine with check resistance " << m_check_resistances;
-    if(m_check_resistances)
-        generate_get_resistances_command(&AFM::callback_scanner_start_state_machine_initial_checks);
-    else
-        emit scanner_start_state_machine_checks_done(true);
+//    qDebug() << "Start scanner state machine with check resistance " << m_check_resistances;
+//    if(m_check_resistances)
+//        generate_get_resistances_command(&AFM::callback_scanner_start_state_machine_initial_checks);
+//    else
+//        emit scanner_start_state_machine_checks_done(true);
+    emit scanner_start_state_machine_checks_done(true);
 
 }
 
-void AFM::callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes) {
-    emit scanner_start_state_machine_checks_done(check_resistance_values(return_bytes));
-}
+//void AFM::callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes) {
+//    emit scanner_start_state_machine_checks_done(check_resistance_values(return_bytes));
+//}
 
 void AFM::auto_sweep_initial_checks() {
     qDebug() << "Start auto sweep with check resistance " << m_check_resistances;
-    if(m_check_resistances)
+    if(m_check_resistances){
+        Buf_settings buf;
+        transient_config_pga(&buf);
         generate_get_resistances_command(&AFM::callback_auto_sweep_initial_checks);
+        transient_restore_pga(&buf);
+    }
     else
         emit auto_sweep_checks_done(true);
 }
@@ -179,8 +176,12 @@ void AFM::callback_auto_sweep_initial_checks(QByteArray return_bytes) {
 
 void AFM::start_approaching_initial_checks() {
     qDebug() << "Start approaching with check resistance " << m_check_resistances;
-    if(m_check_resistances)
+    if(m_check_resistances){
+        Buf_settings buf;
+        transient_config_pga(&buf);
         generate_get_resistances_command(&AFM::callback_start_approaching_initial_checks);
+        transient_restore_pga(&buf);
+    }
     else
         emit start_approaching_checks_done(true);
 }
@@ -238,6 +239,41 @@ void AFM::release_port() {
     mutex.lock();
     port_writing_command = false;
     mutex.unlock();
+}
+
+void AFM::transient_restore_pga(Buf_settings* buf) {
+    cmd_transient_set_pgas(buf);
+}
+
+void AFM::transient_config_pga(Buf_settings* buf) {
+    Buf_settings unity;
+    load_unity(&unity);
+    get_relevant_pgas(buf);
+    cmd_transient_set_pgas(&unity);
+}
+
+void AFM::get_relevant_pgas(Buf_settings* buf) {
+    buf->insert(Buf_settings::value_type( "x_1" , static_cast<PGA*>(PGA_collection["x_1"])->value() ));
+    buf->insert(Buf_settings::value_type( "x_2" , static_cast<PGA*>(PGA_collection["x_2"])->value() ));
+    buf->insert(Buf_settings::value_type( "y_1" , static_cast<PGA*>(PGA_collection["y_1"])->value() ));
+    buf->insert(Buf_settings::value_type( "y_2" , static_cast<PGA*>(PGA_collection["y_2"])->value() ));
+    buf->insert(Buf_settings::value_type( "coarse_z" , static_cast<PGA*>(PGA_collection["coarse_z"])->value() ));
+}
+
+void AFM::cmd_transient_set_pgas (const Buf_settings* buf){
+    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(buf->at("x_1"));
+    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(buf->at("x_2"));
+    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(buf->at("y_1"));
+    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(buf->at("y_2"));
+    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(buf->at("coarse_z"));
+}
+
+void AFM::load_unity(Buf_settings* buf){
+    buf->insert(Buf_settings::value_type( "x_1" , 100));
+    buf->insert(Buf_settings::value_type( "x_2" , 100));
+    buf->insert(Buf_settings::value_type( "y_1" , 100));
+    buf->insert(Buf_settings::value_type( "y_2" , 100));
+    buf->insert(Buf_settings::value_type( "coarse_z" , 100));
 }
 
 bool AFM::check_resistances() {

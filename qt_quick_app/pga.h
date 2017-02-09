@@ -15,6 +15,8 @@ public:
     Q_INVOKABLE double value();
     void init();
     void set_settings();
+    qint8 get_id();
+    void transient_set_value(double value);
 
     static const int X_1;
     static const int X_2;

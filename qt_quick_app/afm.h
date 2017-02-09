@@ -21,6 +21,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <unordered_map>
 
 
 // This class is at the top of the object tree for the main gui thread
@@ -52,7 +53,7 @@ class AFM : public AFMObject
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
         Q_INVOKABLE void scanner_start_state_machine_initial_checks();
-        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
+//        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void auto_sweep_initial_checks();
         Q_INVOKABLE void callback_auto_sweep_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void start_approaching_initial_checks();
@@ -66,6 +67,8 @@ class AFM : public AFMObject
         Q_INVOKABLE QString get_firmware_version();
 
         static const int DAC_Table_Block_Size;
+
+        typedef std::unordered_map<char const*, double> Buf_settings;
 
     signals:
         void trigger_mcu_reset();
@@ -99,6 +102,11 @@ class AFM : public AFMObject
         void set_save_folder(QString);
         void set_settings();
         void generate_get_resistances_command(callback_type method);
+        void get_relevant_pgas(Buf_settings*);
+        void cmd_transient_set_pgas(const Buf_settings*);
+        void load_unity (Buf_settings*);
+        void transient_config_pga(Buf_settings*);
+        void transient_restore_pga(Buf_settings*);
         bool check_resistance_values(QByteArray return_bytes);
         double voltage_resistance_equation(double);
 
