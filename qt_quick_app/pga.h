@@ -16,7 +16,8 @@ public:
     void init();
     void set_settings();
     qint8 get_id();
-    void transient_set_value(double value);
+    void transient_set_value(bool is_callback, const QString* master);
+    void restore_user_value();
 
     static const int X_1;
     static const int X_2;
@@ -29,17 +30,23 @@ public:
 
 signals:
     void value_changed(double);
+    void pga_callback_received(const QString*);
 
 public slots:
 
 private:
+    callback_return_type bind(void (PGA::*method)(QByteArray));
+    typedef void (PGA::*callback_type)(QByteArray);
+
     qint8 m_id;
     double m_default_value;
     double m_value;
-    void cmd_set_value();
-    qint8 value_to_pga();
-    static const QString settings_group_name;
+    const QString* m_caller;
 
+    void cmd_set_value(double value, bool is_callback);
+    void callback_value_set(QByteArray);
+    qint8 value_to_pga(double value);
+    static const QString settings_group_name;
 };
 
 #endif // PGA_H

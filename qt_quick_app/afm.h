@@ -55,6 +55,7 @@ class AFM : public AFMObject
         Q_INVOKABLE void scanner_start_state_machine_initial_checks();
 //        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void auto_sweep_initial_checks();
+        Q_INVOKABLE void start_reapproaching_initial_checks();
         Q_INVOKABLE void callback_auto_sweep_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void start_approaching_initial_checks();
         Q_INVOKABLE void callback_start_approaching_initial_checks(QByteArray return_bytes);
@@ -93,6 +94,7 @@ class AFM : public AFMObject
     public slots:
         void init();
         void contact_server_reply(QNetworkReply*);
+        void generate_get_resistances_command(const QString* master);
 
     private:
         // typedefs
@@ -101,12 +103,7 @@ class AFM : public AFMObject
 
         void set_save_folder(QString);
         void set_settings();
-        void generate_get_resistances_command(callback_type method);
-        void get_relevant_pgas(Buf_settings*);
-        void cmd_transient_set_pgas(const Buf_settings*);
-        void load_unity (Buf_settings*);
-        void transient_config_pga(Buf_settings*);
-        void transient_restore_pga(Buf_settings*);
+        void init_get_resistances_command(const QString *master);
         bool check_resistance_values(QByteArray return_bytes);
         double voltage_resistance_equation(double);
 
@@ -115,6 +112,9 @@ class AFM : public AFMObject
         QString m_save_folder;
         QString m_firmware_version;
 
+        static const QString GENERAL;
+        static const QString AUTOSWEEP;
+        static const QString APPROACH;
         static const QString settings_group_name;
 };
 

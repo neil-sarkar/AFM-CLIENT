@@ -110,9 +110,16 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
 		},
                 start_approaching_initial_checks: function() {
                         if(!this.state.initial_checks_in_progress) {
-                            this.setState({initial_checks_in_progress: true}, function() {
-                                afm.start_approaching_initial_checks();
-                            });
+                            if(!this.state.approach_complete){
+                                this.setState({initial_checks_in_progress: true}, function() {
+                                    afm.start_approaching_initial_checks();
+                                });
+                            }
+                            else{
+                                this.setState({initial_checks_in_progress: true}, function(){
+                                    afm.start_reapproaching_initial_checks();
+                                });
+                            }
                         }
                 },
                 start_approaching : function(check_ok) {

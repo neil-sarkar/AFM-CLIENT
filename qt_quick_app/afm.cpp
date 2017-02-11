@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <QFinalState>
 #include "globals.h"
+#include <QThread>
 
 AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collection, peripheral_collection ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator) {
     this->PGA_collection = PGA_collection;
@@ -49,6 +50,9 @@ void AFM::init() {
     for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
         i.value()->init();
 
+    connect(static_cast<PGA*>(PGA_collection["coarse_z"]), SIGNAL(pga_callback_received(const QString*)),
+            this, SLOT(generate_get_resistances_command(const QString*)));
+
     motor->init();
     sweeper->init();
     approacher->init();
@@ -84,10 +88,7 @@ void AFM::callback_get_firmware_version(QByteArray return_bytes) {
 }
 
 void AFM::cmd_get_resistances() {
-    Buf_settings buf;
-    transient_config_pga(&buf);
-    generate_get_resistances_command(&AFM::callback_get_resistances);
-    transient_restore_pga(&buf);
+    init_get_resistances_command(&AFM::GENERAL);
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
@@ -102,12 +103,34 @@ AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-void AFM::generate_get_resistances_command(callback_type method) {
+void AFM::init_get_resistances_command(const QString* master) {
+    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(false, master);
+    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(false, master);
+    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(false, master);
+    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(false, master);
+    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master);
+}
+
+void AFM::generate_get_resistances_command (const QString* master) {
+    QThread::msleep(50);
     bool pid_enabled = this->scanner->pid->enabled();
     this->scanner->pid->set_disabled();
-    emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(method)));
+
+    //delegate bindings
+    if (master->compare(AFM::GENERAL)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
+    else if (master->compare(AFM::AUTOSWEEP)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_auto_sweep_initial_checks)));
+    else if (master->compare(AFM::APPROACH)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_start_approaching_initial_checks)));
+
     if (pid_enabled)
         this->scanner->pid->set_enabled();
+    static_cast<PGA*>(PGA_collection["x_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["x_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
 }
 
 bool AFM::check_resistance_values(QByteArray return_bytes) {
@@ -160,13 +183,14 @@ void AFM::scanner_start_state_machine_initial_checks() {
 void AFM::auto_sweep_initial_checks() {
     qDebug() << "Start auto sweep with check resistance " << m_check_resistances;
     if(m_check_resistances){
-        Buf_settings buf;
-        transient_config_pga(&buf);
-        generate_get_resistances_command(&AFM::callback_auto_sweep_initial_checks);
-        transient_restore_pga(&buf);
+        init_get_resistances_command(&AFM::AUTOSWEEP);
     }
     else
         emit auto_sweep_checks_done(true);
+}
+
+void AFM::start_reapproaching_initial_checks(){
+    emit start_approaching_checks_done(true);
 }
 
 void AFM::callback_auto_sweep_initial_checks(QByteArray return_bytes) {
@@ -177,10 +201,7 @@ void AFM::callback_auto_sweep_initial_checks(QByteArray return_bytes) {
 void AFM::start_approaching_initial_checks() {
     qDebug() << "Start approaching with check resistance " << m_check_resistances;
     if(m_check_resistances){
-        Buf_settings buf;
-        transient_config_pga(&buf);
-        generate_get_resistances_command(&AFM::callback_start_approaching_initial_checks);
-        transient_restore_pga(&buf);
+        init_get_resistances_command(&AFM::APPROACH);
     }
     else
         emit start_approaching_checks_done(true);
@@ -241,41 +262,6 @@ void AFM::release_port() {
     mutex.unlock();
 }
 
-void AFM::transient_restore_pga(Buf_settings* buf) {
-    cmd_transient_set_pgas(buf);
-}
-
-void AFM::transient_config_pga(Buf_settings* buf) {
-    Buf_settings unity;
-    load_unity(&unity);
-    get_relevant_pgas(buf);
-    cmd_transient_set_pgas(&unity);
-}
-
-void AFM::get_relevant_pgas(Buf_settings* buf) {
-    buf->insert(Buf_settings::value_type( "x_1" , static_cast<PGA*>(PGA_collection["x_1"])->value() ));
-    buf->insert(Buf_settings::value_type( "x_2" , static_cast<PGA*>(PGA_collection["x_2"])->value() ));
-    buf->insert(Buf_settings::value_type( "y_1" , static_cast<PGA*>(PGA_collection["y_1"])->value() ));
-    buf->insert(Buf_settings::value_type( "y_2" , static_cast<PGA*>(PGA_collection["y_2"])->value() ));
-    buf->insert(Buf_settings::value_type( "coarse_z" , static_cast<PGA*>(PGA_collection["coarse_z"])->value() ));
-}
-
-void AFM::cmd_transient_set_pgas (const Buf_settings* buf){
-    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(buf->at("x_1"));
-    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(buf->at("x_2"));
-    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(buf->at("y_1"));
-    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(buf->at("y_2"));
-    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(buf->at("coarse_z"));
-}
-
-void AFM::load_unity(Buf_settings* buf){
-    buf->insert(Buf_settings::value_type( "x_1" , 100));
-    buf->insert(Buf_settings::value_type( "x_2" , 100));
-    buf->insert(Buf_settings::value_type( "y_1" , 100));
-    buf->insert(Buf_settings::value_type( "y_2" , 100));
-    buf->insert(Buf_settings::value_type( "coarse_z" , 100));
-}
-
 bool AFM::check_resistances() {
     return m_check_resistances;
 }
@@ -319,3 +305,6 @@ QString AFM::get_software_version() {
 
 const int AFM::DAC_Table_Block_Size = 256;
 const QString AFM::settings_group_name = "afm";
+const QString AFM::GENERAL = "G";
+const QString AFM::APPROACH = "A";
+const QString AFM::AUTOSWEEP = "S";
