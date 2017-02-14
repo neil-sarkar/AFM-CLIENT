@@ -52,7 +52,9 @@ define(["react", "dom"], function(React, ReactDOM) {
                 if(this.state.gui_version == this.state.server_gui_version) {
                     return (<span>Software Version: {this.state.gui_version} <span style={{color:"green"}}>(up to date)</span></span>);
                 } else {
-                    return (<span>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available)</span></span>);
+                    return (<span>Software Version: {this.state.gui_version} <span style={{color:"red"}}>(update available. click </span>
+                    <span className="weblink" onClick={main_window.open_update_link}>here</span>
+                    <span style={{color:"red"}}> to go to the update page)</span></span>);
                 }
             } else if (this.state.gui_version) {
                 return (<span>Software Version: {this.state.gui_version}</span>)
@@ -65,7 +67,9 @@ define(["react", "dom"], function(React, ReactDOM) {
                 if(this.state.firmware_version == this.state.server_firmware_version) {
                     return (<span>Firmware Version: {this.state.firmware_version} <span style={{color:"green"}}>(up to date)</span></span>);
                 } else {
-                    return (<span>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available)</span></span>);
+                    return (<span>Firmware Version: {this.state.firmware_version} <span style={{color:"red"}}>(update available. click </span>
+                    <span className="weblink" onClick={main_window.open_update_link}>here</span>
+                    <span style={{color:"red"}}> to go to the update page)</span></span>);
                 }
             } else if (this.state.firmware_version) {
                 return (<span>Firmware Version: {this.state.firmware_version}</span>)

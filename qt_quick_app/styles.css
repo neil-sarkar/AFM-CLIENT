@@ -218,6 +218,12 @@ body {
     width: 100%;
 }
 
+.weblink {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 #back-button {
 
 }

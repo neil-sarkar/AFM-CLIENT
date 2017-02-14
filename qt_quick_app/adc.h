@@ -14,7 +14,7 @@ public:
     void init();
     Q_INVOKABLE double value();
     Q_INVOKABLE void read();
-    void update_value(double value);
+    void update_value(double value, bool is_resistance);
     static bool is_actuator_connected(double voltage, quint8 id);
 
     // ADC channel (aka id) constants

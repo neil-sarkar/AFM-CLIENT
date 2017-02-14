@@ -58,7 +58,6 @@ void AFM::init() {
     approacher->init();
     scanner->init();
     force_curve_generator->init();
-    cmd_get_resistances();
 }
 
 QString AFM::get_firmware_version() {
@@ -112,7 +111,7 @@ void AFM::init_get_resistances_command(const QString* master) {
 }
 
 void AFM::generate_get_resistances_command (const QString* master) {
-    QThread::msleep(50);
+    QThread::msleep(20);
     bool pid_enabled = this->scanner->pid->enabled();
     this->scanner->pid->set_disabled();
 
@@ -140,17 +139,17 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
     double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
     double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
     double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
-    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage);
-    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage);
-    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
-    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
-    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
+    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage, true);
+    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage, true);
+    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage, true);
+    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage, true);
+    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage, true);
 
     const double x_1_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/x_1_voltage;
     const double x_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/x_2_voltage;
     const double y_1_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_1_voltage;
     const double y_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_2_voltage;
-    const double z_resistance = ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage;
+    const double z_resistance = (ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage)*(ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage);
     const bool x_1_issue = (x_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool x_2_issue = (x_2_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_2_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool y_1_issue = (y_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (y_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
