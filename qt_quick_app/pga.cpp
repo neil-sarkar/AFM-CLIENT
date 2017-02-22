@@ -18,10 +18,10 @@ void PGA::set_value(double value) {
     }
 }
 
-void PGA::transient_set_value(bool is_callback, const QString* master) {
-    qDebug() << "Setting PGA(Transient) " << m_id << "value to " << 100;
+void PGA::transient_set_value(bool is_callback, const QString* master, int value) {
+    qDebug() << "Setting PGA(Transient) " << m_id << "value to " << value;
     m_caller = master;
-    cmd_set_value(double(100), is_callback);
+    cmd_set_value(double(value), is_callback);
 }
 
 void PGA::restore_user_value() {

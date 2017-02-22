@@ -25,7 +25,7 @@ void ADC::read() {
 }
 
 double ADC::voltage_resistance_equation(double voltage, qint8 id) {
-    return (id == 23) ? (0.05 / voltage * 200)*(0.05 / voltage * 200): (0.2 / voltage * 200); // not sure if we need this conditional
+    return (id == ADC_Z_1_ID) ? (0.05 / voltage * 200)*(0.05 / voltage * 200): (0.2 / voltage * 200); // not sure if we need this conditional
     // 200 is the gain on the amplifier
     // 0.2 is the 200 mV that we pass through the actuators in a get resistances
 }
@@ -61,12 +61,13 @@ const int ADC::RESOLUTION = 4095;
 const double ADC::SCALE_FACTOR = double(MAX_VOLTAGE)/RESOLUTION;
 const double ADC::PHASE_SCALE_FACTOR = double(180.0*2.0/RESOLUTION);
 
+const int ADC::ADC_Z_1_ID = 23;
 const int ADC::Min_Resistance = 20;
 const int ADC::Max_Resistance = 700;
 const double ADC::SENSE_RESISTOR_AMPLIFIER_GAIN = 200;
 const double ADC::RESISTANCE_SCALE_FACTOR_50MV = 0.05*SENSE_RESISTOR_AMPLIFIER_GAIN;
 const double ADC::RESISTANCE_SCALE_FACTOR_200MV = 0.2*SENSE_RESISTOR_AMPLIFIER_GAIN;
-const double ADC::LATERAL_MAX_RESISTANCE = 220;
-const double ADC::LATERAL_MIN_RESISTANCE = 80;
-const double ADC::Z_MAX_RESISTANCE = 325;
-const double ADC::Z_MIN_RESISTANCE = 150;
+const double ADC::LATERAL_MAX_RESISTANCE = 230;
+const double ADC::LATERAL_MIN_RESISTANCE = 40;
+const double ADC::Z_MAX_RESISTANCE = 400;
+const double ADC::Z_MIN_RESISTANCE = 100;

@@ -42,6 +42,7 @@ public:
     static const double LATERAL_MIN_RESISTANCE;
     static const double Z_MAX_RESISTANCE;
     static const double Z_MIN_RESISTANCE;
+    static const int ADC_Z_1_ID;
 
 signals:
     void value_changed(double);

@@ -27,6 +27,10 @@ void Approacher::callback_get_state(QByteArray payload) {
     }
 }
 
+void Approacher::emit_approach_below_setpoint() {
+    emit approach_below_setpoint();
+}
+
 void Approacher::cmd_start_auto_approach() {
     qDebug() << "Starting auto approach";
     quint16 scaled_setpoint = (m_pid->setpoint())/ADC::SCALE_FACTOR;

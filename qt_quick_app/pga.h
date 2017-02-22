@@ -16,7 +16,7 @@ public:
     void init();
     void set_settings();
     qint8 get_id();
-    void transient_set_value(bool is_callback, const QString* master);
+    void transient_set_value(bool is_callback, const QString* master, int value);
     void restore_user_value();
 
     static const int X_1;

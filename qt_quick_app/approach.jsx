@@ -87,6 +87,15 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
                                 this.start_streaming();
 			}
 		},
+		check_setpoint: function () {
+			if (adc_z_1.value() < pid.setpoint()){
+				approacher.emit_approach_below_setpoint();
+				return true;
+			}
+			else {
+				return false;
+			}
+		},
 		start_streaming: function (argument) {
 			var stream_interval_id = setInterval(function() {
 				approacher.cmd_get_state();
@@ -111,9 +120,11 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
                 start_approaching_initial_checks: function() {
                         if(!this.state.initial_checks_in_progress) {
                             if(!this.state.approach_complete){
-                                this.setState({initial_checks_in_progress: true}, function() {
-                                    afm.start_approaching_initial_checks();
-                                });
+                                if(!this.check_setpoint()){
+	                                this.setState({initial_checks_in_progress: true}, function() {
+	                                    afm.start_approaching_initial_checks();
+	                                });
+	                            }
                             }
                             else{
                                 this.setState({initial_checks_in_progress: true}, function(){
@@ -125,16 +136,16 @@ define(["react", "constants", "jsx!pages/inline_approach_controls", "jsx!pages/d
                 start_approaching : function(check_ok) {
                         if(check_ok) {
                             // this.prevent_dangerous_user_input();
-                            motor.cancel_timeout_timer(true);
-                            pid.set_disabled();
-                            dac_z_offset_fine.set_value(1.5);
-                            approacher.cmd_start_auto_approach();
-                            motor_status_opacity = 0.5;
-                            warning_interval = setInterval(function () {
-                                    $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
-                                            motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
-                                    });
-                            }, 300);
+	                            motor.cancel_timeout_timer(true);
+	                            pid.set_disabled();
+	                            dac_z_offset_fine.set_value(1.5);
+	                            approacher.cmd_start_auto_approach();
+	                            motor_status_opacity = 0.5;
+	                            warning_interval = setInterval(function () {
+	                                    $(".motor-status").fadeTo("fast", motor_status_opacity, function () {
+	                                            motor_status_opacity = motor_status_opacity == 0.5 ? 1 : 0.5;
+	                                    });
+	                            }, 300);
                         }
                         this.setState({initial_checks_in_progress: false});
 		},

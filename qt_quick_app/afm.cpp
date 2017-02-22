@@ -103,15 +103,16 @@ AFM::callback_return_type AFM::bind(callback_type method) {
 }
 
 void AFM::init_get_resistances_command(const QString* master) {
-    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(false, master);
-    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(false, master);
-    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(false, master);
-    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(false, master);
-    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master);
+    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master, 100);
+    static_cast<PGA*>(PGA_collection["fine_z"])->transient_set_value(true, master, 20);
 }
 
 void AFM::generate_get_resistances_command (const QString* master) {
-    QThread::msleep(20);
+    QThread::msleep(25);
     bool pid_enabled = this->scanner->pid->enabled();
     this->scanner->pid->set_disabled();
 
@@ -130,6 +131,7 @@ void AFM::generate_get_resistances_command (const QString* master) {
     static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
     static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
     static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["fine_z"])->restore_user_value();
 }
 
 bool AFM::check_resistance_values(QByteArray return_bytes) {
