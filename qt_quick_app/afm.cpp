@@ -107,8 +107,10 @@ void AFM::init_get_resistances_command(const QString* master) {
     static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(false, master, 100);
     static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(false, master, 100);
     static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["fine_z"])->transient_set_value(false, master, 0);
+    static_cast<PGA*>(PGA_collection["leveling"])->transient_set_value(false, master, 0);
+    static_cast<PGA*>(PGA_collection["dds"])->transient_set_value(false, master, 0);
     static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master, 100);
-    static_cast<PGA*>(PGA_collection["fine_z"])->transient_set_value(true, master, 20);
 }
 
 void AFM::generate_get_resistances_command (const QString* master) {
@@ -130,8 +132,10 @@ void AFM::generate_get_resistances_command (const QString* master) {
     static_cast<PGA*>(PGA_collection["x_2"])->restore_user_value();
     static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
     static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
     static_cast<PGA*>(PGA_collection["fine_z"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["leveling"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["dds"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
 }
 
 bool AFM::check_resistance_values(QByteArray return_bytes) {
@@ -140,7 +144,7 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
     double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
     double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
     double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
+    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR * 0.2 / sqrt(0.05) * 2; //equations to calc Z res
     static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage, true);
     static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage, true);
     static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage, true);
@@ -151,7 +155,7 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
     const double x_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/x_2_voltage;
     const double y_1_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_1_voltage;
     const double y_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_2_voltage;
-    const double z_resistance = (ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage)*(ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage);
+    const double z_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/z_voltage;
     const bool x_1_issue = (x_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool x_2_issue = (x_2_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_2_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool y_1_issue = (y_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (y_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
