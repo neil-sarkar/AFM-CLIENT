@@ -21,7 +21,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <unordered_map>
 
 
 // This class is at the top of the object tree for the main gui thread
@@ -69,8 +68,6 @@ class AFM : public AFMObject
 
         static const int DAC_Table_Block_Size;
 
-        typedef std::unordered_map<char const*, double> Buf_settings;
-
     signals:
         void trigger_mcu_reset();
         void enter_bootloader();
@@ -116,6 +113,7 @@ class AFM : public AFMObject
         static const QString AUTOSWEEP;
         static const QString APPROACH;
         static const QString settings_group_name;
+        void reset_all_pga_command();
 };
 
 #endif // AFM_H

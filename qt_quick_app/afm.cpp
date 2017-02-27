@@ -2,7 +2,6 @@
 #include "dac.h"
 #include "dds.h"
 #include "adc.h"
-//#include "pga.h"
 #include "afm_object.h"
 #include "constants.h"
 #include "serial_port.h"
@@ -10,7 +9,6 @@
 #include "force_curve_generator.h"
 #include <QFileDialog>
 #include <QStateMachine>
-#include <unordered_map>
 #include <QFinalState>
 #include "globals.h"
 #include <QThread>
@@ -96,6 +94,7 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
         is_initializing = false;
     }
     check_resistance_values(return_bytes);
+    reset_all_pga_command();
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
@@ -113,6 +112,17 @@ void AFM::init_get_resistances_command(const QString* master) {
     static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master, 100);
 }
 
+void AFM::reset_all_pga_command() {
+    static_cast<PGA*>(PGA_collection["x_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["x_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["fine_z"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["leveling"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["dds"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
+}
+
 void AFM::generate_get_resistances_command (const QString* master) {
     QThread::msleep(25);
     bool pid_enabled = this->scanner->pid->enabled();
@@ -128,14 +138,6 @@ void AFM::generate_get_resistances_command (const QString* master) {
 
     if (pid_enabled)
         this->scanner->pid->set_enabled();
-    static_cast<PGA*>(PGA_collection["x_1"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["x_2"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["fine_z"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["leveling"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["dds"])->restore_user_value();
-    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
 }
 
 bool AFM::check_resistance_values(QByteArray return_bytes) {
@@ -172,6 +174,7 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
 }
 
 void AFM::scanner_start_state_machine_initial_checks() {
+//    Could be reinstated or changed.  Currently not implemented due to not wanting to check R in contact.
 //    qDebug() << "Start scanner state machine with check resistance " << m_check_resistances;
 //    if(m_check_resistances)
 //        generate_get_resistances_command(&AFM::callback_scanner_start_state_machine_initial_checks);
@@ -200,6 +203,7 @@ void AFM::start_reapproaching_initial_checks(){
 
 void AFM::callback_auto_sweep_initial_checks(QByteArray return_bytes) {
     check_resistance_values(return_bytes);
+    reset_all_pga_command();
     emit auto_sweep_checks_done(true);
 }
 
@@ -213,6 +217,8 @@ void AFM::start_approaching_initial_checks() {
 }
 
 void AFM::callback_start_approaching_initial_checks(QByteArray return_bytes) {
+    check_resistance_values(return_bytes);
+    reset_all_pga_command();
     emit start_approaching_checks_done(check_resistance_values(return_bytes));
 }
 

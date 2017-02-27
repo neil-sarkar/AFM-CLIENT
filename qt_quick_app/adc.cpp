@@ -11,7 +11,7 @@ void ADC::update_value(double value , bool is_resistance) {
     m_value = value;
     qDebug() << "Setting ADC" << m_id << "value to " << value;
     if (is_resistance)
-        emit new_resistance_value(voltage_resistance_equation(m_value, m_id));
+        emit new_resistance_value(voltage_resistance_equation(m_value));
     else
         emit value_changed(m_value);
 }
@@ -24,7 +24,7 @@ void ADC::read() {
     cmd_read();
 }
 
-double ADC::voltage_resistance_equation(double voltage, qint8 id) {
+double ADC::voltage_resistance_equation(double voltage) {
     return 0.2 / voltage * 200;
     // 200 is the gain on the amplifier
     // 0.2 is the 200 mV that we pass through the actuators in a get resistances
@@ -45,8 +45,8 @@ void ADC::init() {
     read();  
 } // no hardware initialization required for ADC
 
-bool ADC::is_actuator_connected(double voltage, quint8 id) {
-    double resistance = voltage_resistance_equation(voltage, id);
+bool ADC::is_actuator_connected(double voltage) {
+    double resistance = voltage_resistance_equation(voltage);
     return Min_Resistance < resistance && Max_Resistance > resistance;
 }
 

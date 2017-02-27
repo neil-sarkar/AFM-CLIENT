@@ -15,7 +15,7 @@ public:
     Q_INVOKABLE double value();
     Q_INVOKABLE void read();
     void update_value(double value, bool is_resistance);
-    static bool is_actuator_connected(double voltage, quint8 id);
+    static bool is_actuator_connected(double voltage);
 
     // ADC channel (aka id) constants
     static const int X_1;
@@ -57,7 +57,7 @@ private:
     callback_return_type bind(void (ADC::*method)(QByteArray));
     typedef void (ADC::*callback_type)(QByteArray);
     void cmd_read();
-    static double voltage_resistance_equation(double, qint8);
+    static double voltage_resistance_equation(double);
 };
 
 #endif // ADC_H
