@@ -212,7 +212,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
             if (this.state.starting_fresh_scan) {
                 if(!this.state.initial_checks_in_progress) {
-                    this.setState({ initial_checks_in_progress: true } , function() {
+                    this.setState({ initial_checks_in_progress: true }, function() {
                         afm.scanner_start_state_machine_initial_checks();
                     });
                 }

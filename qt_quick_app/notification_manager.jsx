@@ -7,7 +7,8 @@
         var error_map = {
                 0: "Auto approach aborted due to low signal",
                 1: "Broken device or no device detected",
-                2: "Network error when contacting ICSPI server for updates information"
+                2: "Network error when contacting ICSPI server for updates information",
+                3: "Amplitude below setpoint - Resweep for new setpoint"
         };
         var info_map = {
                 0: "ICSPI update server response =>"
@@ -27,6 +28,7 @@
                 componentDidMount: function() {
                         approacher.approach_low_signal_error.connect(this.handle_approach_low_signal_error);
                         afm.no_device_or_broken_device_error.connect(this.handle_no_device_or_broken_device);
+                        approacher.approach_below_setpoint.connect(this.handle_approach_below_setpoint);
                         afm.network_error.connect(this.handle_network_error);
                         afm.new_server_message.connect(this.handle_new_server_message);
                         $("#notification-manager-wrapper").css('opacity', 0);
@@ -116,6 +118,11 @@
                     // message_type = 0 [Error]
                     // message_code = 1 [no device or broken device error]
                     var message = new this.message_object(d.toLocaleString(), 0, 1, null, null);
+                    this.push_messages(message);
+                },
+                handle_approach_below_setpoint: function() {
+                    var d = new Date();
+                    var message = new this.message_object(d.toLocaleString(), 0, 3, null, null);
                     this.push_messages(message);
                 },
                 handle_network_error: function() {

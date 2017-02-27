@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void cmd_set_low_limit();
     Q_INVOKABLE float signal_low_limit();
     Q_INVOKABLE void set_signal_low_limit(float low_limit_in_V);
+    Q_INVOKABLE void emit_approach_below_setpoint ();
     int state();
     static const float DEFAULT_SIGNAL_LOW_LIMIT;
 
@@ -30,6 +31,7 @@ signals:
     void new_state(int state, int complete);
     void approach_low_signal_error();
     void signal_low_limit_changed(float low_limit);
+    void approach_below_setpoint ();
 
 public slots:
     void handle_auto_approach_info_message(QByteArray working_response);

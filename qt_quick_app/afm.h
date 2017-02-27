@@ -21,6 +21,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <unordered_map>
+
+
+// This class is at the top of the object tree for the main gui thread
+// It contains references to all of the peripherals either directly or through additional wrapper objects
+class AFM : public AFMObject
+{
+    Q_OBJECT
 
 
 // This class is at the top of the object tree for the main gui thread
@@ -52,8 +60,9 @@ class AFM : public AFMObject
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
         Q_INVOKABLE void scanner_start_state_machine_initial_checks();
-        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
+//        Q_INVOKABLE void callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void auto_sweep_initial_checks();
+        Q_INVOKABLE void start_reapproaching_initial_checks();
         Q_INVOKABLE void callback_auto_sweep_initial_checks(QByteArray return_bytes);
         Q_INVOKABLE void start_approaching_initial_checks();
         Q_INVOKABLE void callback_start_approaching_initial_checks(QByteArray return_bytes);
@@ -66,6 +75,8 @@ class AFM : public AFMObject
         Q_INVOKABLE QString get_firmware_version();
 
         static const int DAC_Table_Block_Size;
+
+        typedef std::unordered_map<char const*, double> Buf_settings;
 
     signals:
         void trigger_mcu_reset();
@@ -90,6 +101,7 @@ class AFM : public AFMObject
     public slots:
         void init();
         void contact_server_reply(QNetworkReply*);
+        void generate_get_resistances_command(const QString* master);
 
     private:
         // typedefs
@@ -98,7 +110,7 @@ class AFM : public AFMObject
 
         void set_save_folder(QString);
         void set_settings();
-        void generate_get_resistances_command(callback_type method);
+        void init_get_resistances_command(const QString *master);
         bool check_resistance_values(QByteArray return_bytes);
         double voltage_resistance_equation(double);
 
@@ -107,6 +119,9 @@ class AFM : public AFMObject
         QString m_save_folder;
         QString m_firmware_version;
 
+        static const QString GENERAL;
+        static const QString AUTOSWEEP;
+        static const QString APPROACH;
         static const QString settings_group_name;
 };
 
