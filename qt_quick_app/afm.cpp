@@ -64,10 +64,6 @@ QString AFM::get_firmware_version() {
     return m_firmware_version;
 }
 
-QString AFM::get_firmware_version() {
-    return m_firmware_version;
-}
-
 void AFM::read_all_ADCs() {
     qDebug() << "Reading all ADCs";
     peripheral_collection ::iterator i;
