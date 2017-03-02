@@ -146,7 +146,7 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
     double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
     double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
     double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR * 0.2 / sqrt(0.05) * 2; //equations to calc Z res
+    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR * 0.2 / sqrt(0.05); //equations to calc Z res
     static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage, true);
     static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage, true);
     static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage, true);
