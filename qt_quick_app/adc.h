@@ -43,6 +43,7 @@ public:
     static const double Z_MAX_RESISTANCE;
     static const double Z_MIN_RESISTANCE;
     static const int ADC_Z_1_ID;
+    static const double Z_ROOT_FACTOR;
 
 signals:
     void value_changed(double);

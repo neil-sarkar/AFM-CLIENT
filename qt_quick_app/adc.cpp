@@ -71,3 +71,4 @@ const double ADC::LATERAL_MAX_RESISTANCE = 300;
 const double ADC::LATERAL_MIN_RESISTANCE = 100;
 const double ADC::Z_MAX_RESISTANCE = 400;
 const double ADC::Z_MIN_RESISTANCE = 200;
+const double ADC::Z_ROOT_FACTOR = sqrt(0.2); // from * 0.2 / root(0.2) to factor out the flat value and add the root factor.
