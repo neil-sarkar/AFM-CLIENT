@@ -64,6 +64,7 @@ class AFM : public AFMObject
         Q_INVOKABLE void callback_get_firmware_version(QByteArray return_bytes);
         Q_INVOKABLE QString get_software_version();
         Q_INVOKABLE QString get_firmware_version();
+        Q_INVOKABLE bool get_done_init_resistances();
 
         static const int DAC_Table_Block_Size;
 
@@ -107,6 +108,7 @@ class AFM : public AFMObject
         bool m_check_resistances;
         QString m_save_folder;
         QString m_firmware_version;
+        bool m_done_init_resistances;
 
         static const QString GENERAL;
         static const QString AUTOSWEEP;

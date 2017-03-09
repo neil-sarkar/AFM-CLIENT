@@ -43,8 +43,6 @@
                         if(firmware_version)
                             this.handle_new_firmware_version(firmware_version);
                         afm.contact_server();
-                        afm.cmd_get_resistances();
-                        afm.read_all_ADCs();
 		},
                 enter_bootloader: function() {
                     afm.enter_bootloader();

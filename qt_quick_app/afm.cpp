@@ -23,6 +23,7 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->scanner = scanner;
     this->force_curve_generator = force_curve_generator;
     this->m_firmware_version = "";
+    this->m_done_init_resistances = false;
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(contact_server_reply(QNetworkReply*)));
@@ -56,10 +57,15 @@ void AFM::init() {
     approacher->init();
     scanner->init();
     force_curve_generator->init();
+    cmd_get_resistances();
 }
 
 QString AFM::get_firmware_version() {
     return m_firmware_version;
+}
+
+bool AFM::get_done_init_resistances() {
+    return m_done_init_resistances;
 }
 
 void AFM::read_all_ADCs() {
@@ -95,6 +101,7 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
     }
     check_resistance_values(return_bytes);
     reset_all_pga_command();
+    m_done_init_resistances = true;
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
