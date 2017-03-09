@@ -22,14 +22,6 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-
-// This class is at the top of the object tree for the main gui thread
-// It contains references to all of the peripherals either directly or through additional wrapper objects
-class AFM : public AFMObject
-{
-    Q_OBJECT
-
-
 // This class is at the top of the object tree for the main gui thread
 // It contains references to all of the peripherals either directly or through additional wrapper objects
 class AFM : public AFMObject
