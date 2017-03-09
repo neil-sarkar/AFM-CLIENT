@@ -4,7 +4,7 @@
 #              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006               
 ############################################################################################
 
-!define DEPLOYMENT_FILES_LOCATION "C:\Users\Jimmy\Desktop\nGauge_d0012_windows"
+!define DEPLOYMENT_FILES_LOCATION "C:\DEP"
 !define GITHUB_REPOSITORY_LOCATION "C:\ICSPI_CONF\AFM-CLIENT"
 
 !define APP_NAME "nGauge"
