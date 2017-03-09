@@ -5,12 +5,12 @@
 ############################################################################################
 
 !define DEPLOYMENT_FILES_LOCATION "C:\Users\Jimmy\Desktop\nGauge_d0012_windows"
-!define GITHUB_REPOSITORY_LOCATION "C:\Users\Jimmy\Documents\GitHub\AFM-CLIENT"
+!define GITHUB_REPOSITORY_LOCATION "C:\ICSPI_CONF\AFM-CLIENT"
 
 !define APP_NAME "nGauge"
 !define COMP_NAME "ICSPI"
 !define WEB_SITE "http://www.icspicorp.com/"
-!define VERSION "1.0.0.0"
+!define VERSION "1.0.0.1"
 !define COPYRIGHT "ICSPI©2016"
 !define DESCRIPTION "nGauge AFM application"
 !define INSTALLER_NAME "${GITHUB_REPOSITORY_LOCATION}\nGauge_setup_${VERSION}.exe"
