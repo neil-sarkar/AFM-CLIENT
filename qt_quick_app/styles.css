@@ -218,6 +218,17 @@ body {
     width: 100%;
 }
 
+.console-line {
+    background-color: transparent;
+    font-family: "Courier";
+    font-size: 80%;
+    color:white;
+    text-align:left;
+    height: auto;
+    width: inherit;
+    pointer-events:none;
+}
+
 #back-button {
 
 }
@@ -244,6 +255,40 @@ body {
     padding-right: 3%;
     box-shadow: 10px 0px 8px 8px black;
     overflow-y: auto;
+}
+
+#client-console-wrapper {
+    background-color: black;
+    opacity: 0.3;
+    height: 100%;
+    width: 30%;
+    min-width: 180px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-left:3%;
+    padding-bottom: 0;
+    padding-right:2%;
+    box-shadow: 10px 0px 8px 8px black;
+    overflow-y: auto;
+    pointer-events:none;
+}
+
+#clear-console {
+    cursor: pointer;
+    background-color: black;
+    opacity: 0.8;
+    height: 30px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-family: "Georgia";
+    font-size: 80%;
+    color:white;
+    text-align:center;
+    z-index: 1;
+    pointer-events: auto;
 }
 
 #notification-manager-wrapper {
@@ -276,6 +321,16 @@ body {
     display: inline-block;
     position: fixed;
     left: 80px;
+    top: 38px;
+}
+
+#toggle-console {
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    position: fixed;
+    z-index: 1;
+    left: 120px;
     top: 38px;
 }
 

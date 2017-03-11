@@ -61,7 +61,7 @@ void Builder::wire_hash_command_generated(peripheral_collection & collection, Se
         QObject::connect(i.value(), SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
 }
 
-void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_worker, ReceiveWorker* & receive_worker) {
+void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_worker, ReceiveWorker* & receive_worker, FirmwareUpdater* & firmware_updater) {
     // Wire command_generated signal
 //     TODO: There is likely a cleaner way to connect all the command_generated SIGNALS to the enqueue_command SLOT as command_generated is inherited from AFMObject
      QObject::connect(afm, SIGNAL(command_generated(CommandNode*)), send_worker, SLOT(enqueue_command(CommandNode*)), Qt::QueuedConnection);
@@ -80,9 +80,11 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
      QObject::connect(serial_port, SIGNAL(connected()), afm, SLOT(init()));
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), send_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), receive_worker, SLOT(flush()), Qt::DirectConnection);
+    
     QObject::connect(receive_worker, SIGNAL(auto_approach_info_received(QByteArray)), afm->approacher, SLOT(handle_auto_approach_info_message(QByteArray))); // why isn't this a qt direct connection
     QObject::connect(afm, SIGNAL(trigger_mcu_reset()), serial_port, SLOT(reset_mcu()));
     QObject::connect(afm, SIGNAL(enter_bootloader()), serial_port, SLOT(enter_bootloader()));
+    QObject::connect(afm, SIGNAL(update_firmware()), firmware_updater, SLOT(update_firmware()));
     QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
     QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(disconnected()));
 

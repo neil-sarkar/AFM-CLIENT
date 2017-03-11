@@ -148,8 +148,9 @@
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={this.enter_bootloader}>Enter Bootloader</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.update_firmware}>Update Firware</button>
                                             </div>
-				);
+				); //these settings drawer bottom buttons suck. Requires restyle and security.
 		},
 	})
 	return SettingsDrawer;

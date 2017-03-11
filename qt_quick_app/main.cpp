@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QThread>
 #include "serial_port.h"
+#include "firmware_updater.h"
 #include "adc.h"
 #include "motor.h"
 #include "send_worker.h"
@@ -43,10 +44,12 @@ int main(int argc, char *argv[])
     // Object creation
     Builder* builder = new Builder();
     SerialPort* serial_port = new SerialPort();
+    FirmwareUpdater* firmware_updater = new FirmwareUpdater();
     SendWorker* send_worker = new SendWorker();
     ReceiveWorker* receive_worker = new ReceiveWorker();
+    
     AFM* afm = builder->build_afm();
-    builder->wire(afm, serial_port, send_worker, receive_worker);
+    builder->wire(afm, serial_port, send_worker, receive_worker, firmware_updater);
     builder->generate_command_nodes();
     builder->generate_color_map();
     builder->generate_color_bar();
@@ -59,7 +62,7 @@ int main(int argc, char *argv[])
     QWidget* window = QApplication::desktop()->screen();
     const int horizontalDpi = window->logicalDpiX();
     qDebug() << "logical DPI x " << horizontalDpi;
-    MainWindow m(afm, new WebFileDialog(), horizontalDpi/108.0);
+    MainWindow m(afm, new WebFileDialog(), horizontalDpi/108.0, firmware_updater);
     m.showMinimized();
     m.showMaximized();
 

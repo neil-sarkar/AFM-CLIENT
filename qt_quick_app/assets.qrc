@@ -1,17 +1,17 @@
 <RCC>
-    <qresource prefix="/js" lang="js">
+    <qresource lang="js" prefix="/js">
         <file>console.js</file>
         <file>common.js</file>
         <file>jsx.js</file>
         <file>JSXTransformer.js</file>
         <file>text.js</file>
     </qresource>
-    <qresource prefix="/css" lang="css">
+    <qresource lang="css" prefix="/css">
         <file>home.css</file>
         <file>fonts.css</file>
         <file>styles.css</file>
     </qresource>
-    <qresource prefix="/html" lang="html">
+    <qresource lang="html" prefix="/html">
         <file>home.html</file>
         <file>main.html</file>
         <file>force_curve.html</file>
@@ -23,6 +23,7 @@
         <file>sample_load.jpg</file>
         <file>chip_load.jpg</file>
         <file>wrench_gray.png</file>
+        <file>grey_console.png</file>
     </qresource>
     <qresource prefix="/fonts">
         <file>roboto/RobotoCondensed-Regular.ttf</file>
@@ -99,6 +100,7 @@
         <file>setup.jsx</file>
         <file>notification_manager.jsx</file>
         <file>safety_configs.jsx</file>
+        <file>client_console.jsx</file>
     </qresource>
     <qresource prefix="/js/lib/modules">
         <file>exporting.js</file>

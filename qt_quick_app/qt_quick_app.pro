@@ -34,7 +34,8 @@ SOURCES += main.cpp \
     web_file_dialog.cpp \
     force_curve_generator.cpp \
     globals.cpp \
-    scan_line.cpp
+    scan_line.cpp \
+    firmware_updater.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -73,7 +74,8 @@ HEADERS += \
     globals.h \
     color_map.h \
     scan_line.h \
-    pin_map.h
+    pin_map.h \
+    firmware_updater.h
 
 DISTFILES += \
     test.html
