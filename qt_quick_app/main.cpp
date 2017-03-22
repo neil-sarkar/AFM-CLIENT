@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     QThread* serial_thread = new QThread();
     QThread* sender_thread = new QThread();
     QThread* receiver_thread = new QThread();
+    QThread* fu_thread = new QThread();
 
     // Object creation
     Builder* builder = new Builder();
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
     // Thread connections
     QObject::connect(serial_thread, SIGNAL(started()), serial_port, SLOT(scan_for_ports()));
     QObject::connect(serial_thread, SIGNAL(finished()), serial_port, SLOT(close()));
+    
+    QObject::connect(fu_thread, SIGNAL(finished()), firmware_updater, SLOT(close()));
 
     // Set up view
     QWidget* window = QApplication::desktop()->screen();
@@ -70,11 +73,13 @@ int main(int argc, char *argv[])
     serial_port->moveToThread(serial_thread);
     send_worker->moveToThread(sender_thread);
     receive_worker->moveToThread(receiver_thread);
+    firmware_updater->moveToThread(fu_thread);
 
     // Thread start
     QObject::connect(&m, SIGNAL(loadFinished()), serial_thread, SLOT(start()));
     QObject::connect(&m, SIGNAL(loadFinished()), sender_thread, SLOT(start()));
     QObject::connect(&m, SIGNAL(loadFinished()), receiver_thread, SLOT(start()));
+    QObject::connect(&m, SIGNAL(loadFinished()), fu_thread, SLOT(start()));
 
     // Cleanup
     engine.quit();
@@ -82,5 +87,6 @@ int main(int argc, char *argv[])
     serial_thread->quit();
     receiver_thread->quit();
     sender_thread->quit();
+    fu_thread->quit();
     return closed_event;
 }

@@ -99,9 +99,9 @@
                 },
                 render: function() {
                     return (
-                            <div id="notification-manager-wrapper">
-                                {this.state.messages.map(this.render_message)}
-                            </div>
+                        <div id="notification-manager-wrapper">
+                            {this.state.messages.map(this.render_message)}
+                        </div>
                     );
                 },
                 handle_approach_low_signal_error: function() {

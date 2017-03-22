@@ -108,6 +108,18 @@ void SerialPort::close() {
     emit disconnected();
 }
 
+void SerialPort::start_timer() {
+    port_scan_timer->start(1000);
+}
+
+void SerialPort::stop_timer() {
+    port_scan_timer->stop();
+}
+
+void SerialPort::close_conn() {
+    close();
+}
+
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
     if (port->write(&byte, 1) == 1) { //        qDebug() << QString().sprintf("%2p",byte);
         return AFM_Success;

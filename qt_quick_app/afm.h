@@ -70,7 +70,7 @@ class AFM : public AFMObject
     signals:
         void trigger_mcu_reset();
         void enter_bootloader();
-        void update_firmware();
+        //void update_firmware();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
         void scanner_start_state_machine_checks_done(bool);

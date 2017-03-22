@@ -35,6 +35,9 @@ Q_OBJECT
         void enter_bootloader();
         bool detect_afm();
         void initialize_reading();
+        void stop_timer();
+        void start_timer();
+        void close_conn();
 
     private slots:
         void handle_error(QSerialPort::SerialPortError error);

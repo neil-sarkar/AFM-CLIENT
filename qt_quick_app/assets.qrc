@@ -109,4 +109,8 @@
     <qresource prefix="/static">
         <file>command_spec.tsv</file>
     </qresource>
+    <qresource prefix="/mcu_bin">
+        <file>lowlevelinit-samv7.bin</file>
+        <file>flash-samv7.bin</file>
+    </qresource>
 </RCC>

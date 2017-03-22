@@ -47,6 +47,9 @@
                 enter_bootloader: function() {
                     afm.enter_bootloader();
                 },
+                update_firmware: function() {
+                    firmware_updater.update_firmware();
+                },
                 gui_status: function() {
                     if(this.state.gui_version && this.state.server_gui_version) {
                         if(this.state.gui_version == this.state.server_gui_version) {
@@ -148,7 +151,7 @@
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.restore_defaults}>Restore defaults</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.release_port}>Release Port</button>
                                                     <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={this.enter_bootloader}>Enter Bootloader</button>
-                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={afm.update_firmware}>Update Firware</button>
+                                                    <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" onClick={this.update_firmware}>Update Firmware</button>
                                             </div>
 				); //these settings drawer bottom buttons suck. Requires restyle and security.
 		},

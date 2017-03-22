@@ -22,25 +22,31 @@
                  $(".console_message").remove();
             });
             //Connect signals here
-            firmware_updater.to_console.connect(this.incoming_message);
+            //firmware_updater.to_console.connect(this.incoming_message);
+            //console.log("pogchamp mounted");
+            //this.setState({toPrint: ["lmao"]});
         },
 
         incoming_message: function(message){
+            console.log("lemaodekaiser incoming");
             var buffer = this.state.toPrint.slice();
             buffer.push(message);
             this.setState({toPrint: buffer});
+            console.log(this.state.toPrint.toString())
         },
 
         wipe_messages: function (message){
+            //window.alert("kappa del rey wiped");
             var blank = [];
             this.setState({toPrint: blank});
         },
 
         render_message: function(message, i) {
+            //window.alert("kappa render message called");
             var text = "";
             return (
                 <p key={i} className="console_message">
-                    {text + message}
+                    {message}
                 </p>
                 );
         },
