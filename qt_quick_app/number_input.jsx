@@ -116,12 +116,12 @@ define(["react", "console", "underscore"], function(React, console, _) {
                 <div>
                     {label}
                     <input type="number" ref="input" 
-                                        className={"number-input " + this.compressed_name()}
-                                        min={this.props.min} 
-                                        max={this.props.max} 
-                                        step={this.props.step}
-                                        value={this.state.value} 
-                                        onChange={this.render_text}/>
+                        className={"number-input " + this.compressed_name()}
+                        min={this.props.min}
+                        max={this.props.max}
+                        step={this.props.step}
+                        value={this.state.value}
+                        onChange={this.render_text}/>
                 </div>
             );
         }

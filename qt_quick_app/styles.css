@@ -256,7 +256,17 @@ body {
     padding-bottom: 0;
     padding-right: 3%;
     box-shadow: 10px 0px 8px 8px black;
-    overflow-y: auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    border-top: 1px solid #acaeaf;
+}
+
+#settings-drawer-wrapper-inner {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding-right: 25%;
 }
 
 /*
@@ -315,9 +325,12 @@ body {
 
 .setting-section-name {
     text-align: center;
+    /*font-weight: bold;*/
+    cursor: default;
     padding-bottom: 6px;
-    border-bottom: 1px solid grey;
+    /*border-bottom: 1px solid grey;*/
     margin-top: 15%;
+    background: -webkit-linear-gradient(90deg, #c8ccd1,#edeff2);
 }
 
 #setup-link {
@@ -395,6 +408,10 @@ body {
     width: 100%;
 }
 
+.val-container {
+    width: 100%;
+}
+
 .settings-container-column {
     display: -webkit-flex;
     -webkit-flex-flow: column;
@@ -433,6 +450,10 @@ body {
     cursor: pointer;
 }
 
+.pad-div {
+    width: 100%;
+    height: 2%;
+}
 
 .settings-drawer-button:disabled {
     background-color: gray;
@@ -444,8 +465,10 @@ body {
 }
 
 .adc-controller {
+    float: left;
+    width: 50%;
     margin-bottom: 2%;
-    margin-right: 5%;
+    /*margin-right: 5%;*/
 }
 
 .pid-enable-button, .adc-read-button {
