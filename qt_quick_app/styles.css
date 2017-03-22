@@ -218,6 +218,7 @@ body {
     width: 100%;
 }
 
+/*
 .console-line {
     background-color: transparent;
     font-family: "Courier";
@@ -228,6 +229,7 @@ body {
     width: inherit;
     pointer-events:none;
 }
+*/
 
 #back-button {
 
@@ -257,6 +259,7 @@ body {
     overflow-y: auto;
 }
 
+/*
 #client-console-wrapper {
     background-color: black;
     opacity: 0.3;
@@ -290,6 +293,7 @@ body {
     z-index: 1;
     pointer-events: auto;
 }
+*/
 
 #notification-manager-wrapper {
     background-color: white;

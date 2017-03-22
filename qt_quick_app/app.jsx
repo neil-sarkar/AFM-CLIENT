@@ -1,4 +1,4 @@
-define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pages/settings_drawer", "jsx!pages/client_console", "jsx!pages/notification_manager"], function(React, ReactDOM, ProgressBar, StepData, SettingsDrawer, ClientConsole, NotificationManager) {
+define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pages/settings_drawer", /*"jsx!pages/client_console",*/ "jsx!pages/notification_manager"], function(React, ReactDOM, ProgressBar, StepData, SettingsDrawer, /*ClientConsole,*/ NotificationManager) {
     var App = React.createClass({
         getInitialState: function() {
             return {
@@ -31,7 +31,7 @@ define(["react", "dom", "jsx!pages/progress_bar", "jsx!pages/step_data", "jsx!pa
                 <ProgressBar step={this.state.step} go_to_step={this.go_to_step} step_list={["Setup", "Sweep", "Approach", "Scan"]}/>
                 <StepData ref="step_data" step={this.state.step} go_to_next_step={this.go_to_next_step} go_to_previous_step={this.go_to_previous_step}/>
                 <SettingsDrawer/>
-                <ClientConsole/>
+                {/*<ClientConsole/>*/}
                 <NotificationManager/>
             </div>
             )
