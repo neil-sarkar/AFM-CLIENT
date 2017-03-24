@@ -70,7 +70,7 @@ void MainWindow::addJSObject(CustomPage* page) {
     page->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     page->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
     page->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
-    page->mainFrame()->addToJavaScriptWindowObject(QString("firmware_updater"), m_firmware_updater);
+    //page->mainFrame()->addToJavaScriptWindowObject(QString("firmware_updater"), m_firmware_updater);
 
     peripheral_collection::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {

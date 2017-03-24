@@ -9,18 +9,17 @@ Q_OBJECT
 	public:
         explicit FirmwareUpdater(QObject *parent = 0);
         ~FirmwareUpdater();
-        bool open();
 		Q_INVOKABLE void close();
-		Q_INVOKABLE void update_firmware();
 
 	signals:
         void to_console(QString);
         void start_timer();
         void stop_timer();
         void close_conn();
+        void push_to_AFM(QString);
 
-//	public slots:
-//		void update_firmware();
+	public slots:
+		void update_firmware();	
 
 	private:
 		QString get_serial_port_name();
@@ -37,13 +36,12 @@ Q_OBJECT
         bool go(const quint32 &address);
         void check_mail();
         bool write_to_flash();
-        //quint32 write_page(quint32 offset, const QByteArray &data);
-        //quint32 write_buffer(QByteArray &data);
+        bool open();
 
 		QByteArray m_bin_buf;
 		QString m_portname;
 		int m_baudrate;
-		QSerialPort m_serial;
+		QSerialPort *m_serial;
 		quint32 m_buff_addr;
 		quint32 m_buff_size;
 		quint32 m_mem_size;

@@ -17,15 +17,19 @@
 FirmwareUpdater::FirmwareUpdater(QObject *parent) : QObject(parent) {
 	m_portname = "";
 	m_baudrate = 0;
+	m_serial = new QSerialPort(this);
 }
 
 void FirmwareUpdater::update_firmware () {
     stop_current_serial();
 
+    emit push_to_AFM(QString("Starting FW Reprogram..."));
+
     if (!open()){
         qDebug() << "Could not OPEN connection.";
-        if (m_serial.isOpen())
+        if (m_serial->isOpen())
     		close();
+    	emit push_to_AFM(QString("Connection could not be acquired.  Try again."));
     	return;
     }
 
@@ -34,8 +38,9 @@ void FirmwareUpdater::update_firmware () {
     load_file(FLASH_PATH);
     if (!write_applet(APPLET_CODE_ADDR, &m_bin_buf)){
     	qDebug() << "Could not UPLOAD applet.";
-    	if (m_serial.isOpen())
+    	if (m_serial->isOpen())
     		close();
+    	emit push_to_AFM(QString("Could not UPLOAD utility applet"));
     	return;
     }
 
@@ -44,39 +49,53 @@ void FirmwareUpdater::update_firmware () {
     if (run_applet(0, args, 2)){
     	check_mail();    	
     }
-    if (!run_applet(1, args, 0)){
-    	qDebug() << "Applet ERASE failed.";
-    	if (m_serial.isOpen())
-    		close();
+    else {
+    	emit push_to_AFM(QString("Could not RUN utility applet"));
     	return;
     }
 
-    if (!write_to_flash()){
-		qDebug() << "Applet WRITE failed.";
-    	if (m_serial.isOpen())
+    if (!run_applet(1, args, 0)){
+    	qDebug() << "Applet ERASE failed.";
+    	if (m_serial->isOpen())
     		close();
+    	emit push_to_AFM(QString("Utility applet ERASE Failed"));
     	return;
     }
+
+    qDebug() << "Erased old firmware...";
+    emit push_to_AFM(QString("Erased old firmware."));
+
+    if (!write_to_flash()){
+		qDebug() << "Applet WRITE failed.";
+    	if (m_serial->isOpen())
+    		close();
+    	emit push_to_AFM(QString("Writing firmware failed"));
+    	return;
+    }
+
     int gpnvm [] = {1 , 1};
 
     if (!run_applet(6, gpnvm, 2)){
     	qDebug() << "Applet GPVM failed.";
-    	if (m_serial.isOpen())
+    	if (m_serial->isOpen())
     		close();
+    	emit push_to_AFM(QString("Could not set to boot from flash"));
     	return;
     }
 
     if (!serial_write_word(0x400E1800, 0xA5000001)){
     	qDebug() << "Soft Reset failed.";
-    	if (m_serial.isOpen())
+    	if (m_serial->isOpen())
     		close();
+    	emit push_to_AFM(QString("Could not software reset"));
     	return;
     }
 
-    if (m_serial.isOpen()){
+    if (m_serial->isOpen()){
 		close();
     }
 
+    emit push_to_AFM(QString("Finished programming. Restart NGAUGE if necessary."));
     emit start_timer();
 }
 
@@ -121,14 +140,14 @@ bool FirmwareUpdater::open(){
 		return false;
 	}
 
-	m_serial.setPortName(m_portname);
-	m_serial.setBaudRate(115200);
-	m_serial.setDataBits(QSerialPort::Data8);
-	m_serial.setParity(QSerialPort::NoParity);
-	m_serial.setStopBits(QSerialPort::OneStop);
-	m_serial.setFlowControl(QSerialPort::NoFlowControl);
+	m_serial->setPortName(m_portname);
+	m_serial->setBaudRate(115200);
+	m_serial->setDataBits(QSerialPort::Data8);
+	m_serial->setParity(QSerialPort::NoParity);
+	m_serial->setStopBits(QSerialPort::OneStop);
+	m_serial->setFlowControl(QSerialPort::NoFlowControl);
 
-	if (m_serial.open(QIODevice::ReadWrite))
+	if (m_serial->open(QIODevice::ReadWrite))
 	{
 		// resync in case some data was already sent to monitor:
 		// send a single '#' and ignore response
@@ -158,8 +177,8 @@ bool FirmwareUpdater::open(){
 		//couldn't open port
 		emit to_console(QString("Opening port failed. (Denied)"));
 		qDebug() << "Could not acquire port.";
-		//qDebug() << m_serial.error() ;
-		//qDebug() << m_serial.errorString().toLocal8Bit().constData() ;
+		//qDebug() << m_serial->error() ;
+		//qDebug() << m_serial->errorString().toLocal8Bit().constData() ;
 		return false;
 	}
 	//emit start_timer();
@@ -168,14 +187,14 @@ bool FirmwareUpdater::open(){
 void FirmwareUpdater::serial_write(const QString &str)
 {
 	QByteArray data = str.toLocal8Bit();
-	m_serial.write(data.constData(), data.length());
-	m_serial.waitForBytesWritten(10);
+	m_serial->write(data.constData(), data.length());
+	m_serial->waitForBytesWritten(10);
 }
 
 void FirmwareUpdater::serial_write(const QByteArray &data)
 {
-	m_serial.write(data.constData(), data.length());
-	m_serial.waitForBytesWritten(10);
+	m_serial->write(data.constData(), data.length());
+	m_serial->waitForBytesWritten(10);
 }
 
 QByteArray FirmwareUpdater::serial_read(int minBytes, int timeout /*defualt 10*/)
@@ -187,9 +206,9 @@ QByteArray FirmwareUpdater::serial_read(int minBytes, int timeout /*defualt 10*/
 	do {
 		if (timeout > 0 && (timer.elapsed() >= timeout))
 			break;
-		m_serial.waitForReadyRead(10);
-		if (m_serial.bytesAvailable())
-			resp.append(m_serial.readAll());
+		m_serial->waitForReadyRead(10);
+		if (m_serial->bytesAvailable())
+			resp.append(m_serial->readAll());
 	} while (resp.length() < minBytes);
 
 	return resp;
@@ -216,7 +235,7 @@ bool FirmwareUpdater::load_file (const QString &file_path) {
 }
 
 bool FirmwareUpdater::write_applet (const quint32 &address, QByteArray *data) {
-	if (!m_serial.isOpen())
+	if (!m_serial->isOpen())
 		return false;
 
 	int length = data->length();
@@ -238,7 +257,7 @@ bool FirmwareUpdater::write_applet (const quint32 &address, QByteArray *data) {
 bool FirmwareUpdater::check_device_ID(const quint32 &address) {
 	bool device_good = false;
 
-	if (!m_serial.isOpen())
+	if (!m_serial->isOpen())
 		return false;
 
 	serial_write(QString().sprintf("w%x,#", address));
@@ -276,10 +295,10 @@ bool FirmwareUpdater::run_applet(int cmd, int *args, int length) {
 
 	go(APPLET_CODE_ADDR);
 
-	int elapsed = 20;
+    int elapsed = 12;
 
 	while (elapsed >= 0) {
-		quint32 ack = serial_read_word(APPLET_MAIL_ADDR, 1000);
+        quint32 ack = serial_read_word(APPLET_MAIL_ADDR, 1000);
 		qDebug () << QString().sprintf("%08x", ack);
 		if (ack == (0xffffffff - cmd)) {
 			// return applet status
@@ -294,7 +313,7 @@ bool FirmwareUpdater::run_applet(int cmd, int *args, int length) {
 			}
 		}
 
-		QThread::msleep(10);
+        QThread::msleep(10);
 		elapsed -= 1;
 	}
 
@@ -303,7 +322,7 @@ bool FirmwareUpdater::run_applet(int cmd, int *args, int length) {
 }
 
 bool FirmwareUpdater::serial_write_word(const quint32 &address, quint32 data) {
-	if (!m_serial.isOpen())
+	if (!m_serial->isOpen())
 		return false;
 
 	serial_write(QString().sprintf("W%x,%08x#", address, data));
@@ -312,7 +331,7 @@ bool FirmwareUpdater::serial_write_word(const quint32 &address, quint32 data) {
 
 quint32 FirmwareUpdater::serial_read_word(quint32 address, int timeout)
 {
-	if (!m_serial.isOpen()){
+	if (!m_serial->isOpen()){
 		return 0;	
 	}
 
@@ -326,7 +345,7 @@ quint32 FirmwareUpdater::serial_read_word(quint32 address, int timeout)
 
 bool FirmwareUpdater::go(const quint32 &address)
 {
-	if (!m_serial.isOpen())
+	if (!m_serial->isOpen())
 		return false;
 
 	serial_write(QString().sprintf("G%x#", address));
@@ -345,6 +364,7 @@ void FirmwareUpdater::check_mail(){
 
 	if (m_mem_size > 1){
 		qDebug() << "Detected " << m_mem_size << " of memory"; 
+		emit push_to_AFM(QString().sprintf("Detected %dB of memory", m_mem_size));
 	}
 	else {
 		qDebug() << "Memory detection failed"; 		
@@ -366,13 +386,17 @@ bool FirmwareUpdater::write_to_flash(){
 
     //Debug () << QString().sprintf("%x",m_buff_addr);
 
-    write_applet(m_buff_addr, &m_bin_buf);
+    if(!write_applet(m_buff_addr, &m_bin_buf)){
+    	qDebug () << "Failed to load MEMS bin into buffer";
+    	emit push_to_AFM(QString("Failed to load MEMS bin into buffer"));
+    	return false;
+    }
 
     int args [] = {m_buff_addr, size * PAGE_SIZE, 0};
 
     //qDebug() << args[0] << " " << args[1] << " " << args[2] << " " << sizeof(args);
 
-    bool status = run_applet(2, args, sizeof(args));
+    bool status = run_applet(2, args, 3);
 
     return	status;
 
@@ -382,9 +406,12 @@ bool FirmwareUpdater::write_to_flash(){
 
 void FirmwareUpdater::close()
 {
-	if (m_serial.isOpen())
+	if (m_serial->isOpen())
 	{
-		m_serial.close();
+		if (!m_serial->clear()){
+			qDebug () << "Failed to clear serial";
+		}
+		m_serial->close();
 	}
 }
 

@@ -70,7 +70,7 @@ class AFM : public AFMObject
     signals:
         void trigger_mcu_reset();
         void enter_bootloader();
-        //void update_firmware();
+        void update_firmware();
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
         void scanner_start_state_machine_checks_done(bool);
@@ -87,10 +87,13 @@ class AFM : public AFMObject
         void init_complete();
         void initializing();
         void disconnected();
+        void push_message_to_NM(QString);
 
     public slots:
         void init();
         void contact_server_reply(QNetworkReply*);
+        void push_to_AFM(QString);
+        void boot_loader_entered();
 
     private:
         // typedefs

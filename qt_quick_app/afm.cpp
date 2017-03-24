@@ -281,5 +281,13 @@ QString AFM::get_software_version() {
     return Software_Version;
 }
 
+void AFM::push_to_AFM(QString message){
+    emit push_message_to_NM(message);
+}
+
+void AFM::boot_loader_entered() {
+    emit push_message_to_NM(QString("Bootloader Entered."));
+}
+
 const int AFM::DAC_Table_Block_Size = 256;
 const QString AFM::settings_group_name = "afm";

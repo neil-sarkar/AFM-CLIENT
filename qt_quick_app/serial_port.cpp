@@ -79,6 +79,7 @@ void SerialPort::enter_bootloader() {
     QByteArray message;
     message += "\nOOO\n";
     write_bytes(message);
+    emit entered_bootloader();
 }
 
 bool SerialPort::detect_afm() {

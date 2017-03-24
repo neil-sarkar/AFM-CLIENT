@@ -23,6 +23,7 @@ Q_OBJECT
         void message_sent(CommandNode*); // emitted after a full command has been sent
         void byte_received(char);
         void resetting_mcu();
+        void entered_bootloader();
 
     public slots:
         void on_ready_read();
