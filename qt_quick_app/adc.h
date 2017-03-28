@@ -14,7 +14,7 @@ public:
     void init();
     Q_INVOKABLE double value();
     Q_INVOKABLE void read();
-    void update_value(double value);
+    void update_value(double value, bool is_resistance);
     static bool is_actuator_connected(double voltage);
 
     // ADC channel (aka id) constants
@@ -42,6 +42,8 @@ public:
     static const double LATERAL_MIN_RESISTANCE;
     static const double Z_MAX_RESISTANCE;
     static const double Z_MIN_RESISTANCE;
+    static const int ADC_Z_1_ID;
+    static const double Z_ROOT_FACTOR;
 
 signals:
     void value_changed(double);

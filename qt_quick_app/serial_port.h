@@ -23,6 +23,7 @@ Q_OBJECT
         void message_sent(CommandNode*); // emitted after a full command has been sent
         void byte_received(char);
         void resetting_mcu();
+        void entered_bootloader();
 
     public slots:
         void on_ready_read();
@@ -35,6 +36,9 @@ Q_OBJECT
         void enter_bootloader();
         bool detect_afm();
         void initialize_reading();
+        void stop_timer();
+        void start_timer();
+        void close_conn();
 
     private slots:
         void handle_error(QSerialPort::SerialPortError error);

@@ -11,6 +11,7 @@
 #include <QStateMachine>
 #include <QFinalState>
 #include "globals.h"
+#include <QThread>
 
 AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collection, peripheral_collection ADC_collection, Motor* motor,  Sweeper* sweeper, Approacher* approacher, Scanner* scanner, ForceCurveGenerator* force_curve_generator) {
     this->PGA_collection = PGA_collection;
@@ -22,6 +23,9 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->scanner = scanner;
     this->force_curve_generator = force_curve_generator;
     this->m_firmware_version = "";
+    this->m_done_init_resistances = false;
+    this->m_mcu_bin_file = "";
+    this->m_setting_lock = true;
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(contact_server_reply(QNetworkReply*)));
@@ -47,6 +51,9 @@ void AFM::init() {
     for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
         i.value()->init();
 
+    connect(static_cast<PGA*>(PGA_collection["coarse_z"]), SIGNAL(pga_callback_received(const QString*)),
+            this, SLOT(generate_get_resistances_command(const QString*)));
+
     motor->init();
     sweeper->init();
     approacher->init();
@@ -57,6 +64,19 @@ void AFM::init() {
 
 QString AFM::get_firmware_version() {
     return m_firmware_version;
+}
+
+bool AFM::get_done_init_resistances() {
+    return m_done_init_resistances;
+}
+
+bool AFM::setting_lock() {
+    return m_setting_lock;
+}
+
+void AFM::toggle_setting_lock(){
+    m_setting_lock = !m_setting_lock;
+    emit setting_lock_toggled(m_setting_lock);
 }
 
 void AFM::read_all_ADCs() {
@@ -76,17 +96,13 @@ void AFM::callback_get_firmware_version(QByteArray return_bytes) {
     quint8 version_2 = return_bytes.at(2);
     quint8 version_3 = return_bytes.at(3);
     QString version_string = QString("%1.%2.%3.%4").arg(QString::number(version_0),QString::number(version_1),QString::number(version_2),QString::number(version_3));
-    qDebug() << "Firware Version is " << version_string;
+    qDebug() << "Firmware Version is " << version_string;
     m_firmware_version = version_string;
     emit new_firmware_version(version_string);
 }
 
 void AFM::cmd_get_resistances() {
-    bool pid_enabled = this->scanner->pid->enabled();
-    this->scanner->pid->set_disabled();
-    emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
-    if (pid_enabled)
-        this->scanner->pid->set_enabled();
+    init_get_resistances_command(&AFM::GENERAL);
 }
 
 void AFM::callback_get_resistances(QByteArray return_bytes) {
@@ -94,26 +110,50 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
         emit init_complete();
         is_initializing = false;
     }
-    double x_1_voltage = bytes_to_word(return_bytes.at(0), return_bytes.at(1)) * ADC::SCALE_FACTOR;
-    double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
-    double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
-    double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
-    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage);
-    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage);
-    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
-    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
-    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
+    check_resistance_values(return_bytes);
+    reset_all_pga_command();
+    m_done_init_resistances = true;
 }
 
 AFM::callback_return_type AFM::bind(callback_type method) {
     return std::bind(method, this, std::placeholders::_1);
 }
 
-void AFM::generate_get_resistances_command(callback_type method) {
+void AFM::init_get_resistances_command(const QString* master) {
+    static_cast<PGA*>(PGA_collection["x_1"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["x_2"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["y_1"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["y_2"])->transient_set_value(false, master, 100);
+    static_cast<PGA*>(PGA_collection["fine_z"])->transient_set_value(false, master, 0);
+    static_cast<PGA*>(PGA_collection["leveling"])->transient_set_value(false, master, 0);
+    static_cast<PGA*>(PGA_collection["dds"])->transient_set_value(false, master, 0);
+    static_cast<PGA*>(PGA_collection["coarse_z"])->transient_set_value(true, master, 100);
+}
+
+void AFM::reset_all_pga_command() {
+    static_cast<PGA*>(PGA_collection["x_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["x_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_1"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["y_2"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["fine_z"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["leveling"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["dds"])->restore_user_value();
+    static_cast<PGA*>(PGA_collection["coarse_z"])->restore_user_value();
+}
+
+void AFM::generate_get_resistances_command (const QString* master) {
+    QThread::msleep(30);
     bool pid_enabled = this->scanner->pid->enabled();
     this->scanner->pid->set_disabled();
-    emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(method)));
+
+    //delegate bindings
+    if (master->compare(AFM::GENERAL)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_get_resistances)));
+    else if (master->compare(AFM::AUTOSWEEP)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_auto_sweep_initial_checks)));
+    else if (master->compare(AFM::APPROACH)== 0)
+        emit command_generated(new CommandNode(command_hash[AFM_Get_Resistances], bind(&AFM::callback_start_approaching_initial_checks)));
+
     if (pid_enabled)
         this->scanner->pid->set_enabled();
 }
@@ -124,18 +164,18 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
     double x_2_voltage = bytes_to_word(return_bytes.at(2), return_bytes.at(3)) * ADC::SCALE_FACTOR;
     double y_1_voltage = bytes_to_word(return_bytes.at(4), return_bytes.at(5)) * ADC::SCALE_FACTOR;
     double y_2_voltage = bytes_to_word(return_bytes.at(6), return_bytes.at(7)) * ADC::SCALE_FACTOR;
-    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR;
-    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage);
-    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage);
-    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage);
-    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage);
-    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage);
+    double z_voltage = bytes_to_word(return_bytes.at(8), return_bytes.at(9)) * ADC::SCALE_FACTOR * ADC::Z_ROOT_FACTOR;
+    static_cast<ADC*>(ADC_collection["x_1"])->update_value(x_1_voltage, true);
+    static_cast<ADC*>(ADC_collection["x_2"])->update_value(x_2_voltage, true);
+    static_cast<ADC*>(ADC_collection["y_1"])->update_value(y_1_voltage, true);
+    static_cast<ADC*>(ADC_collection["y_2"])->update_value(y_2_voltage, true);
+    static_cast<ADC*>(ADC_collection["z_1"])->update_value(z_voltage, true);
 
     const double x_1_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/x_1_voltage;
     const double x_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/x_2_voltage;
     const double y_1_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_1_voltage;
     const double y_2_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/y_2_voltage;
-    const double z_resistance = ADC::RESISTANCE_SCALE_FACTOR_50MV/z_voltage;
+    const double z_resistance = ADC::RESISTANCE_SCALE_FACTOR_200MV/z_voltage;
     const bool x_1_issue = (x_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool x_2_issue = (x_2_resistance > ADC::LATERAL_MAX_RESISTANCE) || (x_2_resistance < ADC::LATERAL_MIN_RESISTANCE);
     const bool y_1_issue = (y_1_resistance > ADC::LATERAL_MAX_RESISTANCE) || (y_1_resistance < ADC::LATERAL_MIN_RESISTANCE);
@@ -152,40 +192,51 @@ bool AFM::check_resistance_values(QByteArray return_bytes) {
 }
 
 void AFM::scanner_start_state_machine_initial_checks() {
-    qDebug() << "Start scanner state machine with check resistance " << m_check_resistances;
-    if(m_check_resistances)
-        generate_get_resistances_command(&AFM::callback_scanner_start_state_machine_initial_checks);
-    else
-        emit scanner_start_state_machine_checks_done(true);
+//    Could be reinstated or changed.  Currently not implemented due to not wanting to check R in contact.
+//    qDebug() << "Start scanner state machine with check resistance " << m_check_resistances;
+//    if(m_check_resistances)
+//        generate_get_resistances_command(&AFM::callback_scanner_start_state_machine_initial_checks);
+//    else
+//        emit scanner_start_state_machine_checks_done(true);
+    emit scanner_start_state_machine_checks_done(true);
 
 }
 
-void AFM::callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes) {
-    emit scanner_start_state_machine_checks_done(check_resistance_values(return_bytes));
-}
+//void AFM::callback_scanner_start_state_machine_initial_checks(QByteArray return_bytes) {
+//    emit scanner_start_state_machine_checks_done(check_resistance_values(return_bytes));
+//}
 
 void AFM::auto_sweep_initial_checks() {
     qDebug() << "Start auto sweep with check resistance " << m_check_resistances;
-    if(m_check_resistances)
-        generate_get_resistances_command(&AFM::callback_auto_sweep_initial_checks);
+    if(m_check_resistances){
+        init_get_resistances_command(&AFM::AUTOSWEEP);
+    }
     else
         emit auto_sweep_checks_done(true);
 }
 
+void AFM::start_reapproaching_initial_checks(){
+    emit start_approaching_checks_done(true);
+}
+
 void AFM::callback_auto_sweep_initial_checks(QByteArray return_bytes) {
     check_resistance_values(return_bytes);
+    reset_all_pga_command();
     emit auto_sweep_checks_done(true);
 }
 
 void AFM::start_approaching_initial_checks() {
     qDebug() << "Start approaching with check resistance " << m_check_resistances;
-    if(m_check_resistances)
-        generate_get_resistances_command(&AFM::callback_start_approaching_initial_checks);
+    if(m_check_resistances){
+        init_get_resistances_command(&AFM::APPROACH);
+    }
     else
         emit start_approaching_checks_done(true);
 }
 
 void AFM::callback_start_approaching_initial_checks(QByteArray return_bytes) {
+    check_resistance_values(return_bytes);
+    reset_all_pga_command();
     emit start_approaching_checks_done(check_resistance_values(return_bytes));
 }
 
@@ -208,6 +259,19 @@ void AFM::launch_folder_picker() {
     set_save_folder(path);
 }
 
+void AFM::choose_mcu_bin(){
+    //not a setting yet, dunno about use case.
+    QString file = QFileDialog::getOpenFileName(0,
+                                                tr("Select Firmware Binary"),
+                                                QDir::homePath(),
+                                                "Binaries (*.bin)");
+    if (file.isEmpty()){
+        return;
+    }
+    m_mcu_bin_file = file;
+    emit mcu_bin_changed(m_mcu_bin_file);
+}
+
 QString AFM::save_folder() {
     return m_save_folder;
 }
@@ -217,6 +281,10 @@ void AFM::set_save_folder(QString save_folder) {
     qDebug() << "Setting save folder to " << m_save_folder;
     emit save_folder_changed(m_save_folder);
     update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
+}
+
+QString AFM::mcu_bin_file(){
+    return m_mcu_bin_file;
 }
 
 QString AFM::save_scan_data() {
@@ -281,5 +349,17 @@ QString AFM::get_software_version() {
     return Software_Version;
 }
 
+void AFM::push_to_AFM(QString message){
+    emit push_message_to_NM(message);
+}
+
+void AFM::boot_loader_entered() {
+    emit push_message_to_NM(QString("Bootloader Entered."));
+}
+
+>>>>>>> patch_1001
 const int AFM::DAC_Table_Block_Size = 256;
 const QString AFM::settings_group_name = "afm";
+const QString AFM::GENERAL = "G";
+const QString AFM::APPROACH = "A";
+const QString AFM::AUTOSWEEP = "S";

@@ -6,6 +6,7 @@
 #include <QStandardPaths>
 #include <QWebSettings>
 #include <QNetworkRequest>
+#include <QDesktopServices>
 #include "web_file_dialog.h"
 
 MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_factor)
@@ -36,7 +37,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_facto
     setMinimumSize(640, 480);
 
     set_global_web_settings();
-    setContextMenuPolicy(Qt::NoContextMenu);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
     QObject::connect(m_welcome_page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(welcomePageLoadFinished()));
 }
 
@@ -99,6 +100,10 @@ void MainWindow::load_main_app_page() {
         m_main_app_page.mainFrame()->load(QUrl("qrc:/html/main.html"));
     clearFocus();
     setPage(&m_main_app_page);
+}
+
+void MainWindow::open_update_link() {
+    QDesktopServices::openUrl ( QUrl("http://www.icspicorp.com/resources/") );
 }
 
 void MainWindow::load_home_page() {
