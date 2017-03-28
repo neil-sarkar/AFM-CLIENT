@@ -96,7 +96,7 @@ void AFM::callback_get_firmware_version(QByteArray return_bytes) {
     quint8 version_2 = return_bytes.at(2);
     quint8 version_3 = return_bytes.at(3);
     QString version_string = QString("%1.%2.%3.%4").arg(QString::number(version_0),QString::number(version_1),QString::number(version_2),QString::number(version_3));
-    qDebug() << "Firware Version is " << version_string;
+    qDebug() << "Firmware Version is " << version_string;
     m_firmware_version = version_string;
     emit new_firmware_version(version_string);
 }
