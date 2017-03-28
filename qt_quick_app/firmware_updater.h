@@ -20,6 +20,7 @@ Q_OBJECT
 
 	public slots:
 		void update_firmware(QString);	
+		void entered_bootloader();
 
 	private:
 		QString get_serial_port_name();
@@ -41,6 +42,7 @@ Q_OBJECT
 		QByteArray m_bin_buf;
 		QString m_portname;
 		QString m_mcu_bin;
+		bool m_isboot;
 		int m_baudrate;
 		QSerialPort *m_serial;
 		quint32 m_buff_addr;

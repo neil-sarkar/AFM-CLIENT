@@ -88,8 +88,9 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(firmware_updater, SIGNAL(start_timer()), serial_port, SLOT(start_timer()));
     QObject::connect(firmware_updater, SIGNAL(stop_timer()), serial_port, SLOT(stop_timer()));
     QObject::connect(firmware_updater, SIGNAL(close_conn()), serial_port, SLOT(close_conn()));
-    QObject::connect(firmware_updater, SIGNAL(push_to_AFM(QString)),afm, SLOT(push_to_AFM(QString)));
-    QObject::connect(serial_port, SIGNAL(entered_bootloader()),afm, SLOT(boot_loader_entered()));
+    QObject::connect(firmware_updater, SIGNAL(push_to_AFM(QString)), afm, SLOT(push_to_AFM(QString)));
+    QObject::connect(serial_port, SIGNAL(entered_bootloader()), afm, SLOT(boot_loader_entered()));
+    QObject::connect(serial_port, SIGNAL(entered_bootloader()), firmware_updater, SLOT(entered_bootloader()));
 
     QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
     QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(disconnected()));

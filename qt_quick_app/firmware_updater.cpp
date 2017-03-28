@@ -18,10 +18,25 @@ FirmwareUpdater::FirmwareUpdater(QObject *parent) : QObject(parent) {
 	m_portname = "";
 	m_baudrate = 0;
 	m_serial = new QSerialPort(this);
+	m_isboot = false;
+}
+
+void FirmwareUpdater::entered_bootloader() {
+	m_isboot = true;
 }
 
 void FirmwareUpdater::update_firmware (QString mcu_bin) {
 	m_mcu_bin = mcu_bin;
+
+	if (QString::compare(m_mcu_bin , "") == 0){
+		emit push_to_AFM(QString("No binary file provided. Please click \"Choose Firmware\" button first."));
+		return;
+	}
+
+	if (!m_isboot){
+		emit push_to_AFM(QString("Not in bootloader. Please click \"Enter Bootloader\" button first."));
+		return;
+	}
 
     stop_current_serial();
 
@@ -65,7 +80,7 @@ void FirmwareUpdater::update_firmware (QString mcu_bin) {
     }
 
     qDebug() << "Erased old firmware...";
-    emit push_to_AFM(QString("Erased old firmware."));
+    emit push_to_AFM(QString("Erased old firmware..."));
 
     if (!write_to_flash()){
 		qDebug() << "Applet WRITE failed.";
