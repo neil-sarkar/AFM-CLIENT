@@ -7,10 +7,11 @@ define(["react", "jsx!pages/number_input"], function(React, NumberInput) {
                 get_value={this.props.qt_object.value}
                 set_value={this.props.qt_object.set_value}
                 min={0}
-                max={140}
+                max={119.6}
                 step={0.1}
                 round={1} />
         }
+        //140
     });
     return PGAController;
 });

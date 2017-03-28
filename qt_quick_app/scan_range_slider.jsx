@@ -61,7 +61,7 @@ define(["react"], function(React) {
         getDefaultProps: function() {
             return {
                 min: 0,
-                max: 196,
+                max: 143, /*196,*/
                 step: 1,
                 number_step: 0.1,
                 round: 1,
