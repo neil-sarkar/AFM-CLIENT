@@ -341,6 +341,14 @@ body {
     top: 38px;
 }
 
+#toggle-setting-lock {
+    cursor: pointer;
+    display: inline-block;
+    position: fixed;
+    left: 120px;
+    top: 38px;
+}
+
 #toggle-console {
     background-color: transparent;
     cursor: pointer;

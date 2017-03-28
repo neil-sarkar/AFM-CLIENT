@@ -19,7 +19,7 @@ Q_OBJECT
         void push_to_AFM(QString);
 
 	public slots:
-		void update_firmware();	
+		void update_firmware(QString);	
 
 	private:
 		QString get_serial_port_name();
@@ -40,6 +40,7 @@ Q_OBJECT
 
 		QByteArray m_bin_buf;
 		QString m_portname;
+		QString m_mcu_bin;
 		int m_baudrate;
 		QSerialPort *m_serial;
 		quint32 m_buff_addr;

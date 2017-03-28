@@ -20,7 +20,9 @@ FirmwareUpdater::FirmwareUpdater(QObject *parent) : QObject(parent) {
 	m_serial = new QSerialPort(this);
 }
 
-void FirmwareUpdater::update_firmware () {
+void FirmwareUpdater::update_firmware (QString mcu_bin) {
+	m_mcu_bin = mcu_bin;
+
     stop_current_serial();
 
     emit push_to_AFM(QString("Starting FW Reprogram..."));
@@ -374,7 +376,7 @@ void FirmwareUpdater::check_mail(){
 //not completely futureproof as our program is TINY (i.e. smaller than the buffer)
 //need to future proof this function, as out mcu expands. look to SAMBA
 bool FirmwareUpdater::write_to_flash(){ 
-	load_file(MEMS_PATH);
+	load_file(m_mcu_bin);
 
     if ((m_bin_buf.length() & (PAGE_SIZE - 1)) != 0) {
 		int pad = PAGE_SIZE - (m_bin_buf.length() & (PAGE_SIZE - 1));

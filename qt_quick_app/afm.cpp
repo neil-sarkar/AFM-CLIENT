@@ -22,6 +22,8 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->scanner = scanner;
     this->force_curve_generator = force_curve_generator;
     this->m_firmware_version = "";
+    this->m_mcu_bin_file = "";
+    this->m_setting_lock = true;
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(contact_server_reply(QNetworkReply*)));
@@ -57,6 +59,15 @@ void AFM::init() {
 
 QString AFM::get_firmware_version() {
     return m_firmware_version;
+}
+
+bool AFM::setting_lock() {
+    return m_setting_lock;
+}
+
+void AFM::toggle_setting_lock(){
+    m_setting_lock = !m_setting_lock;
+    emit setting_lock_toggled(m_setting_lock);
 }
 
 void AFM::read_all_ADCs() {
@@ -208,6 +219,19 @@ void AFM::launch_folder_picker() {
     set_save_folder(path);
 }
 
+void AFM::choose_mcu_bin(){
+    //not a setting yet, dunno about use case.
+    QString file = QFileDialog::getOpenFileName(0,
+                                                tr("Select Firmware Binary"),
+                                                QDir::homePath(),
+                                                "Binaries (*.bin)");
+    if (file.isEmpty()){
+        return;
+    }
+    m_mcu_bin_file = file;
+    emit mcu_bin_changed(m_mcu_bin_file);
+}
+
 QString AFM::save_folder() {
     return m_save_folder;
 }
@@ -217,6 +241,10 @@ void AFM::set_save_folder(QString save_folder) {
     qDebug() << "Setting save folder to " << m_save_folder;
     emit save_folder_changed(m_save_folder);
     update_settings(settings_group_name, "save_folder", QVariant(m_save_folder));
+}
+
+QString AFM::mcu_bin_file(){
+    return m_mcu_bin_file;
 }
 
 QString AFM::save_scan_data() {

@@ -37,7 +37,6 @@ private:
     void cmd_set_value();
     qint8 value_to_pga();
     static const QString settings_group_name;
-
 };
 
 #endif // PGA_H
