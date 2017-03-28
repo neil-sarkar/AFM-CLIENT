@@ -3,6 +3,7 @@
 
 #include "afm.h"
 #include "web_file_dialog.h"
+#include "firmware_updater.h"
 #include <QWebView>
 #include <QWebElementCollection>
 #include <QNetworkDiskCache>
@@ -23,7 +24,7 @@ class MainWindow : public QWebView
 {
 Q_OBJECT
 public:
-    explicit MainWindow(AFM*, WebFileDialog*, double);
+    explicit MainWindow(AFM*, WebFileDialog*, double, FirmwareUpdater*);
     MainWindow(CustomPage*);
     Q_INVOKABLE void log_cpp(QString text); // takes in things from JS to log
     Q_INVOKABLE void load_main_app_page();
@@ -32,6 +33,7 @@ public:
     Q_INVOKABLE QWebView* createWindow(CustomPage*);
     Q_INVOKABLE void pop_out_force_curve_page();
     AFM* m_afm;
+    FirmwareUpdater* m_firmware_updater;
 
 signals:
     void loadFinished(void);

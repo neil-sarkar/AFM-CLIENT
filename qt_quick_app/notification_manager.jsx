@@ -11,7 +11,8 @@
                 3: "Amplitude below setpoint - Resweep for new setpoint"
         };
         var info_map = {
-                0: "ICSPI update server response =>"
+                0: "ICSPI update server response =>",
+                1: "FIRMWARE update info =>"
         };
         var NotificationManager = React.createClass({
                 getInitialState: function() {
@@ -21,7 +22,7 @@
                 },
                 getDefaultProps: function() {
                     return {
-                        message_duration: 5000,
+                        message_duration: 8000,
                         max_num_of_messages: 10
                     };
                 },
@@ -31,6 +32,7 @@
                         approacher.approach_below_setpoint.connect(this.handle_approach_below_setpoint);
                         afm.network_error.connect(this.handle_network_error);
                         afm.new_server_message.connect(this.handle_new_server_message);
+                        afm.push_message_to_NM.connect(this.handle_new_afm_info_message);
                         $("#notification-manager-wrapper").css('opacity', 0);
                 },
                 message_object: function(a_timestamp, a_message_type, a_message_code, a_timeout, a_additional_string) {
@@ -101,9 +103,9 @@
                 },
                 render: function() {
                     return (
-                            <div id="notification-manager-wrapper">
-                                {this.state.messages.map(this.render_message)}
-                            </div>
+                        <div id="notification-manager-wrapper">
+                            {this.state.messages.map(this.render_message)}
+                        </div>
                     );
                 },
                 handle_approach_low_signal_error: function() {
@@ -137,6 +139,11 @@
                     // message_type = 2 [Info]
                     // message_code = 0 [Update server response]
                     var message = new this.message_object(d.toLocaleString(), 2, 0, null, message);
+                    this.push_messages(message);
+                },
+                handle_new_afm_info_message: function(message) {
+                    var d = new Date();
+                    var message = new this.message_object(d.toLocaleString(), 2, 1, null, message);
                     this.push_messages(message);
                 }
         })

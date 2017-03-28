@@ -47,8 +47,11 @@ class AFM : public AFMObject
         Q_INVOKABLE void callback_get_resistances(QByteArray return_bytes);
         Q_INVOKABLE void restore_defaults();
         Q_INVOKABLE void launch_folder_picker();
+        Q_INVOKABLE void choose_mcu_bin();
         Q_INVOKABLE QString save_folder();
+        Q_INVOKABLE QString mcu_bin_file();
         Q_INVOKABLE QString save_scan_data();
+        Q_INVOKABLE bool setting_lock();
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
         Q_INVOKABLE void scanner_start_state_machine_initial_checks();
@@ -66,14 +69,17 @@ class AFM : public AFMObject
         Q_INVOKABLE QString get_software_version();
         Q_INVOKABLE QString get_firmware_version();
         Q_INVOKABLE bool get_done_init_resistances();
+        Q_INVOKABLE void toggle_setting_lock();
 
         static const int DAC_Table_Block_Size;
 
     signals:
         void trigger_mcu_reset();
         void enter_bootloader();
+        void update_firmware(QString);
         void new_resistance_values(double, double, double, double, double);
         void save_folder_changed(QString);
+        void mcu_bin_changed(QString);
         void scanner_start_state_machine_checks_done(bool);
         void auto_sweep_checks_done(bool);
         void start_approaching_checks_done(bool);
@@ -88,11 +94,15 @@ class AFM : public AFMObject
         void init_complete();
         void initializing();
         void disconnected();
+        void setting_lock_toggled(bool);
+        void push_message_to_NM(QString);
 
     public slots:
         void init();
         void contact_server_reply(QNetworkReply*);
         void generate_get_resistances_command(const QString* master);
+        void push_to_AFM(QString);
+        void boot_loader_entered();
 
     private:
         // typedefs
@@ -105,9 +115,11 @@ class AFM : public AFMObject
         bool check_resistance_values(QByteArray return_bytes);
         double voltage_resistance_equation(double);
 
+        bool m_setting_lock;
         bool is_initializing;
         bool m_check_resistances;
         QString m_save_folder;
+        QString m_mcu_bin_file;
         QString m_firmware_version;
         bool m_done_init_resistances;
 

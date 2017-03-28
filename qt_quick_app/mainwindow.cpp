@@ -9,13 +9,14 @@
 #include <QDesktopServices>
 #include "web_file_dialog.h"
 
-MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_factor)
+MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_factor, FirmwareUpdater* firmware_updater)
 {
     //If you want to provide support for web sites that allow the user to open new windows, such as pop-up windows, you can subclass QWebView and reimplement the createWindow() function.
 
     // Core objects we will expose to JavaScript
     m_afm = afm;
     m_folder_picker = folder_picker;
+    m_firmware_updater = firmware_updater;
 
     // commented out because we just call addJSObject manually now and pass in the appropriate page
     // QObject::connect(m_main_app_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJSObject())); // Signal is emitted before frame loads any web content:
@@ -37,7 +38,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_facto
     setMinimumSize(640, 480);
 
     set_global_web_settings();
-    setContextMenuPolicy(Qt::NoContextMenu);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
     QObject::connect(m_welcome_page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(welcomePageLoadFinished()));
 }
 
@@ -70,6 +71,7 @@ void MainWindow::addJSObject(CustomPage* page) {
     page->mainFrame()->addToJavaScriptWindowObject(QString("pid"), m_afm->scanner->pid);
     page->mainFrame()->addToJavaScriptWindowObject(QString("folder_picker"), m_folder_picker);
     page->mainFrame()->addToJavaScriptWindowObject(QString("force_curve_generator"), m_afm->force_curve_generator);
+    //page->mainFrame()->addToJavaScriptWindowObject(QString("firmware_updater"), m_firmware_updater);
 
     peripheral_collection::iterator i;
     for (i = m_afm->PGA_collection.begin(); i != m_afm->PGA_collection.end(); ++i) {

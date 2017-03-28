@@ -79,6 +79,7 @@ void SerialPort::enter_bootloader() {
     QByteArray message;
     message += "\nOOO\n";
     write_bytes(message);
+    emit entered_bootloader();
 }
 
 bool SerialPort::detect_afm() {
@@ -106,6 +107,18 @@ void SerialPort::close() {
     qDebug() << "Closing port";
     is_connected = false;
     emit disconnected();
+}
+
+void SerialPort::start_timer() {
+    port_scan_timer->start(1000);
+}
+
+void SerialPort::stop_timer() {
+    port_scan_timer->stop();
+}
+
+void SerialPort::close_conn() {
+    close();
 }
 
 int SerialPort::write_byte(char byte) { // This method is the only one that actually writes anything to the serial port
