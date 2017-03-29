@@ -131,7 +131,7 @@ void ReceiveWorker::handle_asynchronous_message() {
 
 bool ReceiveWorker::is_mcu_heartbeat_message() {
     if (sizeof(MCU_heartbeat_message) == working_response.length()) {
-        for (int i = 0; i < sizeof(MCU_heartbeat_message); i++) {
+        for (unsigned i = 0; i < sizeof(MCU_heartbeat_message); i++) {
             if (MCU_heartbeat_message[i] != static_cast<unsigned char>(working_response[i]))
                 return false;
         }

@@ -33,7 +33,7 @@ Q_OBJECT
 		QByteArray serial_read(int minBytes = 0, int timeout = 10);
 		quint32 serial_read_word(quint32 address, int timeout = 10);
         bool load_file (const QString &file_path);
-        bool run_applet(int cmd, int* args, int length);
+        bool run_applet(int cmd, quint32* args, int length);
         bool go(const quint32 &address);
         void check_mail();
         bool write_to_flash();

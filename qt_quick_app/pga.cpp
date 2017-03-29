@@ -58,6 +58,7 @@ void PGA::cmd_set_value(double value, bool is_callback) {
 }
 
 void PGA::callback_value_set(QByteArray return_bytes) {
+    (void) return_bytes;
     emit pga_callback_received(m_caller);
 }
 

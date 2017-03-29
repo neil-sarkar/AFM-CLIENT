@@ -22,7 +22,7 @@
                 },
                 getDefaultProps: function() {
                     return {
-                        message_duration: 8000,
+                        message_duration: 10000,
                         max_num_of_messages: 10
                     };
                 },
@@ -145,6 +145,7 @@
                     var d = new Date();
                     var message = new this.message_object(d.toLocaleString(), 2, 1, null, message);
                     this.push_messages(message);
+                    console.log(message.additional_string);
                 }
         })
         return NotificationManager;
