@@ -5,14 +5,19 @@
             2: "Info",
         };
         var error_map = {
-                0: "Auto approach aborted due to low signal",
-                1: "Broken device or no device detected",
-                2: "Network error when contacting ICSPI server for updates information",
-                3: "Amplitude below setpoint - Resweep for new setpoint"
+            0: "Auto approach aborted due to low signal",
+            1: "Broken device or no device detected",
+            2: "Network error when contacting ICSPI server for updates information",
+            3: "Amplitude below setpoint - Resweep for new setpoint",
+            4: "Bootloading error =>"
         };
         var info_map = {
-                0: "ICSPI update server response =>",
-                1: "FIRMWARE update info =>"
+            0: "ICSPI update server response =>",
+            1: "Bootloading info =>"
+        };
+        var warning_map = {
+            0: "Bootloading warning =>",  
+            1: "Scan command error - Ensure scan button is not over-clicked."      
         };
         var NotificationManager = React.createClass({
                 getInitialState: function() {
@@ -33,6 +38,7 @@
                         afm.network_error.connect(this.handle_network_error);
                         afm.new_server_message.connect(this.handle_new_server_message);
                         afm.push_message_to_NM.connect(this.handle_new_afm_info_message);
+                        scanner.start_state_error.connect(this.handle_start_state_error);
                         $("#notification-manager-wrapper").css('opacity', 0);
                 },
                 message_object: function(a_timestamp, a_message_type, a_message_code, a_timeout, a_additional_string) {
@@ -143,9 +149,18 @@
                 },
                 handle_new_afm_info_message: function(message) {
                     var d = new Date();
+                    // message_type = 2 [Info]
+                    // message_code = 1 [Firmware/Bootload]
+                    // TODO: Add more variety (tag inbound messages)
                     var message = new this.message_object(d.toLocaleString(), 2, 1, null, message);
                     this.push_messages(message);
-                    console.log(message.additional_string);
+                },
+                handle_start_state_error: function() {
+                    var d = new Date();
+                    // message_type = 1 [Warning]
+                    // message_code = 1 [Scan State machine start failed]
+                    var message = new this.message_object(d.toLocaleString(), 1, 1, null, null);
+                    this.push_messages(message);
                 }
         })
         return NotificationManager;

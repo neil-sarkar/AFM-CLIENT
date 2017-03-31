@@ -347,14 +347,6 @@ body {
     top: 38px;
 }
 
-#toggle-setting-lock {
-    cursor: pointer;
-    display: inline-block;
-    position: fixed;
-    left: 120px;
-    top: 38px;
-}
-
 #toggle-console {
     background-color: transparent;
     cursor: pointer;
@@ -371,6 +363,14 @@ body {
     position:fixed;
     right: 100px;
     top: 38px;
+}
+
+#toggle-setting-lock {
+    cursor: pointer;
+    display: block;
+    position: relative;
+    margin: auto;
+    width: 50%;
 }
 
 #nav-toggle {
@@ -413,6 +413,16 @@ body {
 }
 #nav-toggle.active span:after {
   -webkit-transform: rotate(-45deg);
+}
+
+.icon-button {
+    position: relative;
+    display: block;
+    width: 20px;
+    margin: auto;
+    float: middle;
+    margin-top: 5%;
+    left: 5%;
 }
 
 .settings-container {

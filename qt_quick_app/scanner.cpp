@@ -207,9 +207,13 @@ void Scanner::move_to_starting_point() {
     cmd_start_scan();
 }
 
-
 void Scanner::start_state_machine() {
-    m_state_machine.start();
+    if (!m_state_machine.isRunning()){
+        m_state_machine.start();
+    }
+    else {
+        emit start_state_error();
+    }
 }
 
 void Scanner::initialize_scan_state_machine() {

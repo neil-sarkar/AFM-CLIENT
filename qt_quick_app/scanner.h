@@ -105,6 +105,7 @@ signals:
     void new_reverse_phase_data(QVariantList);
     void new_reverse_error_data(QVariantList);
     void started_scan_state_machine();
+    void start_state_error();
 
     // property changes
     void num_averages_changed(int);

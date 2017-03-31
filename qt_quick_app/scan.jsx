@@ -76,6 +76,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             });
         },
         handle_all_processing_done: function() {
+            this.set_scan_complete();
             if(this.state.auto_save){
                 this.save_data();
             }
@@ -87,13 +88,14 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
             afm.scanner_start_state_machine_checks_done.connect(this.start_scanning);
             scanner.num_rows_changed.connect(this.change_num_rows);
             scanner.num_columns_changed.connect(this.change_num_columns);
-            scanner.all_data_received.connect(this.set_scan_complete);
+            //scanner.all_data_received.connect(this.set_scan_complete);
             scanner.all_processing_done.connect(this.handle_all_processing_done);
             scanner.use_auto_save_changed.connect(this.change_auto_save);
             scanner.use_continuous_scan_changed.connect(this.change_continuous_scan);
             scanner.use_level_changed.connect(this.change_use_level);
             scanner.save_png_changed.connect(this.change_save_png);
             scanner.new_lateral_scale_bar.connect(this.handle_new_lateral_bar_data);
+            scanner.start_state_error.connect(this.handle_start_state_error);
             afm.save_folder_changed.connect(this.save_folder_changed);
             // connect scan views to their data sources
             for (var i = 0; i < scan_views.length; i++) {
@@ -230,8 +232,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     scanning: true,
                     initial_checks_in_progress: false,
                 }, function(){
-                    scanner.start_state_machine();
-                    this.setState({data_saved: false});
+                    this.setState({data_saved: false}); 
                     for (var i = 0; i < scan_views.length; i++) {
                         scan_views[i].data = empty_image_str;
                         scan_views[i].z_bar_data = empty_bar_str;
@@ -245,10 +246,17 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
                     this.setState({
                         starting_fresh_scan: false
                     });
+                    scanner.start_state_machine();
                 });
             } else {
                 this.setState({initial_checks_in_progress: false});
             }
+        },
+        handle_start_state_error: function(){
+            this.setState ({
+                scanning: false,
+                starting_fresh_scan: true
+            });
         },
         clear_scan: function() {
             this.pause_scanning();
@@ -502,7 +510,7 @@ define(["react", "jsx!pages/heatmap_canvas", "jsx!pages/line_profile", "jsx!page
         change_continuous_scan: function(b_use_continuous_scan) {
             this.setState({continuous_scan: b_use_continuous_scan});
         },
-        reset_zoom: function () {
+        reset_zoom: function() {
             scanner.reset_zoom();
             this.setState({zoom_set:false});
         },
