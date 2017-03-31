@@ -358,7 +358,6 @@ void AFM::boot_loader_entered() {
     emit push_message_to_NM(QString("Bootloader Entered."));
 }
 
->>>>>>> patch_1001
 const int AFM::DAC_Table_Block_Size = 256;
 const QString AFM::settings_group_name = "afm";
 const QString AFM::GENERAL = "G";

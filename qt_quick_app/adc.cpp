@@ -1,6 +1,7 @@
 #include "adc.h"
 #include "command_node.h"
 #include "constants.h"
+#include "cmath"
 
 ADC::ADC(qint8 id)
 {
