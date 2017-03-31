@@ -121,27 +121,35 @@ FirmwareUpdater::~FirmwareUpdater() {
 }
 
 QString FirmwareUpdater::get_serial_port_name() {
-	QString port = "";
+    QString port = "";
     QList <QSerialPortInfo> portList;
-	QSerialPortInfo info;
+    QSerialPortInfo info;
 
     portList = QSerialPortInfo::availablePorts();
 
-	if (!portList.isEmpty()){
-		info = portList.at(0);
-		if (info.isValid()){
-			port = info.portName();
-            qDebug() << "Portname: "<< port;
-		}
-		//else throw error
-		else {
-            emit to_console(QString("The Portname is invalid."));
-		}
-	}// else throw error
-	else {
+    if (!portList.isEmpty()){
+        for (int i = 0; i < portList.size(); i++){
+            info = portList.at(i);
+            if (info.isValid()){
+                port = info.portName();
+                qDebug() << "Portname: "<< port;
+                if (!port.contains("COM") && !port.contains("usbmodem")){
+                    port = "";
+                }
+                else {
+                  break;
+                }
+            }
+            //else throw error
+            else {
+                emit to_console(QString("The Portname is invalid."));
+            }
+        }
+    }// else throw error
+    else {
         emit to_console(QString("There are no ports."));
-	}
-	return port;
+    }
+    return port;
 }
 
 void FirmwareUpdater::stop_current_serial(){
@@ -438,5 +446,5 @@ const int FirmwareUpdater::MAX_BUF_SIZE = 32*1024;
 const quint32 FirmwareUpdater::PAGE_SIZE = 512;
 const quint32 FirmwareUpdater::CIRD_REG_ADDR = 0x400e0940;
 const QString FirmwareUpdater::LOWLEVEL_PATH = QString("lowlevelinit-samv7.bin");
-const QString FirmwareUpdater::FLASH_PATH = QString("flash-samv7.bin");
+const QString FirmwareUpdater::FLASH_PATH = QString(":/mcu_bin/flash-samv7.bin");
 const QString FirmwareUpdater::MEMS_PATH = QString("mems_mcu_usb.bin");
