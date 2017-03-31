@@ -187,9 +187,9 @@
                             <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" disabled={this.state.setting_is_locked} onClick={afm.trigger_mcu_reset}>Reset AFM</button>
                             <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={afm.restore_defaults}>Restore defaults</button>
                             <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={afm.release_port}>Release Port</button>
-                            <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={afm.choose_mcu_bin}>Choose Firmware</button>
+                            {/*<button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={afm.choose_mcu_bin}>Choose Firmware</button>*/}
                             <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={this.enter_bootloader}>Enter Bootloader</button>
-                            <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={this.update_firmware}>Update Firmware</button>
+                            {/*<button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={this.update_firmware}>Update Firmware</button>*/}
                         </div>
                         <div className="pad-div"></div>
                     </div>
