@@ -6,7 +6,8 @@
                     server_gui_version: "",
                     mcu_bin: "",
                     setting_is_locked: true,
-                    server_firmware_version: ""};
+                    server_firmware_version: "",
+                    setting_lock: true};
         },
 		componentDidMount: function() {
 			// hide the settings drawer
@@ -103,9 +104,16 @@
                 mcu_bin: mcu_bin_file
             });
         },
+        //not sure if back end is necessary, considering that this is only ui anyways.  maybe for future?
         handle_setting_lock_toggle: function(isLocked) {
             this.setState({
                 setting_is_locked: isLocked
+            });
+        },
+        toggle_setting_lock: function () {
+            afm.toggle_setting_lock();
+            this.setState({
+                setting_lock: afm.setting_lock()
             });
         },
         render: function() {
@@ -174,6 +182,7 @@
                         </div>
                         <p className="setting-section-name">Advanced</p>
                         <div className="settings-container">
+                            <div id="toggle-setting-lock" onClick={this.toggle_setting_lock}><img className="icon-button" src={this.state.setting_lock ? "qrc:/images/lock.png" : "qrc:/images/unlock.png"}></img></div>
                             <button style={{position: 'relative'}} className="settings-drawer-button force-curve-button" onClick={main_window.pop_out_force_curve_page}>Force curve</button>
                             <button style={{position: 'relative'}} className="settings-drawer-button reset-afm-button" disabled={this.state.setting_is_locked} onClick={afm.trigger_mcu_reset}>Reset AFM</button>
                             <button style={{position: 'relative'}} className="settings-drawer-button restore-defaults-button" disabled={this.state.setting_is_locked} onClick={afm.restore_defaults}>Restore defaults</button>

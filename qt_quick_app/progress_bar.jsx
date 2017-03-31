@@ -17,13 +17,7 @@ define(["react"], function(React) {
             this.props.go_to_step(0);
         },
         getInitialState: function() {
-                return {update_message: "", setting_lock: true};
-        },
-        toggle_setting_lock: function () {
-            afm.toggle_setting_lock();
-            this.setState({
-                setting_lock: afm.setting_lock()
-            });
+                return {update_message: ""};
         },
         render: function() {
             var steps = [];
@@ -38,7 +32,6 @@ define(["react"], function(React) {
                     </div>
                     <div id="setup-link" onClick={this.go_to_setup}><img style={{width: "20px"}} src="qrc:/images/wrench_gray.png"></img></div>
                     {/*<div id="toggle-console"><img style={{width: "20px"}} src="qrc:/images/grey_console.png"></img></div>*/}
-                    <div id="toggle-setting-lock" onClick={this.toggle_setting_lock}><img style={{width: "20px"}} src={this.state.setting_lock ? "qrc:/images/lock.png" : "qrc:/images/unlock.png"}></img></div>
                     <ul id="progressbar">
                       {steps}
                     </ul>

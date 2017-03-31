@@ -61,7 +61,7 @@ void FirmwareUpdater::update_firmware (QString mcu_bin) {
     	return;
     }
 
-    int args [] = {0x00000001, 5};
+    quint32 args [] = {0x00000001, 5};
 
     if (run_applet(0, args, 2)){
     	check_mail();    	
@@ -90,7 +90,7 @@ void FirmwareUpdater::update_firmware (QString mcu_bin) {
     	return;
     }
 
-    int gpnvm [] = {1 , 1};
+    quint32 gpnvm [] = {1 , 1};
 
     if (!run_applet(6, gpnvm, 2)){
     	qDebug() << "Applet GPVM failed.";
@@ -294,7 +294,7 @@ bool FirmwareUpdater::check_device_ID(const quint32 &address) {
 	return device_good;
 }
 
-bool FirmwareUpdater::run_applet(int cmd, int *args, int length) {
+bool FirmwareUpdater::run_applet(int cmd, quint32 *args, int length) {
 	int mbxOffset = 0;
     int iterations = length;
 
@@ -409,7 +409,7 @@ bool FirmwareUpdater::write_to_flash(){
     	return false;
     }
 
-    int args [] = {m_buff_addr, size * PAGE_SIZE, 0};
+    quint32 args [] = {m_buff_addr, size * PAGE_SIZE, 0};
 
     //qDebug() << args[0] << " " << args[1] << " " << args[2] << " " << sizeof(args);
 

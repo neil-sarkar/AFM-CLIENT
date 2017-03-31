@@ -59,6 +59,7 @@ void AFM::init() {
     approacher->init();
     scanner->init();
     force_curve_generator->init();
+    read_all_ADCs();
     cmd_get_resistances();
 }
 
