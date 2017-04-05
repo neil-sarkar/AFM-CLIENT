@@ -93,7 +93,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(entered_bootloader()), firmware_updater, SLOT(entered_bootloader()));
 
     QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
-    QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(disconnected()));
+    //QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(initializing()));
 
     // Misc connections
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);

@@ -18,7 +18,7 @@ Q_OBJECT
         Q_INVOKABLE void close(); // closes the serial port, and handles any tear-down processes
 
     signals:
-        void connected(); // emitted when afm is first connected to
+        void connected();    // emitted when afm is first connected to
         void disconnected(); // emitted when afm is first disconnected
         void message_sent(CommandNode*); // emitted after a full command has been sent
         void byte_received(char);
@@ -47,6 +47,7 @@ Q_OBJECT
         QTimer* port_scan_timer;
         bool is_connected;
         QSerialPort* port;
+        unsigned int connected_cnt;
 
         static const int AFM_Baud_Rate;
         static const int AFM_Success;
