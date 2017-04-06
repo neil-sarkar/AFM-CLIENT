@@ -9,6 +9,11 @@
 #include "globals.h"
 #include "constants.h"
 
+/*
+ * QSerialPort->clear in destructor to flush and cleanup.
+ *
+ */
+
 SerialPort::SerialPort(QObject *parent) : QObject(parent) {
     is_connected = false;
     connected_cnt = 0;
@@ -31,14 +36,22 @@ void SerialPort::handle_error(QSerialPort::SerialPortError error) {
     }
 }
 
-//bool SerialPort::isPortAvailable() {
-//    bool portAvailable = false;
-//    QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
-//    for (int i = 0; i < connected_ports.size(); i++){
-//        if (connected_ports[i].portName() )
-//    }
-//}
+bool SerialPort::isPortAvailable(QString portName) {
+    bool portAvailable = false;
+    if (!port->isOpen())
+        return portAvailable;
+    QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
+    for (int i = 0; i < connected_ports.size(); i++) {
+        //qDebug() << "Port Name: " << connected_ports[i].portName();
+        if (QString::compare(connected_ports[i].portName(), portName) == 0) {
+            portAvailable = true;
+            break;
+        }
+    }
+    return portAvailable;
+}
 
+// TODO: add optional arguement for connecting to a specific port
 bool SerialPort::auto_connect() {
     // this method attempts to find all the ports connected and connect to (open) the one
     // that it thinks is the AFM
@@ -161,24 +174,31 @@ void SerialPort::on_ready_read() {
 }
 
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
+
     qDebug() << "Checking connection";
     char temp_buffer[1]; // Create a buffer that will store the first char of data that the serial port has waiting for us
     // check if connection was killed and needs to be established again.
     // TODO: flush and re-initialize
-    unsigned int err = port->error();
-    qDebug() << "ERRROORROOR:" << err;
-    if (err != QSerialPort::NoError) {
-        qDebug() << err << "ERRROORROOR";
+    QSerialPort::SerialPortError err = port->error();
+
+    // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
+    bool isPortThere = isPortAvailable(port->portName());
+    qDebug() << "connected_cnt" << connected_cnt;
+    qDebug() << "isPortTHere" << isPortThere;
+    QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
+    for (int i = 0; i < connected_ports.size(); i++) {
+        qDebug() << "Port Name: " << connected_ports[i].portName();
+    }
+    if (((connected_cnt > 0) && !isPortThere) ||
+        !port->isOpen() ||
+        port->peek(temp_buffer, sizeof(temp_buffer)) == -1)
+    {
+        qDebug() << "ERereroor";
+        emit disconnected();
+        auto_connect(); // call auto_connect() since we're not connected
     }
     else {
-        //emit disconnected(); // earliest time we can detect connection has been lost
-        if (!port->isOpen() || port->peek(temp_buffer, sizeof(temp_buffer)) == -1) // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
-        {
-            auto_connect(); // call auto_connect() since we're not connected
-        }
-        else {
-            on_ready_read(); // ensure that any bytes missed by the last read operation get processed
-        }
+        on_ready_read(); // ensure that any bytes missed by the last read operation get processed
     }
 }
 

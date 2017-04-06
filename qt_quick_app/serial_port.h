@@ -39,6 +39,7 @@ Q_OBJECT
         void stop_timer();
         void start_timer();
         void close_conn();
+        bool isPortAvailable(QString portName);
 
     private slots:
         void handle_error(QSerialPort::SerialPortError error);
