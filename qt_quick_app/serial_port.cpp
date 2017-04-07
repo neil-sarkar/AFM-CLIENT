@@ -38,8 +38,10 @@ void SerialPort::handle_error(QSerialPort::SerialPortError error) {
 
 bool SerialPort::isPortAvailable(QString portName) {
     bool portAvailable = false;
+
     if (!port->isOpen())
         return portAvailable;
+
     QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
     for (int i = 0; i < connected_ports.size(); i++) {
         //qDebug() << "Port Name: " << connected_ports[i].portName();
@@ -79,6 +81,7 @@ bool SerialPort::open(QString port_name, qint32 baud_rate) {
         if (detect_afm()) {
             //port_scan_timer->stop();
             is_connected = true;
+            this->port_name = port_name;
             connected_cnt++;
             initialize_reading();
             emit connected();
@@ -176,29 +179,38 @@ void SerialPort::on_ready_read() {
 void SerialPort::check_connected() { // In order to check if the AFM is connected, we will try to read some data from it
 
     qDebug() << "Checking connection";
-    char temp_buffer[1]; // Create a buffer that will store the first char of data that the serial port has waiting for us
-    // check if connection was killed and needs to be established again.
-    // TODO: flush and re-initialize
+
     QSerialPort::SerialPortError err = port->error();
 
-    // -1 is returned if there was an error in reading the port (aka the device has yet to be connected to)
-    bool isPortThere = isPortAvailable(port->portName());
-    qDebug() << "connected_cnt" << connected_cnt;
-    qDebug() << "isPortTHere" << isPortThere;
-    QList<QSerialPortInfo> connected_ports = QSerialPortInfo::availablePorts();
-    for (int i = 0; i < connected_ports.size(); i++) {
-        qDebug() << "Port Name: " << connected_ports[i].portName();
-    }
-    if (((connected_cnt > 0) && !isPortThere) ||
-        !port->isOpen() ||
-        port->peek(temp_buffer, sizeof(temp_buffer)) == -1)
-    {
-        qDebug() << "ERereroor";
-        emit disconnected();
-        auto_connect(); // call auto_connect() since we're not connected
-    }
+    qDebug() << "serial error: " << err;
+    qDebug() << "connected_cnt: " << connected_cnt;
+
+    if (connected_cnt == 0)
+        auto_connect();
     else {
-        on_ready_read(); // ensure that any bytes missed by the last read operation get processed
+        on_ready_read();
+        port->close();
+        //port->setPortName(port_name);
+        //port->setBaudRate(AFM_Baud_Rate);
+        //bool isPortThere = isPortAvailable(this->port_name);
+        //qDebug() << "isPortTHere: " << isPortThere;
+        //if ( !isPortThere ) {
+        if (!port->open(QIODevice::ReadWrite)) {
+            if (is_connected == true) { // we were connected but now we are disconnected
+                is_connected = false;
+                emit disconnected();
+            }
+            qDebug() << "Port Disconnected";
+        }
+        else {
+            if (is_connected == false) { // we were disconnected but now we are connected again
+                is_connected = true;
+                connected_cnt++;
+                emit connected();
+            }
+            qDebug() << "Port Connected";
+            on_ready_read(); // ensure that any bytes missed by the last read operation get processed
+        }
     }
 }
 

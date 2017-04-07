@@ -47,6 +47,7 @@ Q_OBJECT
     private:
         QTimer* port_scan_timer;
         bool is_connected;
+        QString port_name;
         QSerialPort* port;
         unsigned int connected_cnt;
 

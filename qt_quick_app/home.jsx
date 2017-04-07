@@ -1,7 +1,7 @@
 define(["react", "dom"], function(React, ReactDOM) {
     var status_map = [
         {
-            transition_condition: afm.disconnected, // this won't do anything for now,
+            transition_condition: afm.disconnected,
             // because we never check to see if our connection is still live
             text: "Waiting for serial connection...",
             transition_condition: afm.initializing,
