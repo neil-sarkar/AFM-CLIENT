@@ -38,7 +38,7 @@ MainWindow::MainWindow(AFM* afm, WebFileDialog* folder_picker, double zoom_facto
     setMinimumSize(640, 480);
 
     set_global_web_settings();
-    setContextMenuPolicy(Qt::NoContextMenu);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
     QObject::connect(m_welcome_page.mainFrame(), SIGNAL(loadFinished(bool)), this, SLOT(welcomePageLoadFinished()));
 }
 

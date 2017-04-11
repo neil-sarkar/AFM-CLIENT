@@ -26,6 +26,7 @@ AFM::AFM(peripheral_collection PGA_collection, peripheral_collection DAC_collect
     this->m_done_init_resistances = false;
     this->m_mcu_bin_file = "";
     this->m_setting_lock = true;
+    this->m_serial_connected = false;
     this->network_manager = new QNetworkAccessManager(this);
     connect(network_manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(contact_server_reply(QNetworkReply*)));
@@ -36,6 +37,21 @@ AFM::~AFM() {
     delete this->network_manager;
 }
 
+void AFM::reconnected() {
+    m_serial_connected = true;
+    emit init_complete();
+}
+
+void AFM::disconnecting() {
+    emit disconnected();
+    //emit initializing();
+    m_serial_connected = false;
+}
+
+bool AFM::is_connected() {
+    return m_serial_connected;
+}
+
 void AFM::init() {
     // This method calls the init methods of all the members
     emit initializing();
@@ -43,6 +59,7 @@ void AFM::init() {
     set_settings();
     set_check_resistances(true);
     is_initializing = true;
+
     peripheral_collection::iterator i;
     for (i = DAC_collection.begin(); i != DAC_collection.end(); ++i)
         i.value()->init();
@@ -51,8 +68,8 @@ void AFM::init() {
     for (i = PGA_collection.begin(); i != PGA_collection.end(); ++i)
         i.value()->init();
 
-    connect(static_cast<PGA*>(PGA_collection["coarse_z"]), SIGNAL(pga_callback_received(const QString*)),
-            this, SLOT(generate_get_resistances_command(const QString*)));
+//    connect(static_cast<PGA*>(PGA_collection["coarse_z"]), SIGNAL(pga_callback_received(const QString*)),
+//            this, SLOT(generate_get_resistances_command(const QString*)));
 
     motor->init();
     sweeper->init();
@@ -110,6 +127,7 @@ void AFM::callback_get_resistances(QByteArray return_bytes) {
     if (is_initializing) {
         emit init_complete();
         is_initializing = false;
+        m_serial_connected = true;
     }
     check_resistance_values(return_bytes);
     reset_all_pga_command();

@@ -78,6 +78,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
 
     // Async serial communication handling (when the MCU sends a message without us making an associated call for that message)
     QObject::connect(serial_port, SIGNAL(connected()), afm, SLOT(init()));
+    QObject::connect(serial_port, SIGNAL(reconnected()), afm, SLOT(reconnected()));
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), send_worker, SLOT(flush()), Qt::DirectConnection);
     QObject::connect(serial_port, SIGNAL(resetting_mcu()), receive_worker, SLOT(flush()), Qt::DirectConnection);
     
@@ -93,7 +94,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect(serial_port, SIGNAL(entered_bootloader()), firmware_updater, SLOT(entered_bootloader()));
 
     QObject::connect(receive_worker, SIGNAL(receive_returned()), send_worker, SLOT(handle_receive_return()), Qt::QueuedConnection);
-    //QObject::connect(serial_port, SIGNAL(disconnected()), afm, SIGNAL(initializing()));
+    QObject::connect(serial_port, SIGNAL(disconnected()), afm, SLOT(disconnecting()));
 
     // Misc connections
     QObject::connect(serial_port, SIGNAL(message_sent(CommandNode*)), receive_worker, SLOT(enqueue_command(CommandNode*)), Qt::DirectConnection);
@@ -103,6 +104,7 @@ void Builder::wire(AFM* & afm, SerialPort* & serial_port, SendWorker* & send_wor
     QObject::connect((PGA*)afm->PGA_collection[QString("fine_z")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_z_actuator_scale_factor(double)));
     QObject::connect((PGA*)afm->PGA_collection[QString("x_1")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_x_actuator_scale_factor(double)));
     QObject::connect((PGA*)afm->PGA_collection[QString("y_1")], SIGNAL(value_changed(double)), afm->scanner, SLOT(update_y_actuator_scale_factor(double)));
+    QObject::connect(static_cast<PGA*>(afm->PGA_collection["coarse_z"]), SIGNAL(pga_callback_received(const QString*)), afm, SLOT(generate_get_resistances_command(const QString*)));
 
     // Internal object connections
     QObject::connect(receive_worker, SIGNAL(response_byte_received()), receive_worker, SLOT(build_working_response()));

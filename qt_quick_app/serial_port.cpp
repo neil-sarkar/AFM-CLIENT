@@ -159,6 +159,8 @@ int SerialPort::write_byte(char byte) { // This method is the only one that actu
     return AFM_Fail;
 }
 
+//TODO: INVESTIGATE time out safety, implement emergency pause function in
+// SCAN, APPROACH (PRIORITY), or restructure error delivery system <- logging
 int SerialPort::write_bytes(QByteArray bytes) { // This method is the only one that actually writes anything to the serial port
     qDebug() << "Sending " << bytes;
     if (port->write(bytes.data(), bytes.length()) == bytes.length()) { //        qDebug() << QString().sprintf("%2p",byte);
@@ -188,28 +190,31 @@ void SerialPort::check_connected() { // In order to check if the AFM is connecte
     if (connected_cnt == 0)
         auto_connect();
     else {
-        on_ready_read();
-        port->close();
-        //port->setPortName(port_name);
-        //port->setBaudRate(AFM_Baud_Rate);
-        //bool isPortThere = isPortAvailable(this->port_name);
-        //qDebug() << "isPortTHere: " << isPortThere;
-        //if ( !isPortThere ) {
-        if (!port->open(QIODevice::ReadWrite)) {
-            if (is_connected == true) { // we were connected but now we are disconnected
-                is_connected = false;
-                emit disconnected();
+        if (err > 0) {
+            on_ready_read();
+            port->close();
+            //port->setPortName(port_name);
+            //port->setBaudRate(AFM_Baud_Rate);
+            //bool isPortThere = isPortAvailable(this->port_name);
+            //qDebug() << "isPortTHere: " << isPortThere;
+            //if ( !isPortThere ) {
+            if (!port->open(QIODevice::ReadWrite)) {
+                if (is_connected == true) { // we were connected but now we are disconnected
+                    is_connected = false;
+                    emit disconnected();
+                }
+                qDebug() << "Port Disconnected";
             }
-            qDebug() << "Port Disconnected";
-        }
-        else {
-            if (is_connected == false) { // we were disconnected but now we are connected again
-                is_connected = true;
-                connected_cnt++;
-                emit connected();
+            else {
+                if (is_connected == false) { // we were disconnected but now we are connected again
+                    is_connected = true;
+                    connected_cnt++;
+                    emit reconnected();
+                    //emit connected();
+                }
+                qDebug() << "Port Connected";
+                //on_ready_read(); // ensure that any bytes missed by the last read operation get processed
             }
-            qDebug() << "Port Connected";
-            on_ready_read(); // ensure that any bytes missed by the last read operation get processed
         }
     }
 }

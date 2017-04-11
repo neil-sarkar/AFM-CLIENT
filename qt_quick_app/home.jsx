@@ -1,7 +1,8 @@
 define(["react", "dom"], function(React, ReactDOM) {
     var status_map = [
         {
-            transition_condition: afm.disconnected,
+            enter_condition: afm.disconnected,
+            //transition_condition: afm.disconnected,
             // because we never check to see if our connection is still live
             text: "Waiting for serial connection...",
             transition_condition: afm.initializing,
@@ -34,8 +35,16 @@ define(["react", "dom"], function(React, ReactDOM) {
             }
             afm.new_firmware_version.connect(this.handle_new_firmware_version);
             afm.new_server_data.connect(this.handle_new_server_data);
+
+            this.init_state();
             //afm.cmd_get_firmware_version();
             //afm.contact_server();
+        },
+        init_state: function() {
+            var state_buf = afm.is_connected() ? 2 : this.state.status;
+            this.setState({
+                status: state_buf
+            });
         },
         set_state: function(index) {
             this.setState({

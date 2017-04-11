@@ -51,6 +51,7 @@ class AFM : public AFMObject
         Q_INVOKABLE QString save_folder();
         Q_INVOKABLE QString mcu_bin_file();
         Q_INVOKABLE QString save_scan_data();
+        Q_INVOKABLE bool is_connected();
         Q_INVOKABLE bool setting_lock();
         Q_INVOKABLE void save_force_curve_data();
         Q_INVOKABLE void release_port();
@@ -99,6 +100,8 @@ class AFM : public AFMObject
 
     public slots:
         void init();
+        void reconnected();
+        void disconnecting();
         void contact_server_reply(QNetworkReply*);
         void generate_get_resistances_command(const QString* master);
         void push_to_AFM(QString);
@@ -122,6 +125,7 @@ class AFM : public AFMObject
         QString m_mcu_bin_file;
         QString m_firmware_version;
         bool m_done_init_resistances;
+        bool m_serial_connected;
 
         static const QString GENERAL;
         static const QString AUTOSWEEP;

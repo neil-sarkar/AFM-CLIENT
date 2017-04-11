@@ -20,6 +20,7 @@ Q_OBJECT
     signals:
         void connected();    // emitted when afm is first connected to
         void disconnected(); // emitted when afm is first disconnected
+        void reconnected();
         void message_sent(CommandNode*); // emitted after a full command has been sent
         void byte_received(char);
         void resetting_mcu();
